@@ -29,6 +29,8 @@ TimeManagement Time; // Our global time management object
 namespace {
 
   enum TimeType { OptimumTime, MaxTime };
+  const double k_scale = 1.5;
+  const double inc_scale = 1.0;
 
   int remaining(int myTime, int myInc, int moveOverhead, int movesToGo,
                 int moveNum, bool ponder, TimeType type) {
@@ -57,11 +59,11 @@ namespace {
     // Otherwise we increase usage of remaining time as the game goes on
     else
     {
-        double k = 1 + 20 * moveNum / (500.0 + moveNum);
-        ratio = (type == OptimumTime ? 0.017 : 0.07) * (k + inc / myTime);
+        double k = k_scale * (1 + 20 * moveNum / (500.0 + moveNum));
+        ratio = (type == OptimumTime ? 0.017 : 0.07) * k;
     }
 
-    int time = int(std::min(1.0, ratio) * std::max(0, myTime - moveOverhead));
+    int time = int(std::min(1.0, ratio) * std::max(0, myTime - moveOverhead)) + inc_scale * myInc;
 
     if (type == OptimumTime && ponder)
         time = 5 * time / 4;

@@ -19,6 +19,7 @@
 */
 
 #include <algorithm>
+#include <iostream>
 
 #include "search.h"
 #include "timeman.h"
@@ -30,8 +31,8 @@ namespace {
 
   enum TimeType { OptimumTime, MaxTime };
   const int    high_end = 45;
-  const double he_scale  = 1.1;
-  const double inc_scale = 1.0;
+  const double he_scale  = 1.6;
+  const double inc_scale = 0.95; // is inc already in myTime?? 
 
   int remaining(int myTime, int myInc, int moveOverhead, int movesToGo,
                 int moveNum, bool ponder, TimeType type) {
@@ -109,6 +110,7 @@ void TimeManagement::init(Search::LimitsType& limits, Color us, int ply)
   int moveNum = (ply + 1) / 2;
 
   startTime = limits.startTime;
+  std::cout << limits.time[us] << " : " << limits.inc[us]  << std::endl;
   optimumTime = remaining(limits.time[us], limits.inc[us], moveOverhead,
                           limits.movestogo, moveNum, ponder, OptimumTime);
   maximumTime = remaining(limits.time[us], limits.inc[us], moveOverhead,

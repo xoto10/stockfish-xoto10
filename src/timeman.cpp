@@ -29,6 +29,9 @@ TimeManagement Time; // Our global time management object
 namespace {
 
   enum TimeType { OptimumTime, MaxTime };
+  const int    HighEnd = 45;
+  const double HeScale  = 1.6;
+  const double IncScale = 1.00;
 
   int remaining(int myTime, int myInc, int moveOverhead, int movesToGo,
                 int moveNum, bool ponder, TimeType type) {
@@ -36,15 +39,16 @@ namespace {
     if (myTime <= 0)
         return 0;
 
-    double ratio; // Which ratio of myTime we are going to use
-
-    // Usage of increment follows quadratic distribution with the maximum at move 25
-    double inc = myInc * std::max(55.0, 120 - 0.12 * (moveNum - 25) * (moveNum - 25));
+    double ratio;   // Which ratio of myTime we are going to use
+    double mvohScale = 1.0; // moveOverhead scaling
 
     // In moves-to-go we distribute time according to a quadratic function with
     // the maximum around move 20 for 40 moves in y time case.
     if (movesToGo)
     {
+        // Usage of increment follows quadratic distribution with the maximum at move 25
+        double inc = myInc * std::max(55.0, 120 - 0.12 * (moveNum - 25) * (moveNum - 25));
+
         ratio = (type == OptimumTime ? 1.0 : 6.0) / std::min(50, movesToGo);
 
         if (moveNum <= 40)
@@ -57,11 +61,21 @@ namespace {
     // Otherwise we increase usage of remaining time as the game goes on
     else
     {
-        double k = 1 + 20 * moveNum / (500.0 + moveNum);
-        ratio = (type == OptimumTime ? 0.017 : 0.07) * (k + inc / myTime);
+	double k = std::min(0.10, HeScale / (std::max(1, HighEnd - moveNum)));
+        ratio = (type == OptimumTime ? k : 4.1 * k);
+
+	if (moveOverhead != 0)
+	{
+	    // If inc/overhead ratio is >= 10 deduct full overhead every move,
+	    //   i.e. f = 1/ratio e.g. ~= 3. This should give total safety from losing on time.
+	    // Otherwise tend towards using f = 20 to keep a timebank to cover future move overheads.
+
+	    double incMoRatio = std::max(2.0, std::min(10.0, myInc/double(moveOverhead)) ); // enforce range 2-10
+	    mvohScale = 20.0 - (20.0 - 1.0/ratio) * (incMoRatio - 2.0) / (10.0 - 2.0);
+	}
     }
 
-    int time = int(std::min(1.0, ratio) * std::max(0, myTime - moveOverhead));
+    int time = int(std::min(1.0, ratio) * std::max(0.0, myTime - mvohScale*moveOverhead) + IncScale*myInc);
 
     if (type == OptimumTime && ponder)
         time = 5 * time / 4;

@@ -75,7 +75,7 @@ namespace {
 	}
     }
 
-    int time = int(std::min(1.0, ratio) * std::max(0.0, myTime - mvohScale*moveOverhead) + IncScale*myInc);
+    int time = int( std::max(0.0, std::min(1.0, ratio) * (myTime - mvohScale*moveOverhead) + IncScale*myInc) );
 
     if (type == OptimumTime && ponder)
         time = 5 * time / 4;

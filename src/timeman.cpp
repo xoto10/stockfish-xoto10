@@ -41,6 +41,7 @@ namespace {
 
     double ratio;   // Which ratio of myTime we are going to use
     double mvohScale = 1.0; // moveOverhead scaling
+    int time;
 
     // In moves-to-go we distribute time according to a quadratic function with
     // the maximum around move 20 for 40 moves in y time case.
@@ -48,6 +49,7 @@ namespace {
     {
         // Usage of increment follows quadratic distribution with the maximum at move 25
         double inc = myInc * std::max(55.0, 120 - 0.12 * (moveNum - 25) * (moveNum - 25));
+	int mtg = std::max(1, std::min(25, movesToGo) + std::max(0, movesToGo-25)/2);
 
         ratio = (type == OptimumTime ? 1.0 : 6.0) / std::min(50, movesToGo);
 
@@ -57,6 +59,8 @@ namespace {
             ratio *= 1.5;
 
         ratio *= 1 + inc / (myTime * 8.5);
+
+	time = int(std::min(1.0, ratio) * std::max(0, myTime - mtg*moveOverhead));
     }
     // Otherwise we increase usage of remaining time as the game goes on
     else
@@ -73,9 +77,9 @@ namespace {
 	    double incMoRatio = std::max(2.0, std::min(10.0, myInc/double(moveOverhead)) ); // enforce range 2-10
 	    mvohScale = 20.0 - (20.0 - 1.0/ratio) * (incMoRatio - 2.0) / (10.0 - 2.0);
 	}
-    }
 
-    int time = int( std::max(0.0, std::min(1.0, ratio) * (myTime - mvohScale*moveOverhead) + IncScale*myInc) );
+        time = int( std::max(0.0, std::min(1.0, ratio) * (myTime - mvohScale*moveOverhead) + IncScale*myInc) );
+    }
 
     if (type == OptimumTime && ponder)
         time = 5 * time / 4;

@@ -46,7 +46,7 @@ namespace {
     // the maximum around move 20 for 40 moves in y time case.
     if (movesToGo)
     {
-        int mtg = (movesToGo >= 5) ? 3 : (movesToGo+1) / 2;
+        double mtg = (movesToGo >= 9) ? 5.0 : (movesToGo+1.0) / 2.0;
         ratio = (type == OptimumTime ? 1.0 : 6.0) / std::min(50, movesToGo);
 
         if (moveNum <= 40)

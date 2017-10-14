@@ -46,7 +46,6 @@ namespace {
     // the maximum around move 20 for 40 moves in y time case.
     if (movesToGo)
     {
-moveOverhead = 50;                                           // while testing - try to provoke more time fails
 //      int mtg = (movesToGo >= 5) ? 3 : (movesToGo+1) / 2;  // not used while looking for more fails
         ratio = (type == OptimumTime ? 1.0 : 6.0) / std::min(50, movesToGo);
 

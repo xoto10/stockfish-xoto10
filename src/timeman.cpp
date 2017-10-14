@@ -46,7 +46,7 @@ namespace {
     // the maximum around move 20 for 40 moves in y time case.
     if (movesToGo)
     {
-//      int mtg = (movesToGo >= 5) ? 3 : (movesToGo+1) / 2;  // not used while looking for more fails
+        int mtg = (movesToGo >= 5) ? 3 : (movesToGo+1) / 2;
         ratio = (type == OptimumTime ? 1.0 : 6.0) / std::min(50, movesToGo);
 
         if (moveNum <= 40)
@@ -56,7 +56,7 @@ namespace {
 
         ratio *= 1 + inc / (myTime * 8.5);
 
-        time = int( std::max(0.0, std::min(1.0, ratio) * (myTime - moveOverhead)) );
+        time = int( std::max(0.0, std::min(1.0, ratio) * (myTime - mtg*moveOverhead)) );
     }
     // Otherwise we increase usage of remaining time as the game goes on
     else

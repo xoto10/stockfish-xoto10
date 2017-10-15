@@ -40,11 +40,15 @@ namespace {
 
     // Usage of increment follows quadratic distribution with the maximum at move 25
     double inc = myInc * std::max(55.0, 120 - 0.12 * (moveNum - 25) * (moveNum - 25));
+    int time;
 
     // In moves-to-go we distribute time according to a quadratic function with
     // the maximum around move 20 for 40 moves in y time case.
     if (movesToGo)
     {
+	// allow full overhead for last move of time control, a bit less for previous one,
+	// a bit less for previous one, back to 0 for this move; avg = moves*overhead/2
+        double mtg = (movesToGo+1.0) / 2.0;
         ratio = (type == OptimumTime ? 1.0 : 6.0) / std::min(50, movesToGo);
 
         if (moveNum <= 40)
@@ -53,15 +57,17 @@ namespace {
             ratio *= 1.5;
 
         ratio *= 1 + inc / (myTime * 8.5);
+
+        time = int( std::max(0.0, std::min(1.0, ratio) * (myTime - mtg*moveOverhead)) );
     }
     // Otherwise we increase usage of remaining time as the game goes on
     else
     {
         double k = 1 + 20 * moveNum / (500.0 + moveNum);
         ratio = (type == OptimumTime ? 0.017 : 0.07) * (k + inc / myTime);
-    }
 
-    int time = int(std::min(1.0, ratio) * std::max(0, myTime - moveOverhead));
+        time = int(std::min(1.0, ratio) * std::max(0, myTime - moveOverhead));
+    }
 
     if (type == OptimumTime && ponder)
         time = 5 * time / 4;

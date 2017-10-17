@@ -31,9 +31,15 @@
 class TimeManagement {
 public:
   void init(Search::LimitsType& limits, Color us, int ply);
+  void estimateMyTime(int t) { estimatedMyTime = t; }
+  void setAverageMVOH(double a) { avgMoveOverhead = a; }
+  void setMaximumMVOH(int m) { maxMoveOverhead = m; }
   int optimum() const { return optimumTime; }
   int maximum() const { return maximumTime; }
   int elapsed() const { return int(Search::Limits.npmsec ? Threads.nodes_searched() : now() - startTime); }
+  int estimate() const { return estimatedMyTime; }
+  int maximumMVOH() const { return maxMoveOverhead; }
+  double averageMVOH() const { return avgMoveOverhead; }
 
   int64_t availableNodes; // When in 'nodes as time' mode
 
@@ -41,6 +47,9 @@ private:
   TimePoint startTime;
   int optimumTime;
   int maximumTime;
+  int estimatedMyTime; // store a guess at next myTime to track actual move overhead taken
+  int maxMoveOverhead;
+  double avgMoveOverhead;
 };
 
 extern TimeManagement Time;

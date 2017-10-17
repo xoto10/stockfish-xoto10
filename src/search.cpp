@@ -314,6 +314,7 @@ void MainThread::search() {
       std::cout << " ponder " << UCI::move(bestThread->rootMoves[0].pv[1], rootPos.is_chess960());
 
   std::cout << sync_endl;
+  Time.estimateMyTime( Limits.time[us] + Limits.inc[us] - Time.elapsed() );
 }
 
 

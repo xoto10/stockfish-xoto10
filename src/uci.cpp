@@ -102,6 +102,45 @@ namespace {
   }
 
 
+  // move_overhead() is called when engine receives the "go" command. It uses
+  // an estimate of myTime created earlier to measure the actual comms overhead
+  // after deciding what to move.
+
+  void move_overhead(Position& pos, Search::LimitsType& limits) {
+
+    if (Time.estimate() != -99999)
+    {
+        int overhead = Time.estimate() - limits.time[pos.side_to_move()];
+
+        // Calculate average moveOverhead (using short ema) if in sensible range
+        // e.g. overhead can be < 0 and Arena does strange things with increments < 1s
+        if (-100 <= overhead && overhead < 10000)
+        {
+            double k = 0.3333;  // approx last 5 numbers. Use 0.1818 for last 10 numbers
+            if ( Time.averageMVOH() < -99990.0 )
+                Time.setAverageMVOH(overhead);
+            else
+                // add 200 during calc to avoid problems with -ve numbers
+                Time.setAverageMVOH( k*(200.0+overhead) + (1.0-k)*(200.0+Time.averageMVOH())
+                                     - 200.0 );
+            if ( overhead > Time.maximumMVOH() )
+                Time.setMaximumMVOH(overhead);
+        }
+        sync_cout << "info string overhead: est " << Time.estimate()
+                  << " myt " << limits.time[pos.side_to_move()]
+                  << " inc " << limits.inc[pos.side_to_move()]
+                  << " overhead " << overhead << " avg " << Time.averageMVOH()
+                  << " max " << Time.maximumMVOH()
+                  << sync_endl;
+    }
+    else
+    {
+        sync_cout << "info string overhead: myt " << limits.time[pos.side_to_move()]
+            << " inc " << limits.inc[pos.side_to_move()] << sync_endl;
+    }
+  }
+
+
   // go() is called when engine receives the "go" UCI command. The function sets
   // the thinking time and other parameters from the input string, then starts
   // the search.
@@ -131,6 +170,8 @@ namespace {
         else if (token == "perft")     is >> limits.perft;
         else if (token == "infinite")  limits.infinite = 1;
         else if (token == "ponder")    ponderMode = true;
+
+    move_overhead(pos, limits);
 
     Threads.start_thinking(pos, states, limits, ponderMode);
   }
@@ -176,6 +217,7 @@ namespace {
          << "\nNodes searched  : " << nodes
          << "\nNodes/second    : " << 1000 * nodes / elapsed << endl;
   }
+
 
 } // namespace
 
@@ -228,7 +270,12 @@ void UCI::loop(int argc, char* argv[]) {
       else if (token == "setoption")  setoption(is);
       else if (token == "go")         go(pos, is, states);
       else if (token == "position")   position(pos, is, states);
-      else if (token == "ucinewgame") Search::clear();
+      else if (token == "ucinewgame") { Search::clear();
+                                        Time.estimateMyTime(-99999);
+                                        Time.setAverageMVOH(-99999.0);
+                                        Time.setMaximumMVOH(-999);
+                                        //sync_cout << "info string overhead: reset! " << sync_endl;
+                                      }
       else if (token == "isready")    sync_cout << "readyok" << sync_endl;
 
       // Additional custom non-UCI commands, mainly for debugging

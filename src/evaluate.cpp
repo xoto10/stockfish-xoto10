@@ -881,7 +881,8 @@ namespace {
 
     v /= int(PHASE_MIDGAME);
 
-    v += (me->game_phase() - 64) * Time.pressure() * 3 / 400;   // max +/-30
+    v += (pos.side_to_move() == WHITE ? 1 : -1) * (me->game_phase() - 64)
+         * Time.pressure() * 3 / 400;                                // max is roughly +/-50
 
     // In case of tracing add all remaining individual evaluation terms
     if (T)

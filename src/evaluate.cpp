@@ -24,6 +24,7 @@
 #include <iomanip>
 #include <sstream>
 
+#include "timeman.h"
 #include "bitboard.h"
 #include "evaluate.h"
 #include "material.h"
@@ -879,6 +880,8 @@ namespace {
        + eg_value(score) * int(PHASE_MIDGAME - me->game_phase()) * sf / SCALE_FACTOR_NORMAL;
 
     v /= int(PHASE_MIDGAME);
+
+    v += (me->game_phase() - 64) * Time.pressure() * 3 / 200;   // max +/-61
 
     // In case of tracing add all remaining individual evaluation terms
     if (T)

@@ -115,12 +115,10 @@ void TimeManagement::init(Search::LimitsType& limits, Color us, int ply)
 // time_pressure() is called when engine receives the "go" command. It stores
 // a time pressure value ranging from -100 to +100
 
-void TimeManagement::time_pressure(Position& pos, Search::LimitsType& limits) {
+void TimeManagement::time_pressure(Search::LimitsType& limits) {
 
-  const Color Us = pos.side_to_move();
-  const Color Them = (Us == WHITE ? BLACK : WHITE);
-  double t1 = limits.time[Us] + 10 * limits.inc[Us];
-  double t2 = limits.time[Them] + 10 * limits.inc[Them];
+  double t1 = limits.time[WHITE] + 10 * limits.inc[WHITE];
+  double t2 = limits.time[BLACK] + 10 * limits.inc[BLACK];
 
   if (t2 > 0.0 && t1/t2 > 1.333)
       timePressure = std::min(100, int(150.0 * (t1/t2 - 1.333)));

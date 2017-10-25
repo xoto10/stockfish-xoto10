@@ -112,4 +112,6 @@ void TimeManagement::init(Search::LimitsType& limits, Color us, int ply)
                           limits.movestogo, moveNum, ponder, OptimumTime);
   maximumTime = remaining(limits.time[us], limits.inc[us], moveOverhead,
                           limits.movestogo, moveNum, ponder, MaxTime);
+
+  saveScore = Value(0);
 }

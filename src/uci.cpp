@@ -70,10 +70,22 @@ namespace {
     pos.set(fen, Options["UCI_Chess960"], &states->back(), Threads.main());
 
     // Parse move list (if any)
+    string last = "";  // last move from opponent
     while (is >> token && (m = UCI::to_move(pos, token)) != MOVE_NONE)
     {
         states->emplace_back();
         pos.do_move(m, states->back());
+        last = token;
+    }
+
+    if ( !last.empty() && !Time.lastPonder.empty() )
+    {
+        Time.oppMoves += 1;
+        if (last != Time.lastPonder)
+            Time.oppDiffs += 1;
+        sync_cout << "info string oppdiffs: ponder " << Time.lastPonder << " opp " << last
+                  << " oppMoves " << Time.oppMoves << " oppDiffs " << Time.oppDiffs
+                  << sync_endl;
     }
   }
 
@@ -164,7 +176,11 @@ namespace {
         }
         else if (token == "setoption")  setoption(is);
         else if (token == "position")   position(pos, is, states);
-        else if (token == "ucinewgame") Search::clear();
+        else if (token == "ucinewgame")
+        {
+            Search::clear();
+            Time.initOppMoves();
+        }
     }
 
     elapsed = now() - elapsed + 1; // Ensure positivity to avoid a 'divide by zero'

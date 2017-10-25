@@ -24,6 +24,7 @@
 #include <iomanip>
 #include <sstream>
 
+#include "timeman.h"
 #include "bitboard.h"
 #include "evaluate.h"
 #include "material.h"
@@ -882,6 +883,14 @@ namespace {
        + eg_value(score) * int(PHASE_MIDGAME - me->game_phase()) * sf / SCALE_FACTOR_NORMAL;
 
     v /= int(PHASE_MIDGAME);
+
+    int side = (pos.side_to_move() == WHITE ? 1 : -1);
+    // maybe include: && opponent not doing same moves
+    if (    -35 < side * v  &&  side * v < 260            // roughly level to 1.5 pawns up
+         && Time.scoreTrend() > 2.00 )                    // optional?
+    {
+        v += side * (me->game_phase() - 64) / 2;          // prefer mg over eg for now
+    }
 
     // In case of tracing add all remaining individual evaluation terms
     if (T)

@@ -31,11 +31,41 @@
 class TimeManagement {
 public:
   void init(Search::LimitsType& limits, Color us, int ply);
+  void initOppMoves()
+  {
+      lastMove = "";
+      lastPonder = "";
+      oppMoves = 0;
+      oppDiffs = 0;
+  }
+  void update_scores()
+  {
+      Value avg2 = (lastScore + saveScore) / 2;
+      scores.push_back(avg2);
+      if (scores.size() > 11)
+          scores.pop_front();
+      lastScore = saveScore;
+  }
+  double scoreTrend()
+  {
+      if (scores.size() >= 11)
+          return( double(scores.at(10) - scores.at(0)) / 10.0 );
+      else
+          return(0.0);
+  }
   int optimum() const { return optimumTime; }
   int maximum() const { return maximumTime; }
   int elapsed() const { return int(Search::Limits.npmsec ? Threads.nodes_searched() : now() - startTime); }
 
   int64_t availableNodes; // When in 'nodes as time' mode
+
+  Value saveScore;
+  Value lastScore;
+  std::deque<Value> scores = {};  // last 11 values for lastScore2
+  std::string lastMove;
+  std::string lastPonder;
+  int oppMoves;
+  int oppDiffs;
 
 private:
   TimePoint startTime;

@@ -884,12 +884,13 @@ namespace {
 
     v /= int(PHASE_MIDGAME);
 
+    // Bias towards MG or EG depending on score, score trend, ...
     int side = (pos.side_to_move() == WHITE ? 1 : -1);
     // maybe include: && opponent not doing same moves
     if (    -35 < side * v  &&  side * v < 260            // roughly level to 1.5 pawns up
          && Time.scoreTrend() > 2.00 )                    // optional?
     {
-        v += side * (me->game_phase() - 64) / 2;          // prefer mg over eg for now
+        v += side * (me->game_phase() - 64) / 4;          // prefer mg over eg for now
     }
 
     // In case of tracing add all remaining individual evaluation terms

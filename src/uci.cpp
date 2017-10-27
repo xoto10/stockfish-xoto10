@@ -166,6 +166,8 @@ namespace {
     {
         istringstream is(cmd);
         is >> skipws >> token;
+        if (token[0] == 'u')
+            sync_cout << "info string token " << token << sync_endl;
 
         if (token == "go")
         {
@@ -178,8 +180,8 @@ namespace {
         else if (token == "position")   position(pos, is, states);
         else if (token == "ucinewgame")
         {
-            Search::clear();
             Time.initOppMoves();
+            Search::clear();
         }
     }
 
@@ -244,7 +246,11 @@ void UCI::loop(int argc, char* argv[]) {
       else if (token == "setoption")  setoption(is);
       else if (token == "go")         go(pos, is, states);
       else if (token == "position")   position(pos, is, states);
-      else if (token == "ucinewgame") Search::clear();
+      else if (token == "ucinewgame")
+      {
+          Time.initOppMoves();
+          Search::clear();
+      }
       else if (token == "isready")    sync_cout << "readyok" << sync_endl;
 
       // Additional custom non-UCI commands, mainly for debugging

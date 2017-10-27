@@ -21,6 +21,8 @@
 #ifndef TIMEMAN_H_INCLUDED
 #define TIMEMAN_H_INCLUDED
 
+#include <iostream>
+
 #include "misc.h"
 #include "search.h"
 #include "thread.h"
@@ -37,14 +39,16 @@ public:
       lastPonder = "";
       oppMoves = 0;
       oppDiffs = 0;
+      rootGamePhase = PHASE_NOT_SET;
+      sync_cout << "info string reset rootphase now " << rootGamePhase << sync_endl;
   }
   void update_scores()
   {
-      Value avg2 = (lastScore + saveScore) / 2;
+      Value avg2 = (lastVal + saveVal) / 2;
       scores.push_back(avg2);
       if (scores.size() > 11)
           scores.pop_front();
-      lastScore = saveScore;
+      lastVal = saveVal;
   }
   double scoreTrend()
   {
@@ -53,15 +57,24 @@ public:
       else
           return(0.0);
   }
+  void root_phase(Phase gp)
+  {
+      if (rootGamePhase == PHASE_NOT_SET)
+      {
+          rootGamePhase = gp;
+          sync_cout << "info string set rootphase " << rootGamePhase << sync_endl;
+      }
+  }
   int optimum() const { return optimumTime; }
   int maximum() const { return maximumTime; }
   int elapsed() const { return int(Search::Limits.npmsec ? Threads.nodes_searched() : now() - startTime); }
 
   int64_t availableNodes; // When in 'nodes as time' mode
 
-  Value saveScore;
-  Value lastScore;
-  std::deque<Value> scores = {};  // last 11 values for lastScore2
+  Phase rootGamePhase;
+  Value saveVal;
+  Value lastVal;
+  std::deque<Value> scores = {};  // last 11 values for lastVal2
   std::string lastMove;
   std::string lastPonder;
   int oppMoves;

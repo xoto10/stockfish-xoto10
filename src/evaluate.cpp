@@ -18,12 +18,14 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <iostream>
 #include <algorithm>
 #include <cassert>
 #include <cstring>   // For std::memset
 #include <iomanip>
 #include <sstream>
 
+#include "uci.h"
 #include "bitboard.h"
 #include "evaluate.h"
 #include "material.h"
@@ -143,6 +145,9 @@ namespace {
     // a white knight on g5 and black's king is on g8, this white knight adds 2
     // to kingAdjacentZoneAttacksCount[WHITE].
     int kingAdjacentZoneAttacksCount[COLOR_NB];
+
+    // BKA try to get our bishops to roughly attack opponents king
+    int bishopDiagonal[COLOR_NB][3][DIAG_NB];
   };
 
   #define V(v) Value(v)
@@ -245,6 +250,7 @@ namespace {
   const Value LazyThreshold  = Value(1500);
   const Value SpaceThreshold = Value(12222);
 
+  const int bishopKingBonus[15] = {10, 6, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
   // initialize() computes king and pawn attacks, and the king ring bitboard
   // for a given color. This is done at the beginning of the evaluation.
@@ -283,6 +289,16 @@ namespace {
     }
     else
         kingRing[Us] = kingAttackersCount[Them] = 0;
+
+// BKA allow for 3 bishops (unlikely!)
+    for (int c=0; c<COLOR_NB; c++)
+    {
+      for (int n=0; n<3; n++)
+      {
+          bishopDiagonal[c][n][A1DIR] = UNKN;
+          bishopDiagonal[c][n][H1DIR] = UNKN;
+      }
+    }
   }
 
 
@@ -356,6 +372,17 @@ namespace {
                 // Bonus for bishop on a long diagonal which can "see" both center squares
                 if (more_than_one(Center & (attacks_bb<BISHOP>(s, pos.pieces(PAWN)) | s)))
                     score += LongRangedBishop;
+
+// BKA   bishopDiagonal[1][H1DIR] = UNKN;
+                int i=0;
+                while (i<3 && bishopDiagonal[Us][i][A1DIR] != UNKN)
+                    i+=1;
+                if (i<3)
+                {
+                    bishopDiagonal[Us][i][A1DIR] = s/8 - s%8;
+                    bishopDiagonal[Us][i][H1DIR] = (7-s/8) - s%8;
+                    //sync_cout << "info string BKA " << UCI::square(s) << " now " << bishopDiagonal[Us][i][A1DIR] << sync_endl;
+                }
             }
 
             // An important Chess960 pattern: A cornered bishop blocked by a friendly
@@ -521,6 +548,17 @@ namespace {
     // Penalty when our king is on a pawnless flank
     if (!(pos.pieces(PAWN) & KingFlank[kf]))
         score -= PawnlessFlank;
+
+// BKA bishopKingAttack bonus
+    int bishopKingAttack = 0;
+    int kingDiag[DIAG_NB] = { ksq/8 - ksq%8, (7-ksq/8) - ksq%8 };
+    for (int i=0; i<3 && bishopDiagonal[Them][i][A1DIR] != UNKN; i++)
+    {
+        bishopKingAttack += ( bishopKingBonus[abs(bishopDiagonal[Them][i][A1DIR] - kingDiag[A1DIR])]
+                            + bishopKingBonus[abs(bishopDiagonal[Them][i][H1DIR] - kingDiag[H1DIR])] );
+        //sync_cout << "info string BKAval " << UCI::square(ksq) << " val " << bishopKingAttack << sync_endl;
+    }
+    score -= make_score(bishopKingAttack, 0);
 
     if (T)
         Trace::add(KING, Us, score);

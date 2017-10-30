@@ -260,6 +260,10 @@ enum Rank : int {
 /// and the upper 16 bits are used to store the middlegame value. Take some
 /// care to avoid left-shifting a signed int to avoid undefined behavior.
 enum Score : int { SCORE_ZERO };
+ 
+enum DiagDir {
+  A1DIR, H1DIR, DIAG_NB = 2, UNKN = 3
+};
 
 inline Score make_score(int mg, int eg) {
   return Score((int)((unsigned int)eg << 16) + mg);

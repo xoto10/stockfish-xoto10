@@ -854,10 +854,15 @@ namespace {
     initialize<WHITE>();
     initialize<BLACK>();
 
-    score += evaluate_pieces<WHITE, KNIGHT>() - evaluate_pieces<BLACK, KNIGHT>();
-    score += evaluate_pieces<WHITE, BISHOP>() - evaluate_pieces<BLACK, BISHOP>();
-    score += evaluate_pieces<WHITE, ROOK  >() - evaluate_pieces<BLACK, ROOK  >();
-    score += evaluate_pieces<WHITE, QUEEN >() - evaluate_pieces<BLACK, QUEEN >();
+    Score pw =   evaluate_pieces<WHITE, KNIGHT>()
+               + evaluate_pieces<WHITE, BISHOP>()
+               + evaluate_pieces<WHITE, ROOK  >()
+               + evaluate_pieces<WHITE, QUEEN >();
+    Score pb =   evaluate_pieces<BLACK, KNIGHT>()
+               + evaluate_pieces<BLACK, BISHOP>()
+               + evaluate_pieces<BLACK, ROOK  >()
+               + evaluate_pieces<BLACK, QUEEN >();
+    score += pw - pb;
 
     score += mobility[WHITE] - mobility[BLACK];
 
@@ -874,7 +879,14 @@ namespace {
         score +=  evaluate_space<WHITE>()
                 - evaluate_space<BLACK>();
 
-    score += evaluate_initiative(eg_value(score));
+    Score intv = evaluate_initiative(eg_value(score));
+    Score intvMaterial = SCORE_ZERO;
+    // If initiative and score, add 1/10 to piece values to discourage exchanges
+    if (intv>0 && score>0)
+        intvMaterial = make_score(mg_value(pw)/10, eg_value(pw)/10);
+    else if (intv<0 && score<0)
+        intvMaterial = - make_score(mg_value(pb)/10, eg_value(pb)/10);
+    score += intv + intvMaterial;
 
     // Interpolate between a middlegame and a (scaled by 'sf') endgame score
     ScaleFactor sf = evaluate_scale_factor(eg_value(score));

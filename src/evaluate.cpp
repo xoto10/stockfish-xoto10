@@ -882,9 +882,9 @@ namespace {
     Score intv = evaluate_initiative(eg_value(score));
     Score intvMaterial = SCORE_ZERO;
     // If initiative and score, add 1/10 to piece values to discourage exchanges
-    if (intv>0 && score>0)
+    if (eg_value(intv) > 0 && mg_value(score) > 0)
         intvMaterial = make_score(mg_value(pw)/10, eg_value(pw)/10);
-    else if (intv<0 && score<0)
+    else if (eg_value(intv) < 0 && mg_value(score) < 0)
         intvMaterial = - make_score(mg_value(pb)/10, eg_value(pb)/10);
     score += intv + intvMaterial;
 

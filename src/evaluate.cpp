@@ -874,7 +874,14 @@ namespace {
         score +=  evaluate_space<WHITE>()
                 - evaluate_space<BLACK>();
 
-    score += evaluate_initiative(eg_value(score));
+    Score intv = evaluate_initiative(eg_value(score));
+    Score intvMaterial = SCORE_ZERO;
+    // If initiative and score, add 1/3200 to piece values to discourage exchanges
+    if (eg_value(intv) > +20 && mg_value(score) > 0)
+        intvMaterial = make_score(pos.non_pawn_material(WHITE)/3200, pos.non_pawn_material(WHITE)/3200);
+    else if (eg_value(intv) < -20 && mg_value(score) < 0)
+        intvMaterial = - make_score(pos.non_pawn_material(BLACK)/3200, pos.non_pawn_material(BLACK)/3200);
+    score += intv + intvMaterial;
 
     // Interpolate between a middlegame and a (scaled by 'sf') endgame score
     ScaleFactor sf = evaluate_scale_factor(eg_value(score));

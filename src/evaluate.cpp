@@ -775,7 +775,7 @@ namespace {
   template<Tracing T>
   ScaleFactor Evaluation<T>::evaluate_scale_factor(Value eg) {
 
-    Color strongSide = eg > VALUE_DRAW ? WHITE : BLACK;
+    Color strongSide = eg > 0 ? WHITE : BLACK;
     ScaleFactor sf = me->scale_factor(pos, strongSide);
 
     // If we don't already have an unusual scale factor, check for certain
@@ -788,11 +788,15 @@ namespace {
             // is almost a draw, in case of KBP vs KB, it is even more a draw.
             if (   pos.non_pawn_material(WHITE) == BishopValueMg
                 && pos.non_pawn_material(BLACK) == BishopValueMg)
-                return more_than_one(pos.pieces(PAWN)) ? ScaleFactor(31) : ScaleFactor(9);
+                return more_than_one(pos.pieces(PAWN)) ? ScaleFactor(26) : ScaleFactor(9);
 
             // Endgame with opposite-colored bishops, but also other pieces. Still
             // a bit drawish, but not as drawish as with only the two bishops.
-            return ScaleFactor(46);
+            return ScaleFactor(46 - 10 * !(pe->passed_pawns(WHITE) | pe->passed_pawns(BLACK)));
+            // 1000-7500: X+600/177:  ~9-46
+            int opb = (pos.non_pawn_material(strongSide)+600)/177;
+            opb = (opb<9) ? 9 : (opb>46) ? 46 : opb;
+            return ScaleFactor(opb);
         }
         // Endings where weaker side can place his king in front of the opponent's
         // pawns are drawish.

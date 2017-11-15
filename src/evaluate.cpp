@@ -865,7 +865,7 @@ namespace {
     score += evaluate_initiative(eg_value(score));
 
     if (pos.opposite_bishops())
-        score -= make_score(8, 0);
+        score -= make_score(16, 0);
 
     // Interpolate between a middlegame and a (scaled by 'sf') endgame score
     ScaleFactor sf = evaluate_scale_factor(eg_value(score));

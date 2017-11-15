@@ -866,9 +866,9 @@ namespace {
 
     if (pos.opposite_bishops())
     {
-        int opb = std::min( 24, std::abs(mg_value(score)) );
-        score -= make_score( (pos.side_to_move() == WHITE ? opb : -opb)
-                             * (mg_value(score) > 0 ? 1 : -1)
+        int opb = std::min( 16, std::abs(mg_value(score)) );
+        score -= make_score( // (pos.side_to_move() == WHITE ? 1 : -1) *
+                             (mg_value(score) > 0 ? opb : -opb)
                            , 0);
     }
 

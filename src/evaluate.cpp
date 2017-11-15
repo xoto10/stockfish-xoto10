@@ -793,7 +793,7 @@ namespace {
             // Endgame with opposite-colored bishops, but also other pieces. Still
             // a bit drawish, but not as drawish as with only the two bishops.
             // 1000-7500: X+600/177:  ~9-46
-            int opb = (pos.non_pawn_material(strongSide)+600)/177;
+            int opb = (pos.non_pawn_material(strongSide)+600)/354 + 23;
             opb = (opb<9) ? 9 : (opb>46) ? 46 : opb;
             return ScaleFactor(opb);
         }

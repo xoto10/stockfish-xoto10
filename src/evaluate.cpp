@@ -866,10 +866,8 @@ namespace {
 
     if (pos.opposite_bishops())
     {
-        int opb = std::min( 16, std::abs(mg_value(score)) );
-        score -= make_score( // (pos.side_to_move() == WHITE ? 1 : -1) *
-                             (mg_value(score) > 0 ? opb : -opb)
-                           , 0);
+        int opb = std::min( 8, std::abs(mg_value(score)) );
+        score -= make_score((mg_value(score) > 0 ? opb : -opb), 0);
     }
 
     // Interpolate between a middlegame and a (scaled by 'sf') endgame score

@@ -245,6 +245,9 @@ namespace {
   const Value LazyThreshold  = Value(1500);
   const Value SpaceThreshold = Value(12222);
 
+  // Penalty for opposite bishops during midgame
+  const int OppositeBishopsMG = 12;
+
 
   // initialize() computes king and pawn attacks, and the king ring bitboard
   // for a given color. This is done at the beginning of the evaluation.
@@ -863,6 +866,12 @@ namespace {
                 - evaluate_space<BLACK>();
 
     score += evaluate_initiative(eg_value(score));
+
+    if (pos.opposite_bishops())
+    {
+        int opb = std::min( OppositeBishopsMG, std::abs(mg_value(score)) );
+        score -= make_score((mg_value(score) > 0 ? opb : -opb), 0);
+    }
 
     // Interpolate between a middlegame and a (scaled by 'sf') endgame score
     ScaleFactor sf = evaluate_scale_factor(eg_value(score));

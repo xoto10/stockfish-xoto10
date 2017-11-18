@@ -792,7 +792,7 @@ namespace {
 
             // Endgame with opposite-colored bishops, but also other pieces. Still
             // a bit drawish, but not as drawish as with only the two bishops.
-            return ScaleFactor(46);
+            return ScaleFactor(46 - 10 * !(pe->passed_pawns(WHITE) | pe->passed_pawns(BLACK)));
         }
         // Endings where weaker side can place his king in front of the opponent's
         // pawns are drawish.

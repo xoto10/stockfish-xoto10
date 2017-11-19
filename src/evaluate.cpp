@@ -796,8 +796,8 @@ namespace {
                 sf = ScaleFactor(46);
 
             // be particularly cautious with good winning / possibly won positions
-            if (PawnValueEg < eg && eg < 2 * PawnValueEg)
-                sf = ScaleFactor(sf / 2);
+            if (PawnValueEg < std::abs(eg) && std::abs(eg) < 2 * PawnValueEg)
+                sf = ScaleFactor(sf - 5);
         }
         // Endings where weaker side can place his king in front of the opponent's
         // pawns are drawish.

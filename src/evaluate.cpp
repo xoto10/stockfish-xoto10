@@ -102,6 +102,7 @@ namespace {
     template<Color Us, PieceType Pt> Score evaluate_pieces();
     ScaleFactor evaluate_scale_factor(Value eg);
     Score evaluate_initiative(Value eg);
+    Score evaluate_opp_bishops(Score sc);
 
     // Data members
     const Position& pos;
@@ -770,6 +771,27 @@ namespace {
   }
 
 
+  // evaluate_opp_bishops() computes the bonus/malus for having opposite color bishops
+
+  template<Tracing T>
+  Score Evaluation<T>::evaluate_opp_bishops(Score sc) {
+
+    Score inc;
+
+    if (pos.opposite_bishops())
+    {
+        int mgInc = std::min( 16, std::abs(mg_value(sc)) );
+        int egInc = std::min(  8, std::abs(eg_value(sc)) );
+        inc = make_score( (mg_value(sc) > 0 ? -mgInc : mgInc), (eg_value(sc) > 0 ? -egInc : egInc) );
+    }
+    else
+    {
+        inc = SCORE_ZERO;
+    }
+
+    return inc;
+  }
+
   // evaluate_scale_factor() computes the scale factor for the winning side
 
   template<Tracing T>
@@ -863,6 +885,7 @@ namespace {
                 - evaluate_space<BLACK>();
 
     score += evaluate_initiative(eg_value(score));
+    score += evaluate_opp_bishops(score);
 
     // Interpolate between a middlegame and a (scaled by 'sf') endgame score
     ScaleFactor sf = evaluate_scale_factor(eg_value(score));

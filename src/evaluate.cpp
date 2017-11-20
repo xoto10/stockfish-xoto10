@@ -24,6 +24,7 @@
 #include <iomanip>
 #include <sstream>
 
+#include "timeman.h"
 #include "bitboard.h"
 #include "evaluate.h"
 #include "material.h"
@@ -863,6 +864,12 @@ namespace {
                 - evaluate_space<BLACK>();
 
     score += evaluate_initiative(eg_value(score));
+    int mat = 0;
+    if (pos.side_to_move() == WHITE && mg_value(score) > -40)
+        mat = (Time.ourSide == pos.side_to_move() ? 1 : -1) * make_score(pos.non_pawn_material(WHITE)/400, 0);
+    else if (pos.side_to_move() == BLACK && mg_value(score) < 40)
+        mat = (Time.ourSide == pos.side_to_move() ? -1 : 1) * make_score(pos.non_pawn_material(BLACK)/400, 0);
+    score += make_score(mat, 0);
 
     // Interpolate between a middlegame and a (scaled by 'sf') endgame score
     ScaleFactor sf = evaluate_scale_factor(eg_value(score));

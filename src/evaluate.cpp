@@ -788,11 +788,11 @@ namespace {
             // is almost a draw, in case of KBP vs KB, it is even more a draw.
             if (   pos.non_pawn_material(WHITE) == BishopValueMg
                 && pos.non_pawn_material(BLACK) == BishopValueMg)
-                return more_than_one(pos.pieces(PAWN)) ? ScaleFactor(31) : ScaleFactor(9);
+                return more_than_one(pos.pieces(PAWN)) ? ScaleFactor(26) : ScaleFactor(9);
 
             // Endgame with opposite-colored bishops, but also other pieces. Still
             // a bit drawish, but not as drawish as with only the two bishops.
-            return ScaleFactor(46);
+            return ScaleFactor(46 - 10 * !(pe->passed_pawns(WHITE) | pe->passed_pawns(BLACK)));
         }
         // Endings where weaker side can place his king in front of the opponent's
         // pawns are drawish.
@@ -863,6 +863,12 @@ namespace {
                 - evaluate_space<BLACK>();
 
     score += evaluate_initiative(eg_value(score));
+
+    if (pos.opposite_bishops())
+    {
+        int opb = std::min( 16, std::abs(mg_value(score)) );
+        score -= make_score( (mg_value(score) > 0 ? opb : -opb), 0);
+    }
 
     // Interpolate between a middlegame and a (scaled by 'sf') endgame score
     ScaleFactor sf = evaluate_scale_factor(eg_value(score));

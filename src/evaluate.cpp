@@ -870,6 +870,8 @@ namespace {
        + eg_value(score) * int(PHASE_MIDGAME - me->game_phase()) * sf / SCALE_FACTOR_NORMAL;
 
     v /= int(PHASE_MIDGAME);
+    Score mat = SCORE_ZERO;
+    mat = make_score(pos.non_pawn_material()/1600, 0);
 
     // In case of tracing add all remaining individual evaluation terms
     if (T)
@@ -884,7 +886,7 @@ namespace {
         Trace::add(TOTAL, score);
     }
 
-    return (pos.side_to_move() == WHITE ? v : -v) + Eval::Tempo; // Side to move point of view
+    return (pos.side_to_move() == WHITE ? v : -v) + mat; // Side to move point of view
   }
 
 } // namespace

@@ -209,13 +209,23 @@ void MainThread::search() {
   Time.init(Limits, us, rootPos.game_ply());
   TT.new_search();
 
-  int uci_contempt = Options["Contempt"] * PawnValueEg / 100; // From centipawns
-  Contempt[ us] =  Value(uci_contempt);
-  Contempt[~us] = -Value(uci_contempt);
-  DrawValue[ us] = VALUE_DRAW - contempt(rootPos, us);
-  DrawValue[~us] = VALUE_DRAW + contempt(rootPos, us);
-  // assume that compiler will remember our value from the above line:
-  Time.contemptWhite = (us == WHITE) ? contempt(rootPos, us) : contempt(rootPos, ~us);
+  if (Options["Contempt"] == 0)
+  {
+      Contempt[ us] = Contempt[~us] = VALUE_ZERO;
+      DrawValue[ us] = DrawValue[~us] = VALUE_DRAW;
+      Time.contemptWhite = VALUE_ZERO;
+  }
+  else
+  {
+      int uci_contempt = Options["Contempt"] * PawnValueEg / 100; // From centipawns
+      Contempt[ us] =  Value(uci_contempt);
+      Contempt[~us] = -Value(uci_contempt);
+
+      Value conUs = contempt(rootPos, us);
+      DrawValue[ us] = VALUE_DRAW - conUs;
+      DrawValue[~us] = VALUE_DRAW + conUs;
+      Time.contemptWhite = us == WHITE ? conUs : contempt(rootPos, ~us);
+  }
 
   if (rootMoves.empty())
   {

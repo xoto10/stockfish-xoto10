@@ -119,6 +119,10 @@ namespace {
     // pawn or squares attacked by 2 pawns are not explicitly added.
     Bitboard attackedBy2[COLOR_NB];
 
+    // bishopAttacksRook[color] are the squares from where a bishop could
+    // attack an opponent rook.
+    Bitboard bishopAttacksRook[COLOR_NB];
+
     // kingRing[color] is the zone around the king which is considered
     // by the king safety evaluation. This consists of the squares directly
     // adjacent to the king, and (only for a king on its first rank) the
@@ -226,6 +230,7 @@ namespace {
   const Score Hanging             = S( 48, 27);
   const Score WeakUnopposedPawn   = S(  5, 25);
   const Score ThreatByPawnPush    = S( 38, 22);
+  const Score ThreatByAttackOnRook = S( 19, 11);
   const Score HinderPassedPawn    = S(  7,  0);
   const Score TrappedBishopA1H1   = S( 50, 50);
 
@@ -283,6 +288,9 @@ namespace {
     }
     else
         kingRing[Us] = kingAttackersCount[Them] = 0;
+
+    // Clear bishopAttacksRook information
+    bishopAttacksRook[Us]    = 0;
   }
 
 
@@ -392,6 +400,8 @@ namespace {
                     && !pe->semiopen_side(Us, file_of(ksq), file_of(s) < file_of(ksq)))
                     score -= (TrappedRook - make_score(mob * 22, 0)) * (1 + !pos.can_castle(Us));
             }
+
+            bishopAttacksRook[Them] |= pos.attacks_from<BISHOP>(s);
         }
 
         if (Pt == QUEEN)
@@ -608,6 +618,11 @@ namespace {
        & ~attackedBy[Us][PAWN];
 
     score += ThreatByPawnPush * popcount(b);
+
+    // Add a bonus for possible attacks by bishop onto rook
+    b =  ~pos.pieces(Us) & ~attackedBy[Them][ALL_PIECES]
+         & attackedBy[Us][BISHOP] & bishopAttacksRook[Us];
+    score += ThreatByAttackOnRook * popcount(b);
 
     if (T)
         Trace::add(THREAT, Us, score);

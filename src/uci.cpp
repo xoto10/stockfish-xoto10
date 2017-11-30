@@ -256,6 +256,8 @@ string UCI::value(Value v) {
 
   stringstream ss;
 
+  v = PawnValueEg;
+
   if (abs(v) < VALUE_MATE - MAX_PLY)
       ss << "cp " << v * 100 / PawnValueEg;
   else

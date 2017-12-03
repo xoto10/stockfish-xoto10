@@ -61,6 +61,7 @@ namespace {
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV };
+  const int DefaultContempt = 5;
 
   // Sizes and phases of the skip-blocks, used for distributing search depths across the threads
   const int skipSize[]  = { 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4 };
@@ -199,7 +200,9 @@ void MainThread::search() {
   Time.init(Limits, us, rootPos.game_ply());
   TT.new_search();
 
-  int contempt = Options["Contempt"] * PawnValueEg / 100; // From centipawns
+  int contempt = Limits.infinite && !Options["Contempt"]
+                 ? 0
+                 : (DefaultContempt + Options["Contempt"]) * PawnValueEg / 100; // From centipawns
 
   Eval::Contempt = (us == WHITE ?  make_score(contempt, contempt / 2)
                                 : -make_score(contempt, contempt / 2));

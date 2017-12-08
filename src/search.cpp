@@ -654,7 +654,7 @@ namespace {
                   ss->staticEval, TT.generation());
     }
 
-    if (skipEarlyPruning || !pos.non_pawn_material(pos.side_to_move()))
+    if (skipEarlyPruning || pos.count<ALL_PIECES>() <= 2)
         goto moves_loop;
 
     // Step 6. Razoring (skipped when in check)

@@ -31,10 +31,12 @@ namespace {
   enum TimeType { OptimumTime, MaxTime };
 
   int remaining(int myTime, int myInc, int moveOverhead, int movesToGo,
-                int moveNum, bool ponder, TimeType type) {
+                Position& pos, bool ponder, TimeType type) {
 
     if (myTime <= 0)
         return 0;
+
+    int moveNum = (pos.game_ply() + 1) / 2;
 
     double ratio; // Which ratio of myTime we are going to use
 
@@ -76,7 +78,7 @@ namespace {
 
 
 /// init() is called at the beginning of the search and calculates the allowed
-/// thinking time out of the time control and current game ply. We support four
+/// thinking time out of the time control and current position. We support four
 /// different kinds of time controls, passed in 'limits':
 ///
 ///  inc == 0 && movestogo == 0 means: x basetime  [sudden death!]
@@ -84,7 +86,7 @@ namespace {
 ///  inc >  0 && movestogo == 0 means: x basetime + z increment
 ///  inc >  0 && movestogo != 0 means: x moves in y minutes + z increment
 
-void TimeManagement::init(Search::LimitsType& limits, Color us, int ply)
+void TimeManagement::init(Search::LimitsType& limits, Color us, Position& pos)
 {
   int moveOverhead = Options["Move Overhead"];
   int npmsec       = Options["nodestime"];
@@ -105,11 +107,9 @@ void TimeManagement::init(Search::LimitsType& limits, Color us, int ply)
       limits.npmsec = npmsec;
   }
 
-  int moveNum = (ply + 1) / 2;
-
   startTime = limits.startTime;
   optimumTime = remaining(limits.time[us], limits.inc[us], moveOverhead,
-                          limits.movestogo, moveNum, ponder, OptimumTime);
+                          limits.movestogo, pos, ponder, OptimumTime);
   maximumTime = remaining(limits.time[us], limits.inc[us], moveOverhead,
-                          limits.movestogo, moveNum, ponder, MaxTime);
+                          limits.movestogo, pos, ponder, MaxTime);
 }

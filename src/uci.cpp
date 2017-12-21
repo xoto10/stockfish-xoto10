@@ -132,6 +132,12 @@ namespace {
         else if (token == "infinite")  limits.infinite = 1;
         else if (token == "ponder")    ponderMode = true;
 
+    if (Time.minThinkingTime < 0)
+    {
+        Time.minThinkingTime = std::min(20, limits.time[pos.side_to_move()] / 15000);
+        Time.maxOverheadReserve = Time.minThinkingTime / 50;
+    }
+
     Threads.start_thinking(pos, states, limits, ponderMode);
   }
 

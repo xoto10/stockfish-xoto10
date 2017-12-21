@@ -18,7 +18,9 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <iostream>
 #include <algorithm>
+#include <cfloat>
 
 #include "search.h"
 #include "timeman.h"
@@ -30,16 +32,32 @@ namespace {
 
   enum TimeType { OptimumTime, MaxTime };
 
+  // move_importance() is a skew-logistic function based on naive statistical
+  // analysis of "how many games are still undecided after n half-moves". Game
+  // is considered "undecided" as long as neither side has >275cp advantage.
+  // Data was extracted from the CCRL game database with some simple filtering criteria.
+
+  double move_importance(int ply) {
+
+    const double XScale = 7.64;
+    const double XShift = 58.4;
+    const double Skew   = 0.183;
+
+    return pow((1 + exp((ply - XShift) / XScale)), -Skew) + DBL_MIN; // Ensure non-zero
+  }
+
   int remaining(int myTime, int myInc, int moveOverhead, int movesToGo,
-                int moveNum, bool ponder, TimeType type) {
+                int ply, bool ponder, TimeType type) {
 
     if (myTime <= 0)
         return 0;
 
     double ratio; // Which ratio of myTime we are going to use
+    int moveNum = (ply + 1) / 2;
 
     // Usage of increment follows quadratic distribution with the maximum at move 25
     double inc = myInc * std::max(55.0, 120 - 0.12 * (moveNum - 25) * (moveNum - 25));
+    int time;
 
     // In moves-to-go we distribute time according to a quadratic function with
     // the maximum around move 20 for 40 moves in y time case.
@@ -56,15 +74,45 @@ namespace {
             ratio = std::min(0.75, ratio);
 
         ratio *= 1 + inc / (myTime * 8.5);
+        time = int(std::min(1.0, ratio) * std::max(0, myTime - moveOverhead));
     }
-    // Otherwise we increase usage of remaining time as the game goes on
+    // For games with increment we increase usage of remaining time as the game goes on
+    else if (inc)
+    {
+        double k = 1 + 20 * moveNum / (500.0 + moveNum);
+        ratio = (type == OptimumTime ? 0.017 : 0.07) * (k + inc / myTime);
+        time = int(std::min(1.0, ratio) * std::max(0, myTime - moveOverhead));
+    }
+    // Otherwise we have a sudden death game, use simplified version of old algorithm
     else
     {
         double k = 1 + 20 * moveNum / (500.0 + moveNum);
         ratio = (type == OptimumTime ? 0.017 : 0.07) * (k + inc / myTime);
-    }
+        int time_old = int(std::min(1.0, ratio) * std::max(0, myTime - moveOverhead));
 
-    int time = int(std::min(1.0, ratio) * std::max(0, myTime - moveOverhead));
+        const double TMaxRatio   = (type == OptimumTime ? 1 : 4.43);  // was 7.09);
+        const double TStealRatio = (type == OptimumTime ? 0 : 0.35);
+
+        double moveImportance = (move_importance(ply) * 89) / 100;
+        double otherMovesImportance = 0;
+        for (int i = 1; i < 50; ++i)
+            otherMovesImportance += move_importance(ply + 2 * i);
+
+        // ratio1&2 are the same for OptimumTime, but different for MaximumTime
+        ratio = (TMaxRatio * moveImportance)
+                / (TMaxRatio * moveImportance + otherMovesImportance);
+        if (type == MaxTime)
+        {
+            double ratio2 = (moveImportance + TStealRatio * otherMovesImportance)
+                            / (moveImportance + otherMovesImportance);
+            ratio = std::min(ratio, ratio2);
+        }
+
+        time = Time.minThinkingTime
+               + int(std::min(1.0, ratio)
+                     * (myTime - std::min(Time.maxOverheadReserve, 42*moveOverhead)));
+  sync_cout << "info string timeinit: time " << myTime << " opt " << time << " old " << time_old << sync_endl;
+    }
 
     if (type == OptimumTime && ponder)
         time = 5 * time / 4;
@@ -105,11 +153,9 @@ void TimeManagement::init(Search::LimitsType& limits, Color us, int ply)
       limits.npmsec = npmsec;
   }
 
-  int moveNum = (ply + 1) / 2;
-
   startTime = limits.startTime;
   optimumTime = remaining(limits.time[us], limits.inc[us], moveOverhead,
-                          limits.movestogo, moveNum, ponder, OptimumTime);
+                          limits.movestogo, ply, ponder, OptimumTime);
   maximumTime = remaining(limits.time[us], limits.inc[us], moveOverhead,
-                          limits.movestogo, moveNum, ponder, MaxTime);
+                          limits.movestogo, ply, ponder, MaxTime);
 }

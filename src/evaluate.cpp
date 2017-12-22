@@ -229,6 +229,7 @@ namespace {
   const Score ThreatByAttackOnQueen = S( 38, 22);
   const Score HinderPassedPawn      = S(  7,  0);
   const Score TrappedBishopA1H1     = S( 50, 50);
+  const Score LightSquareBishop     = S( 12,  0);
 
   #undef S
   #undef V
@@ -359,6 +360,10 @@ namespace {
             {
                 // Penalty for pawns on the same color square as the bishop
                 score -= BishopPawns * pe->pawns_on_same_color_squares(Us, s);
+
+                // Bonus for white keeping lsb on board in opening
+                if (Us == WHITE && (s%8 + s/8) % 2 == 1 && pos.game_ply() < 40)
+                    score += LightSquareBishop;
 
                 // Bonus for bishop on a long diagonal which can "see" both center squares
                 if (more_than_one(Center & (attacks_bb<BISHOP>(s, pos.pieces(PAWN)) | s)))

@@ -65,6 +65,7 @@ namespace {
   // Sizes and phases of the skip-blocks, used for distributing search depths across the threads
   const int skipSize[]  = { 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4 };
   const int skipPhase[] = { 0, 1, 0, 1, 2, 3, 0, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5, 6, 7 };
+  const int WideThread = 10;
 
   // Razoring and futility margin based on depth
   // razor_margin[0] is unused as long as depth >= ONE_PLY in search
@@ -514,6 +515,9 @@ namespace {
 
     // Step 1. Initialize node
     Thread* thisThread = pos.this_thread();
+    size_t thIdx = thisThread->index();
+    if (thIdx == WideThread)
+        skipEarlyPruning = true;
     inCheck = pos.checkers();
     moveCount = captureCount = quietCount = ss->moveCount = 0;
     ss->statScore = 0;
@@ -569,7 +573,8 @@ namespace {
         && tte->depth() >= depth
         && ttValue != VALUE_NONE // Possible in case of TT access race
         && (ttValue >= beta ? (tte->bound() & BOUND_LOWER)
-                            : (tte->bound() & BOUND_UPPER)))
+                            : (tte->bound() & BOUND_UPPER))
+        && thIdx != WideThread)
     {
         // If ttMove is quiet, update move sorting heuristics on TT hit
         if (ttMove)
@@ -822,7 +827,8 @@ moves_loop: // When in check search starts from here
                   : pos.gives_check(move);
 
       moveCountPruning =   depth < 16 * ONE_PLY
-                        && moveCount >= FutilityMoveCounts[improving][depth / ONE_PLY];
+                        && moveCount >= FutilityMoveCounts[improving][depth / ONE_PLY]
+                        && thIdx != WideThread;
 
       // Step 12. Singular and Gives Check Extensions
 
@@ -855,7 +861,8 @@ moves_loop: // When in check search starts from here
       // Step 13. Pruning at shallow depth
       if (  !rootNode
           && pos.non_pawn_material(pos.side_to_move())
-          && bestValue > VALUE_MATED_IN_MAX_PLY)
+          && bestValue > VALUE_MATED_IN_MAX_PLY
+          && thIdx != WideThread)
       {
           if (   !captureOrPromotion
               && !givesCheck
@@ -1136,6 +1143,7 @@ moves_loop: // When in check search starts from here
     bool ttHit, givesCheck, evasionPrunable;
     Depth ttDepth;
     int moveCount;
+    size_t thIdx = pos.this_thread()->index();
 
     if (PvNode)
     {
@@ -1234,7 +1242,8 @@ moves_loop: // When in check search starts from here
       if (   !InCheck
           && !givesCheck
           &&  futilityBase > -VALUE_KNOWN_WIN
-          && !pos.advanced_pawn_push(move))
+          && !pos.advanced_pawn_push(move)
+          && thIdx != WideThread)
       {
           assert(type_of(move) != ENPASSANT); // Due to !pos.advanced_pawn_push
 

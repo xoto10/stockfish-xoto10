@@ -229,9 +229,9 @@ namespace {
   const Score ThreatByAttackOnQueen = S( 38, 22);
   const Score HinderPassedPawn      = S(  7,  0);
   const Score TrappedBishopA1H1     = S( 50, 50);
-  const int   BishopBonusBeforePly  = 40;
-  const Score BishopBonus[COLOR_NB][2] = { S(0,0), S(11,0), S(0,0), S(-12,0) };
-//TUNE(SetRange(-24, 24), BishopBonus, SetRange(20, 60), BishopBonusBeforePly);
+  int   BishopBonusBeforePly  = 40;
+  Score BishopBonus[COLOR_NB][2] = { S(0,0), S(11,0), S(0,0), S(-12,0) };
+TUNE(SetRange(-24, 24), BishopBonus, SetRange(20, 60), BishopBonusBeforePly);
   #undef S
   #undef V
 

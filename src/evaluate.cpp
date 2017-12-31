@@ -229,8 +229,9 @@ namespace {
   const Score ThreatByAttackOnQueen = S( 38, 22);
   const Score HinderPassedPawn      = S(  7,  0);
   const Score TrappedBishopA1H1     = S( 50, 50);
-  const Score LightSquareBishop     = S( 12,  0);
-
+  const int   BishopBonusBeforePly  = 40;
+  const Score BishopBonus[COLOR_NB][2] = { S(0,0), S(11,0), S(0,0), S(-12,0) };
+//TUNE(SetRange(-24, 24), BishopBonus, SetRange(20, 60), BishopBonusBeforePly);
   #undef S
   #undef V
 
@@ -362,8 +363,10 @@ namespace {
                 score -= BishopPawns * pe->pawns_on_same_color_squares(Us, s);
 
                 // Bonus for white keeping lsb on board in opening
-                if (Us == WHITE && (s%8 + s/8) % 2 == 1 && pos.game_ply() < 40)
-                    score += LightSquareBishop;
+                // black f bishop doesn't seem valuable. 11-12 seems about right value for bonus.
+                // need to check best move limit.
+                if (pos.game_ply() < BishopBonusBeforePly)
+                    score += BishopBonus[Us][(s%8 + s/8) % 2];
 
                 // Bonus for bishop on a long diagonal which can "see" both center squares
                 if (more_than_one(Center & (attacks_bb<BISHOP>(s, pos.pieces(PAWN)) | s)))

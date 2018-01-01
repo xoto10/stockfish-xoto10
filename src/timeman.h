@@ -27,6 +27,12 @@
 #include "search.h"
 #include "thread.h"
 
+const int DiffMin = 20;       // score difference over last 10 moves
+const int MinScore = 20;
+const int BaseContempt = 0;
+const int ExtraContempt = 30;
+const int HighContempt = 30;
+
 /// The TimeManagement class computes the optimal time to think depending on
 /// the maximum available time, the game move number and other parameters.
 
@@ -39,31 +45,29 @@ public:
       lastPonder = "";
       oppMoves = 0;
       oppDiffs = 0;
-      rootGamePhase = PHASE_NOT_SET;
-      sync_cout << "info string reset rootphase now " << rootGamePhase << sync_endl;
+      lastVal = VALUE_NONE;
   }
-  void update_scores()
+  void update_scores(std::string move, std::string pond)
   {
-      Value avg2 = (lastVal + saveVal) / 2;
+      Value avg2 = ((lastVal==VALUE_NONE ? saveVal : lastVal) + saveVal) / 2;
       scores.push_back(avg2);
       if (scores.size() > 11)
           scores.pop_front();
       lastVal = saveVal;
+      lastMove = move;
+      lastPonder = pond;
   }
-  double scoreTrend()
+  int get_dynamic_contempt(int contempt)
   {
       if (scores.size() >= 11)
-          return( double(scores.at(10) - scores.at(0)) / 10.0 );
-      else
-          return(0.0);
-  }
-  void root_phase(Phase gp)
-  {
-      if (rootGamePhase == PHASE_NOT_SET)
       {
-          rootGamePhase = gp;
-          sync_cout << "info string set rootphase " << rootGamePhase << sync_endl;
+          int diff = (scores.at(10) - scores.at(0));
+          sync_cout << "info string s0 " << scores.at(0) << " s10 " << scores.at(10) << " diff " << diff << sync_endl;
+          return(diff >= DiffMin && scores.at(10) >= MinScore && contempt >= 0
+                 ? std::min(ExtraContempt, HighContempt-contempt) : BaseContempt);
       }
+      else
+          return(0);
   }
   int optimum() const { return optimumTime; }
   int maximum() const { return maximumTime; }
@@ -71,7 +75,6 @@ public:
 
   int64_t availableNodes; // When in 'nodes as time' mode
 
-  Phase rootGamePhase;
   Value saveVal;
   Value lastVal;
   std::deque<Value> scores = {};  // last 11 values for lastVal2

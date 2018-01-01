@@ -171,6 +171,7 @@ void Search::clear() {
 
   Threads.main()->wait_for_search_finished();
 
+  Time.initOppMoves();
   Time.availableNodes = 0;
   TT.clear();
   Threads.clear();
@@ -193,8 +194,10 @@ void MainThread::search() {
   Time.init(Limits, us, rootPos.game_ply());
   TT.new_search();
 
-  int contempt = Options["Contempt"] * PawnValueEg / 100; // From centipawns
-
+  int dynamic = Time.get_dynamic_contempt(Options["Contempt"]);
+  int contempt = (Options["Contempt"] + dynamic)
+                 * PawnValueEg / 100; // From centipawns
+  sync_cout << "info string dyn " << dynamic << sync_endl;
   Eval::Contempt = (us == WHITE ?  make_score(contempt, contempt / 2)
                                 : -make_score(contempt, contempt / 2));
 
@@ -274,9 +277,7 @@ void MainThread::search() {
   }
   std::cout << sync_endl;
 
-  Time.update_scores();
-  Time.lastMove = move;
-  Time.lastPonder = pond;
+  Time.update_scores(move, pond);
 }
 
 
@@ -1546,8 +1547,10 @@ string UCI::pv(const Position& pos, Depth depth, Value alpha, Value beta) {
          << " seldepth " << rootMoves[i].selDepth
          << " multipv "  << i + 1
          << " score "    << UCI::value(v);
-      if (i == 0)
+      if (i == 0) {
           Time.saveVal = v;
+          sync_cout << "info string saveval " << v << sync_endl;
+      }
 
       if (!tb && i == PVIdx)
           ss << (v >= beta ? " lowerbound" : v <= alpha ? " upperbound" : "");

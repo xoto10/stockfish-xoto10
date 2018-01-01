@@ -86,6 +86,7 @@ namespace {
         sync_cout << "info string oppdiffs: ponder " << Time.lastPonder << " opp " << last
                   << " oppMoves " << Time.oppMoves << " oppDiffs " << Time.oppDiffs
                   << sync_endl;
+        sync_cout << "info string fen: " << pos.fen() << sync_endl;
     }
   }
 
@@ -178,11 +179,7 @@ namespace {
         }
         else if (token == "setoption")  setoption(is);
         else if (token == "position")   position(pos, is, states);
-        else if (token == "ucinewgame")
-        {
-            Time.initOppMoves();
-            Search::clear();
-        }
+        else if (token == "ucinewgame") Search::clear();
     }
 
     elapsed = now() - elapsed + 1; // Ensure positivity to avoid a 'divide by zero'
@@ -246,11 +243,7 @@ void UCI::loop(int argc, char* argv[]) {
       else if (token == "setoption")  setoption(is);
       else if (token == "go")         go(pos, is, states);
       else if (token == "position")   position(pos, is, states);
-      else if (token == "ucinewgame")
-      {
-          Time.initOppMoves();
-          Search::clear();
-      }
+      else if (token == "ucinewgame") Search::clear();
       else if (token == "isready")    sync_cout << "readyok" << sync_endl;
 
       // Additional custom non-UCI commands, mainly for debugging

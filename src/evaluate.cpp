@@ -245,7 +245,7 @@ namespace {
   // Threshold and scaling for lazy and space evaluation
   const Value LazyThreshold  = Value(1500);
   const Value SpaceThreshold = Value(12222);
-  const int   SpaceScaling   = 60;
+  const int   SpaceScaling   = 68;
 
 
   // initialize() computes king and pawn attacks, and the king ring bitboard

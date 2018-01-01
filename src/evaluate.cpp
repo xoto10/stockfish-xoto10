@@ -242,9 +242,10 @@ namespace {
   const int BishopSafeCheck = 435;
   const int KnightSafeCheck = 790;
 
-  // Threshold for lazy and space evaluation
+  // Threshold and scaling for lazy and space evaluation
   const Value LazyThreshold  = Value(1500);
   const Value SpaceThreshold = Value(12222);
+  const int   SpaceScaling   = 76;
 
 
   // initialize() computes king and pawn attacks, and the king ring bitboard
@@ -743,7 +744,7 @@ namespace {
     int bonus = popcount(safe) + popcount(behind & safe);
     int weight = pos.count<ALL_PIECES>(Us) - 2 * pe->open_files();
 
-    return make_score(bonus * weight * weight * 0.075, 0);
+    return make_score(bonus * weight * weight * SpaceScaling / 1024, 0);
   }
 
 

@@ -263,12 +263,20 @@ void MainThread::search() {
   if (bestThread != this)
       sync_cout << UCI::pv(bestThread->rootPos, bestThread->completedDepth, -VALUE_INFINITE, VALUE_INFINITE) << sync_endl;
 
-  sync_cout << "bestmove " << UCI::move(bestThread->rootMoves[0].pv[0], rootPos.is_chess960());
+  std::string move = UCI::move(bestThread->rootMoves[0].pv[0], rootPos.is_chess960());
+  std::string pond = "";
+  sync_cout << "bestmove " << move;
 
   if (bestThread->rootMoves[0].pv.size() > 1 || bestThread->rootMoves[0].extract_ponder_from_tt(rootPos))
-      std::cout << " ponder " << UCI::move(bestThread->rootMoves[0].pv[1], rootPos.is_chess960());
-
+  {
+      pond = UCI::move(bestThread->rootMoves[0].pv[1], rootPos.is_chess960());
+      std::cout << " ponder " << pond;
+  }
   std::cout << sync_endl;
+
+  Time.update_scores();
+  Time.lastMove = move;
+  Time.lastPonder = pond;
 }
 
 
@@ -1538,6 +1546,8 @@ string UCI::pv(const Position& pos, Depth depth, Value alpha, Value beta) {
          << " seldepth " << rootMoves[i].selDepth
          << " multipv "  << i + 1
          << " score "    << UCI::value(v);
+      if (i == 0)
+          Time.saveVal = v;
 
       if (!tb && i == PVIdx)
           ss << (v >= beta ? " lowerbound" : v <= alpha ? " upperbound" : "");

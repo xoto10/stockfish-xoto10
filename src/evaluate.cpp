@@ -18,12 +18,14 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+//#include <iostream>
 #include <algorithm>
 #include <cassert>
 #include <cstring>   // For std::memset
 #include <iomanip>
 #include <sstream>
 
+#include "timeman.h"
 #include "bitboard.h"
 #include "evaluate.h"
 #include "material.h"
@@ -877,6 +879,18 @@ namespace {
        + eg_value(score) * int(PHASE_MIDGAME - me->game_phase()) * sf / SCALE_FACTOR_NORMAL;
 
     v /= int(PHASE_MIDGAME);
+
+    // Calculate gpBias, bias towards MG or EG depending on score, score trend
+    int side = (pos.side_to_move() == WHITE ? 1 : -1);
+    // maybe include: && opponent not doing same moves
+    if (    -35 < side * v  &&  side * v < 260            // from roughly level to 1.5 pawns up
+         && Time.scoreTrend() > 2.00 )                    // optional?
+    {
+        int gpBias = side * (me->game_phase() - Time.rootGamePhase) / 16;
+        v += gpBias;
+//        sync_cout << "info string gpbias: rootphase " << Time.rootGamePhase << " phase "
+//                  << me->game_phase() << " gpbias " << gpBias << sync_endl;
+    }
 
     // In case of tracing add all remaining individual evaluation terms
     if (T)

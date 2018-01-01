@@ -743,7 +743,8 @@ namespace {
     int bonus = popcount(safe) + popcount(behind & safe);
     int weight = pos.count<ALL_PIECES>(Us) - 2 * pe->open_files();
 
-    return make_score(bonus * weight * weight * 0.075, 0);
+    int r = bonus * weight * weight / 16;
+    return make_score(r + r/4, 0);
   }
 
 

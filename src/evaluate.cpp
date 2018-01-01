@@ -35,6 +35,8 @@ namespace {
   const Bitboard QueenSide   = FileABB | FileBBB | FileCBB | FileDBB;
   const Bitboard CenterFiles = FileCBB | FileDBB | FileEBB | FileFBB;
   const Bitboard KingSide    = FileEBB | FileFBB | FileGBB | FileHBB;
+  const Bitboard SpaceMaskWh = CenterFiles & (Rank2BB | Rank3BB | Rank4BB | SquareBB[SQ_D5] | SquareBB[SQ_E5]);
+  const Bitboard SpaceMaskBl = CenterFiles & (Rank7BB | Rank6BB | Rank5BB | SquareBB[SQ_D4] | SquareBB[SQ_E4]);
 
   const Bitboard KingFlank[FILE_NB] = {
     QueenSide, QueenSide, QueenSide, CenterFiles, CenterFiles, KingSide, KingSide, KingSide
@@ -721,24 +723,33 @@ namespace {
 
   template<Tracing T>  template<Color Us>
   Score Evaluation<T>::evaluate_space() {
-
-    const Color Them = (Us == WHITE ? BLACK : WHITE);
-    const Bitboard SpaceMask =
-      Us == WHITE ? CenterFiles & (Rank2BB | Rank3BB | Rank4BB | SquareBB[SQ_D5] | SquareBB[SQ_E5])
-                  : CenterFiles & (Rank7BB | Rank6BB | Rank5BB | SquareBB[SQ_D4] | SquareBB[SQ_E4]);
+    Bitboard safe, behind;
 
     // Find the safe squares for our pieces inside the area defined by
     // SpaceMask. A square is unsafe if it is attacked by an enemy
     // pawn, or if it is undefended and attacked by an enemy piece.
-    Bitboard safe =   SpaceMask
-                   & ~pos.pieces(Us, PAWN)
-                   & ~attackedBy[Them][PAWN]
-                   & (attackedBy[Us][ALL_PIECES] | ~attackedBy[Them][ALL_PIECES]);
+    if (Us == WHITE) {
+        safe =   SpaceMaskWh
+              & ~pos.pieces(WHITE, PAWN)
+              & ~attackedBy[BLACK][PAWN]
+              & (attackedBy[WHITE][ALL_PIECES] | ~attackedBy[BLACK][ALL_PIECES]);
 
-    // Find all squares which are at most three squares behind some friendly pawn
-    Bitboard behind = pos.pieces(Us, PAWN);
-    behind |= (Us == WHITE ? behind >>  8 : behind <<  8);
-    behind |= (Us == WHITE ? behind >> 16 : behind << 16);
+        // Find all squares which are at most three squares behind some friendly pawn
+        behind = pos.pieces(WHITE, PAWN);
+        behind |= behind >>  8;
+        behind |= behind >> 16;
+    }
+    else {
+        safe =   SpaceMaskBl
+              & ~pos.pieces(BLACK, PAWN)
+              & ~attackedBy[WHITE][PAWN]
+              & (attackedBy[BLACK][ALL_PIECES] | ~attackedBy[WHITE][ALL_PIECES]);
+
+        // Find all squares which are at most three squares behind some friendly pawn
+        behind = pos.pieces(BLACK, PAWN);
+        behind |= behind <<  8;
+        behind |= behind << 16;
+    }
 
     int bonus = popcount(safe) + popcount(behind & safe);
     int weight = pos.count<ALL_PIECES>(Us) - 2 * pe->open_files();

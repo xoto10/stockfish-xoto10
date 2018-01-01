@@ -724,8 +724,8 @@ namespace {
 
     const Color Them = (Us == WHITE ? BLACK : WHITE);
     const Bitboard SpaceMask =
-      Us == WHITE ? CenterFiles & (Rank2BB | Rank3BB | Rank4BB | SquareBB[SQ_D5] | SquareBB[SQ_E5])
-                  : CenterFiles & (Rank7BB | Rank6BB | Rank5BB | SquareBB[SQ_D4]);
+      Us == WHITE ? CenterFiles & (Rank2BB | Rank3BB | Rank4BB | SquareBB[SQ_E5] | SquareBB[SQ_D5] | SquareBB[SQ_C5])
+                  : CenterFiles & (Rank7BB | Rank6BB | Rank5BB | SquareBB[SQ_E4] | SquareBB[SQ_D4]);
 
     // Find the safe squares for our pieces inside the area defined by
     // SpaceMask. A square is unsafe if it is attacked by an enemy

@@ -31,7 +31,7 @@ const int NumMoves = 10;
 const int DiffMin = 20;
 const int MinScore = 20;
 const int BaseContempt = 0;
-const int ExtraContempt = 30;
+const int ExtraContempt = 10;
 const int HighContempt = 30;
 
 /// The TimeManagement class computes the optimal time to think depending on

@@ -24,6 +24,15 @@
 #include "misc.h"
 #include "search.h"
 #include "thread.h"
+#include "uci.h"
+
+// Constants for dynamic contempt
+const int NumMoves = 10;
+const int DiffMin = 20;
+const int MinScore = 20;
+const int BaseContempt = 0;
+const int ExtraContempt = 10;
+const int HighContempt = 30;
 
 /// The TimeManagement class computes the optimal time to think depending on
 /// the maximum available time, the game move number and other parameters.
@@ -31,11 +40,42 @@
 class TimeManagement {
 public:
   void init(Search::LimitsType& limits, Color us, int ply);
+  void init_scores()
+  {
+      lastVal = VALUE_NONE;
+      saveVal = VALUE_NONE;
+  }
+  void update_scores()
+  {
+      if (saveVal != VALUE_NONE)
+      {
+          Value avg2 = ((lastVal==VALUE_NONE ? saveVal : lastVal) + saveVal) / 2;
+          scores.push_back(avg2);
+          if (scores.size() > NumMoves+1)
+              scores.pop_front();
+          lastVal = saveVal;
+      }
+  }
+  int get_dynamic_contempt()
+  {
+      if (scores.size() >= NumMoves+1)
+      {
+          int diff = (scores.at(NumMoves) - scores.at(0));
+          return(diff >= DiffMin && scores.at(NumMoves) >= MinScore && Options["Contempt"] >= 0
+                 ? std::min(ExtraContempt, HighContempt-Options["Contempt"]) : BaseContempt);
+      }
+      else
+          return(0);
+  }
   int optimum() const { return optimumTime; }
   int maximum() const { return maximumTime; }
   int elapsed() const { return int(Search::Limits.npmsec ? Threads.nodes_searched() : now() - startTime); }
 
   int64_t availableNodes; // When in 'nodes as time' mode
+
+  Value saveVal;
+  Value lastVal;
+  std::deque<Value> scores = {};  // last 11 values for average of lastVal and saveVal
 
 private:
   TimePoint startTime;

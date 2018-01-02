@@ -21,13 +21,14 @@
 #ifndef TIMEMAN_H_INCLUDED
 #define TIMEMAN_H_INCLUDED
 
-#include <iostream>
-
 #include "misc.h"
 #include "search.h"
 #include "thread.h"
+#include "uci.h"
 
-const int DiffMin = 20;       // score difference over last 10 moves
+// Constants for dynamic contempt
+const int NumMoves = 10;
+const int DiffMin = 20;
 const int MinScore = 20;
 const int BaseContempt = 0;
 const int ExtraContempt = 30;
@@ -39,32 +40,29 @@ const int HighContempt = 30;
 class TimeManagement {
 public:
   void init(Search::LimitsType& limits, Color us, int ply);
-  void initOppMoves()
+  void init_scores()
   {
-      lastMove = "";
-      lastPonder = "";
-      oppMoves = 0;
-      oppDiffs = 0;
       lastVal = VALUE_NONE;
+      saveVal = VALUE_NONE;
   }
-  void update_scores(std::string move, std::string pond)
+  void update_scores()
   {
-      Value avg2 = ((lastVal==VALUE_NONE ? saveVal : lastVal) + saveVal) / 2;
-      scores.push_back(avg2);
-      if (scores.size() > 11)
-          scores.pop_front();
-      lastVal = saveVal;
-      lastMove = move;
-      lastPonder = pond;
-  }
-  int get_dynamic_contempt(int contempt)
-  {
-      if (scores.size() >= 11)
+      if (saveVal != VALUE_NONE)
       {
-          int diff = (scores.at(10) - scores.at(0));
-          sync_cout << "info string s0 " << scores.at(0) << " s10 " << scores.at(10) << " diff " << diff << sync_endl;
-          return(diff >= DiffMin && scores.at(10) >= MinScore && contempt >= 0
-                 ? std::min(ExtraContempt, HighContempt-contempt) : BaseContempt);
+          Value avg2 = ((lastVal==VALUE_NONE ? saveVal : lastVal) + saveVal) / 2;
+          scores.push_back(avg2);
+          if (scores.size() > NumMoves+1)
+              scores.pop_front();
+          lastVal = saveVal;
+      }
+  }
+  int get_dynamic_contempt()
+  {
+      if (scores.size() >= NumMoves+1)
+      {
+          int diff = (scores.at(NumMoves) - scores.at(0));
+          return(diff >= DiffMin && scores.at(NumMoves) >= MinScore && Options["Contempt"] >= 0
+                 ? std::min(ExtraContempt, HighContempt-Options["Contempt"]) : BaseContempt);
       }
       else
           return(0);
@@ -77,11 +75,7 @@ public:
 
   Value saveVal;
   Value lastVal;
-  std::deque<Value> scores = {};  // last 11 values for lastVal2
-  std::string lastMove;
-  std::string lastPonder;
-  int oppMoves;
-  int oppDiffs;
+  std::deque<Value> scores = {};  // last 11 values for average of lastVal and saveVal
 
 private:
   TimePoint startTime;

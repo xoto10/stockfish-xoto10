@@ -171,7 +171,7 @@ void Search::clear() {
 
   Threads.main()->wait_for_search_finished();
 
-  Time.initOppMoves();
+  Time.init_scores();
   Time.availableNodes = 0;
   TT.clear();
   Threads.clear();
@@ -194,12 +194,13 @@ void MainThread::search() {
   Time.init(Limits, us, rootPos.game_ply());
   TT.new_search();
 
-  int dynamic = Time.get_dynamic_contempt(Options["Contempt"]);
-  int contempt = (Options["Contempt"] + dynamic)
-                 * PawnValueEg / 100; // From centipawns
-  sync_cout << "info string dyn " << dynamic << sync_endl;
-  Eval::Contempt = (us == WHITE ?  make_score(contempt, contempt / 2)
-                                : -make_score(contempt, contempt / 2));
+  int dynamic = Time.get_dynamic_contempt();
+  int contempt = (Options["Contempt"] + dynamic) * PawnValueEg / 100; // From centipawns
+  if (Limits.infinite)
+      Eval::Contempt = make_score(0, 0);
+  else
+      Eval::Contempt = (us == WHITE ?  make_score(contempt, contempt / 2)
+                                    : -make_score(contempt, contempt / 2));
 
   if (rootMoves.empty())
   {
@@ -266,18 +267,12 @@ void MainThread::search() {
   if (bestThread != this)
       sync_cout << UCI::pv(bestThread->rootPos, bestThread->completedDepth, -VALUE_INFINITE, VALUE_INFINITE) << sync_endl;
 
-  std::string move = UCI::move(bestThread->rootMoves[0].pv[0], rootPos.is_chess960());
-  std::string pond = "";
-  sync_cout << "bestmove " << move;
-
+  sync_cout << "bestmove " << UCI::move(bestThread->rootMoves[0].pv[0], rootPos.is_chess960());
   if (bestThread->rootMoves[0].pv.size() > 1 || bestThread->rootMoves[0].extract_ponder_from_tt(rootPos))
-  {
-      pond = UCI::move(bestThread->rootMoves[0].pv[1], rootPos.is_chess960());
-      std::cout << " ponder " << pond;
-  }
+      std::cout << " ponder " << UCI::move(bestThread->rootMoves[0].pv[1], rootPos.is_chess960());
   std::cout << sync_endl;
 
-  Time.update_scores(move, pond);
+  Time.update_scores();
 }
 
 
@@ -1547,10 +1542,8 @@ string UCI::pv(const Position& pos, Depth depth, Value alpha, Value beta) {
          << " seldepth " << rootMoves[i].selDepth
          << " multipv "  << i + 1
          << " score "    << UCI::value(v);
-      if (i == 0) {
+      if (i == 0)
           Time.saveVal = v;
-          sync_cout << "info string saveval " << v << sync_endl;
-      }
 
       if (!tb && i == PVIdx)
           ss << (v >= beta ? " lowerbound" : v <= alpha ? " upperbound" : "");

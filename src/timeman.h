@@ -38,13 +38,13 @@ public:
   int MinDiffDec = -30;
   int MinEvalInc = 30;
   int MinEvalDec = -30;
-  int ContemptInc = 5;
-  int ContemptDec = -5;
-  int MaxContemptInc = 30;
-  int MaxContemptDec = -30;
+  int ContemptInc = 0;
+  int ContemptDec = 0;
+  const int MaxContemptInc = 30;
+  const int MaxContemptDec = -30;
 TUNE(SetRange(0,50), MinDiffInc, SetRange(-50,0), MinDiffDec);
 TUNE(SetRange(-50,50), MinEvalInc, MinEvalDec);
-TUNE(SetRange(0,30), ContemptInc, SetRange(-30,0), ContemptDec);
+TUNE(SetRange(-30,30), ContemptInc, ContemptDec);
 
 
   void init(Search::LimitsType& limits, Color us, int ply);

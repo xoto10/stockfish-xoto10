@@ -28,10 +28,10 @@
 
 // Constants for dynamic contempt
 const int NumMoves = 10;
-const int DiffMinInc = 20;
-const int DiffMinDec = -20;
-const int MinEvalInc = 20;
-const int MinEvalDec = -20;
+const int DiffMinInc = 30;
+const int DiffMinDec = -30;
+const int MinEvalInc = 30;
+const int MinEvalDec = -30;
 const int ContemptInc = 5;
 const int ContemptDec = -10;
 const int MaxContemptInc = 30;

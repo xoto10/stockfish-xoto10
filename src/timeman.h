@@ -26,22 +26,27 @@
 #include "thread.h"
 #include "uci.h"
 
-// Constants for dynamic contempt
-const int NumMoves = 10;
-const int DiffMinInc = 20;
-const int DiffMinDec = -20;
-const int MinEvalInc = 20;
-const int MinEvalDec = -20;
-const int ContemptInc = 5;
-const int ContemptDec = -10;
-const int MaxContemptInc = 30;
-const int MaxContemptDec = -30;
-
 /// The TimeManagement class computes the optimal time to think depending on
 /// the maximum available time, the game move number and other parameters.
 
 class TimeManagement {
 public:
+
+  // Constants for dynamic contempt
+  unsigned NumMoves = 10;
+  int MinDiffInc = 30;
+  int MinDiffDec = -30;
+  int MinEvalInc = 30;
+  int MinEvalDec = -30;
+  int ContemptInc = 5;
+  int ContemptDec = -5;
+  int MaxContemptInc = 30;
+  int MaxContemptDec = -30;
+TUNE(SetRange(0,50), MinDiffInc, SetRange(-50,0), MinDiffDec);
+TUNE(SetRange(-50,50), MinEvalInc, MinEvalDec);
+TUNE(SetRange(0,30), ContemptInc, SetRange(-30,0), ContemptDec);
+
+
   void init(Search::LimitsType& limits, Color us, int ply);
   void init_scores()
   {
@@ -66,9 +71,9 @@ public:
       {
           int ret, diff = (scores.at(NumMoves) - scores.at(0));
 
-          if (diff >= DiffMinInc && scores.at(NumMoves) >= MinEvalInc && Options["Contempt"] >= 0)
+          if (diff >= MinDiffInc && scores.at(NumMoves) >= MinEvalInc && Options["Contempt"] >= 0)
               ret = std::min(ContemptInc, MaxContemptInc-Options["Contempt"]);
-          else if (diff <= DiffMinDec && scores.at(NumMoves) <= MinEvalDec)
+          else if (diff <= MinDiffDec && scores.at(NumMoves) <= MinEvalDec)
               ret = std::max(ContemptDec, MaxContemptDec-Options["Contempt"]);
           else
               ret = 0;

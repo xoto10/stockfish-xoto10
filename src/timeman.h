@@ -34,12 +34,13 @@ public:
 
   // Constants for dynamic contempt
   const unsigned NumMoves = 10;
-  const int MinDiffInc = 40;
-  const int MinEvalInc[COLOR_NB] = {55,-5};
+
+  const int MinDiffInc = 20;
+  const int MinEvalInc[COLOR_NB] = {30,-5};
   const int ContemptInc = 5;
   const int MaxContemptInc = 30;
-  // disable decrement for now (set ContemptDec to zero)
-  const int MinDiffDec = -40;
+
+  const int MinDiffDec = -20;
   const int MinEvalDec[COLOR_NB] = {-20,-20};
   const int ContemptDec = -10;
   const int MaxContemptDec = -30;

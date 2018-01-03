@@ -171,7 +171,6 @@ void Search::clear() {
 
   Threads.main()->wait_for_search_finished();
 
-  Time.init_scores();
   Time.availableNodes = 0;
   TT.clear();
   Threads.clear();

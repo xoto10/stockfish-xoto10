@@ -41,8 +41,8 @@ public:
   const int MaxContemptInc = 30;
 
   const int MinDiffDec = -20;
-  const int MinEvalDec[COLOR_NB] = {-20,-20};
-  const int ContemptDec = -10;
+  const int MinEvalDec[COLOR_NB] = {-2000,-2000};
+  const int ContemptDec = 0;
   const int MaxContemptDec = -30;
 
   void init(Search::LimitsType& limits, Color us, int ply);

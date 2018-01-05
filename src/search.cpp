@@ -263,6 +263,9 @@ void MainThread::search() {
   if (bestThread != this)
       sync_cout << UCI::pv(bestThread->rootPos, bestThread->completedDepth, -VALUE_INFINITE, VALUE_INFINITE) << sync_endl;
 
+  //if(bestThread->rootMoves.size() > 1)
+//	  sync_cout << "info 2nd bestmove " << UCI::move(bestThread->rootMoves[1].pv[0], rootPos.is_chess960()) << " score " << bestThread->rootMoves[1].score << sync_endl;
+
   sync_cout << "bestmove " << UCI::move(bestThread->rootMoves[0].pv[0], rootPos.is_chess960());
 
   if (bestThread->rootMoves[0].pv.size() > 1 || bestThread->rootMoves[0].extract_ponder_from_tt(rootPos))
@@ -317,6 +320,10 @@ void Thread::search() {
       if (idx)
       {
           int i = (idx - 1) % 20;
+
+          if (idx == Threads.size() - 1 && rootDepth > 10 * ONE_PLY && rootMoves.size() > 1)
+        	  ss->excludedMove = rootMoves[0].pv[0];
+          else
           if (((rootDepth / ONE_PLY + rootPos.game_ply() + skipPhase[i]) / skipSize[i]) % 2)
               continue;
       }

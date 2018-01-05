@@ -41,7 +41,7 @@ public:
   const int MaxContemptInc = 30;
 
   const int MinDiffDec = -20;
-  const int MinEvalDec[COLOR_NB] = {-20,-20};
+  const int MinEvalDec[COLOR_NB] = {5,-30};
   const int ContemptDec = -10;
   const int MaxContemptDec = -30;
 

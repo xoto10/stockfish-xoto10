@@ -294,6 +294,7 @@ void Thread::search() {
 
   bestValue = delta = alpha = -VALUE_INFINITE;
   beta = VALUE_INFINITE;
+  altMove = false;
 
   if (mainThread)
   {
@@ -321,11 +322,15 @@ void Thread::search() {
       {
           int i = (idx - 1) % 20;
 
-          if (idx == Threads.size() - 1 && rootDepth > 10 * ONE_PLY && rootMoves.size() > 1 && rootPos.see_ge(rootMoves[0].pv[0]))
-        	  ss->excludedMove = rootMoves[0].pv[0];
-          else
           if (((rootDepth / ONE_PLY + rootPos.game_ply() + skipPhase[i]) / skipSize[i]) % 2)
               continue;
+
+          if (   Threads.size() > 9 && idx == Threads.size() - 1 && rootDepth > 10 * ONE_PLY
+              && rootMoves.size() > 1 && rootPos.see_ge(rootMoves[0].pv[0]))
+          {
+              ss->excludedMove = rootMoves[0].pv[0];
+              altMove = true;
+          }
       }
 
       // Age out PV variability metric
@@ -1102,11 +1107,15 @@ moves_loop: // When in check search starts from here
              && is_ok((ss-1)->currentMove))
         update_continuation_histories(ss-1, pos.piece_on(prevSq), prevSq, stat_bonus(depth));
 
-    if (!excludedMove)
+    if (!excludedMove || thisThread->altMove)
+    {
         tte->save(posKey, value_to_tt(bestValue, ss->ply),
                   bestValue >= beta ? BOUND_LOWER :
                   PvNode && bestMove ? BOUND_EXACT : BOUND_UPPER,
                   depth, bestMove, ss->staticEval, TT.generation());
+        if (thisThread->altMove)
+            ss->excludedMove = MOVE_NONE;
+    }
 
     assert(bestValue > -VALUE_INFINITE && bestValue < VALUE_INFINITE);
 

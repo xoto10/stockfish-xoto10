@@ -62,6 +62,7 @@ public:
   Endgames endgames;
   size_t PVIdx;
   int selDepth, nmp_ply, pair;
+  bool altMove;
   std::atomic<uint64_t> nodes, tbHits;
 
   Position rootPos;

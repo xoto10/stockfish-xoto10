@@ -194,8 +194,8 @@ void MainThread::search() {
   Time.init(Limits, us, rootPos.game_ply());
   TT.new_search();
 
-  int dynamic = Time.get_dynamic_contempt(us);
-  int contempt = (Options["Contempt"] + dynamic) * PawnValueEg / 100; // From centipawns
+  int contempt = Options["Contempt"] * PawnValueEg / 100  // From centipawns
+                 + Time.get_dynamic_contempt(us);
   if (Limits.infinite)
       Eval::Contempt = make_score(0, 0);
   else

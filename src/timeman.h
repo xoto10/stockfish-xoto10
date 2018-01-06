@@ -35,15 +35,15 @@ public:
   // Constants for dynamic contempt
   const unsigned NumMoves = 10;
 
-  const int MinDiffInc = 20;
-  const int MinEvalInc[COLOR_NB] = {30,-5};
-  const int ContemptInc = 5;
-  const int MaxContemptInc = 30;
+  const int MinDiffInc[COLOR_NB] = {21,21};
+  const int MinEvalInc[COLOR_NB] = {30,-4};
+  const int ContemptInc[COLOR_NB] = {12,12};
+  const int MaxContemptInc = 72;
 
-  const int MinDiffDec = -20;
-  const int MinEvalDec[COLOR_NB] = {-20,-20};
-  const int ContemptDec = -10;
-  const int MaxContemptDec = -30;
+  const int MinDiffDec[COLOR_NB] = {-21,-21};
+  const int MinEvalDec[COLOR_NB] = {-13,-20};
+  const int ContemptDec[COLOR_NB] = {-31,-31};
+  const int MaxContemptDec = -72;
 
   void init(Search::LimitsType& limits, Color us, int ply);
   void init_scores()
@@ -69,10 +69,10 @@ public:
       {
           int ret, diff = (scores.at(NumMoves) - scores.at(0));
 
-          if (diff >= MinDiffInc && scores.at(NumMoves) >= MinEvalInc[Us] && Options["Contempt"] >= 0)
-              ret = std::min(ContemptInc, MaxContemptInc-Options["Contempt"]);
-          else if (diff <= MinDiffDec && scores.at(NumMoves) <= MinEvalDec[Us])
-              ret = std::max(ContemptDec, MaxContemptDec-Options["Contempt"]);
+          if (diff >= MinDiffInc[Us] && scores.at(NumMoves) >= MinEvalInc[Us] && Options["Contempt"] >= 0)
+              ret = std::min(ContemptInc[Us], MaxContemptInc-Options["Contempt"]);
+          else if (diff <= MinDiffDec[Us] && scores.at(NumMoves) <= MinEvalDec[Us])
+              ret = std::max(ContemptDec[Us], MaxContemptDec-Options["Contempt"]);
           else
               ret = 0;
           return(ret);

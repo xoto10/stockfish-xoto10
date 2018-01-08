@@ -35,14 +35,14 @@ public:
   // Constants for dynamic contempt
   const unsigned NumMoves = 10;
 
-  const int MinDiffInc[COLOR_NB] = {20,19};
-  const int MinEvalInc[COLOR_NB] = {29,-2};
-  const int ContemptInc[COLOR_NB] = {16,14};
+  const int MinDiffInc[COLOR_NB] = {20,21};
+  const int MinEvalInc[COLOR_NB] = {34,-1};
+  const int ContemptInc[COLOR_NB] = {16,10};
   const int MaxContemptInc = 72;
 
-  const int MinDiffDec[COLOR_NB] = {-21,-23};
-  const int MinEvalDec[COLOR_NB] = {-12,-19};
-  const int ContemptDec[COLOR_NB] = {-30,-27};
+  const int MinDiffDec[COLOR_NB] = {-23,-23};
+  const int MinEvalDec[COLOR_NB] = {-11,-22};
+  const int ContemptDec[COLOR_NB] = {-29,-23};
   const int MaxContemptDec = -72;
 
   void init(Search::LimitsType& limits, Color us, int ply);

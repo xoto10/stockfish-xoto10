@@ -21,6 +21,8 @@
 #ifndef TIMEMAN_H_INCLUDED
 #define TIMEMAN_H_INCLUDED
 
+#include <iostream>
+
 #include "misc.h"
 #include "search.h"
 #include "thread.h"
@@ -34,22 +36,11 @@ public:
 
   // Constants for dynamic contempt
   const unsigned NumMoves = 10;
-/*
-  const int MinDiffInc[COLOR_NB] = {20,19};
-  const int MinEvalInc[COLOR_NB] = {29,-2};
-  const int ContemptInc[COLOR_NB] = {16,14};
-  const int MaxContemptInc = 72;
-
-  const int MinDiffDec[COLOR_NB] = {-21,-23};
-  const int MinEvalDec[COLOR_NB] = {-12,-19};
-  const int ContemptDec[COLOR_NB] = {-30,-27};
-  const int MaxContemptDec = -72;
-*/
   const int dynCon[COLOR_NB][6][8] =
   {
       {            //  White
   //Eval: <-30 -20 -10  <0 >=0  >10 >20 >30
-          {-24,-24, -6,  0,  0,  0,  0,  0},  //        Diff < -20
+          {-24,-24,-24, -6,  0,  0,  0,  0},  //        Diff < -20
           { -6,  0,  0,  0,  0,  0,  0,  0},  // -20 <= Diff < -10
           {  0,  0,  0,  0,  0,  0,  0,  0},  // -10 <= Diff <   0
           {  0,  0,  0,  0,  0,  0,  0,  0},  //   0 <= Diff <  10
@@ -91,6 +82,8 @@ public:
           int d = std::min( std::max((30 + scores.at(NumMoves) - scores.at(0)) / 10 - 1, 0), 5);
           int e = std::min( std::max((40 + scores.at(NumMoves)) / 10 - 1, 0), 7);
           int ret = dynCon[Us][d][e];
+          sync_cout << "info string diff " << (scores.at(NumMoves) - scores.at(0)) << " eval "
+                    << scores.at(NumMoves) << " ret " << ret << sync_endl;
           return(ret);
       }
       else

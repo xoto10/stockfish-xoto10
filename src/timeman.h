@@ -36,7 +36,7 @@ public:
 
   // Constants for dynamic contempt
   const unsigned NumMoves = 10;
-  const int dynCon[COLOR_NB][6][8] =
+  int dynCon[COLOR_NB][6][8] =
   {
       {            //  White
   //Eval: <-30 -20 -10  <0 >=0  >10 >20 >30
@@ -53,9 +53,29 @@ public:
           {  0,  0,  0,  0,  0,  0,  0,  0},  // -10 <= Diff <   0
           {  0,  0,  0,  0,  0,  0,  0,  0},  //   0 <= Diff <  10
           {  0,  0,  0,  0,  0,  0,  0,  4},  //  10 <= Diff <  20
-          {  0,  0,  0,  4, 13, 13, 13, 13}   //  20 <= Diff
+          {  0,  0,  0,  0, 13, 13, 13, 13}   //  20 <= Diff
       }
   };  // Us, (diff+30)/10-1, (sc+40)/10-1 to index into here
+
+  int whiteDef[2][4] = { {-24,-24,-24,-6}, {-6, 0, 0, 0} };
+  int whiteAtk[2][4] = { {  0,  0,  0, 4}, { 0, 0, 4,13} };
+  int blackDef[2][4] = { {-24,-24, -6, 0}, {-6, 0, 0, 0} };
+  int blackAtk[2][4] = { {  0,  0,  0, 4}, {13,13,13,13} };
+TUNE(SetRange(-72,72), whiteDef, whiteAtk, blackDef, blackAtk);
+
+  void setContempt()
+  {
+    for (int i=0; i<2; i++)
+    {
+      for (int j=0; j<4; j++)
+      {
+        dynCon[WHITE][i][j]     = whiteDef[i][j];
+        dynCon[WHITE][i+4][j+4] = whiteAtk[i][j];
+        dynCon[BLACK][i][j]     = blackDef[i][j];
+        dynCon[BLACK][i+4][j+4] = blackAtk[i][j];
+      }
+    }
+  }
 
   void init(Search::LimitsType& limits, Color us, int ply);
   void init_scores()

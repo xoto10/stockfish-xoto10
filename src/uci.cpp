@@ -132,6 +132,21 @@ namespace {
         else if (token == "infinite")  limits.infinite = 1;
         else if (token == "ponder")    ponderMode = true;
 
+    // check copy of values was correct
+/*  for (int c=0; c<2; c+=1)
+    {
+      for (int i=0; i<6; i+=1)
+      {
+        std::ostringstream oss;
+        oss << "info string dyn" << i << " ";
+        for (int j=0; j<8; j+=1)
+          oss << " " << Time.dynCon[c][i][j];
+        sync_cout << oss.str() << sync_endl;
+      }
+    }
+    //sync_cout << sync_endl;
+    sync_cout << "info string dyn end" << sync_endl;
+*/
     Threads.start_thinking(pos, states, limits, ponderMode);
   }
 
@@ -164,7 +179,11 @@ namespace {
         }
         else if (token == "setoption")  setoption(is);
         else if (token == "position")   position(pos, is, states);
-        else if (token == "ucinewgame") Search::clear();
+        else if (token == "ucinewgame")
+        {
+            Search::clear();
+            Time.setContempt();
+        }
     }
 
     elapsed = now() - elapsed + 1; // Ensure positivity to avoid a 'divide by zero'

@@ -24,18 +24,71 @@
 #include "misc.h"
 #include "search.h"
 #include "thread.h"
+#include "uci.h"
 
 /// The TimeManagement class computes the optimal time to think depending on
 /// the maximum available time, the game move number and other parameters.
 
 class TimeManagement {
 public:
+
+  // Constants for dynamic contempt
+  const unsigned NumMoves = 10;
+
+  const int MinDiffInc[COLOR_NB] = {20,21};
+  const int MinEvalInc[COLOR_NB] = {34,-1};
+  const int ContemptInc[COLOR_NB] = {16,10};
+  const int MaxContemptInc = 72;
+
+  const int MinDiffDec[COLOR_NB] = {-23,-23};
+  const int MinEvalDec[COLOR_NB] = {-11,-22};
+  const int ContemptDec[COLOR_NB] = {-29,-23};
+  const int MaxContemptDec = -72;
+
   void init(Search::LimitsType& limits, Color us, int ply);
+  void init_scores()
+  {
+      scores.clear();
+      lastVal = VALUE_NONE;
+      saveVal = VALUE_NONE;
+  }
+  void update_scores()
+  {
+      if (saveVal != VALUE_NONE)
+      {
+          Value avg2 = ((lastVal==VALUE_NONE ? saveVal : lastVal) + saveVal) / 2;
+          scores.push_back(avg2);
+          if (scores.size() > NumMoves+1)
+              scores.pop_front();
+          lastVal = saveVal;
+      }
+  }
+  int get_dynamic_contempt(Color Us)
+  {
+      if (scores.size() >= NumMoves+1)
+      {
+          int ret, diff = (scores.at(NumMoves) - scores.at(0));
+
+          if (diff >= MinDiffInc[Us] && scores.at(NumMoves) >= MinEvalInc[Us] && Options["Contempt"] >= 0)
+              ret = std::min(ContemptInc[Us], MaxContemptInc-Options["Contempt"]);
+          else if (diff <= MinDiffDec[Us] && scores.at(NumMoves) <= MinEvalDec[Us])
+              ret = std::max(ContemptDec[Us], MaxContemptDec-Options["Contempt"]);
+          else
+              ret = 0;
+          return(ret);
+      }
+      else
+          return(0);
+  }
   int optimum() const { return optimumTime; }
   int maximum() const { return maximumTime; }
   int elapsed() const { return int(Search::Limits.npmsec ? Threads.nodes_searched() : now() - startTime); }
 
   int64_t availableNodes; // When in 'nodes as time' mode
+
+  Value saveVal;
+  Value lastVal;
+  std::deque<Value> scores = {};  // last 11 values for average of lastVal and saveVal
 
 private:
   TimePoint startTime;

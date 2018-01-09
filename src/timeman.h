@@ -40,27 +40,27 @@ public:
   {
       {            //  White
   //Eval: <-30 -20 -10  <0 >=0  >10 >20 >30
-          {-24,-24,-24, -6,  0,  0,  0,  0},  //        Diff < -20
-          { -6,  0,  0,  0,  0,  0,  0,  0},  // -20 <= Diff < -10
+          {-21,-25,-28, -4,  0,  0,  0,  0},  //        Diff < -20
+          { -4, -4,  2,  3,  0,  0,  0,  0},  // -20 <= Diff < -10
           {  0,  0,  0,  0,  0,  0,  0,  0},  // -10 <= Diff <   0
           {  0,  0,  0,  0,  0,  0,  0,  0},  //   0 <= Diff <  10
-          {  0,  0,  0,  0,  0,  0,  0,  4},  //  10 <= Diff <  20
-          {  0,  0,  0,  0,  0,  0,  4, 13}   //  20 <= Diff
+          {  0,  0,  0,  0, -1, -1,  0,  5},  //  10 <= Diff <  20
+          {  0,  0,  0,  0,  0,  0,  7, 11}   //  20 <= Diff
       },
       {            //  Black
-          {-24,-24, -6,  0,  0,  0,  0,  0},  //        Diff < -20
-          { -6,  0,  0,  0,  0,  0,  0,  0},  // -20 <= Diff < -10
+          {-27,-25, -6,  2,  0,  0,  0,  0},  //        Diff < -20
+          { -6, -1,  2,  0,  0,  0,  0,  0},  // -20 <= Diff < -10
           {  0,  0,  0,  0,  0,  0,  0,  0},  // -10 <= Diff <   0
           {  0,  0,  0,  0,  0,  0,  0,  0},  //   0 <= Diff <  10
-          {  0,  0,  0,  0,  0,  0,  0,  4},  //  10 <= Diff <  20
-          {  0,  0,  0,  0, 13, 13, 13, 13}   //  20 <= Diff
+          {  0,  0,  0,  0,  2,  3, -2,  5},  //  10 <= Diff <  20
+          {  0,  0,  0,  4, 17, 15, 13, 11}   //  20 <= Diff
       }
   };  // Us, (diff+30)/10-1, (sc+40)/10-1 to index into here
 
-  int whiteDef[2][4] = { {-24,-24,-24,-6}, {-6, 0, 0, 0} };
-  int whiteAtk[2][4] = { {  0,  0,  0, 4}, { 0, 0, 4,13} };
-  int blackDef[2][4] = { {-24,-24, -6, 0}, {-6, 0, 0, 0} };
-  int blackAtk[2][4] = { {  0,  0,  0, 4}, {13,13,13,13} };
+  int whiteDef[2][4] = { {  0,  0,  0, 0}, { 0, 0, 0, 0} };
+  int whiteAtk[2][4] = { {  0,  0,  0, 0}, { 0, 0, 0, 0} };
+  int blackDef[2][4] = { {  0,  0,  0, 0}, { 0, 0, 0, 0} };
+  int blackAtk[2][4] = { {  0,  0,  0, 0}, { 0, 0, 0, 0} };
 TUNE(SetRange(-72,72), whiteDef, whiteAtk, blackDef, blackAtk);
 
   void setContempt()
@@ -69,10 +69,10 @@ TUNE(SetRange(-72,72), whiteDef, whiteAtk, blackDef, blackAtk);
     {
       for (int j=0; j<4; j++)
       {
-        dynCon[WHITE][i][j]     = whiteDef[i][j];
-        dynCon[WHITE][i+4][j+4] = whiteAtk[i][j];
-        dynCon[BLACK][i][j]     = blackDef[i][j];
-        dynCon[BLACK][i+4][j+4] = blackAtk[i][j];
+        dynCon[WHITE][i][j+4] = whiteDef[i][j];
+        dynCon[WHITE][i+4][j] = whiteAtk[i][j];
+        dynCon[BLACK][i][j+4] = blackDef[i][j];
+        dynCon[BLACK][i+4][j] = blackAtk[i][j];
       }
     }
   }

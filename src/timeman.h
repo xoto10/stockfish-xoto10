@@ -36,24 +36,29 @@ public:
 
   // Constants for dynamic contempt
   const unsigned NumMoves = 10;
-  const int dynCon[COLOR_NB][6][8] =
+  const int dynCon[COLOR_NB][8][8] =
   {
       {            //  White
-  //Eval: <-30 -20 -10  <0 >=0 >10 >20 >30
-          {-20,-24,-28, -5,  1,  1,  0, -2},  //        Diff < -20
-          { -5, -3,  0,  0,  0, -2,  2,  1},  // -20 <= Diff < -10
-          { -2,  4,  3,  0,  1, -1, -4,  1},  // -10 <= Diff <   0
-          { -2,  0,  2,  2, -2, -4, -1,  2},  //   0 <= Diff <  10
-          {  1,  3,  0, -2,  0,  0,  0,  5},  //  10 <= Diff <  20
-          {  0,  2,  0, -2,  0,  0,  7, 12}   //  20 <= Diff
+  //Eval: <-20 -10  <0 >=0 >10 >20 >30
+          {-22,-28, -5,  1,  1,  0, -2, -2},  //        Diff < -30
+          {-16,-22, -3,  1,  1,  0, -1, -1},  // -30 <= Diff < -20
+          { -4,  0,  0,  0, -2,  2,  1,  1},  // -20 <= Diff < -10
+          {  1,  3,  0,  1, -1, -4,  1,  1},  // -10 <= Diff <   0
+          { -1,  2,  2, -2, -4, -1,  2,  2},  //   0 <= Diff <  10
+          {  2,  0, -2,  0,  0,  0,  5,  5},  //  10 <= Diff <  20
+          {  1,  0, -2,  0,  0,  5, 10, 10},  //  20 <= Diff <  30
+          {  1,  0, -2,  0,  0,  9, 14, 14}   //  30 <= Diff
       },
       {            //  Black
-          {-27,-24, -6,  0,  1,  0,  3, -2},  //        Diff < -20
-          { -7, -1,  0,  0, -2,  0,  0, -4},  // -20 <= Diff < -10
-          {  3,  0, -2,  0, -1,  0,  2, -1},  // -10 <= Diff <   0
-          { -2,  1,  1,  0,  0,  1, -2,  0},  //   0 <= Diff <  10
-          {  0, -2, -2, -1,  1,  3,  0,  5},  //  10 <= Diff <  20
-          { -2, -3,  0, -1, 16, 14, 13, 11}   //  20 <= Diff
+  //Eval: <-40 -30 -20 -10  <0 >=0 >10 >20
+          {-27,-27,-24, -6,  0,  1,  0,  1},  //        Diff < -30
+          {-20,-20,-17, -2,  0,  1,  0,  3},  // -30 <= Diff < -20
+          { -7, -7, -1,  0,  0, -2,  0,  0},  // -20 <= Diff < -10
+          {  3,  3,  0, -2,  0, -1,  0,  2},  // -10 <= Diff <   0
+          { -2, -2,  1,  1,  0,  0,  1, -2},  //   0 <= Diff <  10
+          {  0,  0, -2, -2, -1,  1,  3,  0},  //  10 <= Diff <  20
+          { -2, -2, -3,  0, -1, 14, 12, 11},  //  20 <= Diff <  30
+          { -2, -2, -3,  0, -1, 18, 16, 15}   //  30 <= Diff
       }
   };  // Us, (diff+30)/10-1, (sc+40)/10-1 to index into here
 
@@ -79,11 +84,11 @@ public:
   {
       if (scores.size() >= NumMoves+1)
       {
-          int d = std::min( std::max((30 + scores.at(NumMoves) - scores.at(0)) / 10 - 1, 0), 5);
-          int e = std::min( std::max((40 + scores.at(NumMoves)) / 10 - 1, 0), 7);
+          int d = std::min( std::max((50 + scores.at(NumMoves) - scores.at(0)) / 10 - 1, 0), 7);
+          int e = std::min( std::max(((Us==WHITE ? 30 : 50) + scores.at(NumMoves)) / 10 - 1, 0), 7);
           int ret = dynCon[Us][d][e];
-          sync_cout << "info string diff " << (scores.at(NumMoves) - scores.at(0)) << " eval "
-                    << scores.at(NumMoves) << " ret " << ret << sync_endl;
+//        sync_cout << "info string diff " << (scores.at(NumMoves) - scores.at(0)) << " eval "
+//                  << scores.at(NumMoves) << " ret " << ret << sync_endl;
           return(ret);
       }
       else

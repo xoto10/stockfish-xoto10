@@ -82,8 +82,8 @@ public:
           int d = std::min( std::max((30 + scores.at(NumMoves) - scores.at(0)) / 10 - 1, 0), 5);
           int e = std::min( std::max((40 + scores.at(NumMoves)) / 10 - 1, 0), 7);
           int ret = dynCon[Us][d][e];
-          sync_cout << "info string diff " << (scores.at(NumMoves) - scores.at(0)) << " eval "
-                    << scores.at(NumMoves) << " ret " << ret << sync_endl;
+//        sync_cout << "info string diff " << (scores.at(NumMoves) - scores.at(0)) << " eval "
+//                  << scores.at(NumMoves) << " ret " << ret << sync_endl;
           return(ret);
       }
       else

@@ -268,7 +268,7 @@ void MainThread::search() {
       sync_cout << UCI::pv(bestThread->rootPos, bestThread->completedDepth, -VALUE_INFINITE, VALUE_INFINITE) << sync_endl;
 
   Time.saveVal = bestThread->rootMoves[0].score;
-  sync_cout << "info string saveval " << Time.saveVal << sync_endl;
+//sync_cout << "info string saveval " << Time.saveVal << sync_endl;
   sync_cout << "bestmove " << UCI::move(bestThread->rootMoves[0].pv[0], rootPos.is_chess960());
 
   if (bestThread->rootMoves[0].pv.size() > 1 || bestThread->rootMoves[0].extract_ponder_from_tt(rootPos))

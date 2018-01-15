@@ -171,6 +171,7 @@ void Search::clear() {
 
   Threads.main()->wait_for_search_finished();
 
+  Time.init_scores();
   Time.availableNodes = 0;
   TT.clear();
   Threads.clear();
@@ -193,10 +194,13 @@ void MainThread::search() {
   Time.init(Limits, us, rootPos.game_ply());
   TT.new_search();
 
-  int contempt = Options["Contempt"] * PawnValueEg / 100; // From centipawns
-
-  Eval::Contempt = (us == WHITE ?  make_score(contempt, contempt / 2)
-                                : -make_score(contempt, contempt / 2));
+  int contempt = Options["Contempt"] * PawnValueEg / 100  // From centipawns
+                 + Time.get_dynamic_contempt(us);
+  if (Limits.infinite)
+      Eval::Contempt = make_score(0, 0);
+  else
+      Eval::Contempt = (us == WHITE ?  make_score(contempt, contempt / 2)
+                                    : -make_score(contempt, contempt / 2));
 
   if (rootMoves.empty())
   {
@@ -263,12 +267,15 @@ void MainThread::search() {
   if (bestThread != this)
       sync_cout << UCI::pv(bestThread->rootPos, bestThread->completedDepth, -VALUE_INFINITE, VALUE_INFINITE) << sync_endl;
 
+  Time.saveVal = bestThread->rootMoves[0].score;
+//sync_cout << "info string saveval " << Time.saveVal << sync_endl;
   sync_cout << "bestmove " << UCI::move(bestThread->rootMoves[0].pv[0], rootPos.is_chess960());
 
   if (bestThread->rootMoves[0].pv.size() > 1 || bestThread->rootMoves[0].extract_ponder_from_tt(rootPos))
       std::cout << " ponder " << UCI::move(bestThread->rootMoves[0].pv[1], rootPos.is_chess960());
-
   std::cout << sync_endl;
+
+  Time.update_scores();
 }
 
 

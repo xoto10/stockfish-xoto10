@@ -132,6 +132,23 @@ namespace {
         else if (token == "infinite")  limits.infinite = 1;
         else if (token == "ponder")    ponderMode = true;
 
+ 
+    /* check copy of values was correct
+    for (int c=0; c<2; c+=1)
+    {
+      for (int i=0; i<8; i+=1)
+      {
+        std::ostringstream oss;
+        oss << "info string dyn" << i << " ";
+        for (int j=0; j<8; j+=1)
+          oss << " " << Time.dynCon[c][i][j];
+        sync_cout << oss.str() << sync_endl;
+      }
+      sync_cout << "info string dyn gap" << sync_endl;
+    }
+    sync_cout << "info string dyn end" << sync_endl;
+    */
+
     Threads.start_thinking(pos, states, limits, ponderMode);
   }
 
@@ -228,7 +245,11 @@ void UCI::loop(int argc, char* argv[]) {
       else if (token == "setoption")  setoption(is);
       else if (token == "go")         go(pos, is, states);
       else if (token == "position")   position(pos, is, states);
-      else if (token == "ucinewgame") Search::clear();
+      else if (token == "ucinewgame")
+      {
+        Search::clear();
+        Time.setContempt();
+      }
       else if (token == "isready")    sync_cout << "readyok" << sync_endl;
 
       // Additional custom non-UCI commands, mainly for debugging
@@ -255,6 +276,12 @@ string UCI::value(Value v) {
   assert(-VALUE_INFINITE < v && v < VALUE_INFINITE);
 
   stringstream ss;
+
+  if (abs(v) < PawnValueEg)
+      v = PawnValueEg;
+
+  if (abs(v) < PawnValueEg)
+      v = PawnValueEg;
 
   if (abs(v) < VALUE_MATE - MAX_PLY)
       ss << "cp " << v * 100 / PawnValueEg;

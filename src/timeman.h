@@ -24,23 +24,44 @@
 #include "misc.h"
 #include "search.h"
 #include "thread.h"
+#include <cfloat>
+#include <cmath>
 
 /// The TimeManagement class computes the optimal time to think depending on
 /// the maximum available time, the game move number and other parameters.
 
 class TimeManagement {
 public:
+  TimeManagement() {
+    for (int i=0; i<200; i++)
+      moveImp[i] = move_importance(i);
+  }
   void init(Search::LimitsType& limits, Color us, int ply);
   int optimum() const { return optimumTime; }
   int maximum() const { return maximumTime; }
   int elapsed() const { return int(Search::Limits.npmsec ? Threads.nodes_searched() : now() - startTime); }
 
   int64_t availableNodes; // When in 'nodes as time' mode
+  double moveImp[200];
 
 private:
   TimePoint startTime;
   int optimumTime;
   int maximumTime;
+
+  // move_importance() is a skew-logistic function based on naive statistical
+  // analysis of "how many games are still undecided after n half-moves". Game
+  // is considered "undecided" as long as neither side has >275cp advantage.
+  // Data was extracted from the CCRL game database with some simple filtering criteria.
+
+  double move_importance(int ply) {
+
+    const double XScale = 7.64;
+    const double XShift = 58.4;
+    const double Skew   = 0.183;
+
+    return pow((1 + exp((ply - XShift) / XScale)), -Skew) + DBL_MIN; // Ensure non-zero
+  }
 };
 
 extern TimeManagement Time;

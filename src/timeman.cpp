@@ -37,31 +37,17 @@ namespace {
   const double StealRatio = 0.35; // However we must not steal time from remaining moves over this ratio
 
 
-  // move_importance() is a skew-logistic function based on naive statistical
-  // analysis of "how many games are still undecided after n half-moves". Game
-  // is considered "undecided" as long as neither side has >275cp advantage.
-  // Data was extracted from the CCRL game database with some simple filtering criteria.
-
-  double move_importance(int ply) {
-
-    const double XScale = 7.64;
-    const double XShift = 58.4;
-    const double Skew   = 0.183;
-
-    return pow((1 + exp((ply - XShift) / XScale)), -Skew) + DBL_MIN; // Ensure non-zero
-  }
-
   template<TimeType T>
   int remaining(int myTime, int movesToGo, int ply, int slowMover) {
 
     const double TMaxRatio   = (T == OptimumTime ? 1 : MaxRatio);
     const double TStealRatio = (T == OptimumTime ? 0 : StealRatio);
 
-    double moveImportance = (move_importance(ply) * slowMover) / 100;
+    double moveImportance = (Time.moveImp[ply>199 ? 199 : ply] * slowMover) / 100;
     double otherMovesImportance = 0;
 
     for (int i = 1; i < movesToGo; ++i)
-        otherMovesImportance += move_importance(ply + 2 * i);
+        otherMovesImportance += Time.moveImp[ply + 2*i > 199 ? 199 : ply + 2*i];
 
     double ratio1 = (TMaxRatio * moveImportance) / (TMaxRatio * moveImportance + otherMovesImportance);
     double ratio2 = (moveImportance + TStealRatio * otherMovesImportance) / (moveImportance + otherMovesImportance);
@@ -116,7 +102,7 @@ void TimeManagement::init(Search::LimitsType& limits, Color us, int ply) {
       // Calculate thinking time for hypothetical "moves to go"-value
       int hypMyTime =  limits.time[us]
                      + limits.inc[us] * (hypMTG - 1)
-                     - moveOverhead * (2 + std::min(hypMTG, 40));
+                     - moveOverhead * (2 + (limits.inc[us] ? 1 : std::min(hypMTG, 40)));
 
       hypMyTime = std::max(hypMyTime, 0);
 

@@ -28,6 +28,7 @@
 #include "evaluate.h"
 #include "material.h"
 #include "pawns.h"
+#include "timeman.h"
 
 namespace {
 
@@ -877,6 +878,8 @@ namespace {
        + eg_value(score) * int(PHASE_MIDGAME - me->game_phase()) * sf / SCALE_FACTOR_NORMAL;
 
     v /= int(PHASE_MIDGAME);
+    int eps = std::max(0, 12 - pos.game_ply()) / 2;
+    v += (pos.key() ^ Time.moveRand) % (2*eps + 1) - eps;
 
     // In case of tracing add all remaining individual evaluation terms
     if (T)

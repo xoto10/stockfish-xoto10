@@ -144,6 +144,7 @@ namespace {
 
     string token;
     uint64_t num, nodes = 0, cnt = 1;
+    Time.moveRand = 12345678;
 
     vector<string> list = setup_bench(pos, args);
     num = count_if(list.begin(), list.end(), [](string s) { return s.find("go ") == 0; });

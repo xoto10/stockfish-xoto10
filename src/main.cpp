@@ -24,6 +24,7 @@
 #include "position.h"
 #include "search.h"
 #include "thread.h"
+#include "timeman.h"
 #include "tt.h"
 #include "uci.h"
 #include "syzygy/tbprobe.h"
@@ -36,6 +37,7 @@ int main(int argc, char* argv[]) {
 
   std::cout << engine_info() << std::endl;
 
+  Time.set_rand();
   UCI::init(Options);
   PSQT::init();
   Bitboards::init();

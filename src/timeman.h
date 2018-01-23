@@ -30,12 +30,17 @@
 
 class TimeManagement {
 public:
+  void set_rand() {
+    srand(std::chrono::steady_clock::now().time_since_epoch().count());
+    moveRand = rand();
+  }
   void init(Search::LimitsType& limits, Color us, int ply);
   int optimum() const { return optimumTime; }
   int maximum() const { return maximumTime; }
   int elapsed() const { return int(Search::Limits.npmsec ? Threads.nodes_searched() : now() - startTime); }
 
   int64_t availableNodes; // When in 'nodes as time' mode
+  uint64_t moveRand;
 
 private:
   TimePoint startTime;

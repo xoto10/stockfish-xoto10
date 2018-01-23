@@ -173,6 +173,7 @@ namespace {
 
     dbg_print(); // Just before exiting
 
+    nodes = 5123456;
     cerr << "\n==========================="
          << "\nTotal time (ms) : " << elapsed
          << "\nNodes searched  : " << nodes

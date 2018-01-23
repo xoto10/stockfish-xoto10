@@ -144,8 +144,7 @@ namespace {
 
     string token;
     uint64_t num, nodes = 0, cnt = 1;
-    srand(12345678);
-    Time.moveRand = rand();
+    Time.moveRand = 12345678;
 
     vector<string> list = setup_bench(pos, args);
     num = count_if(list.begin(), list.end(), [](string s) { return s.find("go ") == 0; });
@@ -173,7 +172,6 @@ namespace {
 
     dbg_print(); // Just before exiting
 
-    nodes = 5123456;
     cerr << "\n==========================="
          << "\nTotal time (ms) : " << elapsed
          << "\nNodes searched  : " << nodes

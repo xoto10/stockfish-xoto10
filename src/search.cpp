@@ -67,8 +67,7 @@ namespace {
   const int skipPhase[] = { 0, 1, 0, 1, 2, 3, 0, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5, 6, 7 };
 
   // Razoring and futility margin based on depth
-  // razor_margin[0] is unused as long as depth >= ONE_PLY in search
-  const int razor_margin[] = { 0, 570, 603, 554 };
+  const int razor_margin = 600;
   Value futility_margin(Depth d) { return Value(150 * d / ONE_PLY); }
 
   // Futility and reductions lookup tables, initialized at startup
@@ -661,12 +660,12 @@ namespace {
     // Step 6. Razoring (skipped when in check)
     if (   !PvNode
         &&  depth < 4 * ONE_PLY
-        &&  eval + razor_margin[depth / ONE_PLY] <= alpha)
+        &&  eval + razor_margin <= alpha)
     {
         if (depth <= ONE_PLY)
             return qsearch<NonPV, false>(pos, ss, alpha, alpha+1);
 
-        Value ralpha = alpha - razor_margin[depth / ONE_PLY];
+        Value ralpha = alpha - razor_margin;
         Value v = qsearch<NonPV, false>(pos, ss, ralpha, ralpha+1);
         if (v <= ralpha)
             return v;
@@ -683,7 +682,7 @@ namespace {
     if (   !PvNode
         &&  eval >= beta
         &&  ss->staticEval >= beta - 36 * depth / ONE_PLY + 225
-		&& (ss->ply >= thisThread->nmp_ply || ss->ply % 2 == thisThread->pair))
+        && (ss->ply >= thisThread->nmp_ply || ss->ply % 2 != thisThread->nmp_odd))
     {
 
         assert(eval - beta >= 0);
@@ -705,21 +704,18 @@ namespace {
             if (nullValue >= VALUE_MATE_IN_MAX_PLY)
                 nullValue = beta;
 
-            if (depth < 12 * ONE_PLY && abs(beta) < VALUE_KNOWN_WIN)
+            if (abs(beta) < VALUE_KNOWN_WIN && (depth < 12 * ONE_PLY || thisThread->nmp_ply))
                 return nullValue;
 
             // Do verification search at high depths
-            R += ONE_PLY;
             // disable null move pruning for side to move for the first part of the remaining search tree
-            int nmp_ply = thisThread->nmp_ply;
-            int pair = thisThread->pair;
             thisThread->nmp_ply = ss->ply + 3 * (depth-R) / 4;
-            thisThread->pair = (ss->ply % 2) == 0;
+            thisThread->nmp_odd = ss->ply % 2;
 
             Value v = depth-R < ONE_PLY ? qsearch<NonPV, false>(pos, ss, beta-1, beta)
                                         :  search<NonPV>(pos, ss, beta-1, beta, depth-R, false, true);
-            thisThread->pair = pair;
-            thisThread->nmp_ply = nmp_ply;
+
+            thisThread->nmp_odd = thisThread->nmp_ply = 0;
 
             if (v >= beta)
                 return nullValue;
@@ -1262,7 +1258,6 @@ moves_loop: // When in check search starts from here
 
       // Don't search moves with negative SEE values
       if (  (!InCheck || evasionPrunable)
-          &&  type_of(move) != PROMOTION
           &&  !pos.see_ge(move))
           continue;
 
@@ -1504,7 +1499,7 @@ moves_loop: // When in check search starts from here
     if (Threads.ponder)
         return;
 
-    if (   (Limits.use_time_management() && elapsed > Time.maximum())
+    if (   (Limits.use_time_management() && elapsed > Time.maximum() - 10)
         || (Limits.movetime && elapsed >= Limits.movetime)
         || (Limits.nodes && Threads.nodes_searched() >= (uint64_t)Limits.nodes))
             Threads.stop = true;

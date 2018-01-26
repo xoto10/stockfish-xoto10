@@ -35,6 +35,7 @@ namespace {
   const int MoveHorizon   = 50;   // Plan time management at most this many moves ahead
   const double MaxRatio   = 7.09; // When in trouble, we can step over reserved time with this ratio
   const double StealRatio = 0.35; // However we must not steal time from remaining moves over this ratio
+  const int openingTime[6] = {-75, -75, -50, -50, -25, -25};
 
 
   // move_importance() is a skew-logistic function based on naive statistical
@@ -129,4 +130,9 @@ void TimeManagement::init(Search::LimitsType& limits, Color us, int ply) {
 
   if (Options["Ponder"])
       optimumTime += optimumTime / 4;
+
+  if (ply < 6 && Time.startPly < 2)
+  {
+      optimumTime += optimumTime * openingTime[ply] / 256;
+  }
 }

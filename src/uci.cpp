@@ -75,6 +75,8 @@ namespace {
         states->emplace_back();
         pos.do_move(m, states->back());
     }
+
+    Time.startPly = pos.game_ply();
   }
 
 

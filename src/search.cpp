@@ -171,6 +171,7 @@ void Search::clear() {
   Threads.main()->wait_for_search_finished();
 
   Time.availableNodes = 0;
+  Time.OrigTime[WHITE] = -1;
   TT.clear();
   Threads.clear();
 }
@@ -193,6 +194,17 @@ void MainThread::search() {
   TT.new_search();
 
   int contempt = Options["Contempt"] * PawnValueEg / 100; // From centipawns
+
+  if (Limits.inc[us] == Limits.inc[~us]) {
+      int TimeConMin = std::max(Time.OrigTime[WHITE],Time.OrigTime[BLACK])/64 + Limits.inc[us];
+      if (std::min(Limits.time[us], Limits.time[~us]) > TimeConMin) {
+          int TimeConIncs = 30;
+          int TimeConLogs = 3;
+          double ourTime   = Limits.time[us]  + TimeConIncs*Limits.inc[us];
+          double theirTime = Limits.time[~us] + TimeConIncs*Limits.inc[~us];
+          contempt += std::round(TimeConLogs * log(ourTime/theirTime));
+      }
+  }
 
   Eval::Contempt = (us == WHITE ?  make_score(contempt, contempt / 2)
                                 : -make_score(contempt, contempt / 2));

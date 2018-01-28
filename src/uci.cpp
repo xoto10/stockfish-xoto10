@@ -132,6 +132,10 @@ namespace {
         else if (token == "infinite")  limits.infinite = 1;
         else if (token == "ponder")    ponderMode = true;
 
+    if (Time.OrigTime[WHITE] == -1) {
+        Time.OrigTime[WHITE] = limits.time[WHITE];
+        Time.OrigTime[BLACK] = limits.time[BLACK];
+    }
     Threads.start_thinking(pos, states, limits, ponderMode);
   }
 

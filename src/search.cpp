@@ -74,6 +74,11 @@ namespace {
   int FutilityMoveCounts[2][16]; // [improving][depth]
   int Reductions[2][2][64][64];  // [pv][improving][depth][moveNumber]
 
+  // Contempt change based on time use
+  int TimeConIncs = 30;
+  int TimeConLogs = 30;
+TUNE(TimeConIncs, TimeConLogs);
+
   template <bool PvNode> Depth reduction(bool i, Depth d, int mn) {
     return Reductions[PvNode][i][std::min(d / ONE_PLY, 63)][std::min(mn, 63)] * ONE_PLY;
   }
@@ -198,11 +203,9 @@ void MainThread::search() {
   if (Limits.inc[us] == Limits.inc[~us]) {
       int TimeConMin = std::max(Time.OrigTime[WHITE],Time.OrigTime[BLACK])/64 + Limits.inc[us];
       if (std::min(Limits.time[us], Limits.time[~us]) > TimeConMin) {
-          int TimeConIncs = 30;
-          int TimeConLogs = 3;
           double ourTime   = Limits.time[us]  + TimeConIncs*Limits.inc[us];
           double theirTime = Limits.time[~us] + TimeConIncs*Limits.inc[~us];
-          contempt += std::round(TimeConLogs * log(ourTime/theirTime));
+          contempt += std::round(TimeConLogs * log(ourTime/theirTime) / 10.0);
       }
   }
 

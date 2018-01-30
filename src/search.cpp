@@ -74,6 +74,10 @@ namespace {
   int FutilityMoveCounts[2][16]; // [improving][depth]
   int Reductions[2][2][64][64];  // [pv][improving][depth][moveNumber]
 
+  // +/- offsets for w/b for contempt -40,-30...+30,+40 (in internal PawnValueEg measure)
+  // (Initial values to be tuned later)
+  int bwContemptOffset[9] = {5, 5, 5, 5, 5, 5, 5, 5, 5};
+
   template <bool PvNode> Depth reduction(bool i, Depth d, int mn) {
     return Reductions[PvNode][i][std::min(d / ONE_PLY, 63)][std::min(mn, 63)] * ONE_PLY;
   }
@@ -193,6 +197,10 @@ void MainThread::search() {
   TT.new_search();
 
   int contempt = Options["Contempt"] * PawnValueEg / 100; // From centipawns
+
+  // Apply symmetrical increment/decrement for white/black
+  int i = std::max( std::min((Options["Contempt"]+45) / 10, 8), 0);
+  contempt += (us == WHITE) ? bwContemptOffset[i] : -bwContemptOffset[i];
 
   Eval::Contempt = (us == WHITE ?  make_score(contempt, contempt / 2)
                                 : -make_score(contempt, contempt / 2));

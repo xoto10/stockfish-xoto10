@@ -249,6 +249,13 @@ namespace {
   const Value LazyThreshold  = Value(1500);
   const Value SpaceThreshold = Value(12222);
 
+  // Constants for evaluate_initiative()
+  int InitConstant = 17;
+  int InitPawnAsymmMult = 8;
+  int InitKingDistMult = 8;
+  int InitPawnCountMult = 12;
+  int InitFlanksMult = 16;
+TUNE(InitConstant, InitPawnAsymmMult, InitKingDistMult, InitPawnCountMult, InitFlanksMult);
 
   // initialize() computes king and pawn attacks, and the king ring bitboard
   // for a given color. This is done at the beginning of the evaluation.
@@ -771,7 +778,10 @@ namespace {
     bool bothFlanks = (pos.pieces(PAWN) & QueenSide) && (pos.pieces(PAWN) & KingSide);
 
     // Compute the initiative bonus for the attacking side
-    int initiative = 8 * (pe->pawn_asymmetry() + kingDistance - 17) + 12 * pos.count<PAWN>() + 16 * bothFlanks;
+    int initiative =   InitPawnAsymmMult * (pe->pawn_asymmetry() - InitConstant)
+                     + InitKingDistMult * kingDistance
+                     + InitPawnCountMult * pos.count<PAWN>()
+                     + InitFlanksMult * bothFlanks;
 
     // Now apply the bonus: note that we find the attacking side by extracting
     // the sign of the endgame value, and that we carefully cap the bonus so

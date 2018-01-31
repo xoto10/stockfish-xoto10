@@ -76,7 +76,7 @@ namespace {
 
   // +/- offsets for w/b for contempt -40,-30...+30,+40 (in internal PawnValueEg measure)
   // (Initial values to be tuned later)
-  int bwContemptOffset[9] = {5, 5, 5, 5, 5, 5, 5, 5, 5};
+  int bwContemptOffset[9] = {3, 3, 3, 3, 3, 3, 3, 3, 3};
 
   template <bool PvNode> Depth reduction(bool i, Depth d, int mn) {
     return Reductions[PvNode][i][std::min(d / ONE_PLY, 63)][std::min(mn, 63)] * ONE_PLY;

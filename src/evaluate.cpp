@@ -145,6 +145,9 @@ namespace {
     // a white knight on g5 and black's king is on g8, this white knight adds 2
     // to kingAdjacentZoneAttacksCount[WHITE].
     int kingAdjacentZoneAttacksCount[COLOR_NB];
+
+    // bishopPawnsSame[color] holds number of pawns on same color square as a bishop
+    int bishopPawnsSame[COLOR_NB];
   };
 
   #define V(v) Value(v)
@@ -218,6 +221,8 @@ namespace {
   // Assorted bonuses and penalties used by evaluation
   const Score MinorBehindPawn       = S( 16,  0);
   const Score BishopPawns           = S(  8, 12);
+  const Score BishopPawnsMalus      = S( -8,-12);
+  const Score BishopPawnsBonus      = S(  8, 12);
   const Score LongRangedBishop      = S( 22,  0);
   const Score RookOnPawn            = S(  8, 24);
   const Score TrappedRook           = S( 92,  0);
@@ -305,6 +310,7 @@ namespace {
     Square s;
     Score score = SCORE_ZERO;
 
+    bishopPawnsSame[Us] = bishopPawnsSame[Them] = 0;
     attackedBy[Us][Pt] = 0;
 
     if (Pt == QUEEN)
@@ -361,7 +367,9 @@ namespace {
             if (Pt == BISHOP)
             {
                 // Penalty for pawns on the same color square as the bishop
-                score -= BishopPawns * pe->pawns_on_same_color_squares(Us, s);
+                if (pos.count<BISHOP>(Us) == 1)
+                    //score -= BishopPawns * pe->pawns_on_same_color_squares(Us, s);
+                    bishopPawnsSame[Us] = pe->pawns_on_same_color_squares(Us, s);
 
                 // Bonus for bishop on a long diagonal which can "see" both center squares
                 if (more_than_one(Center & (attacks_bb<BISHOP>(s, pos.pieces(PAWN)) | s)))
@@ -876,6 +884,9 @@ namespace {
     if (pos.non_pawn_material() >= SpaceThreshold)
         score +=  evaluate_space<WHITE>()
                 - evaluate_space<BLACK>();
+
+    score +=   (v > 0 ? BishopPawnsMalus : BishopPawnsBonus) * bishopPawnsSame[WHITE]
+             - (v > 0 ? BishopPawnsMalus : BishopPawnsBonus) * bishopPawnsSame[BLACK];
 
     score += evaluate_initiative(eg_value(score));
 

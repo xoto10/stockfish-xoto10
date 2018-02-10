@@ -74,6 +74,13 @@ namespace {
   int FutilityMoveCounts[2][16]; // [improving][depth]
   int Reductions[2][2][64][64];  // [pv][improving][depth][moveNumber]
 
+  // Dynamic Contempt constants
+  int DynConLimit = 256;
+  int DynConMax = 5;
+  int DynConMult = 102;
+  int DynConAdd = 0;
+TUNE(DynConLimit, DynConMax, SetRange(0,408), DynConMult, SetRange(-100,+100), DynConAdd);
+
   template <bool PvNode> Depth reduction(bool i, Depth d, int mn) {
     return Reductions[PvNode][i][std::min(d / ONE_PLY, 63)][std::min(mn, 63)] * ONE_PLY;
   }
@@ -341,11 +348,11 @@ void Thread::search() {
               alpha = std::max(rootMoves[PVIdx].previousScore - delta,-VALUE_INFINITE);
               beta  = std::min(rootMoves[PVIdx].previousScore + delta, VALUE_INFINITE);
 
-              // Adjust contempt based on current situation
-              contempt  = Options["Contempt"] * PawnValueEg / 100;          // From centipawns
-              contempt += bestValue >  2 * PawnValueEg ?  PawnValueEg / 5:  // Dynamic contempt
-                          bestValue < -2 * PawnValueEg ? -PawnValueEg / 5:
-                          bestValue / 10;
+              // Dynamic Contempt - adjust contempt based on current situation
+              contempt  = Options["Contempt"] * PawnValueEg / 100;    // From centipawns
+              contempt += bestValue >  DynConLimit * PawnValueEg / 128 ?  PawnValueEg / DynConMax:
+                          bestValue < -DynConLimit * PawnValueEg / 128 ? -PawnValueEg / DynConMax:
+                          DynConMult * (bestValue + DynConAdd) / 1024;
 
               Eval::Contempt = (us == WHITE ?  make_score(contempt, contempt / 2)
                                             : -make_score(contempt, contempt / 2));

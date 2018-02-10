@@ -342,9 +342,9 @@ void Thread::search() {
               beta  = std::min(rootMoves[PVIdx].previousScore + delta, VALUE_INFINITE);
 
               // Adjust contempt based on current situation
-              contempt  = Options["Contempt"] * PawnValueEg / 100;  // From centipawns
-              contempt += bestValue >  500 ?  50:                   // Dynamic contempt
-                          bestValue < -500 ? -50:
+              contempt  = Options["Contempt"] * PawnValueEg / 100;          // From centipawns
+              contempt += bestValue >  2 * PawnValueEg ?  PawnValueEg / 5:  // Dynamic contempt
+                          bestValue < -2 * PawnValueEg ? -PawnValueEg / 5:
                           bestValue / 10;
 
               Eval::Contempt = (us == WHITE ?  make_score(contempt, contempt / 2)

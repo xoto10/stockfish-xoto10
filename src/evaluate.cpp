@@ -228,6 +228,7 @@ namespace {
   const Score ThreatByRank          = S( 16,  3);
   const Score Hanging               = S( 52, 30);
   const Score WeakUnopposedPawn     = S(  5, 25);
+  const Score UndefendedPawns       = S(  5, 25);
   const Score ThreatByPawnPush      = S( 47, 26);
   const Score ThreatByAttackOnQueen = S( 42, 21);
   const Score HinderPassedPawn      = S(  8,  1);
@@ -593,6 +594,10 @@ namespace {
         if (b)
             score += ThreatByKing[more_than_one(b)];
     }
+
+    // Malus for undefended pawns
+    b = pos.pieces(Us, PAWN) & ~attackedBy[Us][ALL_PIECES];
+    score -= UndefendedPawns * popcount(b);
 
     // Bonus for opponent unopposed weak pawns
     if (pos.pieces(Us, ROOK, QUEEN))

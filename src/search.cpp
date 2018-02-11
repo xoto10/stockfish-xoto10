@@ -75,11 +75,10 @@ namespace {
   int Reductions[2][2][64][64];  // [pv][improving][depth][moveNumber]
 
   // Dynamic Contempt constants
-  int DynConLimitW = 256;
-  int DynConLimitB = 256;
-  int DynConMult = 102;
-  int DynConAdd = 0;
-TUNE(DynConLimitW, DynConLimitB, SetRange(0,408), DynConMult, SetRange(-100,+100), DynConAdd);
+  const int DynConLimitW = 267;
+  const int DynConLimitB = 262;
+  const int DynConMult = 113;
+  const int DynConAdd = 6;
 
   template <bool PvNode> Depth reduction(bool i, Depth d, int mn) {
     return Reductions[PvNode][i][std::min(d / ONE_PLY, 63)][std::min(mn, 63)] * ONE_PLY;

@@ -164,6 +164,7 @@ namespace {
 
   // Assorted bonuses and penalties
   const Score BishopPawns       = S(  8, 12);
+  const Score BishopAndPawnD6   = S(  4,  0);
   const Score CloseEnemies      = S(  7,  0);
   const Score Hanging           = S( 52, 30);
   const Score HinderPassedPawn  = S(  8,  1);
@@ -353,6 +354,11 @@ namespace {
                 // Bonus for bishop on a long diagonal which can "see" both center squares
                 if (more_than_one(Center & (attacks_bb<BISHOP>(s, pos.pieces(PAWN)) | s)))
                     score += LongRangedBishop;
+
+                if (   Us == BLACK
+                    && (s == SQ_C8 || s == SQ_D7)
+                    && (pos.pieces(BLACK,PAWN) & SquareBB[SQ_E6]) )
+                    score -= BishopAndPawnD6;
             }
 
             // An important Chess960 pattern: A cornered bishop blocked by a friendly
@@ -859,7 +865,6 @@ namespace {
             + threats<WHITE>() - threats<BLACK>()
             + passed< WHITE>() - passed< BLACK>()
             + space<  WHITE>() - space<  BLACK>();
-
     score += initiative(eg_value(score));
 
     // Interpolate between a middlegame and a (scaled by 'sf') endgame score

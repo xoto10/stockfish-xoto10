@@ -163,7 +163,8 @@ namespace {
   const Score KingProtector[] = { S(3, 5), S(4, 3), S(3, 0), S(1, -1) };
 
   // Deter QSB from being blocked by pawn on E3/E6
-  const Score BishopAndPawnE6[COLOR_NB] = { S(4, 0), S(4, 0) };
+  Score BishopAndPawnE6[COLOR_NB] = { S(1, 0), S(1, 0) };
+TUNE(SetRange(-10,20), BishopAndPawnE6);
 
   // Assorted bonuses and penalties
   const Score BishopPawns       = S(  8, 12);

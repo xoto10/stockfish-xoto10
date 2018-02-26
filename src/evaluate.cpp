@@ -162,6 +162,9 @@ namespace {
   // KingProtector[PieceType-2] contains a penalty according to distance from king
   const Score KingProtector[] = { S(3, 5), S(4, 3), S(3, 0), S(1, -1) };
 
+  // Deter QSB from being blocked by pawn on E3/E6
+  const Score BishopAndPawnE6[COLOR_NB] = { S(1, -1), S(5, 0) };
+
   // Assorted bonuses and penalties
   const Score BishopPawns       = S(  8, 12);
   const Score CloseEnemies      = S(  7,  0);
@@ -353,6 +356,11 @@ namespace {
                 // Bonus for bishop on a long diagonal which can "see" both center squares
                 if (more_than_one(Center & (attacks_bb<BISHOP>(s, pos.pieces(PAWN)) | s)))
                     score += LongRangedBishop;
+
+                // Penalty for bishop on C8/D7 if pawn on E6 (similar for white)
+                if (   (s == relative_square(Us, SQ_C1) || s == relative_square(Us, SQ_D2))
+                    && (pos.pieces(Us, PAWN) & SquareBB[relative_square(Us, SQ_E3)]) )
+                    score -= BishopAndPawnE6[Us];
             }
 
             // An important Chess960 pattern: A cornered bishop blocked by a friendly

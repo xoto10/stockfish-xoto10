@@ -10,8 +10,11 @@
 
 
 
-grep -e ' -[89][0-9]$' -e ' -1[0-9][0-9]$' -e ' [89][0-9]$' -e ' 1[0-9][0-9]$' chk_2mv_2.out >chk_2mv_2.bad
+# filter out the most extreme evals (exclude eval <= -70 and eval >= 109)
+grep -e ' -[789][0-9]$' -e ' -1[0-9][0-9]$' -e ' 10[9]$' -e ' 1[1-9][0-9]$' chk_2mv_2.out >chk_2mv_2.bad
 
+
+# copy book excluding extreme evals
 grep '\[FEN' 2mv_v1.pgn |
 while read line
 do

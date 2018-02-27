@@ -60,6 +60,7 @@ public:
   Pawns::Table pawnsTable;
   Material::Table materialTable;
   Endgames endgames;
+  double bestMoveChanges;
   size_t PVIdx;
   int selDepth, nmp_ply, nmp_odd;
   std::atomic<uint64_t> nodes, tbHits;
@@ -84,7 +85,7 @@ struct MainThread : public Thread {
   void check_time();
 
   bool failedLow;
-  double bestMoveChanges, previousTimeReduction;
+  double previousTimeReduction;
   Value previousScore;
   int callsCnt;
 };

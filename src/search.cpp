@@ -197,6 +197,7 @@ void MainThread::search() {
   Color us = rootPos.side_to_move();
   Time.init(Limits, us, rootPos.game_ply());
   TT.new_search();
+  Eval::Unstable = (us == WHITE ? 1 : -1);
 
   if (rootMoves.empty())
   {
@@ -293,8 +294,9 @@ void Thread::search() {
   bestValue = delta = alpha = -VALUE_INFINITE;
   beta = VALUE_INFINITE;
 
+  bestMoveChanges = 0;
   if (mainThread)
-      mainThread->bestMoveChanges = 0, mainThread->failedLow = false;
+      mainThread->failedLow = false;
 
   size_t multiPV = Options["MultiPV"];
   Skill skill(Options["Skill Level"]);
@@ -324,8 +326,9 @@ void Thread::search() {
       }
 
       // Age out PV variability metric
+      bestMoveChanges *= 0.505;
       if (mainThread)
-          mainThread->bestMoveChanges *= 0.505, mainThread->failedLow = false;
+          mainThread->failedLow = false;
 
       // Save the last iteration's scores before first PV line is searched and
       // all the move scores except the (new) PV are set to -VALUE_INFINITE.
@@ -453,7 +456,7 @@ void Thread::search() {
                      timeReduction *= 1.3;
 
               // Use part of the gained time from a previous stable move for the current move
-              double unstablePvFactor = 1.0 + mainThread->bestMoveChanges;
+              double unstablePvFactor = 1.0 + bestMoveChanges;
               unstablePvFactor *= std::pow(mainThread->previousTimeReduction, 0.51) / timeReduction;
 
               // Stop the search if we have only one legal move, or if available time elapsed
@@ -1038,8 +1041,8 @@ moves_loop: // When in check, search starts from here
               // We record how often the best move has been changed in each
               // iteration. This information is used for time management: When
               // the best move changes frequently, we allocate some more time.
-              if (moveCount > 1 && thisThread == Threads.main())
-                  ++static_cast<MainThread*>(thisThread)->bestMoveChanges;
+              if (moveCount > 1) // && thisThread == Threads.main())
+                  ++(thisThread->bestMoveChanges);
           }
           else
               // All other moves but the PV are set to the lowest value: this

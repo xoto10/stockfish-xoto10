@@ -871,7 +871,7 @@ namespace {
        + eg_value(score) * int(PHASE_MIDGAME - me->game_phase()) * sf / SCALE_FACTOR_NORMAL;
 
     v /= int(PHASE_MIDGAME);
-    v += Eval::Unstable * ((int)pos.this_thread()->bestMoveChanges - 10);
+    v += Eval::Unstable * (10 - (int)pos.this_thread()->bestMoveChanges);
 
     // In case of tracing add all remaining individual evaluation terms
     if (T)

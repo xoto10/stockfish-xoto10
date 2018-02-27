@@ -197,7 +197,7 @@ void MainThread::search() {
   Color us = rootPos.side_to_move();
   Time.init(Limits, us, rootPos.game_ply());
   TT.new_search();
-  Eval::Unstable = (us == WHITE ? 1 : -1);
+  Eval::Unstable = (us == WHITE ? 2 : -2);
 
   if (rootMoves.empty())
   {

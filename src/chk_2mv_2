@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# chk_2mv_2 - run after chk_2mv
+
+
+
+grep -e ' position: ' -e ' depth 18 ' -e '^bestmove ' chk_2mv.out | grep -v ' currmovenumber ' |
+  awk '/position:/   { pos=$0; }
+       / depth 18 /  { gsub(/.*score/, "score"); gsub(/ nodes .*/, ""); pv=$0; }
+       /^bestmove /  { print pos, pv; }' >chk_2mv_2.out
+
+# sort -nk12 chk_2mv_2.out
+
+

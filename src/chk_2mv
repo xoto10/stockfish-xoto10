@@ -1,0 +1,49 @@
+#!/bin/bash
+
+# chk_2mv - eval positions in 2moves_v1.pgn
+
+
+# [FEN "rn1qkbnr/ppp1pppp/8/3p1b2/2P5/1P6/P2PPPPP/RNBQKBNR w KQkq -"]
+# [Result "1/2-1/2"]
+#
+# 1/2-1/2
+#
+# [FEN "rnbqkbnr/1p1ppppp/p1p5/8/8/4PQ2/PPPP1PPP/RNB1KBNR w KQkq -"]
+# [Result "1/2-1/2"]
+# 
+# 1/2-1/2
+
+# uci
+# setoption name hash value 128
+# setoption name threads value 4
+
+
+export BOOK=2mv_v1.pgn
+export INIT=""
+
+
+\rm -f chk_2mv.posns
+
+date
+(  
+  echo "uci"
+  echo "setoption name hash value 128"
+  echo "setoption name threads value 3"
+
+  grep FEN "$BOOK" |
+  while read line
+  do
+    #echo "$line" >>chk_2mv.posns
+    echo "$line" | sed 's/.* "\([^"]*\)".*/position fen \1 0 3/'
+    echo "go depth 18"
+    sleep 0.9
+  done
+) | ./stockfish_sf9_2mv
+date
+
+# Then run this:
+# ./chk_2mv_2
+# and:
+# ./chk_2mv_3
+
+

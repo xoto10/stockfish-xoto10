@@ -66,6 +66,7 @@ namespace {
     else
         return;
 
+    sync_cout << "info string position: " << fen << sync_endl;
     states = StateListPtr(new std::deque<StateInfo>(1)); // Drop old and create a new one
     pos.set(fen, Options["UCI_Chess960"], &states->back(), Threads.main());
 

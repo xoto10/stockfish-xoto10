@@ -1,0 +1,35 @@
+#!/bin/bash
+
+# chk_2mv_3 - run after chk_2mv_2
+
+# [FEN "rn1qkbnr/ppp1pppp/8/3p1b2/2P5/1P6/P2PPPPP/RNBQKBNR w KQkq -"]
+# [Result "1/2-1/2"]
+#
+# 1/2-1/2
+#
+
+
+
+grep -e ' -[89][0-9]$' -e ' -1[0-9][0-9]$' -e ' [89][0-9]$' -e ' 1[0-9][0-9]$' chk_2mv_2.out >chk_2mv_2.bad
+
+grep '\[FEN' 2mv_v1.pgn |
+while read line
+do
+   fen=$(echo "$line" | sed 's/\[FEN "//' | sed 's/ w .*//')
+   c=$(grep -cF "$fen" chk_2mv_2.bad)
+   #grep -F "$fen" chk_2mv_2.out
+   #echo "fen=$fen c=$c"
+
+   if [[ $c = 0 ]] ; then
+      echo "$line"
+      echo '[Result "1/2-1/2"]
+
+1/2-1/2
+'
+
+   fi
+done >2mv_v2.pgn
+
+# sort -nk12 chk_2mv_2.out
+
+

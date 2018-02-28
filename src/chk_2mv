@@ -19,18 +19,19 @@ export ENGINE=./stockfish_sf9_2mv
 date
 (  
   echo "uci"
-  echo "setoption name hash value 128"
-  echo "setoption name threads value 3"
+  echo "setoption name Hash value 256"
+  echo "setoption name Threads value 3"
 
   # for testing use:
-  # grep FEN "$BOOK" | head -1000 |
+  # grep FEN "$BOOK" | head -100 |
   grep FEN "$BOOK" |
   while read line
   do
     #echo "$line" >>chk_2mv.posns
+    echo "setoption name Clear Hash"
     echo "$line" | sed 's/.* "\([^"]*\)".*/position fen \1 0 3/'
     echo "go depth 18"
-    sleep 0.9
+    sleep 1.1
   done
 ) | $ENGINE
 date

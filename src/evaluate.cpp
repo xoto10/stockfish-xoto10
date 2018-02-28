@@ -515,6 +515,7 @@ namespace {
 
     Bitboard b, weak, defended, nonPawnEnemies, stronglyProtected, safeThreats;
     Score score = SCORE_ZERO;
+    int numThreats = 0;
 
     // Non-pawn enemies attacked by a pawn
     nonPawnEnemies = pos.pieces(Them) ^ pos.pieces(Them, PAWN);
@@ -528,6 +529,7 @@ namespace {
 
         safeThreats = pawn_attacks_bb<Us>(b) & weak;
         score += ThreatBySafePawn * popcount(safeThreats);
+        numThreats += popcount(safeThreats);
     }
 
     // Squares strongly protected by the enemy, either because they defend the
@@ -549,6 +551,7 @@ namespace {
         {
             Square s = pop_lsb(&b);
             score += ThreatByMinor[type_of(pos.piece_on(s))];
+            numThreats++;
             if (type_of(pos.piece_on(s)) != PAWN)
                 score += ThreatByRank * (int)relative_rank(Them, s);
         }
@@ -558,11 +561,13 @@ namespace {
         {
             Square s = pop_lsb(&b);
             score += ThreatByRook[type_of(pos.piece_on(s))];
+            numThreats++;
             if (type_of(pos.piece_on(s)) != PAWN)
                 score += ThreatByRank * (int)relative_rank(Them, s);
         }
 
         score += Hanging * popcount(weak & ~attackedBy[Them][ALL_PIECES]);
+        numThreats += popcount(weak & ~attackedBy[Them][ALL_PIECES]);
 
         b = weak & attackedBy[Us][KING];
         if (b)
@@ -587,6 +592,7 @@ namespace {
        & ~attackedBy[Us][PAWN];
 
     score += ThreatByPawnPush * popcount(b);
+    numThreats += popcount(b);
 
     // Bonus for safe slider threats on the next move toward enemy queen
     safeThreats = ~pos.pieces(Us) & ~attackedBy2[Them] & attackedBy2[Us];
@@ -594,6 +600,10 @@ namespace {
        | (attackedBy[Us][ROOK  ] & attackedBy[Them][QUEEN] & ~attackedBy[Them][QUEEN_DIAGONAL]);
 
     score += ThreatOnQueen * popcount(b & safeThreats);
+    numThreats += popcount(b & safeThreats);
+
+    // make contempt style score from numthreats
+    score += make_score(numThreats, numThreats/2);
 
     if (T)
         Trace::add(THREAT, Us, score);

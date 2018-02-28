@@ -98,6 +98,12 @@ const Score Bonus[][RANK_NB][int(FILE_NB) / 2] = {
   }
 };
 
+
+Score sc[COLOR_NB][8] = { { S(0,0), S(0,0), S(0,0), S(0,0), S(0,0), S(0,0), S(0,0), S(0,0) }
+                        , { S(0,0), S(0,0), S(0,0), S(0,0), S(0,0), S(0,0), S(0,0), S(0,0) }
+                        };
+TUNE(SetRange(-40,40), sc);
+
 #undef S
 
 Score psq[PIECE_NB][SQUARE_NB];
@@ -121,6 +127,24 @@ void init() {
           psq[~pc][~s] = -psq[pc][s];
       }
   }
+
+  psq[W_PAWN][SQ_D3] += sc[WHITE][0];
+  psq[W_PAWN][SQ_E3] += sc[WHITE][0];
+  psq[W_PAWN][SQ_D4] += sc[WHITE][0];
+  psq[W_PAWN][SQ_E4] += sc[WHITE][0];
+  psq[W_PAWN][SQ_D5] += sc[WHITE][0];
+  psq[W_PAWN][SQ_E5] += sc[WHITE][0];
+  psq[W_PAWN][SQ_D6] += sc[WHITE][0];
+  psq[W_PAWN][SQ_E6] += sc[WHITE][0];
+
+  psq[B_PAWN][SQ_D3] += sc[BLACK][0];
+  psq[B_PAWN][SQ_E3] += sc[BLACK][0];
+  psq[B_PAWN][SQ_D4] += sc[BLACK][0];
+  psq[B_PAWN][SQ_E4] += sc[BLACK][0];
+  psq[B_PAWN][SQ_D5] += sc[BLACK][0];
+  psq[B_PAWN][SQ_E5] += sc[BLACK][0];
+  psq[B_PAWN][SQ_D6] += sc[BLACK][0];
+  psq[B_PAWN][SQ_E6] += sc[BLACK][0];
 }
 
 } // namespace PSQT

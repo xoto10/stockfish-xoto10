@@ -129,22 +129,22 @@ void init() {
   }
 
   psq[W_PAWN][SQ_D3] += sc[WHITE][0];
-  psq[W_PAWN][SQ_E3] += sc[WHITE][0];
-  psq[W_PAWN][SQ_D4] += sc[WHITE][0];
-  psq[W_PAWN][SQ_E4] += sc[WHITE][0];
-  psq[W_PAWN][SQ_D5] += sc[WHITE][0];
-  psq[W_PAWN][SQ_E5] += sc[WHITE][0];
-  psq[W_PAWN][SQ_D6] += sc[WHITE][0];
-  psq[W_PAWN][SQ_E6] += sc[WHITE][0];
+  psq[W_PAWN][SQ_E3] += sc[WHITE][1];
+  psq[W_PAWN][SQ_D4] += sc[WHITE][2];
+  psq[W_PAWN][SQ_E4] += sc[WHITE][3];
+  psq[W_PAWN][SQ_D5] += sc[WHITE][4];
+  psq[W_PAWN][SQ_E5] += sc[WHITE][5];
+  psq[W_PAWN][SQ_D6] += sc[WHITE][6];
+  psq[W_PAWN][SQ_E6] += sc[WHITE][7];
 
   psq[B_PAWN][SQ_D3] += sc[BLACK][0];
-  psq[B_PAWN][SQ_E3] += sc[BLACK][0];
-  psq[B_PAWN][SQ_D4] += sc[BLACK][0];
-  psq[B_PAWN][SQ_E4] += sc[BLACK][0];
-  psq[B_PAWN][SQ_D5] += sc[BLACK][0];
-  psq[B_PAWN][SQ_E5] += sc[BLACK][0];
-  psq[B_PAWN][SQ_D6] += sc[BLACK][0];
-  psq[B_PAWN][SQ_E6] += sc[BLACK][0];
+  psq[B_PAWN][SQ_E3] += sc[BLACK][1];
+  psq[B_PAWN][SQ_D4] += sc[BLACK][2];
+  psq[B_PAWN][SQ_E4] += sc[BLACK][3];
+  psq[B_PAWN][SQ_D5] += sc[BLACK][4];
+  psq[B_PAWN][SQ_E5] += sc[BLACK][5];
+  psq[B_PAWN][SQ_D6] += sc[BLACK][6];
+  psq[B_PAWN][SQ_E6] += sc[BLACK][7];
 }
 
 } // namespace PSQT

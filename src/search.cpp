@@ -67,8 +67,8 @@ namespace {
   const int SkipPhase[] = { 0, 1, 0, 1, 2, 3, 0, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5, 6, 7 };
 
   // Delta used by aspiration window
-  const int DeltaInit = 21;
-  const int DeltaMult = 47;
+  const int DeltaInit = 22;
+  const int DeltaMult = 45;
   const int DeltaInc = 4;
 
   // Razor and futility margins

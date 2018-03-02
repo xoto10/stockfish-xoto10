@@ -66,6 +66,12 @@ namespace {
   const int SkipSize[]  = { 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4 };
   const int SkipPhase[] = { 0, 1, 0, 1, 2, 3, 0, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5, 6, 7 };
 
+  // Delta used by aspiration window
+  int DeltaInit = 18;
+  int DeltaMult = 64;
+  int DeltaInc = 5;
+TUNE(SetRange(0,72), DeltaInit, SetRange(0,256), DeltaMult, SetRange(0,20), DeltaInc);
+
   // Razor and futility margins
   const int RazorMargin1 = 590;
   const int RazorMargin2 = 604;
@@ -342,7 +348,7 @@ void Thread::search() {
           // Reset aspiration window starting size
           if (rootDepth >= 5 * ONE_PLY)
           {
-              delta = Value(18);
+              delta = Value(DeltaInit);
               alpha = std::max(rootMoves[PVIdx].previousScore - delta,-VALUE_INFINITE);
               beta  = std::min(rootMoves[PVIdx].previousScore + delta, VALUE_INFINITE);
 
@@ -403,7 +409,7 @@ void Thread::search() {
               else
                   break;
 
-              delta += delta / 4 + 5;
+              delta += DeltaMult * delta / 256 + DeltaInc;
 
               assert(alpha >= -VALUE_INFINITE && beta <= VALUE_INFINITE);
           }

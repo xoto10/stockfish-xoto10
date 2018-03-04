@@ -28,8 +28,10 @@
 #include "evaluate.h"
 #include "material.h"
 #include "pawns.h"
+#include "thread.h"
 
 std::atomic<Score> Eval::Contempt;
+int Eval::Unstable;
 
 namespace Trace {
 
@@ -867,6 +869,7 @@ namespace {
        + eg_value(score) * int(PHASE_MIDGAME - me->game_phase()) * sf / SCALE_FACTOR_NORMAL;
 
     v /= int(PHASE_MIDGAME);
+    v += Eval::Unstable * (10 - (int)pos.this_thread()->bestMoveChanges);
 
     // In case of tracing add all remaining individual evaluation terms
     if (T)

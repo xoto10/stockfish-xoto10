@@ -530,9 +530,10 @@ namespace {
     {
         // Step 2. Check for aborted search and immediate draw
         if (   Threads.stop.load(std::memory_order_relaxed)
-            || pos.is_draw(ss->ply)
-            || ss->ply >= MAX_PLY)
-            return (ss->ply >= MAX_PLY && !inCheck) ? evaluate(pos) : VALUE_DRAW;
+            || pos.is_draw(ss->ply) )
+            return VALUE_DRAW;
+        if (ss->ply >= MAX_PLY)
+            return inCheck ? alpha+1 : evaluate(pos);
 
         // Step 3. Mate distance pruning. Even if we mate at the next move our score
         // would be at best mate_in(ss->ply+1), but if alpha is already bigger because
@@ -1187,9 +1188,10 @@ moves_loop: // When in check, search starts from here
     moveCount = 0;
 
     // Check for an immediate draw or maximum ply reached
-    if (   pos.is_draw(ss->ply)
-        || ss->ply >= MAX_PLY)
-        return (ss->ply >= MAX_PLY && !InCheck) ? evaluate(pos) : VALUE_DRAW;
+    if (pos.is_draw(ss->ply))
+         return VALUE_DRAW;
+    if (ss->ply >= MAX_PLY)
+         return InCheck ? alpha+1 : evaluate(pos);
 
     assert(0 <= ss->ply && ss->ply < MAX_PLY);
 

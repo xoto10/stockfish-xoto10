@@ -346,11 +346,13 @@ void Thread::search() {
               alpha = std::max(rootMoves[PVIdx].previousScore - delta,-VALUE_INFINITE);
               beta  = std::min(rootMoves[PVIdx].previousScore + delta, VALUE_INFINITE);
 
-              // Adjust contempt based on current bestValue
-              ct =  Options["Contempt"] * PawnValueEg / 100 // From centipawns
-                  + (bestValue >  500 ?  50:                // Dynamic contempt
-                     bestValue < -500 ? -50:
-                     bestValue / 10);
+              ct =  Options["Contempt"] * PawnValueEg / 100; // From centipawns
+
+              // Adjust contempt based on current bestValue (dynamic contempt)
+              int sign = (bestValue > 0) - (bestValue < 0);
+              ct +=  bestValue >  500 ?  70 :
+                     bestValue < -500 ? -70 :
+                     bestValue / 10 + sign * int(std::round(3.22 * log(1 + abs(bestValue))));
 
               Eval::Contempt = (us == WHITE ?  make_score(ct, ct / 2)
                                             : -make_score(ct, ct / 2));
@@ -680,20 +682,21 @@ namespace {
         goto moves_loop;
 
     // Step 7. Razoring (skipped when in check)
-    if (   !PvNode
-        &&  depth <= ONE_PLY)
+    if (  !PvNode
+        && depth <= 2 * ONE_PLY)
     {
-        if (eval + RazorMargin1 <= alpha)
+        if (   depth == ONE_PLY
+            && eval + RazorMargin1 <= alpha)
             return qsearch<NonPV, false>(pos, ss, alpha, alpha+1);
-    }
-    else if (   !PvNode
-             &&  depth <= 2 * ONE_PLY
-             &&  eval + RazorMargin2 <= alpha)
-    {
-        Value ralpha = alpha - RazorMargin2;
-        Value v = qsearch<NonPV, false>(pos, ss, ralpha, ralpha+1);
-        if (v <= ralpha)
-            return v;
+
+        else if (eval + RazorMargin2 <= alpha)
+        {
+            Value ralpha = alpha - RazorMargin2;
+            Value v = qsearch<NonPV, false>(pos, ss, ralpha, ralpha+1);
+
+            if (v <= ralpha)
+                return v;
+        }
     }
 
     // Step 8. Futility pruning: child node (skipped when in check)
@@ -774,7 +777,7 @@ namespace {
                 // Perform a preliminary search at depth 1 to verify that the move holds.
                 // We will only do this search if the depth is not 5, thus avoiding two
                 // searches at depth 1 in a row.
-                if (depth != 5 * ONE_PLY)
+                if (depth > 5 * ONE_PLY)
                     value = -search<NonPV>(pos, ss+1, -rbeta, -rbeta+1, ONE_PLY, !cutNode, true);
 
                 // If the first search was skipped or was performed and held, perform
@@ -783,6 +786,7 @@ namespace {
                     value = -search<NonPV>(pos, ss+1, -rbeta, -rbeta+1, depth - 4 * ONE_PLY, !cutNode, false);
 
                 pos.undo_move(move);
+
                 if (value >= rbeta)
                     return value;
             }

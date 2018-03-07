@@ -1194,7 +1194,9 @@ moves_loop: // When in check, search starts from here
     if (pos.is_draw(ss->ply))
          return VALUE_DRAW;
     if (ss->ply >= MAX_PLY)
-         return InCheck ? alpha+1 : evaluate(pos);
+         return InCheck ? pos.this_thread()->rootPos.side_to_move() == pos.side_to_move()
+                                  ? alpha+1 : beta
+                        : evaluate(pos);
 
     assert(0 <= ss->ply && ss->ply < MAX_PLY);
 

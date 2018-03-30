@@ -1077,15 +1077,15 @@ bool Position::see_ge(Move m, Value threshold) const {
 /// Position::is_draw() tests whether the position is drawn by 50-move rule
 /// or by repetition. It does not detect stalemates.
 
-bool Position::is_draw(int ply) const {
+int Position::is_draw(int ply) const {
 
   if (st->rule50 > 99 && (!checkers() || MoveList<LEGAL>(*this).size()))
-      return true;
+      return DRAW_RULE50;
 
   int end = std::min(st->rule50, st->pliesFromNull);
 
   if (end < 4)
-    return false;
+    return DRAW_NONE;
 
   StateInfo* stp = st->previous->previous;
   int cnt = 0;
@@ -1098,10 +1098,10 @@ bool Position::is_draw(int ply) const {
       // after the root, or repeats twice before or at the root.
       if (   stp->key == st->key
           && ++cnt + (ply > i) == 2)
-          return true;
+          return cnt;  // DRAW_REP1 or DRAW_REP2
   }
 
-  return false;
+  return DRAW_NONE;
 }
 
 

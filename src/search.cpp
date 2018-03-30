@@ -76,6 +76,9 @@ namespace {
   int FutilityMoveCounts[2][16]; // [improving][depth]
   int Reductions[2][2][64][64];  // [pv][improving][depth][moveNumber]
 
+  // Divisor for repeat return value
+  constexpr int RepeatDiv = 4;
+
   template <bool PvNode> Depth reduction(bool i, Depth d, int mn) {
     return Reductions[PvNode][i][std::min(d / ONE_PLY, 63)][std::min(mn, 63)] * ONE_PLY;
   }
@@ -534,9 +537,14 @@ namespace {
     if (!rootNode)
     {
         // Step 2. Check for aborted search and immediate draw
-        if (   Threads.stop.load(std::memory_order_relaxed)
-            || pos.is_draw(ss->ply)
-            || ss->ply >= MAX_PLY)
+        if (Threads.stop.load(std::memory_order_relaxed))
+            return VALUE_DRAW;
+        if (int drawType = pos.is_draw(ss->ply))
+            return (drawType==DRAW_REP1) ? (alpha>0) ? alpha/RepeatDiv
+                                                     : (beta<0) ? beta/RepeatDiv
+                                                                : VALUE_DRAW
+                                         : VALUE_DRAW;
+        if (ss->ply >= MAX_PLY)
             return (ss->ply >= MAX_PLY && !inCheck) ? evaluate(pos) : VALUE_DRAW;
 
         // Step 3. Mate distance pruning. Even if we mate at the next move our score
@@ -1178,8 +1186,12 @@ moves_loop: // When in check, search starts from here
     moveCount = 0;
 
     // Check for an immediate draw or maximum ply reached
-    if (   pos.is_draw(ss->ply)
-        || ss->ply >= MAX_PLY)
+    if (int drawType = pos.is_draw(ss->ply))
+        return (drawType==DRAW_REP1) ? (alpha>0) ? alpha/RepeatDiv
+                                                 : (beta<0) ? beta/RepeatDiv
+                                                            : VALUE_DRAW
+                                     : VALUE_DRAW;
+    if (ss->ply >= MAX_PLY)
         return (ss->ply >= MAX_PLY && !inCheck) ? evaluate(pos) : VALUE_DRAW;
 
     assert(0 <= ss->ply && ss->ply < MAX_PLY);

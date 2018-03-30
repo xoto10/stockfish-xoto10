@@ -103,6 +103,13 @@ typedef uint64_t Bitboard;
 constexpr int MAX_MOVES = 256;
 constexpr int MAX_PLY   = 128;
 
+enum DrawType : int {
+  DRAW_NONE,
+  DRAW_REP1,
+  DRAW_REP2,
+  DRAW_RULE50
+};
+
 /// A move needs 16 bits to be stored
 ///
 /// bit  0- 5: destination square (from 0 to 63)

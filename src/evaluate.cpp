@@ -97,6 +97,10 @@ namespace {
   constexpr int BishopSafeCheck = 435;
   constexpr int KnightSafeCheck = 790;
 
+  // Asymmetry holds bonus values for different asymmetry levels
+  int A[13] = {0, 8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96};
+TUNE(SetRange(-20,150), A);
+
 #define S(mg, eg) make_score(mg, eg)
 
   // MobilityBonus[PieceType-2][attacked] contains bonuses for middle and end game,
@@ -768,7 +772,7 @@ namespace {
 
     // Compute the initiative bonus for the attacking side
     int complexity =   8 * outflanking
-                    +  8 * pe->pawn_asymmetry()
+                    +      A[std::min(12,pe->pawn_asymmetry())]
                     + 12 * pos.count<PAWN>()
                     + 16 * pawnsOnBothFlanks
                     + 48 * !pos.non_pawn_material()

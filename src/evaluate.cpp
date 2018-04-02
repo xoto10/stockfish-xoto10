@@ -98,7 +98,7 @@ namespace {
   constexpr int KnightSafeCheck = 790;
 
   // Bonus values for different asymmetry levels
-  int PawnAsymmetry[13] = {4, 10, 18, 19, 26, 39, 46, 53, 62, 74, 82, 87, 100};
+  constexpr int PawnAsymmetry[13] = {4, 18, 17, 19, 30, 41, 46, 50, 64, 67, 84, 85, 101};
 
 #define S(mg, eg) make_score(mg, eg)
 

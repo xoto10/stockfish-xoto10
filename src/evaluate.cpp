@@ -99,6 +99,8 @@ namespace {
 
   // Bonus values for different asymmetry levels
   constexpr int PawnAsymmetry[13] = {0, 4, 8, 20, 32, 44, 56, 64, 72, 76, 80, 84, 88};
+  constexpr int PawnsTotal[17] = {0, 12, 24, 36, 48, 60, 72, 84, 96,
+                                  108, 120, 120, 120, 108, 96, 84, 72};
 
 #define S(mg, eg) make_score(mg, eg)
 
@@ -772,7 +774,7 @@ namespace {
     // Compute the initiative bonus for the attacking side
     int complexity =   8 * outflanking
                     +      PawnAsymmetry[std::min(12,pe->pawn_asymmetry())]
-                    + 12 * pos.count<PAWN>()
+                    +      PawnsTotal[pos.count<PAWN>()]
                     + 16 * pawnsOnBothFlanks
                     + 48 * !pos.non_pawn_material()
                     -136 ;

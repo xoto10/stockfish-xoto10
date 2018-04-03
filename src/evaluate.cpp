@@ -163,6 +163,7 @@ namespace {
 
   // Assorted bonuses and penalties
   constexpr Score BishopPawns        = S(  8, 12);
+  constexpr Score BishopFarSide      = S( 12,  6);
   constexpr Score CloseEnemies       = S(  7,  0);
   constexpr Score Connectivity       = S(  3,  1);
   constexpr Score CorneredBishop     = S( 50, 50);
@@ -295,6 +296,8 @@ namespace {
     constexpr Color Them = (Us == WHITE ? BLACK : WHITE);
     constexpr Bitboard OutpostRanks = (Us == WHITE ? Rank4BB | Rank5BB | Rank6BB
                                                    : Rank5BB | Rank4BB | Rank3BB);
+    constexpr Bitboard FarSideRanks = (Us == WHITE ? Rank5BB | Rank6BB | Rank7BB | Rank8BB
+                                                   : Rank1BB | Rank2BB | Rank3BB | Rank4BB);
     const Square* pl = pos.squares<Pt>(Us);
 
     Bitboard b, bb;
@@ -350,6 +353,10 @@ namespace {
             {
                 // Penalty according to number of pawns on the same color square as the bishop
                 score -= BishopPawns * pe->pawns_on_same_color_squares(Us, s);
+
+                // Bonus if bishop can see squares on far side of board
+                if (pos.attacks_from<BISHOP>(s) & FarSideRanks)
+                    score += BishopFarSide;
 
                 // Bonus for bishop on a long diagonal which can "see" both center squares
                 if (more_than_one(Center & (attacks_bb<BISHOP>(s, pos.pieces(PAWN)) | s)))

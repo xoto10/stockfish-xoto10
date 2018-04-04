@@ -355,7 +355,7 @@ namespace {
                 score -= BishopPawns * pe->pawns_on_same_color_squares(Us, s);
 
                 // Bonus if bishop can see squares on far side of board
-                if (b & FarSideRanks)
+                if (relative_rank(Us, s) < RANK_4 && (b & FarSideRanks))
                     score += BishopFarSide;
 
                 // Bonus for bishop on a long diagonal which can "see" both center squares

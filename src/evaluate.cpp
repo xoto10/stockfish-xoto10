@@ -174,6 +174,7 @@ namespace {
   constexpr Score PawnlessFlank      = S( 20, 80);
   constexpr Score RookOnPawn         = S(  8, 24);
   constexpr Score SliderOnQueen      = S( 42, 21);
+  constexpr Score QueenAttack        = S( 20, 10);
   constexpr Score ThreatByPawnPush   = S( 47, 26);
   constexpr Score ThreatByRank       = S( 16,  3);
   constexpr Score ThreatBySafePawn   = S(175,168);
@@ -568,6 +569,7 @@ namespace {
         if (b)
             score += ThreatByKing[more_than_one(b)];
     }
+    score += QueenAttack * popcount(attackedBy[Us][QUEEN] & (pos.pieces(Them) ^ pos.pieces(Them, PAWN)));
 
     // Bonus for enemy unopposed weak pawns
     if (pos.pieces(Us, ROOK, QUEEN))

@@ -226,6 +226,9 @@ namespace {
     // and h6. It is set to 0 when king safety evaluation is skipped.
     Bitboard kingRing[COLOR_NB];
 
+    // Outposts, not tested for pawn defenders
+    Bitboard Outposts[COLOR_NB];
+
     // kingAttackersCount[color] is the number of pieces of the given color
     // which attack a square in the kingRing of the enemy king.
     int kingAttackersCount[COLOR_NB];
@@ -254,6 +257,8 @@ namespace {
     constexpr Direction Up   = (Us == WHITE ? NORTH : SOUTH);
     constexpr Direction Down = (Us == WHITE ? SOUTH : NORTH);
     constexpr Bitboard LowRanks = (Us == WHITE ? Rank2BB | Rank3BB: Rank7BB | Rank6BB);
+    constexpr Bitboard OutpostRanks = (Us == WHITE ? Rank4BB | Rank5BB | Rank6BB
+                                                   : Rank5BB | Rank4BB | Rank3BB);
 
     // Find our pawns that are blocked or on the first two ranks
     Bitboard b = pos.pieces(Us, PAWN) & (shift<Down>(pos.pieces()) | LowRanks);
@@ -286,6 +291,9 @@ namespace {
     }
     else
         kingRing[Us] = kingAttackersCount[Them] = 0;
+
+    // Find outposts
+    Outposts[Us] = OutpostRanks & ~pe->pawn_attacks_span(Them);
   }
 
 
@@ -294,11 +302,9 @@ namespace {
   Score Evaluation<T>::pieces() {
 
     constexpr Color Them = (Us == WHITE ? BLACK : WHITE);
-    constexpr Bitboard OutpostRanks = (Us == WHITE ? Rank4BB | Rank5BB | Rank6BB
-                                                   : Rank5BB | Rank4BB | Rank3BB);
     const Square* pl = pos.squares<Pt>(Us);
 
-    Bitboard b, bb;
+    Bitboard b;
     Square s;
     Score score = SCORE_ZERO;
     int mob;
@@ -337,12 +343,11 @@ namespace {
         if (Pt == BISHOP || Pt == KNIGHT)
         {
             // Bonus if piece is on an outpost square or can reach one
-            bb = OutpostRanks & ~pe->pawn_attacks_span(Them);
-            if (bb & s)
+            if (Outposts[Us] & s)
                 score += Outpost[Pt == BISHOP][bool(attackedBy[Us][PAWN] & s)] * 2;
 
-            else if (bb &= b & ~pos.pieces(Us))
-                score += Outpost[Pt == BISHOP][bool(attackedBy[Us][PAWN] & bb)];
+            else if (Outposts[Us] & b & ~pos.pieces(Us))
+                score += Outpost[Pt == BISHOP][bool(attackedBy[Us][PAWN] & Outposts[Us] & b)];
 
             // Bonus when behind a pawn
             if (    relative_rank(Us, s) < RANK_5

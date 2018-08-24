@@ -155,7 +155,9 @@ namespace {
   constexpr int PassedDanger[RANK_NB] = { 0, 0, 0, 3, 7, 11, 20 };
 
   // SpaceWeights[early] contains a term to weight the space bonus
-  constexpr int SpaceWeights[17] = { 0, 1, 8, 27, 64, 125, 216, 343, 512, 729, 1000, 1331, 1728, 2197, 2744, 3375, 4096 };
+  constexpr int SpaceWeights[32] = { -3375, -2744, -2197, -1728, -1331, -1000, -729, -512, -343
+                                   , -216, -125, -64, -27, -8, -1, 0, 1, 8, 27, 64, 125, 216
+                                   , 343, 512, 729, 1000, 1331, 1728, 2197, 2744, 3375, 4096 };
 
   // Assorted bonuses and penalties
   constexpr Score BishopPawns        = S(  3,  7);
@@ -742,7 +744,7 @@ namespace {
     int bonus = popcount(safe) + popcount(behind & safe);
     int early = pos.count<ALL_PIECES>(Us) - 2 * pe->open_files();
 
-    Score score = make_score(bonus * SpaceWeights[early] / 256, 0);
+    Score score = make_score(bonus * SpaceWeights[early+15] / 256, 0);
 
     if (T)
         Trace::add(SPACE, Us, score);

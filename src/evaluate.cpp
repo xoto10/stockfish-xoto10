@@ -154,6 +154,9 @@ namespace {
   // PassedDanger[Rank] contains a term to weight the passed score
   constexpr int PassedDanger[RANK_NB] = { 0, 0, 0, 3, 7, 11, 20 };
 
+  // weakKingRing[] contains a term to weight a weak king ring
+  constexpr int weakKingRing[9] = { 0, 185, 423, 714, 1057, 1454, 1903, 2405, 2960 };
+
   // Assorted bonuses and penalties
   constexpr Score BishopPawns        = S(  3,  7);
   constexpr Score CloseEnemies       = S(  6,  0);
@@ -476,7 +479,7 @@ namespace {
 
         kingDanger +=        kingAttackersCount[Them] * kingAttackersWeight[Them]
                      +  69 * kingAttacksCount[Them]
-                     + 185 * popcount(kingRing[Us] & weak)
+                     +       weakKingRing[ popcount(kingRing[Us] & weak) ]
                      + 129 * popcount(pos.blockers_for_king(Us) | unsafeChecks)
                      +   4 * tropism
                      - 873 * !pos.count<QUEEN>(Them)

@@ -155,7 +155,7 @@ namespace {
   constexpr int PassedDanger[RANK_NB] = { 0, 0, 0, 3, 7, 11, 20 };
 
   // SpaceWeights[early] contains a term to weight the space bonus
-  int SpaceWeights[17] = { 0, 1, 8, 27, 64, 125, 216, 343, 512, 729, 1000, 1331, 1728, 2197, 2744, 3375, 4096 };
+  int SpaceWeights[17] = { 0, 1, 8, 27, 65, 124, 208, 345, 516, 715, 1014, 1299, 1662, 2198, 2609, 3539, 4129 };
 TUNE(SpaceWeights);
 
   // Assorted bonuses and penalties

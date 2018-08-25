@@ -155,7 +155,7 @@ namespace {
   constexpr int PassedDanger[RANK_NB] = { 0, 0, 0, 3, 7, 11, 20 };
 
   // weakKingRing[] contains a term to weight a weak king ring
-  constexpr int weakKingRing[9] = { 0, 185, 342, 473, 577, 653, 701, 721, 740 };
+  constexpr int weakKingRing[9] = { 0, 200, 420, 650, 830, 960, 1050, 1110, 1140 };
 
   // Assorted bonuses and penalties
   constexpr Score BishopPawns        = S(  3,  7);

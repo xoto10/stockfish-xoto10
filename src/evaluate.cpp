@@ -155,7 +155,7 @@ namespace {
   constexpr int PassedDanger[RANK_NB] = { 0, 0, 0, 3, 7, 11, 20 };
 
   // weakKingRing[] contains a term to weight a weak king ring
-  constexpr int weakKingRing[9] = { 0, 185, 423, 714, 1057, 1454, 1903, 2405, 2960 };
+  constexpr int weakKingRing[9] = { -30, 155, 340, 525, 710, 895, 1080, 1265, 1450 };
 
   // Assorted bonuses and penalties
   constexpr Score BishopPawns        = S(  3,  7);
@@ -483,8 +483,7 @@ namespace {
                      + 129 * popcount(pos.blockers_for_king(Us) | unsafeChecks)
                      +   4 * tropism
                      - 873 * !pos.count<QUEEN>(Them)
-                     -   6 * mg_value(score) / 8
-                     -   30;
+                     -   6 * mg_value(score) / 8;
 
         // Transform the kingDanger units into a Score, and subtract it from the evaluation
         if (kingDanger > 0)

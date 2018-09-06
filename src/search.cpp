@@ -68,9 +68,10 @@ namespace {
   // Razor and futility margins
   constexpr int RazorMargin = 600;
   #define V Value
-  constexpr Value FutilityMargin[7][2] = { {V(0),V(0)},     {V(175),V(125)} , {V(350),V(250)}, {V(525),V(375)}
+            Value FutilityMargin[7][2] = { {V(0),V(0)},     {V(175),V(125)} , {V(350),V(250)}, {V(525),V(375)}
                                          , {V(700),V(500)}, {V(875),V(625)} , {V(1050),V(750)} };
   #undef V
+TUNE(FutilityMargin);
 
   // Futility and reductions lookup tables, initialized at startup
   int FutilityMoveCounts[2][16]; // [improving][depth]

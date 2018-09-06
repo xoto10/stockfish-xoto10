@@ -67,9 +67,10 @@ namespace {
 
   // Razor and futility margins
   constexpr int RazorMargin = 600;
-  Value futility_margin(Depth d, bool improving) {
-    return Value((175 - 50 * improving) * d / ONE_PLY);
-  }
+  #define V Value
+  constexpr Value FutilityMargin[7][2] = { {V(0),V(0)},     {V(175),V(125)} , {V(350),V(250)}, {V(525),V(375)}
+                                         , {V(700),V(500)}, {V(875),V(625)} , {V(1050),V(750)} };
+  #undef V
 
   // Futility and reductions lookup tables, initialized at startup
   int FutilityMoveCounts[2][16]; // [improving][depth]
@@ -749,7 +750,7 @@ namespace {
     // Step 8. Futility pruning: child node (~30 Elo)
     if (   !rootNode
         &&  depth < 7 * ONE_PLY
-        &&  eval - futility_margin(depth, improving) >= beta
+        &&  eval - FutilityMargin[depth][improving] >= beta
         &&  eval < VALUE_KNOWN_WIN) // Do not return unproven wins
         return eval;
 

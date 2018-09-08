@@ -39,6 +39,7 @@ Bitboard PassedPawnMask[COLOR_NB][SQUARE_NB];
 Bitboard PawnAttackSpan[COLOR_NB][SQUARE_NB];
 Bitboard PseudoAttacks[PIECE_TYPE_NB][SQUARE_NB];
 Bitboard PawnAttacks[COLOR_NB][SQUARE_NB];
+Bitboard Corners;
 
 Magic RookMagics[SQUARE_NB];
 Magic BishopMagics[SQUARE_NB];
@@ -158,6 +159,8 @@ void Bitboards::init() {
               BetweenBB[s1][s2] = attacks_bb(pt, s1, SquareBB[s2]) & attacks_bb(pt, s2, SquareBB[s1]);
           }
   }
+  Corners     = SquareBB[SQ_A1] | SquareBB[SQ_B1] | SquareBB[SQ_G1] | SquareBB[SQ_H1]
+              | SquareBB[SQ_A8] | SquareBB[SQ_B8] | SquareBB[SQ_G8] | SquareBB[SQ_H8];
 }
 
 

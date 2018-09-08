@@ -156,7 +156,7 @@ namespace {
 
   // TrappedRook[cantcastle][mobility] contains penalties for a trapped rook
   constexpr Score TrappedRook[2][4]        = { { S( 92,0), S( 70,0), S( 48,0), S(26,0)}
-                                             , { S(204,0), S(160,0), S(116,0), S(72,0)} };
+                                             , { S(184,0), S(140,0), S( 96,0), S(52,0)} };
 
   // Assorted bonuses and penalties
   constexpr Score BishopPawns        = S(  3,  7);

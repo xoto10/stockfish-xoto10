@@ -154,6 +154,10 @@ namespace {
   // PassedDanger[Rank] contains a term to weight the passed score
   constexpr int PassedDanger[RANK_NB] = { 0, 0, 0, 3, 7, 11, 20 };
 
+  // TrappedRook[cancastle][mobility] contains penalties for a trapped rook
+  constexpr Score TrappedRook[2][4]        = { { S(184,0), S(140,0), S(96,0), S(52,0)}
+                                             , { S( 92,0), S( 70,0), S(48,0), S(26,0)} };
+  
   // Assorted bonuses and penalties
   constexpr Score BishopPawns        = S(  3,  7);
   constexpr Score CloseEnemies       = S(  6,  0);
@@ -172,7 +176,6 @@ namespace {
   constexpr Score ThreatByPawnPush   = S( 45, 40);
   constexpr Score ThreatByRank       = S( 16,  3);
   constexpr Score ThreatBySafePawn   = S(173,102);
-  constexpr Score TrappedRook        = S( 92,  0);
   constexpr Score WeakQueen          = S( 50, 10);
   constexpr Score WeakUnopposedPawn  = S(  5, 29);
 
@@ -385,7 +388,7 @@ namespace {
             {
                 File kf = file_of(pos.square<KING>(Us));
                 if ((kf < FILE_E) == (file_of(s) < kf))
-                    score -= (TrappedRook - make_score(mob * 22, 0)) * (1 + !pos.can_castle(Us));
+                    score -= TrappedRook[pos.can_castle(Us)][mob];
             }
         }
 

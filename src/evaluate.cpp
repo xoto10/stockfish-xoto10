@@ -155,7 +155,7 @@ namespace {
   constexpr int PassedDanger[RANK_NB] = { 0, 0, 0, 3, 7, 11, 20 };
 
   // TrappedRook[cantcastle][mobility] contains penalties for a trapped rook
-  constexpr Score TrappedRook[2][4]        = { { S( 92,0), S( 68,0), S( 48,0), S(26,0)}
+  constexpr Score TrappedRook[2][4]        = { { S( 92,0), S( 72,0), S( 48,0), S(26,0)}
                                              , { S(184,0), S(140,0), S( 96,0), S(52,0)} };
 
   // Assorted bonuses and penalties

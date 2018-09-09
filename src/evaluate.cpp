@@ -388,7 +388,7 @@ namespace {
                 if ((kf < FILE_E) == (file_of(s) < kf))
                     score -= (TrappedRook - make_score(mob * TrappedRookMob, 0))
                              * (1 + !pos.can_castle(Us))
-                             * (1 + (file_of(s) == 0) + (file_of(s) == 7));
+                             * (1 + (file_of(s) == FILE_A) + (file_of(s) == FILE_H));
             }
         }
 

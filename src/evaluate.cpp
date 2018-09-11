@@ -155,8 +155,8 @@ namespace {
   constexpr int PassedDanger[RANK_NB] = { 0, 0, 0, 3, 7, 11, 20 };
 
   // TrappedRook[cantcastle][mobility] contains penalties for a trapped rook
-  constexpr Score TrappedRook[2][4]        = { { S( 92,0), S( 72,0), S( 48,0), S(26,0)}
-                                             , { S(184,0), S(140,0), S( 96,0), S(52,0)} };
+  constexpr Score TrappedRook[2][5]        = { { S( 89,0), S( 85,0), S( 70,0), S( 29,0), S( 4,0)}
+                                             , { S(178,0), S(170,0), S(140,0), S( 58,0), S( 8,0)} };
 
   // Assorted bonuses and penalties
   constexpr Score BishopPawns        = S(  3,  7);
@@ -384,7 +384,7 @@ namespace {
                 score += RookOnFile[bool(pe->semiopen_file(Them, file_of(s)))];
 
             // Penalty when trapped by the king, even more if the king cannot castle
-            else if (mob <= 3)
+            else if (mob <= 4)
             {
                 File kf = file_of(pos.square<KING>(Us));
                 if ((kf < FILE_E) == (file_of(s) < kf))

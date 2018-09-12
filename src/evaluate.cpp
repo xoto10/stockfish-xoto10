@@ -77,7 +77,6 @@ namespace {
   constexpr Bitboard CenterFiles = FileCBB | FileDBB | FileEBB | FileFBB;
   constexpr Bitboard KingSide    = FileEBB | FileFBB | FileGBB | FileHBB;
   constexpr Bitboard Center      = (FileDBB | FileEBB) & (Rank4BB | Rank5BB);
-  constexpr Bitboard OuterFiles  = FileABB | FileHBB;
 
   constexpr Bitboard KingFlank[FILE_NB] = {
     QueenSide ^ FileDBB, QueenSide, QueenSide,
@@ -255,7 +254,7 @@ namespace {
 
     // Squares occupied by those pawns, by our king or queen, or controlled by enemy pawns
     // are excluded from the mobility area.
-    mobilityArea[Us] = ~(b | pos.pieces(Us, KING, QUEEN) | pe->pawn_attacks(Them) | OuterFiles);
+    mobilityArea[Us] = ~(b | pos.pieces(Us, KING, QUEEN) | pe->pawn_attacks(Them));
 
     // Initialise attackedBy bitboards for kings and pawns
     attackedBy[Us][KING] = pos.attacks_from<KING>(pos.square<KING>(Us));
@@ -388,6 +387,9 @@ namespace {
                 if ((kf < FILE_E) == (file_of(s) < kf))
                     score -= (TrappedRook - make_score(mob * 22, 0)) * (1 + !pos.can_castle(Us));
             }
+
+            if (Us == WHITE)
+                mobilityArea[Us] &= ~Rank1BB;
         }
 
         if (Pt == QUEEN)
@@ -843,10 +845,10 @@ namespace {
     initialize<BLACK>();
 
     // Pieces should be evaluated first (populate attack tables)
-    score +=  pieces<WHITE, KNIGHT>() - pieces<BLACK, KNIGHT>()
-            + pieces<WHITE, BISHOP>() - pieces<BLACK, BISHOP>()
+    score +=  pieces<WHITE, QUEEN >() - pieces<BLACK, QUEEN >()
             + pieces<WHITE, ROOK  >() - pieces<BLACK, ROOK  >()
-            + pieces<WHITE, QUEEN >() - pieces<BLACK, QUEEN >();
+            + pieces<WHITE, BISHOP>() - pieces<BLACK, BISHOP>()
+            + pieces<WHITE, KNIGHT>() - pieces<BLACK, KNIGHT>();
 
     score += mobility[WHITE] - mobility[BLACK];
 

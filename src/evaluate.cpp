@@ -154,6 +154,10 @@ namespace {
   // PassedDanger[Rank] contains a term to weight the passed score
   constexpr int PassedDanger[RANK_NB] = { 0, 0, 0, 3, 7, 11, 20 };
 
+  // RookOpenFiles[openfiles] contains a bonus for rooks
+  constexpr Score RookOpenFiles[FILE_NB] = { S(0,0),   S(5,5),   S(10,10), S(10,10)
+                                           , S(10,10), S(10,10), S(10,10), S(10,10)};
+
   // Assorted bonuses and penalties
   constexpr Score BishopPawns        = S(  3,  7);
   constexpr Score CloseEnemies       = S(  6,  0);
@@ -372,6 +376,9 @@ namespace {
 
         if (Pt == ROOK)
         {
+            // Bonus for number of open files
+            score += RookOpenFiles[pe->open_files()];
+
             // Bonus for aligning rook with enemy pawns on the same rank/file
             if (relative_rank(Us, s) >= RANK_5)
                 score += RookOnPawn * popcount(pos.pieces(Them, PAWN) & PseudoAttacks[ROOK][s]);

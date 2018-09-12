@@ -158,7 +158,7 @@ namespace {
             int   F[9] = { 0, 5, 10, 10, 10, 10, 10, 10, 10 };
             Score RookOpenFiles[9] = { S(F[0],F[0]),   S(F[1],F[1]),   S(F[2],F[2]), S(F[3],F[3])
                                      , S(F[4],F[4]), S(F[5],F[5]), S(F[6],F[6]), S(F[7],F[7]), S(F[8],F[8])};
-TUNE(F);
+TUNE(SetRange(-10,30),F);
 
   // Assorted bonuses and penalties
   constexpr Score BishopPawns        = S(  3,  7);

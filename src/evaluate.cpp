@@ -376,9 +376,6 @@ namespace {
 
         if (Pt == ROOK)
         {
-            // Bonus for number of open files
-            score += RookOpenFiles[pe->open_files()];
-
             // Bonus for aligning rook with enemy pawns on the same rank/file
             if (relative_rank(Us, s) >= RANK_5)
                 score += RookOnPawn * popcount(pos.pieces(Them, PAWN) & PseudoAttacks[ROOK][s]);
@@ -862,6 +859,11 @@ namespace {
             + space<  WHITE>() - space<  BLACK>();
 
     score += initiative(eg_value(score));
+
+    // calc bonus for number of open files if number of rooks unequal
+    if (pos.count<ROOK>(WHITE) != pos.count<ROOK>(BLACK))
+        score += RookOpenFiles[pe->open_files()]
+                 * (pos.count<ROOK>(WHITE) - pos.count<ROOK>(BLACK));
 
     // Interpolate between a middlegame and a (scaled by 'sf') endgame score
     ScaleFactor sf = scale_factor(eg_value(score));

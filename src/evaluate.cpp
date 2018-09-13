@@ -155,8 +155,8 @@ namespace {
   constexpr int PassedDanger[RANK_NB] = { 0, 0, 0, 3, 7, 11, 20 };
 
   // RookOpenFiles[openfiles] contains a bonus for rooks
-  constexpr Score RookOpenFiles[9] = { S(-1,-1),   S(3,3),   S( 8, 8), S(10,10)
-                                     , S(10,10), S(10,10), S(10,10), S(10,10), S( 9, 9)};
+  constexpr Score RookOpenFiles[9] = { S(-1,-1),   S(3,3),   S( 7, 7), S(10,10)
+                                     , S(10,10), S(10,10), S(10,10), S(10,10), S(10,10)};
 
   // Assorted bonuses and penalties
   constexpr Score BishopPawns        = S(  3,  7);

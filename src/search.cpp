@@ -537,7 +537,7 @@ namespace {
         && !rootNode
         && pos.has_game_cycle(ss->ply))
     {
-        alpha = VALUE_DRAW;
+        alpha = VALUE_DRAW + thisThread->ict;
         if (alpha >= beta)
             return alpha;
     }

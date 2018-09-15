@@ -164,6 +164,7 @@ namespace {
   constexpr Score KnightOnQueen      = S( 21, 11);
   constexpr Score LongDiagonalBishop = S( 46,  0);
   constexpr Score MinorBehindPawn    = S( 16,  0);
+  constexpr Score NotOpen            = S( 20, 20);
   constexpr Score Overload           = S( 13,  6);
   constexpr Score PawnlessFlank      = S( 19, 84);
   constexpr Score RookOnPawn         = S( 10, 30);
@@ -754,6 +755,7 @@ namespace {
 
   template<Tracing T>
   Score Evaluation<T>::initiative(Value eg) const {
+    Score ret;
 
     int outflanking =  distance<File>(pos.square<KING>(WHITE), pos.square<KING>(BLACK))
                      - distance<Rank>(pos.square<KING>(WHITE), pos.square<KING>(BLACK));
@@ -772,12 +774,16 @@ namespace {
     // Now apply the bonus: note that we find the attacking side by extracting
     // the sign of the endgame value, and that we carefully cap the bonus so
     // that the endgame score will never change sign after the bonus.
-    int v = ((eg > 0) - (eg < 0)) * std::max(complexity, -abs(eg));
+    ret = make_score(0, ((eg > 0) - (eg < 0)) * std::max(complexity, -abs(eg)));
+//  int weight = pos.count<ALL_PIECES>(Us) - 2 * pe->open_files();
+//  int semiopenFiles[COLOR_NB];
+    if (2*popcount(pe->open_files()) + popcount(pe->semiopenFiles[WHITE] & pe->semiopenFiles[BLACK]) < 3)
+        ret -= (eg > 0 ? NotOpen : -NotOpen);
 
     if (T)
-        Trace::add(INITIATIVE, make_score(0, v));
+        Trace::add(INITIATIVE, ret);
 
-    return make_score(0, v);
+    return ret;
   }
 
 

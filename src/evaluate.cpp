@@ -775,9 +775,7 @@ namespace {
     // the sign of the endgame value, and that we carefully cap the bonus so
     // that the endgame score will never change sign after the bonus.
     ret = make_score(0, ((eg > 0) - (eg < 0)) * std::max(complexity, -abs(eg)));
-//  int weight = pos.count<ALL_PIECES>(Us) - 2 * pe->open_files();
-//  int semiopenFiles[COLOR_NB];
-    if (2*popcount(pe->open_files()) + popcount(pe->semiopenFiles[WHITE] & pe->semiopenFiles[BLACK]) < 3)
+    if (2*popcount(pe->open_files()) + popcount(pe->semiopenFiles[WHITE] | pe->semiopenFiles[BLACK]) < 3)
         ret -= (eg > 0 ? NotOpen : -NotOpen);
 
     if (T)

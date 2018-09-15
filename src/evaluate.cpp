@@ -155,6 +155,7 @@ namespace {
   constexpr int PassedDanger[RANK_NB] = { 0, 0, 0, 3, 7, 11, 20 };
 
   // Assorted bonuses and penalties
+  constexpr Score AttackedBy2        = S(  4,  0);
   constexpr Score BishopPawns        = S(  3,  7);
   constexpr Score CloseEnemies       = S(  6,  0);
   constexpr Score CorneredBishop     = S( 50, 50);
@@ -607,6 +608,9 @@ namespace {
 
         score += SliderOnQueen * popcount(b & safe & attackedBy2[Us]);
     }
+
+    // Bonus for number of attacked squares
+    score += AttackedBy2 * popcount(attackedBy2[Us]);
 
     if (T)
         Trace::add(THREAT, Us, score);

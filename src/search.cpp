@@ -1158,7 +1158,7 @@ moves_loop: // When in check, search starts from here
 
     if (!moveCount)
         bestValue = excludedMove ? alpha
-                   :     inCheck ? mated_in(ss->ply) : VALUE_DRAW;
+                   :     inCheck ? mated_in(ss->ply) : VALUE_DRAW-1;
     else if (bestMove)
     {
         // Quiet best move: update move sorting heuristics

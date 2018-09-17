@@ -621,7 +621,7 @@ namespace {
     posKey = pos.key() ^ Key(excludedMove << 16); // Isn't a very good hash
     tte = TT.probe(posKey, ttHit);
     if (ttHit &&
-          (   thisThread->nodes.load(std::memory_order_relaxed) & 15
+          (   thisThread->nodes.load(std::memory_order_relaxed) & 7
            || depth < thisThread->rootDepth / 2
            || value_from_tt(tte->value(), ss->ply) != VALUE_DRAW
           )

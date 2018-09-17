@@ -620,7 +620,19 @@ namespace {
     excludedMove = ss->excludedMove;
     posKey = pos.key() ^ Key(excludedMove << 16); // Isn't a very good hash
     tte = TT.probe(posKey, ttHit);
-    ttValue = ttHit ? value_from_tt(tte->value(), ss->ply) : VALUE_NONE;
+    if (ttHit &&
+          (   value_from_tt(tte->value(), ss->ply) != VALUE_DRAW
+           || depth < thisThread->rootDepth / 2
+           || thisThread->nodes.load(std::memory_order_relaxed) & 2)
+       )
+    {
+        ttValue = value_from_tt(tte->value(), ss->ply);
+    }
+    else
+    {
+        ttHit = false;
+        ttValue = VALUE_NONE;
+    }
     ttMove =  rootNode ? thisThread->rootMoves[thisThread->pvIdx].pv[0]
             : ttHit    ? tte->move() : MOVE_NONE;
 
@@ -1158,7 +1170,7 @@ moves_loop: // When in check, search starts from here
 
     if (!moveCount)
         bestValue = excludedMove ? alpha
-                   :     inCheck ? mated_in(ss->ply) : VALUE_DRAW-1;
+                   :     inCheck ? mated_in(ss->ply) : VALUE_DRAW;
     else if (bestMove)
     {
         // Quiet best move: update move sorting heuristics

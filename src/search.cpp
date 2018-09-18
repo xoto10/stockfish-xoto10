@@ -622,7 +622,7 @@ namespace {
     tte = TT.probe(posKey, ttHit);
     if (ttHit &&
           (   thisThread->nodes.load(std::memory_order_relaxed) & 31
-           || depth < thisThread->rootDepth / 4
+           || 4 * depth < thisThread->rootDepth * 3
            || value_from_tt(tte->value(), ss->ply) != VALUE_DRAW
           )
        )

@@ -117,6 +117,17 @@ namespace {
       S(106,184), S(109,191), S(113,206), S(116,212) }
   };
 
+  // OutFlanking is a bonus used in initiative()
+  constexpr int OutFlanking[FILE_NB][RANK_NB] = { {  0,-12,-24,-36,-48,-60,-72,-84}
+                                                , { 12,  0, 12,-24,-36,-48,-60,-72}
+                                                , { 24, 12,  0,-12,-24,-36,-48,-60}
+                                                , { 60, 40, 12,  0,-12,-24,-36,-48}
+                                                , { 72, 52, 24, 12,  0,-12,-24,-36}
+                                                , { 84, 64, 36, 24, 12,  0,-12,-24}
+                                                , { 72, 60, 48, 36, 24, 12,  0,-12}
+                                                , { 84, 72, 60, 48, 36, 24, 12,  0}
+                                                };
+
   // Outpost[knight/bishop][supported by pawn] contains bonuses for minor
   // pieces if they occupy or can reach an outpost square, bigger if that
   // square is supported by a pawn.
@@ -755,22 +766,18 @@ namespace {
   template<Tracing T>
   Score Evaluation<T>::initiative(Value eg) const {
 
-    int outflanking =  distance<File>(pos.square<KING>(WHITE), pos.square<KING>(BLACK))
-                     - distance<Rank>(pos.square<KING>(WHITE), pos.square<KING>(BLACK));
+    int outflanking = OutFlanking[ distance<File>(pos.square<KING>(WHITE), pos.square<KING>(BLACK)) ]
+                                 [ distance<Rank>(pos.square<KING>(WHITE), pos.square<KING>(BLACK)) ];
 
     bool pawnsOnBothFlanks =   (pos.pieces(PAWN) & QueenSide)
                             && (pos.pieces(PAWN) & KingSide);
 
-    bool oppositeCastling =   (file_of(pos.square<KING>(WHITE)) < FILE_D && file_of(pos.square<KING>(BLACK)) > FILE_E)
-                           || (file_of(pos.square<KING>(BLACK)) < FILE_D && file_of(pos.square<KING>(WHITE)) > FILE_E);
-
     // Compute the initiative bonus for the attacking side
     int complexity =   8 * pe->pawn_asymmetry()
                     + 12 * pos.count<PAWN>()
-                    + 12 * outflanking
+                    +      outflanking
                     + 16 * pawnsOnBothFlanks
                     + 48 * !pos.non_pawn_material()
-                    + 20 * oppositeCastling
                     -118 ;
 
     // Now apply the bonus: note that we find the attacking side by extracting

@@ -754,7 +754,7 @@ namespace {
 
   template<Tracing T>
   Score Evaluation<T>::initiative(Score sc) const {
-    int mg, eg = eg_value(sc);
+    int eg = eg_value(sc);
 
     int outflanking =  distance<File>(pos.square<KING>(WHITE), pos.square<KING>(BLACK))
                      - distance<Rank>(pos.square<KING>(WHITE), pos.square<KING>(BLACK));
@@ -762,8 +762,8 @@ namespace {
     bool pawnsOnBothFlanks =   (pos.pieces(PAWN) & QueenSide)
                             && (pos.pieces(PAWN) & KingSide);
 
-    bool oppositeCastling =   (file_of(pos.square<KING>(WHITE)) < FILE_D && file_of(pos.square<KING>(BLACK)) > FILE_E)
-                           || (file_of(pos.square<KING>(BLACK)) < FILE_D && file_of(pos.square<KING>(WHITE)) > FILE_E);
+    bool oppositeCastling =   (file_of(pos.square<KING>(BLACK)) < FILE_D && file_of(pos.square<KING>(WHITE)) > FILE_E)
+                           || (file_of(pos.square<KING>(WHITE)) < FILE_D && file_of(pos.square<KING>(BLACK)) > FILE_E);
 
     // Compute the initiative bonus for the attacking side
     int complexity =   8 * pe->pawn_asymmetry()
@@ -776,13 +776,13 @@ namespace {
     // Now apply the bonus: note that we find the attacking side by extracting
     // the sign of the endgame value, and that we carefully cap the bonus so
     // that the endgame score will never change sign after the bonus.
-    mg = 24 * oppositeCastling;
-    eg = std::max(complexity, -abs(eg)) * ((eg > 0) - (eg < 0));
+    int e = ((eg > 0) - (eg < 0)) * std::max(complexity, -abs(eg));
+    int m = 16 * oppositeCastling;
 
     if (T)
-        Trace::add(INITIATIVE, make_score(mg, eg));
+        Trace::add(INITIATIVE, make_score(m, e));
 
-    return make_score(mg, eg);
+    return make_score(m, e);
   }
 
 

@@ -761,12 +761,16 @@ namespace {
     bool pawnsOnBothFlanks =   (pos.pieces(PAWN) & QueenSide)
                             && (pos.pieces(PAWN) & KingSide);
 
+    bool oppositeCastling =   (file_of(pos.square<KING>(WHITE)) < FILE_D && file_of(pos.square<KING>(BLACK)) > FILE_E)
+                           || (file_of(pos.square<KING>(BLACK)) < FILE_D && file_of(pos.square<KING>(WHITE)) > FILE_E);
+
     // Compute the initiative bonus for the attacking side
     int complexity =   8 * pe->pawn_asymmetry()
                     + 12 * pos.count<PAWN>()
                     + 12 * outflanking
                     + 16 * pawnsOnBothFlanks
                     + 48 * !pos.non_pawn_material()
+                    + 24 * oppositeCastling
                     -118 ;
 
     // Now apply the bonus: note that we find the attacking side by extracting

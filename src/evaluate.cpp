@@ -764,7 +764,7 @@ namespace {
                             && (pos.pieces(PAWN) & KingSide);
 
     // Increase penalty if not many semiopen files
-    int penalty = (popcount(pe->semiopenFiles[WHITE] | pe->semiopenFiles[BLACK]) < 4)
+    int penalty = (popcount(pe->semiopenFiles[WHITE] | pe->semiopenFiles[BLACK]) < 5)
                    ? 138 : 118;
 
     // Compute the initiative bonus for the attacking side

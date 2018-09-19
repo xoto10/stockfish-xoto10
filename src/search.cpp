@@ -535,7 +535,7 @@ namespace {
         && !rootNode
         && pos.has_game_cycle(ss->ply))
     {
-        alpha = VALUE_DRAW - (depth+4) / 8;
+        alpha = depth < 4 ? VALUE_DRAW : depth < 18 ? VALUE_DRAW-1 : VALUE_DRAW-2;
         if (alpha >= beta)
             return alpha;
     }
@@ -585,7 +585,9 @@ namespace {
             || pos.is_draw(ss->ply)
             || ss->ply >= MAX_PLY)
             return (ss->ply >= MAX_PLY && !inCheck) ? evaluate(pos) - 10 * ((ss-1)->statScore > 0)
-                                                    : VALUE_DRAW - (depth+4) / 8;
+                   : depth < 4                      ? VALUE_DRAW
+                   : depth < 18                     ? VALUE_DRAW - 1
+                   :                                  VALUE_DRAW - 2;
 
         // Step 3. Mate distance pruning. Even if we mate at the next move our score
         // would be at best mate_in(ss->ply+1), but if alpha is already bigger because

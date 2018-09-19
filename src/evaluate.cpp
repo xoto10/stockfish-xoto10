@@ -765,7 +765,7 @@ namespace {
 
     // Increase penalty if not many semiopen files
     int penalty = (popcount(pe->semiopenFiles[WHITE] | pe->semiopenFiles[BLACK]) < 5)
-                   ? 138 : 118;
+                   ? 130 : 118;
 
     // Compute the initiative bonus for the attacking side
     int complexity =   8 * pe->pawn_asymmetry()

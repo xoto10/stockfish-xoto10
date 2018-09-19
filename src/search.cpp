@@ -527,7 +527,6 @@ namespace {
 
     constexpr bool PvNode = NT == PV;
     const bool rootNode = PvNode && ss->ply == 0;
-    Thread* thisThread = pos.this_thread();
 
     // Check if we have an upcoming move which draws by repetition, or
     // if the opponent had an alternative move earlier to this position.
@@ -536,7 +535,7 @@ namespace {
         && !rootNode
         && pos.has_game_cycle(ss->ply))
     {
-        alpha = VALUE_DRAW - std::max(0, depth-4);
+        alpha = VALUE_DRAW - depth/4;
         if (alpha >= beta)
             return alpha;
     }
@@ -564,6 +563,7 @@ namespace {
     int moveCount, captureCount, quietCount;
 
     // Step 1. Initialize node
+    Thread* thisThread = pos.this_thread();
     inCheck = pos.checkers();
     Color us = pos.side_to_move();
     moveCount = captureCount = quietCount = ss->moveCount = 0;
@@ -584,9 +584,9 @@ namespace {
         if (   Threads.stop.load(std::memory_order_relaxed)
             || pos.is_draw(ss->ply)
             || ss->ply >= MAX_PLY)
-            return (ss->ply >= MAX_PLY && !inCheck)
-                   ? evaluate(pos) - 10 * ((ss-1)->statScore > 0)
-                   : VALUE_DRAW - std::max(0, depth-4);
+            return (ss->ply >= MAX_PLY && !inCheck) ? evaluate(pos) - 10 * ((ss-1)->statScore > 0)
+                                                    : VALUE_DRAW - depth/4;
+
         // Step 3. Mate distance pruning. Even if we mate at the next move our score
         // would be at best mate_in(ss->ply+1), but if alpha is already bigger because
         // a shorter mate was found upward in the tree then there is no need to search

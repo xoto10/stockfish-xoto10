@@ -763,7 +763,7 @@ namespace {
 
     // Compute the initiative bonus for the attacking side
     int complexity =   8 * pe->pawn_asymmetry()
-                    + 12 * std::min(12, pos.count<PAWN>())
+                    + 12 * pos.count<PAWN>()
                     + 12 * outflanking
                     + 16 * pawnsOnBothFlanks
                     + 48 * !pos.non_pawn_material()
@@ -862,6 +862,16 @@ namespace {
        + eg_value(score) * int(PHASE_MIDGAME - me->game_phase()) * sf / SCALE_FACTOR_NORMAL;
 
     v /= int(PHASE_MIDGAME);
+
+    // Penalty if winning but not enough open files
+    Value OpenFiles = Value(20);
+    if (popcount(pe->semiopenFiles[WHITE] | pe->semiopenFiles[BLACK]) < 5)
+    {
+        if (v > 160)
+            v -= std::min(v, OpenFiles);
+        else if (v < -160)
+            v += std::min(-v, OpenFiles);
+    }
 
     // In case of tracing add all remaining individual evaluation terms
     if (T)

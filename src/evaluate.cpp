@@ -777,7 +777,7 @@ namespace {
     Score ret;
 
     if (oppositeCastling)
-        mg = m > 0 ? 24 : m < 0 ? -24 : 0;
+        mg = m > 160 ? 16 : m < -160 ? -16 : 0;
     // Now apply the bonus: note that we find the attacking side by extracting
     // the sign of the endgame value, and that we carefully cap the bonus so
     // that the endgame score will never change sign after the bonus.

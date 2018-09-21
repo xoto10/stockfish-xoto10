@@ -863,7 +863,7 @@ namespace {
 
     v /= int(PHASE_MIDGAME);
 //  if (v >= VALUE_DRAW)
-//      v = v + 1;
+    v = v + 1;
 
     // In case of tracing add all remaining individual evaluation terms
     if (T)

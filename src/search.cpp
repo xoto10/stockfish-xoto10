@@ -623,7 +623,7 @@ namespace {
     if (ttHit &&
           (   thisThread->nodes.load(std::memory_order_relaxed) & 31
            || depth < 4
-           || value_from_tt(tte->value(), ss->ply) != VALUE_DRAW
+           || value_from_tt(tte->value(), ss->ply) != VALUE_DRAW - 1
           )
        )
     {

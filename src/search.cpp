@@ -535,7 +535,7 @@ namespace {
         && !rootNode
         && pos.has_game_cycle(ss->ply))
     {
-        alpha = VALUE_DRAW;
+        alpha = depth < 4 ? VALUE_DRAW : VALUE_DRAW - 1;
         if (alpha >= beta)
             return alpha;
     }
@@ -585,7 +585,7 @@ namespace {
             || pos.is_draw(ss->ply)
             || ss->ply >= MAX_PLY)
             return (ss->ply >= MAX_PLY && !inCheck) ? evaluate(pos) - 10 * ((ss-1)->statScore > 0)
-                                                    : VALUE_DRAW;
+                                                    : depth < 4 ? VALUE_DRAW : VALUE_DRAW - 1;
 
         // Step 3. Mate distance pruning. Even if we mate at the next move our score
         // would be at best mate_in(ss->ply+1), but if alpha is already bigger because
@@ -621,7 +621,7 @@ namespace {
     posKey = pos.key() ^ Key(excludedMove << 16); // Isn't a very good hash
     tte = TT.probe(posKey, ttHit);
     if (ttHit &&
-          (   thisThread->nodes.load(std::memory_order_relaxed) & 61
+          (   thisThread->nodes.load(std::memory_order_relaxed) & 31
            || depth < 4
            || value_from_tt(tte->value(), ss->ply) != VALUE_DRAW
           )

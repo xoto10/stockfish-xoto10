@@ -620,7 +620,20 @@ namespace {
     excludedMove = ss->excludedMove;
     posKey = pos.key() ^ Key(excludedMove << 16); // Isn't a very good hash
     tte = TT.probe(posKey, ttHit);
-    ttValue = ttHit ? value_from_tt(tte->value(), ss->ply) : VALUE_NONE;
+    if (ttHit &&
+          (   thisThread->nodes.load(std::memory_order_relaxed) & 31
+           || depth < 4
+           || value_from_tt(tte->value(), ss->ply) != VALUE_DRAW
+          )
+       )
+    {
+        ttValue = value_from_tt(tte->value(), ss->ply);
+    }
+    else
+    {
+        ttHit = false;
+        ttValue = VALUE_NONE;
+    }
     ttMove =  rootNode ? thisThread->rootMoves[thisThread->pvIdx].pv[0]
             : ttHit    ? tte->move() : MOVE_NONE;
 

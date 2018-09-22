@@ -62,6 +62,9 @@ namespace {
   constexpr Value BlockedStorm[RANK_NB] =
     { V(0), V(0), V(66), V(6), V(5), V(1), V(15) };
 
+  constexpr Bitboard QueenSide   = FileABB | FileBBB | FileCBB | FileDBB;
+  constexpr Bitboard KingSide    = FileEBB | FileFBB | FileGBB | FileHBB;
+
   #undef S
   #undef V
 
@@ -186,12 +189,18 @@ Entry* probe(const Position& pos) {
   if (e->key == key)
       return e;
 
+  bool pawnsOnBothFlanks =   (pos.pieces(PAWN) & QueenSide)
+                          && (pos.pieces(PAWN) & KingSide);
+
   e->key = key;
   e->scores[WHITE] = evaluate<WHITE>(pos, e);
   e->scores[BLACK] = evaluate<BLACK>(pos, e);
   e->openFiles = popcount(e->semiopenFiles[WHITE] & e->semiopenFiles[BLACK]);
   e->asymmetry = popcount(  (e->passedPawns[WHITE]   | e->passedPawns[BLACK])
                           | (e->semiopenFiles[WHITE] ^ e->semiopenFiles[BLACK]));
+  e->complexity =    8 * e->asymmetry
+                  + 12 * pos.count<PAWN>()
+                  + 16 * pawnsOnBothFlanks;
 
   return e;
 }

@@ -203,6 +203,8 @@ namespace {
     Pawns::Entry* pe;
     Bitboard mobilityArea[COLOR_NB];
     Score mobility[COLOR_NB] = { SCORE_ZERO, SCORE_ZERO };
+    int pawnAsymmetry;
+    int openFiles;
 
     // attackedBy[color][piece type] is a bitboard representing all squares
     // attacked by a given color and piece type. Special "piece types" which
@@ -280,6 +282,10 @@ namespace {
     }
     else
         kingRing[Us] = kingAttackersCount[Them] = 0;
+
+    openFiles = popcount(pe->semiopenFiles[WHITE] & pe->semiopenFiles[BLACK]);
+    pawnAsymmetry = popcount(  (pe->passedPawns[WHITE]   | pe->passedPawns[BLACK])
+                             | (pe->semiopenFiles[WHITE] ^ pe->semiopenFiles[BLACK]));
   }
 
 
@@ -737,7 +743,7 @@ namespace {
     behind |= (Us == WHITE ? behind >> 16 : behind << 16);
 
     int bonus = popcount(safe) + popcount(behind & safe);
-    int weight = pos.count<ALL_PIECES>(Us) - 2 * pe->open_files();
+    int weight = pos.count<ALL_PIECES>(Us) - 2 * openFiles;
 
     Score score = make_score(bonus * weight * weight / 16, 0);
 
@@ -762,7 +768,7 @@ namespace {
                             && (pos.pieces(PAWN) & KingSide);
 
     // Compute the initiative bonus for the attacking side
-    int complexity =   8 * pe->pawn_asymmetry()
+    int complexity =   8 * pawnAsymmetry
                     + 12 * pos.count<PAWN>()
                     + 12 * outflanking
                     + 16 * pawnsOnBothFlanks
@@ -795,7 +801,7 @@ namespace {
         if (   pos.opposite_bishops()
             && pos.non_pawn_material(WHITE) == BishopValueMg
             && pos.non_pawn_material(BLACK) == BishopValueMg)
-            sf = 8 + 4 * pe->pawn_asymmetry();
+            sf = 8 + 4 * pawnAsymmetry;
         else
             sf = std::min(40 + (pos.opposite_bishops() ? 2 : 7) * pos.count<PAWN>(strongSide), sf);
 

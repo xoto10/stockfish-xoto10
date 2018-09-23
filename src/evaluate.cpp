@@ -863,7 +863,7 @@ namespace {
 
     v /= int(PHASE_MIDGAME);
 
-    v += pe->open_files() * v / 512;
+    v += pe->open_files() * v / 256;
 
     // In case of tracing add all remaining individual evaluation terms
     if (T)

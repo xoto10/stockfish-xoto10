@@ -776,7 +776,7 @@ namespace {
     int v = ((eg > 0) - (eg < 0)) * std::max(complexity, -abs(eg));
 
     // pieceAsymmetry is applied to the midgame part of the score
-    int pieceAsymmetry = (pos.non_pawn_material(BLACK) != pos.non_pawn_material(WHITE)) ? 24 : 0;
+    int pieceAsymmetry = (pos.non_pawn_material(BLACK) != pos.non_pawn_material(WHITE)) ? 16 : 0;
 
     Score ret = make_score(pieceAsymmetry, v);
 

@@ -196,7 +196,7 @@ namespace {
     template<Color Us> Score passed() const;
     template<Color Us> Score space() const;
     ScaleFactor scale_factor(Value eg) const;
-    Score initiative(Value eg) const;
+    Score initiative(Score sc) const;
 
     const Position& pos;
     Material::Entry* me;
@@ -753,7 +753,8 @@ namespace {
   // known attacking/defending status of the players.
 
   template<Tracing T>
-  Score Evaluation<T>::initiative(Value eg) const {
+  Score Evaluation<T>::initiative(Score sc) const {
+    int eg = eg_value(sc);
 
     int outflanking =  distance<File>(pos.square<KING>(WHITE), pos.square<KING>(BLACK))
                      - distance<Rank>(pos.square<KING>(WHITE), pos.square<KING>(BLACK));
@@ -774,10 +775,15 @@ namespace {
     // that the endgame score will never change sign after the bonus.
     int v = ((eg > 0) - (eg < 0)) * std::max(complexity, -abs(eg));
 
-    if (T)
-        Trace::add(INITIATIVE, make_score(0, v));
+    // pieceAsymmetry is applied to the midgame part of the score
+    int pieceAsymmetry = (pos.non_pawn_material(BLACK) != pos.non_pawn_material(WHITE)) ? 24 : 0;
 
-    return make_score(0, v);
+    Score ret = make_score(pieceAsymmetry, v);
+
+    if (T)
+        Trace::add(INITIATIVE, ret);
+
+    return ret;
   }
 
 
@@ -854,7 +860,7 @@ namespace {
             + passed< WHITE>() - passed< BLACK>()
             + space<  WHITE>() - space<  BLACK>();
 
-    score += initiative(eg_value(score));
+    score += initiative(score);
 
     // Interpolate between a middlegame and a (scaled by 'sf') endgame score
     ScaleFactor sf = scale_factor(eg_value(score));

@@ -74,8 +74,8 @@ namespace {
   // Futility and reductions lookup tables, initialized at startup
   int Reductions[2][2][64][64];  // [pv][improving][depth][moveNumber]
   int FutilityMoveCounts[2][16] = { // [improving][depth]
-                                    { 3, 4, 5, 8, 12, 16, 21, 27, 33, 40, 48, 57, 66, 76, 86, 97 },
-                                    { 6, 7, 10, 15, 22, 31, 42, 55, 70, 87, 107, 129, 152, 177, 204, 233 } };
+                                    { 2, 3, 4, 7, 11, 15, 20, 26, 33, 41, 51, 61, 70, 79, 88, 97 },
+                                    { 5, 6, 9, 14, 21, 30, 42, 55, 70, 89, 113, 137, 160, 183, 208, 233 } };
 
   template <bool PvNode> Depth reduction(bool i, Depth d, int mn) {
     return Reductions[PvNode][i][std::min(d / ONE_PLY, 63)][std::min(mn, 63)] * ONE_PLY;

@@ -761,8 +761,8 @@ namespace {
                     + 12 * outflanking
                     + 16 * pawnsOnBothFlanks
                     + 48 * !pos.non_pawn_material()
-                    + 10
-                    - 20 * pe->open_files()
+                    +  2
+                    - 16 * pe->open_files()
                     ;
 
     // Now apply the bonus: note that we find the attacking side by extracting

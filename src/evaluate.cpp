@@ -761,7 +761,7 @@ namespace {
                     + 12 * outflanking
                     + 16 * pawnsOnBothFlanks
                     + 48 * !pos.non_pawn_material()
-                    +  2
+                    + 18
                     - 16 * pe->open_files()
                     ;
 

@@ -376,15 +376,15 @@ namespace {
             if (relative_rank(Us, s) >= RANK_5)
                 score += RookOnPawn * popcount(pos.pieces(Them, PAWN) & PseudoAttacks[ROOK][s]);
 
+            // Bonus if connected to Queen or other Rook
+            if (b & pos.pieces(Us, QUEEN, ROOK))
+                score += MajorConnected;
+
             // Bonus for rook on an open or semi-open file
             if (pe->semiopen_file(Us, file_of(s)))
                 score += RookOnFile[bool(pe->semiopen_file(Them, file_of(s)))];
 
-            // else Bonus if connected to Queen or other Rook
-            else if (b & pos.pieces(Us, QUEEN, ROOK))
-                score += MajorConnected;
-
-            // else Penalty when trapped by the king, even more if the king cannot castle
+            // Penalty when trapped by the king, even more if the king cannot castle
             else if (mob <= 3)
             {
                 File kf = file_of(pos.square<KING>(Us));

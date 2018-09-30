@@ -31,6 +31,9 @@ namespace {
   #define V Value
   #define S(mg, eg) make_score(mg, eg)
 
+  constexpr Bitboard QueenSide   = FileABB | FileBBB | FileCBB | FileDBB;
+  constexpr Bitboard KingSide    = FileEBB | FileFBB | FileGBB | FileHBB;
+
   // Pawn penalties
   constexpr Score Backward = S( 9, 24);
   constexpr Score Doubled  = S(11, 56);
@@ -186,12 +189,16 @@ Entry* probe(const Position& pos) {
   if (e->key == key)
       return e;
 
+  bool pawnsOnBothFlanks =   (pos.pieces(PAWN) & QueenSide)
+                          && (pos.pieces(PAWN) & KingSide);
+
   e->key = key;
   e->scores[WHITE] = evaluate<WHITE>(pos, e);
   e->scores[BLACK] = evaluate<BLACK>(pos, e);
   e->openFiles = popcount(e->semiopenFiles[WHITE] & e->semiopenFiles[BLACK]);
   e->asymmetry = popcount(  (e->passedPawns[WHITE]   | e->passedPawns[BLACK])
                           | (e->semiopenFiles[WHITE] ^ e->semiopenFiles[BLACK]));
+  e->complexity = pos.count<PAWN>() + 4 * (pawnsOnBothFlanks - e->openFiles);
 
   return e;
 }

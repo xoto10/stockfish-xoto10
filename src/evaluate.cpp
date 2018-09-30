@@ -249,12 +249,11 @@ namespace {
     constexpr Bitboard LowRanks = (Us == WHITE ? Rank2BB | Rank3BB: Rank7BB | Rank6BB);
     constexpr Bitboard FirstRank = (Us == WHITE ? Rank1BB : Rank8BB);
 
-    // Find our pawns that are blocked or on the first two ranks
-    // and also minor pieces on 1st rank
+    // Find our pawns that are blocked or on the first two ranks and whole 1st rank
     Bitboard b =  (pos.pieces(Us, PAWN) & (shift<Down>(pos.pieces()) | LowRanks) )
-                | (pos.pieces(Us, KNIGHT, BISHOP) & FirstRank);
+                | FirstRank;
 
-    // Squares occupied by those pawns or minors, by our king or queen, or controlled by enemy pawns
+    // Squares on Rank1, or occupied by those pawns, by our king or queen, or controlled by enemy pawns
     // are excluded from the mobility area.
     mobilityArea[Us] = ~(b | pos.pieces(Us, KING, QUEEN) | pe->pawn_attacks(Them));
 

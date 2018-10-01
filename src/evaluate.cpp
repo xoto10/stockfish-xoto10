@@ -161,6 +161,7 @@ namespace {
   constexpr Score Hanging            = S( 57, 32);
   constexpr Score KingProtector      = S(  6,  6);
   constexpr Score KnightOnQueen      = S( 21, 11);
+  constexpr Score LivePawns          = S(  0,  8);
   constexpr Score LongDiagonalBishop = S( 46,  0);
   constexpr Score MinorBehindPawn    = S( 16,  0);
   constexpr Score Overload           = S( 13,  6);
@@ -196,6 +197,7 @@ namespace {
     template<Color Us> Score space() const;
     ScaleFactor scale_factor(Value eg) const;
     Score initiative(Value eg) const;
+    template<Color Us> Score winning() const;
 
     const Position& pos;
     Material::Entry* me;
@@ -775,6 +777,22 @@ namespace {
   }
 
 
+  // Evaluation::winning() computes a score modification for the winning side
+
+  template<Tracing T> template<Color Us>
+  Score Evaluation<T>::winning() const {
+
+    constexpr Direction Up = (Us == WHITE ? NORTH : SOUTH);
+
+    // Count pawns that are not blocked or backward for winning side
+    int livePawns = pos.count<PAWN>(Us) -
+                    popcount( (shift<Up>(pos.pieces(Us, PAWN)) & pos.pieces())
+                             | shift<Up>(pe->backwardPawns[Us]) );
+
+    return LivePawns * livePawns;
+  }
+
+
   // Evaluation::scale_factor() computes the scale factor for the winning side
 
   template<Tracing T>
@@ -849,6 +867,9 @@ namespace {
             + space<  WHITE>() - space<  BLACK>();
 
     score += initiative(eg_value(score));
+
+    // Extra adjustment for winning side
+    score += (eg_value(score) >= 0) ? winning<WHITE>() : -winning<BLACK>();
 
     // Interpolate between a middlegame and a (scaled by 'sf') endgame score
     ScaleFactor sf = scale_factor(eg_value(score));

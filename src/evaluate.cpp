@@ -166,6 +166,7 @@ namespace {
   constexpr Score Overload           = S( 13,  6);
   constexpr Score PawnlessFlank      = S( 19, 84);
   constexpr Score RookOnPawn         = S( 10, 30);
+  constexpr Score RooksWeak          = S(  0, 16);
   constexpr Score SliderOnQueen      = S( 42, 21);
   constexpr Score ThreatByKing       = S( 23, 76);
   constexpr Score ThreatByPawnPush   = S( 45, 40);
@@ -371,6 +372,10 @@ namespace {
 
         if (Pt == ROOK)
         {
+            // Penalty if few open files
+            if (pe->open_files() == 0) score -= RooksWeak * 2;
+            else if (pe->open_files() == 1) score -= RooksWeak;
+
             // Bonus for aligning rook with enemy pawns on the same rank/file
             if (relative_rank(Us, s) >= RANK_5)
                 score += RookOnPawn * popcount(pos.pieces(Them, PAWN) & PseudoAttacks[ROOK][s]);

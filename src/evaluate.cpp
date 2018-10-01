@@ -213,6 +213,8 @@ namespace {
     // pawn or squares attacked by 2 pawns are not explicitly added.
     Bitboard attackedBy2[COLOR_NB];
 
+    Bitboard blockedPawns[COLOR_NB];
+
     // kingRing[color] are the squares adjacent to the king, plus (only for a
     // king on its first rank) the squares two ranks in front. For instance,
     // if black's king is on g8, kingRing[BLACK] is f8, h8, f7, g7, h7, f6, g6
@@ -249,11 +251,11 @@ namespace {
     constexpr Bitboard LowRanks = (Us == WHITE ? Rank2BB | Rank3BB: Rank7BB | Rank6BB);
 
     // Find our pawns that are blocked or on the first two ranks
-    Bitboard b = pos.pieces(Us, PAWN) & (shift<Down>(pos.pieces()) | LowRanks);
+    blockedPawns[Us] = pos.pieces(Us, PAWN) & (shift<Down>(pos.pieces()) | LowRanks);
 
     // Squares occupied by those pawns, by our king or queen, or controlled by enemy pawns
     // are excluded from the mobility area.
-    mobilityArea[Us] = ~(b | pos.pieces(Us, KING, QUEEN) | pe->pawn_attacks(Them));
+    mobilityArea[Us] = ~(blockedPawns[Us] | pos.pieces(Us, KING, QUEEN) | pe->pawn_attacks(Them));
 
     // Initialise attackedBy bitboards for kings and pawns
     attackedBy[Us][KING] = pos.attacks_from<KING>(pos.square<KING>(Us));
@@ -766,7 +768,21 @@ namespace {
     // Now apply the bonus: note that we find the attacking side by extracting
     // the sign of the endgame value, and that we carefully cap the bonus so
     // that the endgame score will never change sign after the bonus.
-    int v = ((eg > 0) - (eg < 0)) * std::max(complexity, -abs(eg));
+    int v;
+    if (eg >= 0) // WHITE is winning
+    {
+        if (pos.pieces(WHITE, PAWN) - blockedPawns[WHITE] < 1)
+            v = 0;
+        else
+            v = (complexity >= 0) ? complexity : std::max(complexity, -int(eg));
+    }
+    else         // BLACK is winning
+    {
+        if (pos.pieces(BLACK, PAWN) - blockedPawns[BLACK] < 1)
+            v = 0;
+        else
+            v = (complexity <= 0) ? complexity : std::min(complexity, -int(eg));
+    }
 
     if (T)
         Trace::add(INITIATIVE, make_score(0, v));

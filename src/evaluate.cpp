@@ -771,14 +771,14 @@ namespace {
     int v;
     if (eg >= 0) // WHITE is winning
     {
-        if (pos.pieces(WHITE, PAWN) - blockedPawns[WHITE] < 1)
+        if (pos.pieces(WHITE, PAWN) - blockedPawns[WHITE] < 2)
             v = 0;
         else
             v = (complexity >= 0) ? complexity : std::max(complexity, -int(eg));
     }
     else         // BLACK is winning
     {
-        if (pos.pieces(BLACK, PAWN) - blockedPawns[BLACK] < 1)
+        if (pos.pieces(BLACK, PAWN) - blockedPawns[BLACK] < 2)
             v = 0;
         else
             v = (complexity <= 0) ? complexity : std::min(complexity, -int(eg));

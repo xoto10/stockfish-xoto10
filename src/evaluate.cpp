@@ -175,6 +175,8 @@ namespace {
   constexpr Score WeakQueen          = S( 50, 10);
   constexpr Score WeakUnopposedPawn  = S(  5, 29);
 
+            Score RooksWeak[3] = { S(10,96), S(10,48), S(10,16) };
+TUNE(RooksWeak);
 #undef S
 
   // Evaluation class computes and stores attacks tables and other working data
@@ -371,6 +373,11 @@ namespace {
 
         if (Pt == ROOK)
         {
+            // Penalty if few open files
+            if      (pe->open_files() == 2) score -= RooksWeak[2];
+            else if (pe->open_files() == 1) score -= RooksWeak[1];
+            else if (pe->open_files() == 0) score -= RooksWeak[0];
+
             // Bonus for aligning rook with enemy pawns on the same rank/file
             if (relative_rank(Us, s) >= RANK_5)
                 score += RookOnPawn * popcount(pos.pieces(Them, PAWN) & PseudoAttacks[ROOK][s]);

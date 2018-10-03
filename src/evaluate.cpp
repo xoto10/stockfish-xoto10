@@ -154,6 +154,9 @@ namespace {
   // PassedDanger[Rank] contains a term to weight the passed score
   constexpr int PassedDanger[RANK_NB] = { 0, 0, 0, 3, 7, 11, 20 };
 
+  // RooksWeak[openFiles] contains a penalty for rooks when few open files
+  constexpr Score RooksWeak[3] = { S(0,94), S(1,46), S(1,4) };
+
   // Assorted bonuses and penalties
   constexpr Score BishopPawns        = S(  3,  7);
   constexpr Score CloseEnemies       = S(  6,  0);
@@ -166,7 +169,6 @@ namespace {
   constexpr Score Overload           = S( 13,  6);
   constexpr Score PawnlessFlank      = S( 19, 84);
   constexpr Score RookOnPawn         = S( 10, 30);
-  constexpr Score RooksWeak          = S( 32, 40);
   constexpr Score SliderOnQueen      = S( 42, 21);
   constexpr Score ThreatByKing       = S( 23, 76);
   constexpr Score ThreatByPawnPush   = S( 45, 40);
@@ -373,8 +375,8 @@ namespace {
         if (Pt == ROOK)
         {
             // Penalty if few open files
-            if (pe->open_files() == 0) score -= RooksWeak * 2;
-            else if (pe->open_files() == 1) score -= RooksWeak;
+            if (pe->open_files() < 3)
+                score -= RooksWeak[ pe->open_files() ];
 
             // Bonus for aligning rook with enemy pawns on the same rank/file
             if (relative_rank(Us, s) >= RANK_5)

@@ -33,6 +33,7 @@ TranspositionTable TT; // Our global transposition table
 void TTEntry::save(Key k, Value v, Bound b, Depth d, Move m, Value ev) {
 
   assert(d / ONE_PLY * ONE_PLY == d);
+  if (v == VALUE_DRAW) return;
 
   // Preserve any existing move for the same position
   if (m || (k >> 48) != key16)

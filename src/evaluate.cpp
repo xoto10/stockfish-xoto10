@@ -163,6 +163,7 @@ namespace {
   constexpr Score KnightOnQueen      = S( 21, 11);
   constexpr Score LongDiagonalBishop = S( 46,  0);
   constexpr Score MinorBehindPawn    = S( 16,  0);
+  constexpr Score NoCastle           = S( 20,  0);
   constexpr Score Overload           = S( 13,  6);
   constexpr Score PawnlessFlank      = S( 19, 84);
   constexpr Score RookOnPawn         = S( 10, 30);
@@ -202,6 +203,9 @@ namespace {
     Pawns::Entry* pe;
     Bitboard mobilityArea[COLOR_NB];
     Score mobility[COLOR_NB] = { SCORE_ZERO, SCORE_ZERO };
+
+    // NoCastleBB lists some squares for King position
+    Bitboard NoCastleBB = SquareBB[SQ_B1] + SQ_C1 + SQ_D1 + SQ_F1 + SQ_G1;
 
     // attackedBy[color][piece type] is a bitboard representing all squares
     // attacked by a given color and piece type. Special "piece types" which
@@ -497,6 +501,15 @@ namespace {
 
     // King tropism bonus, to anticipate slow motion attacks on our king
     score -= CloseEnemies * tropism;
+
+    // Penalty if stopped from castling
+    if (pos.square<KING>(Us) & NoCastleBB)
+    {
+        Bitboard rbb = (file_of(pos.square<KING>(Us)) > FILE_D) ? LineBB[pos.square<KING>(Us)][SQ_H1]
+                                                                : LineBB[pos.square<KING>(Us)][SQ_A1];
+        if (rbb & pos.pieces(Us, ROOK))
+            score -= NoCastle;
+    }
 
     if (T)
         Trace::add(KING, Us, score);

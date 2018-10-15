@@ -84,6 +84,10 @@ namespace {
     KingSide, KingSide, KingSide ^ FileEBB
   };
 
+  // NoCastleBB lists some squares for King position
+  constexpr Bitboard NoCastleW = Bitboard(0) + SQ_B1 + SQ_C1 + SQ_D1 + SQ_E1 + SQ_F1 + SQ_G1;
+  constexpr Bitboard NoCastleB = Bitboard(0) + SQ_B8 + SQ_C8 + SQ_D8 + SQ_E8 + SQ_F8 + SQ_G8;
+
   // Threshold for lazy and space evaluation
   constexpr Value LazyThreshold  = Value(1500);
   constexpr Value SpaceThreshold = Value(12222);
@@ -163,7 +167,8 @@ namespace {
   constexpr Score KnightOnQueen      = S( 21, 11);
   constexpr Score LongDiagonalBishop = S( 46,  0);
   constexpr Score MinorBehindPawn    = S( 16,  0);
-  constexpr Score NoCastle           = S( 40,  0);
+  constexpr Score NoCastle           = S( 28,  0);
+  constexpr Score NotYetCastled      = S( 14,  0);
   constexpr Score Overload           = S( 13,  6);
   constexpr Score PawnlessFlank      = S( 19, 84);
   constexpr Score RookOnPawn         = S( 10, 30);
@@ -203,10 +208,6 @@ namespace {
     Pawns::Entry* pe;
     Bitboard mobilityArea[COLOR_NB];
     Score mobility[COLOR_NB] = { SCORE_ZERO, SCORE_ZERO };
-
-    // NoCastleBB lists some squares for King position
-    Bitboard NoCastleW = SquareBB[SQ_B1] + SQ_C1 + SQ_D1 + SQ_F1 + SQ_G1;
-    Bitboard NoCastleB = SquareBB[SQ_B8] + SQ_C8 + SQ_D8 + SQ_F8 + SQ_G8;
 
     // attackedBy[color][piece type] is a bitboard representing all squares
     // attacked by a given color and piece type. Special "piece types" which
@@ -511,7 +512,8 @@ namespace {
         Bitboard rbb = (file_of(pos.square<KING>(Us)) > FILE_D) ? BetweenBB[pos.square<KING>(Us)][hn]
                                                                 : BetweenBB[pos.square<KING>(Us)][an];
         if (rbb & pos.pieces(Us, ROOK))
-            score -= NoCastle;
+            score -= Us==WHITE ? (pos.square<KING>(Us) == SQ_E1 ? NotYetCastled : NoCastle )
+                               : (pos.square<KING>(Us) == SQ_E8 ? NotYetCastled : NoCastle );
     }
 
     if (T)

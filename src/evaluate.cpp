@@ -505,8 +505,8 @@ namespace {
     // Penalty if stopped from castling
     if (pos.square<KING>(Us) & NoCastleBB)
     {
-        Bitboard rbb = (file_of(pos.square<KING>(Us)) > FILE_D) ? LineBB[pos.square<KING>(Us)][SQ_H1]
-                                                                : LineBB[pos.square<KING>(Us)][SQ_A1];
+        Bitboard rbb = (file_of(pos.square<KING>(Us)) > FILE_D) ? LineBB[SQ_G1][SQ_H1]
+                                                                : LineBB[SQ_A1][SQ_C1];
         if (rbb & pos.pieces(Us, ROOK))
             score -= NoCastle;
     }

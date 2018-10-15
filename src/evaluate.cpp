@@ -205,7 +205,8 @@ namespace {
     Score mobility[COLOR_NB] = { SCORE_ZERO, SCORE_ZERO };
 
     // NoCastleBB lists some squares for King position
-    Bitboard NoCastleBB = SquareBB[SQ_B1] + SQ_C1 + SQ_D1 + SQ_F1 + SQ_G1;
+    Bitboard NoCastleW = SquareBB[SQ_B1] + SQ_C1 + SQ_D1 + SQ_F1 + SQ_G1;
+    Bitboard NoCastleB = SquareBB[SQ_B8] + SQ_C8 + SQ_D8 + SQ_F8 + SQ_G8;
 
     // attackedBy[color][piece type] is a bitboard representing all squares
     // attacked by a given color and piece type. Special "piece types" which
@@ -503,10 +504,12 @@ namespace {
     score -= CloseEnemies * tropism;
 
     // Penalty if stopped from castling
-    if (pos.square<KING>(Us) & NoCastleBB)
+    if (pos.square<KING>(Us) & (Us==WHITE ? NoCastleW : NoCastleB))
     {
-        Bitboard rbb = (file_of(pos.square<KING>(Us)) > FILE_D) ? LineBB[SQ_G1][SQ_H1]
-                                                                : LineBB[SQ_A1][SQ_C1];
+        Square an = Us==WHITE ? SQ_A1 : SQ_A8;
+        Square hn = Us==WHITE ? SQ_H1 : SQ_H8;
+        Bitboard rbb = (file_of(pos.square<KING>(Us)) > FILE_D) ? BetweenBB[pos.square<KING>(Us)][hn]
+                                                                : BetweenBB[pos.square<KING>(Us)][an];
         if (rbb & pos.pieces(Us, ROOK))
             score -= NoCastle;
     }

@@ -163,6 +163,7 @@ namespace {
   constexpr Score KnightOnQueen      = S( 21, 11);
   constexpr Score LongDiagonalBishop = S( 46,  0);
   constexpr Score MinorBehindPawn    = S( 16,  0);
+  constexpr Score NoCastle           = S( 92,  0);
   constexpr Score Overload           = S( 13,  6);
   constexpr Score PawnlessFlank      = S( 19, 84);
   constexpr Score RookOnPawn         = S( 10, 30);
@@ -171,7 +172,6 @@ namespace {
   constexpr Score ThreatByPawnPush   = S( 45, 40);
   constexpr Score ThreatByRank       = S( 16,  3);
   constexpr Score ThreatBySafePawn   = S(173,102);
-  constexpr Score TrappedRook        = S( 92,  0);
   constexpr Score WeakQueen          = S( 50, 10);
   constexpr Score WeakUnopposedPawn  = S(  5, 29);
 
@@ -202,6 +202,10 @@ namespace {
     Pawns::Entry* pe;
     Bitboard mobilityArea[COLOR_NB];
     Score mobility[COLOR_NB] = { SCORE_ZERO, SCORE_ZERO };
+
+    // NoCastleX bitboards list some squares for King position
+    Bitboard NoCastleW = SquareBB[SQ_B1] + SQ_C1 + SQ_D1 + SQ_F1 + SQ_G1;
+    Bitboard NoCastleB = SquareBB[SQ_B8] + SQ_C8 + SQ_D8 + SQ_F8 + SQ_G8;
 
     // attackedBy[color][piece type] is a bitboard representing all squares
     // attacked by a given color and piece type. Special "piece types" which
@@ -378,14 +382,6 @@ namespace {
             // Bonus for rook on an open or semi-open file
             if (pe->semiopen_file(Us, file_of(s)))
                 score += RookOnFile[bool(pe->semiopen_file(Them, file_of(s)))];
-
-            // Penalty when trapped by the king, even more if the king cannot castle
-            else if (mob <= 3)
-            {
-                File kf = file_of(pos.square<KING>(Us));
-                if ((kf < FILE_E) == (file_of(s) < kf))
-                    score -= (TrappedRook - make_score(mob * 22, 0)) * (1 + !pos.can_castle(Us));
-            }
         }
 
         if (Pt == QUEEN)
@@ -497,6 +493,17 @@ namespace {
 
     // King tropism bonus, to anticipate slow motion attacks on our king
     score -= CloseEnemies * tropism;
+
+    // Penalty if stopped from castling
+    if (pos.square<KING>(Us) & (Us==WHITE ? NoCastleW : NoCastleB))
+    {
+        Square an = Us==WHITE ? SQ_A1 : SQ_A8;
+        Square hn = Us==WHITE ? SQ_H1 : SQ_H8;
+        Bitboard rbb = (file_of(pos.square<KING>(Us)) > FILE_D) ? BetweenBB[pos.square<KING>(Us)][hn]
+                                                                : BetweenBB[pos.square<KING>(Us)][an];
+        if (rbb & pos.pieces(Us, ROOK))
+            score -= NoCastle;
+    }
 
     if (T)
         Trace::add(KING, Us, score);

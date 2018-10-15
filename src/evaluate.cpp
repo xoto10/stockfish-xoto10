@@ -205,8 +205,8 @@ namespace {
     Score mobility[COLOR_NB] = { SCORE_ZERO, SCORE_ZERO };
 
     // NoCastleBB lists some squares for King position
-    Bitboard NoCastleW = SquareBB[SQ_B1] + SQ_C1 + SQ_D1 + SQ_F1 + SQ_G1;
-    Bitboard NoCastleB = SquareBB[SQ_B8] + SQ_C8 + SQ_D8 + SQ_F8 + SQ_G8;
+    Bitboard NoCastleW = SquareBB[SQ_B1] + SQ_C1 + SQ_D1 + SQ_D2 + SQ_E2 + SQ_F2 + SQ_F1 + SQ_G1;
+    Bitboard NoCastleB = SquareBB[SQ_B8] + SQ_C8 + SQ_D8 + SQ_D7 + SQ_E7 + SQ_F7 + SQ_F8 + SQ_G8;
 
     // attackedBy[color][piece type] is a bitboard representing all squares
     // attacked by a given color and piece type. Special "piece types" which

@@ -23,6 +23,7 @@
 #include <cstring>   // For std::memset
 #include <iomanip>
 #include <sstream>
+#include <iostream>
 
 #include "bitboard.h"
 #include "evaluate.h"
@@ -508,8 +509,8 @@ namespace {
     {
         Square an = Us==WHITE ? SQ_A1 : SQ_A8;
         Square hn = Us==WHITE ? SQ_H1 : SQ_H8;
-        Bitboard rbb = (file_of(pos.square<KING>(Us)) > FILE_D) ? BetweenBB[pos.square<KING>(Us)][hn]
-                                                                : BetweenBB[pos.square<KING>(Us)][an];
+        Bitboard rbb = (file_of(pos.square<KING>(Us)) > FILE_D) ? BetweenBB[pos.square<KING>(Us)][hn] | hn
+                                                                : BetweenBB[pos.square<KING>(Us)][an] | an;
         if (rbb & pos.pieces(Us, ROOK))
             score -= NoCastle;
     }

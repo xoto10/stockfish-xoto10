@@ -302,7 +302,7 @@ void MainThread::search() {
 void Thread::search() {
 
   Stack stack[MAX_PLY+7], *ss = stack+4; // To reference from (ss-4) to (ss+2)
-  Value bestValue, alpha, beta, delta;
+  Value bestValue, alpha, beta, delta, maxdelta;
   Move  lastBestMove = MOVE_NONE;
   Depth lastBestMoveDepth = DEPTH_ZERO;
   MainThread* mainThread = (this == Threads.main() ? Threads.main() : nullptr);
@@ -315,6 +315,7 @@ void Thread::search() {
      (ss-i)->continuationHistory = &this->continuationHistory[NO_PIECE][0]; // Use as sentinel
 
   bestValue = delta = alpha = -VALUE_INFINITE;
+  maxdelta = Value(18);
   beta = VALUE_INFINITE;
 
   if (mainThread)
@@ -387,7 +388,7 @@ void Thread::search() {
           if (rootDepth >= 5 * ONE_PLY)
           {
               Value previousScore = rootMoves[pvIdx].previousScore;
-              delta = Value(18);
+              delta = (Value(18) + maxdelta) / 2;
               alpha = std::max(previousScore - delta,-VALUE_INFINITE);
               beta  = std::min(previousScore + delta, VALUE_INFINITE);
 
@@ -446,6 +447,7 @@ void Thread::search() {
                   break;
 
               delta += delta / 4 + 5;
+              maxdelta = delta;
 
               assert(alpha >= -VALUE_INFINITE && beta <= VALUE_INFINITE);
           }

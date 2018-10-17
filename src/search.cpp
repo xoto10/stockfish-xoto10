@@ -389,7 +389,7 @@ void Thread::search() {
               Value previousScore = rootMoves[pvIdx].previousScore;
               delta = Value(18);
               alpha = std::max(previousScore - (previousScore < -24 ? 2*delta : delta),-VALUE_INFINITE);
-              beta  = std::min(previousScore + (previousScore >  66 ? 12*delta/16 : delta), VALUE_INFINITE);
+              beta  = std::min(previousScore + (previousScore >  66 ? 2*delta : delta), VALUE_INFINITE);
 
               // Adjust contempt based on root move's previousScore (dynamic contempt)
               int dct = ct + 88 * previousScore / (abs(previousScore) + 200);
@@ -441,7 +441,7 @@ void Thread::search() {
                   }
               }
               else if (bestValue >= beta)
-                  beta = std::min(bestValue + (bestValue > 66 ? 12*delta/16 : delta), VALUE_INFINITE);
+                  beta = std::min(bestValue + (bestValue > 66 ? 2*delta : delta), VALUE_INFINITE);
               else
                   break;
 

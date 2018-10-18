@@ -367,6 +367,18 @@ namespace {
                             : pos.piece_on(s + d + d) == make_piece(Us, PAWN) ? CorneredBishop * 2
                                                                               : CorneredBishop;
             }
+
+            // Bonus for bishop controlling several squares with no opposed bishop
+            Bitboard bishopSquares = (DarkSquares & s) ? DarkSquares : ~DarkSquares;
+            if (  !(bishopSquares & pos.pieces(Them,BISHOP))
+               && pos.count<PAWN>() > 7)
+            {
+                score += make_score(5,2)
+                         * (popcount(attacks_bb<BISHOP>(s, pos.pieces(PAWN))) - 7);
+                score += make_score(5,2)
+                         * (popcount(bishopSquares & kingRing[Them]
+                                     & (~pos.pieces(Them) | pos.pieces(Them, KING)) ));
+            }
         }
 
         if (Pt == ROOK)

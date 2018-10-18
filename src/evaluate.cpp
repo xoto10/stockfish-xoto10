@@ -693,9 +693,9 @@ namespace {
 
     // Bonus for levers and levers on both flanks
     b = pe->lever_pawns(Us);
-//  score += LeverPawns * popcount(b);
-    if ((b & QueenSide) && (b & KingSide))
-        score += FlankLevers;
+    score += LeverPawns * popcount(b);
+//  if ((b & QueenSide) && (b & KingSide))
+//      score += FlankLevers;
 
     if (T)
         Trace::add(PASSED, Us, score);

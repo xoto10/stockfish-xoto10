@@ -158,9 +158,11 @@ namespace {
   constexpr Score BishopPawns        = S(  3,  7);
   constexpr Score CloseEnemies       = S(  6,  0);
   constexpr Score CorneredBishop     = S( 50, 50);
+  constexpr Score FlankLevers        = S( 20, 10);
   constexpr Score Hanging            = S( 57, 32);
   constexpr Score KingProtector      = S(  6,  6);
   constexpr Score KnightOnQueen      = S( 21, 11);
+  constexpr Score LeverPawns         = S(  5,  5);
   constexpr Score LongDiagonalBishop = S( 46,  0);
   constexpr Score MinorBehindPawn    = S( 16,  0);
   constexpr Score Overload           = S( 13,  6);
@@ -688,6 +690,12 @@ namespace {
 
         score += bonus + PassedFile[file_of(s)];
     }
+
+    // Bonus for levers and levers on both flanks
+    b = pe->lever_pawns(Us);
+//  score += LeverPawns * popcount(b);
+    if ((b & QueenSide) && (b & KingSide))
+        score += FlankLevers;
 
     if (T)
         Trace::add(PASSED, Us, score);

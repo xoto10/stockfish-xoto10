@@ -118,8 +118,7 @@ namespace {
 
         // A lever attacks one of their pawns or can be moved forward to attack.
         // Note that we still need to check if the pawn is blocked.
-        if (   lever
-            || (leverPush && popcount(phalanx) >= popcount(leverPush)))
+        if (leverPush && popcount(phalanx) >= popcount(leverPush))
         {
             e->leverPawns[Us] |= s;
 //sync_cout << "info string lever pawn " << UCI::square(s) << sync_endl;

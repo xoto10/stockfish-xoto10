@@ -692,11 +692,12 @@ namespace {
         score += bonus + PassedFile[file_of(s)];
     }
 
-    // Bonus for each unblocked lever and for having unblocked levers on both flanks
-    b = pe->lever_pawns(Us) & ~(pos.pieces(Us, PAWN) & shift<Down>(pos.pieces(Them)));
+    // Bonus for having unblocked levers on both flanks if center is blocked
+    b =   (pos.pieces(Us, PAWN) & attackedBy[Them][PAWN])
+        | (pe->lever_pawns(Us) & ~(pos.pieces(Us, PAWN) & shift<Down>(pos.pieces(Them))));
     bb = pos.pieces(Us, PAWN) & shift<Down>(pos.pieces(Them)) & (FileDBB | FileEBB);
 //  score += LeverPawns * popcount(b);
-    if ((b & QueenSide) && (b & KingSide) && popcount(bb) == 2)
+    if (popcount(bb) == 2 && (b & QueenSide) && (b & KingSide))
         score += FlankLevers;
 
     if (T)

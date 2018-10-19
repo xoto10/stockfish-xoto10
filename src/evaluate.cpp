@@ -617,6 +617,7 @@ namespace {
 
     constexpr Color     Them = (Us == WHITE ? BLACK : WHITE);
     constexpr Direction Up   = (Us == WHITE ? NORTH : SOUTH);
+    constexpr Direction Down = (Us == WHITE ? SOUTH : NORTH);
 
     auto king_proximity = [&](Color c, Square s) {
       return std::min(distance(pos.square<KING>(c), s), 5);
@@ -691,11 +692,12 @@ namespace {
         score += bonus + PassedFile[file_of(s)];
     }
 
-    // Bonus for levers and levers on both flanks
-    b = pe->lever_pawns(Us);
-    score += LeverPawns * popcount(b);
-//  if ((b & QueenSide) && (b & KingSide))
-//      score += FlankLevers;
+    // Bonus for each unblocked lever and for having unblocked levers on both flanks
+    b = pe->lever_pawns(Us) & ~(pos.pieces(Us, PAWN) & shift<Down>(pos.pieces(Them)));
+    bb = pos.pieces(Us, PAWN) & shift<Down>(pos.pieces(Them)) & (FileDBB | FileEBB);
+//  score += LeverPawns * popcount(b);
+    if ((b & QueenSide) && (b & KingSide) && popcount(bb) == 2)
+        score += FlankLevers;
 
     if (T)
         Trace::add(PASSED, Us, score);

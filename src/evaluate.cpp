@@ -694,7 +694,7 @@ namespace {
 
     // Bonus for having unblocked levers on both flanks if center is blocked
     b =   (pos.pieces(Us, PAWN) & attackedBy[Them][PAWN])
-        | (pe->lever_pawns(Us) & ~(pos.pieces(Us, PAWN) & shift<Down>(pos.pieces(Them))));
+        | (pe->lever_pawns(Us) & ~shift<Down>(pos.pieces(Them)));  // or pos.pieces() ??
     bb = pos.pieces(Us, PAWN) & shift<Down>(pos.pieces(Them)) & (FileDBB | FileEBB);
 //  score += LeverPawns * popcount(b);
     if (popcount(bb) == 2 && (b & QueenSide) && (b & KingSide))

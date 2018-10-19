@@ -90,7 +90,6 @@ namespace {
     e->pawnsOnSquares[Us][BLACK] = popcount(ourPawns & DarkSquares);
     e->pawnsOnSquares[Us][WHITE] = pos.count<PAWN>(Us) - e->pawnsOnSquares[Us][BLACK];
 
-//sync_cout << "info string \n*** leverpawns " << pos << " for " << Us << sync_endl;
     // Loop through all pawns of the current color and score each pawn
     while ((s = *pl++) != SQ_NONE)
     {
@@ -119,10 +118,7 @@ namespace {
         // A lever attacks one of their pawns or can be moved forward to attack.
         // Note that we still need to check if the pawn is blocked.
         if (leverPush && popcount(phalanx) >= popcount(leverPush))
-        {
             e->leverPawns[Us] |= s;
-//sync_cout << "info string lever pawn " << UCI::square(s) << sync_endl;
-        }
 
         // Passed pawns will be properly scored in evaluation because we need
         // full attack info to evaluate them. Include also not passed pawns

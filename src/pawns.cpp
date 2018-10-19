@@ -33,7 +33,7 @@ namespace {
 
   // Pawn penalties
   constexpr Score Backward = S( 9, 24);
-  constexpr Score Doubled  = S(15, 56);
+  constexpr Score Doubled[2] = { S(11, 56), S(22, 56) };
   constexpr Score Isolated = S( 5, 15);
 
   // Connected pawn bonus by opposed, phalanx, #support and rank
@@ -71,12 +71,25 @@ namespace {
     constexpr Color     Them = (Us == WHITE ? BLACK : WHITE);
     constexpr Direction Up   = (Us == WHITE ? NORTH : SOUTH);
 
+    constexpr Bitboard QueenSide   = FileABB | FileBBB | FileCBB | FileDBB;
+    constexpr Bitboard CenterFiles = FileCBB | FileDBB | FileEBB | FileFBB;
+    constexpr Bitboard KingSide    = FileEBB | FileFBB | FileGBB | FileHBB;
+
+    constexpr Bitboard KingFlank[FILE_NB] = {
+      QueenSide ^ FileDBB, QueenSide, QueenSide,
+      CenterFiles, CenterFiles,
+      KingSide, KingSide, KingSide ^ FileEBB
+    };
+
     Bitboard b, neighbours, stoppers, doubled, supported, phalanx;
     Bitboard lever, leverPush;
     Square s;
     bool opposed, backward;
     Score score = SCORE_ZERO;
     const Square* pl = pos.squares<PAWN>(Us);
+
+    const Square ksq    = pos.square<KING>(Us);
+    Bitboard kingFlank  = KingFlank[file_of(ksq)];
 
     Bitboard ourPawns   = pos.pieces(  Us, PAWN);
     Bitboard theirPawns = pos.pieces(Them, PAWN);
@@ -142,7 +155,7 @@ namespace {
             score -= Backward, e->weakUnopposed[Us] += !opposed;
 
         if (doubled && !supported)
-            score -= Doubled;
+            score -= (kingFlank & s) ? Doubled[1] : Doubled[0];
     }
 
     return score;

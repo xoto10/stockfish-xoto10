@@ -195,6 +195,7 @@ namespace {
     template<Color Us> Score threats() const;
     template<Color Us> Score passed() const;
     template<Color Us> Score space() const;
+    template<Color Us> Score flank_levers() const;
     ScaleFactor scale_factor(Value eg) const;
     Score initiative(Value eg) const;
 
@@ -513,10 +514,9 @@ namespace {
 
     constexpr Color     Them     = (Us == WHITE ? BLACK   : WHITE);
     constexpr Direction Up       = (Us == WHITE ? NORTH   : SOUTH);
-    constexpr Direction Down     = (Us == WHITE ? SOUTH   : NORTH);
     constexpr Bitboard  TRank3BB = (Us == WHITE ? Rank3BB : Rank6BB);
 
-    Bitboard b, weak, defended, nonPawnEnemies, stronglyProtected, safe, blocked;
+    Bitboard b, weak, defended, nonPawnEnemies, stronglyProtected, safe;
     Score score = SCORE_ZERO;
 
     // Non-pawn enemies
@@ -602,13 +602,6 @@ namespace {
 
         score += SliderOnQueen * popcount(b & safe & attackedBy2[Us]);
     }
-
-    // Bonus for having unblocked levers on both flanks if center is blocked
-    b =   (pos.pieces(Us, PAWN) & attackedBy[Them][PAWN])
-        | (pe->lever_pawns(Us) & ~shift<Down>(pos.pieces(Them)));  // or pos.pieces() ??
-    blocked = pos.pieces(Us, PAWN) & shift<Down>(pos.pieces(Them)) & (FileDBB | FileEBB);
-    if (blocked)
-        score += FlankLever * (bool(b & QueenSide) + bool(b & KingSide));
 
     if (T)
         Trace::add(THREAT, Us, score);
@@ -745,6 +738,26 @@ namespace {
   }
 
 
+  // Evaluation::flank_levers() computes the bonus for having levers on both flanks
+  // if center is blocked.
+
+  template<Tracing T> template<Color Us>
+  Score Evaluation<T>::flank_levers() const {
+    constexpr Color     Them = (Us == WHITE ? BLACK : WHITE);
+    constexpr Direction Down = (Us == WHITE ? SOUTH : NORTH);
+
+    Bitboard b, blocked;
+
+    b =   (pos.pieces(Us, PAWN) & attackedBy[Them][PAWN])
+        | (pe->lever_pawns(Us) & ~shift<Down>(pos.pieces(Them)));  // or pos.pieces() ??
+    blocked = pos.pieces(Us, PAWN) & shift<Down>(pos.pieces(Them)) & (FileDBB | FileEBB);
+
+    if (blocked)
+        return(FlankLever * (bool(b & QueenSide) + bool(b & KingSide)));
+    return Score(0);
+  }
+
+
   // Evaluation::initiative() computes the initiative correction value
   // for the position. It is a second order bonus/malus based on the
   // known attacking/defending status of the players.
@@ -757,12 +770,15 @@ namespace {
 
     bool pawnsOnBothFlanks =   (pos.pieces(PAWN) & QueenSide)
                             && (pos.pieces(PAWN) & KingSide);
+    Score flankLevers = (eg > 0) ? flank_levers<WHITE>() :
+                        (eg < 0) ? flank_levers<BLACK>() : Score(0);
 
     // Compute the initiative bonus for the attacking side
     int complexity =   8 * pe->pawn_asymmetry()
                     + 12 * pos.count<PAWN>()
                     + 12 * outflanking
                     + 16 * pawnsOnBothFlanks
+                    +      flankLevers
                     + 48 * !pos.non_pawn_material()
                     -118 ;
 

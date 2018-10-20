@@ -605,7 +605,7 @@ namespace {
 
     // Bonus for having unblocked levers on both flanks if center is blocked
     b =   (pos.pieces(Us, PAWN) & attackedBy[Them][PAWN])
-        | (pe->lever_pawns(Us) & ~shift<Down>(pos.pieces(Them)));  // or pos.pieces() ??
+        | (pe->lever_pawns(Us) & ~shift<Down>(pos.pieces()));  // or pos.pieces(Them) ??
     blocked = pos.pieces(Us, PAWN) & shift<Down>(pos.pieces(Them)) & (FileDBB | FileEBB);
     if (more_than_one(blocked))
         score += FlankLever * (bool(b & QueenSide) + bool(b & KingSide));

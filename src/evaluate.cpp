@@ -158,7 +158,7 @@ namespace {
   constexpr Score BishopPawns        = S(  3,  7);
   constexpr Score CloseEnemies       = S(  6,  0);
   constexpr Score CorneredBishop     = S( 50, 50);
-  constexpr Score FlankLever         = S(  5, 10);
+  constexpr Score FlankLever         = S( 10,  5);
   constexpr Score Hanging            = S( 57, 32);
   constexpr Score KingProtector      = S(  6,  6);
   constexpr Score KnightOnQueen      = S( 21, 11);
@@ -607,7 +607,7 @@ namespace {
     b =   (pos.pieces(Us, PAWN) & attackedBy[Them][PAWN])
         | (pe->lever_pawns(Us) & ~shift<Down>(pos.pieces(Them)));  // or pos.pieces() ??
     blocked = pos.pieces(Us, PAWN) & shift<Down>(pos.pieces(Them)) & (FileDBB | FileEBB);
-    if (more_than_one(blocked))
+    if (blocked)
         score += FlankLever * (bool(b & QueenSide) + bool(b & KingSide));
 
     if (T)

@@ -33,8 +33,9 @@ namespace {
 
   // Pawn penalties
   constexpr Score Backward = S( 9, 24);
-  constexpr Score Doubled[2] = { S(11, 56), S(11, 56) };
   constexpr Score Isolated = S( 5, 15);
+  // Doubled holds doubled pawns penalty, indexed by [<on kings flank>]
+  constexpr Score Doubled[2] = { S(8, 56), S(14, 56) };
 
   // Connected pawn bonus by opposed, phalanx, #support and rank
   Score Connected[2][2][3][RANK_NB];

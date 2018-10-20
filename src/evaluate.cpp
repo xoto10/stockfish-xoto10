@@ -158,7 +158,7 @@ namespace {
   constexpr Score BishopPawns        = S(  3,  7);
   constexpr Score CloseEnemies       = S(  6,  0);
   constexpr Score CorneredBishop     = S( 50, 50);
-  constexpr Score FlankLevers        = S( 20, 10);
+  constexpr Score FlankLever         = S( 10,  5);
   constexpr Score Hanging            = S( 57, 32);
   constexpr Score KingProtector      = S(  6,  6);
   constexpr Score KnightOnQueen      = S( 21, 11);
@@ -514,9 +514,10 @@ namespace {
 
     constexpr Color     Them     = (Us == WHITE ? BLACK   : WHITE);
     constexpr Direction Up       = (Us == WHITE ? NORTH   : SOUTH);
+    constexpr Direction Down     = (Us == WHITE ? SOUTH   : NORTH);
     constexpr Bitboard  TRank3BB = (Us == WHITE ? Rank3BB : Rank6BB);
 
-    Bitboard b, weak, defended, nonPawnEnemies, stronglyProtected, safe;
+    Bitboard b, weak, defended, nonPawnEnemies, stronglyProtected, safe, blocked;
     Score score = SCORE_ZERO;
 
     // Non-pawn enemies
@@ -603,6 +604,13 @@ namespace {
         score += SliderOnQueen * popcount(b & safe & attackedBy2[Us]);
     }
 
+    // Bonus for having unblocked levers on both flanks if center is blocked
+    b =   (pos.pieces(Us, PAWN) & attackedBy[Them][PAWN])
+        | (pe->lever_pawns(Us) & ~shift<Down>(pos.pieces(Them)));  // or pos.pieces() ??
+    blocked = pos.pieces(Us, PAWN) & shift<Down>(pos.pieces(Them)) & (FileDBB | FileEBB);
+    if (more_than_one(blocked))
+        score += FlankLever * (bool(b & QueenSide) + bool(b & KingSide));
+
     if (T)
         Trace::add(THREAT, Us, score);
 
@@ -617,7 +625,6 @@ namespace {
 
     constexpr Color     Them = (Us == WHITE ? BLACK : WHITE);
     constexpr Direction Up   = (Us == WHITE ? NORTH : SOUTH);
-    constexpr Direction Down = (Us == WHITE ? SOUTH : NORTH);
 
     auto king_proximity = [&](Color c, Square s) {
       return std::min(distance(pos.square<KING>(c), s), 5);
@@ -691,14 +698,6 @@ namespace {
 
         score += bonus + PassedFile[file_of(s)];
     }
-
-    // Bonus for having unblocked levers on both flanks if center is blocked
-    b =   (pos.pieces(Us, PAWN) & attackedBy[Them][PAWN])
-        | (pe->lever_pawns(Us) & ~shift<Down>(pos.pieces(Them)));  // or pos.pieces() ??
-    bb = pos.pieces(Us, PAWN) & shift<Down>(pos.pieces(Them)) & (FileDBB | FileEBB);
-//  score += LeverPawns * popcount(b);
-    if (popcount(bb) == 2 && (b & QueenSide) && (b & KingSide))
-        score += FlankLevers;
 
     if (T)
         Trace::add(PASSED, Us, score);

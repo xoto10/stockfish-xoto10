@@ -154,11 +154,13 @@ namespace {
   // PassedDanger[Rank] contains a term to weight the passed score
   constexpr int PassedDanger[RANK_NB] = { 0, 0, 0, 3, 7, 11, 20 };
 
+  // FlankLever contains a bonus for having a lever on each flank
+  constexpr int FlankLever = S(10, 5);
+
   // Assorted bonuses and penalties
   constexpr Score BishopPawns        = S(  3,  7);
   constexpr Score CloseEnemies       = S(  6,  0);
   constexpr Score CorneredBishop     = S( 50, 50);
-  constexpr Score FlankLever         = S( 10,  5);
   constexpr Score Hanging            = S( 57, 32);
   constexpr Score KingProtector      = S(  6,  6);
   constexpr Score KnightOnQueen      = S( 21, 11);
@@ -195,7 +197,7 @@ namespace {
     template<Color Us> Score threats() const;
     template<Color Us> Score passed() const;
     template<Color Us> Score space() const;
-    template<Color Us> Score flank_levers() const;
+    template<Color Us> int flank_levers() const;
     ScaleFactor scale_factor(Value eg) const;
     Score initiative(Value eg) const;
 
@@ -742,7 +744,7 @@ namespace {
   // if center is blocked.
 
   template<Tracing T> template<Color Us>
-  Score Evaluation<T>::flank_levers() const {
+  int Evaluation<T>::flank_levers() const {
     constexpr Color     Them = (Us == WHITE ? BLACK : WHITE);
     constexpr Direction Down = (Us == WHITE ? SOUTH : NORTH);
 
@@ -770,8 +772,8 @@ namespace {
 
     bool pawnsOnBothFlanks =   (pos.pieces(PAWN) & QueenSide)
                             && (pos.pieces(PAWN) & KingSide);
-    Score flankLevers = (eg > 0) ? flank_levers<WHITE>() :
-                        (eg < 0) ? flank_levers<BLACK>() : Score(0);
+    int flankLevers = (eg > 0) ? flank_levers<WHITE>() :
+                      (eg < 0) ? flank_levers<BLACK>() : 0;
 
     // Compute the initiative bonus for the attacking side
     int complexity =   8 * pe->pawn_asymmetry()

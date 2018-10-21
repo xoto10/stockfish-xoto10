@@ -752,7 +752,7 @@ namespace {
         | (pe->lever_pawns(Us) & ~shift<Down>(pos.pieces(Them)));  // or pos.pieces() ??
     blocked = pos.pieces(Us, PAWN) & shift<Down>(pos.pieces(Them)) & (FileDBB | FileEBB);
 
-    if (blocked)
+    if (more_than_one(blocked))
         return(FlankLever * (bool(b & QueenSide) + bool(b & KingSide)));
     return Score(0);
   }

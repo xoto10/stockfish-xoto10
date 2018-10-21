@@ -155,7 +155,7 @@ namespace {
   constexpr int PassedDanger[RANK_NB] = { 0, 0, 0, 3, 7, 11, 20 };
 
   // FlankLever contains a bonus for having a lever on each flank
-  constexpr int FlankLever = S(10, 5);
+  constexpr int FlankLevers = S(10, 5);
 
   // Assorted bonuses and penalties
   constexpr Score BishopPawns        = S(  3,  7);
@@ -754,8 +754,8 @@ namespace {
         | (pe->lever_pawns(Us) & ~shift<Down>(pos.pieces(Them)));  // or pos.pieces() ??
     blocked = pos.pieces(Us, PAWN) & shift<Down>(pos.pieces(Them)) & (FileDBB | FileEBB);
 
-    if (more_than_one(blocked))
-        return(FlankLever * (bool(b & QueenSide) + bool(b & KingSide)));
+    if (more_than_one(blocked) && (b & QueenSide) && (b & KingSide))
+        return(FlankLevers);
     return Score(0);
   }
 
@@ -772,15 +772,15 @@ namespace {
 
     bool pawnsOnBothFlanks =   (pos.pieces(PAWN) & QueenSide)
                             && (pos.pieces(PAWN) & KingSide);
-    int flankLevers = (eg > 0) ? flank_levers<WHITE>() :
-                      (eg < 0) ? flank_levers<BLACK>() : 0;
+    int leversOnBothFlanks = (eg > 0) ? flank_levers<WHITE>() :
+                             (eg < 0) ? flank_levers<BLACK>() : 0;
 
     // Compute the initiative bonus for the attacking side
     int complexity =   8 * pe->pawn_asymmetry()
                     + 12 * pos.count<PAWN>()
                     + 12 * outflanking
                     + 16 * pawnsOnBothFlanks
-                    +      flankLevers
+                    +      leversOnBothFlanks
                     + 48 * !pos.non_pawn_material()
                     -118 ;
 

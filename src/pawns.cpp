@@ -116,7 +116,7 @@ namespace {
         // A lever attacks one of their pawns or can be moved forward to attack.
         // Note that we still need to check if the pawn is blocked.
         if (  lever
-            | (leverPush && (popcount(leverPush) == 1 || phalanx) && (~theirPawns & (s + Up))) // | ourPawns?
+            | (leverPush && popcount(phalanx) >= popcount(leverPush) && (~pos.pieces(PAWN) & (s + Up))) // | ourPawns?
            )
             e->leverPawns[Us] |= s;
 

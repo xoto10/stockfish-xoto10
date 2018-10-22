@@ -34,6 +34,7 @@ namespace Pawns {
 struct Entry {
 
   Score pawn_score(Color c) const { return scores[c]; }
+  Bitboard lever_pawns(Color c) const { return leverPawns[c]; }
   Bitboard pawn_attacks(Color c) const { return pawnAttacks[c]; }
   Bitboard passed_pawns(Color c) const { return passedPawns[c]; }
   Bitboard pawn_attacks_span(Color c) const { return pawnAttacksSpan[c]; }
@@ -63,6 +64,7 @@ struct Entry {
 
   Key key;
   Score scores[COLOR_NB];
+  Bitboard leverPawns[COLOR_NB];
   Bitboard passedPawns[COLOR_NB];
   Bitboard pawnAttacks[COLOR_NB];
   Bitboard pawnAttacksSpan[COLOR_NB];

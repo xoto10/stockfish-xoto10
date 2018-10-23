@@ -193,8 +193,9 @@ namespace {
     template<Color Us> Score king() const;
     template<Color Us> Score threats() const;
     template<Color Us> Score passed() const;
-    template<Color Us> Score space() const;
+    template<Color Us> Score space();
     ScaleFactor scale_factor(Value eg) const;
+    Score defend(Score sc) const;
     Score initiative(Value eg) const;
 
     const Position& pos;
@@ -202,6 +203,9 @@ namespace {
     Pawns::Entry* pe;
     Bitboard mobilityArea[COLOR_NB];
     Score mobility[COLOR_NB] = { SCORE_ZERO, SCORE_ZERO };
+
+    // spaceBonus[color] stores the bonus value calculated in space() for later use
+    Value spaceBonus[COLOR_NB];
 
     // attackedBy[color][piece type] is a bitboard representing all squares
     // attacked by a given color and piece type. Special "piece types" which
@@ -704,10 +708,13 @@ namespace {
   // improve play on game opening.
 
   template<Tracing T> template<Color Us>
-  Score Evaluation<T>::space() const {
+  Score Evaluation<T>::space() {
 
     if (pos.non_pawn_material() < SpaceThreshold)
+    {
+        spaceBonus[Us] = Value(0);
         return SCORE_ZERO;
+    }
 
     constexpr Color Them = (Us == WHITE ? BLACK : WHITE);
     constexpr Bitboard SpaceMask =
@@ -724,15 +731,37 @@ namespace {
     behind |= (Us == WHITE ? behind >>  8 : behind <<  8);
     behind |= (Us == WHITE ? behind >> 16 : behind << 16);
 
-    int bonus = popcount(safe) + popcount(behind & safe);
+    spaceBonus[Us] = Value(popcount(safe) + popcount(behind & safe));
     int weight = pos.count<ALL_PIECES>(Us) - 2 * pe->open_files();
 
-    Score score = make_score(bonus * weight * weight / 16, 0);
+    Score score = make_score(spaceBonus[Us] * weight * weight / 16, 0);
 
     if (T)
         Trace::add(SPACE, Us, score);
 
     return score;
+  }
+
+
+  // Evaluation::defend() computes the defend adjustment value
+  // for the position. It is a second order bonus/malus based on the
+  // known attacking/defending status of the players.
+
+  template<Tracing T>
+  Score Evaluation<T>::defend(Score sc) const {
+    Value mg  = mg_value(sc);
+    Value adj = Value(0);
+
+    // Adjust space bonus for losing side, open files are ok
+    if (mg > 0)
+        adj = std::max(-mg, -spaceBonus[BLACK] * pos.count<ALL_PIECES>(BLACK) * pe->open_files() / 4);
+    else if (mg < 0)
+        adj = std::min(-mg,  spaceBonus[WHITE] * pos.count<ALL_PIECES>(WHITE) * pe->open_files() / 4);
+
+    if (T)
+        Trace::add(INITIATIVE, make_score(adj, 0));
+
+    return make_score(adj, 0);
   }
 
 
@@ -842,6 +871,7 @@ namespace {
             + passed< WHITE>() - passed< BLACK>()
             + space<  WHITE>() - space<  BLACK>();
 
+    score += defend(score);
     score += initiative(eg_value(score));
 
     // Interpolate between a middlegame and a (scaled by 'sf') endgame score

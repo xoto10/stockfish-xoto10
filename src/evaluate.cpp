@@ -709,8 +709,9 @@ namespace {
     if (pos.non_pawn_material() < SpaceThreshold)
         return SCORE_ZERO;
 
-    constexpr Color Them = (Us == WHITE ? BLACK : WHITE);
-    constexpr Bitboard SpaceMask =
+    constexpr Color     Them = (Us == WHITE ? BLACK : WHITE);
+    constexpr Direction Down = (Us == WHITE ? SOUTH : NORTH);
+    constexpr Bitboard  SpaceMask =
       Us == WHITE ? CenterFiles & (Rank2BB | Rank3BB | Rank4BB)
                   : CenterFiles & (Rank7BB | Rank6BB | Rank5BB);
 
@@ -724,8 +725,10 @@ namespace {
     behind |= (Us == WHITE ? behind >>  8 : behind <<  8);
     behind |= (Us == WHITE ? behind >> 16 : behind << 16);
 
+    Bitboard blocked = pe->backward_pawns(Us) | (shift<Down>(pos.pieces()) & pos.pieces(Us, PAWN));
     int bonus = popcount(safe) + popcount(behind & safe);
-    int weight = pos.count<ALL_PIECES>(Us) - 2 * pe->open_files();
+    int weight = pos.count<ALL_PIECES>(Us)
+                 - 2 * pe->open_files() * bool(pos.pieces(Us, PAWN) ^ blocked);
 
     Score score = make_score(bonus * weight * weight / 16, 0);
 

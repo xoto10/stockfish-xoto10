@@ -753,12 +753,12 @@ namespace {
     Value adj = Value(0);
 
     // Adjust space bonus for losing side, open files are ok
-    if (mg > 0)
-        adj = std::max(-mg, (- spaceBonus[BLACK] * pos.count<ALL_PIECES>(BLACK) * pe->open_files()
-                             + pe->open_files() * pe->open_files()) / 4);
-    else if (mg < 0)
-        adj = std::min(-mg, (spaceBonus[WHITE] * pos.count<ALL_PIECES>(WHITE) * pe->open_files()
-                             - pe->open_files() * pe->open_files()) / 4);
+    if (mg < 0)
+//      adj = std::max(-mg, -spaceBonus[BLACK] * pos.count<ALL_PIECES>(BLACK) * pe->open_files() / 4);
+        adj =              -spaceBonus[BLACK] * pos.count<ALL_PIECES>(BLACK) * pe->open_files() / 4;
+    else if (mg > 0)
+//      adj = std::min(mg,  spaceBonus[WHITE] * pos.count<ALL_PIECES>(WHITE) * pe->open_files() / 4);
+        adj =               spaceBonus[WHITE] * pos.count<ALL_PIECES>(WHITE) * pe->open_files() / 4;
 
     if (T)
         Trace::add(INITIATIVE, make_score(adj, 0));

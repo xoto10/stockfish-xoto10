@@ -709,8 +709,8 @@ namespace {
     if (pos.non_pawn_material() < SpaceThreshold)
         return SCORE_ZERO;
 
-    constexpr Color Them = (Us == WHITE ? BLACK : WHITE);
-    constexpr Bitboard SpaceMask =
+    constexpr Color     Them = (Us == WHITE ? BLACK : WHITE);
+    constexpr Bitboard  SpaceMask =
       Us == WHITE ? CenterFiles & (Rank2BB | Rank3BB | Rank4BB)
                   : CenterFiles & (Rank7BB | Rank6BB | Rank5BB);
 
@@ -743,6 +743,16 @@ namespace {
   template<Tracing T>
   Score Evaluation<T>::initiative(Value eg) const {
 
+    bool livePawns = false;
+    if (eg > 0)
+        livePawns = pos.pieces(WHITE, PAWN) ^
+                    (pe->backward_pawns(WHITE) | (pos.pieces(WHITE, PAWN) & shift<SOUTH>(pos.pieces())));
+    else if (eg < 0)
+        livePawns = pos.pieces(BLACK, PAWN) ^
+                    (pe->backward_pawns(BLACK) | (pos.pieces(BLACK, PAWN) & shift<NORTH>(pos.pieces())));
+    if (!livePawns)
+        return Score(0);
+
     int outflanking =  distance<File>(pos.square<KING>(WHITE), pos.square<KING>(BLACK))
                      - distance<Rank>(pos.square<KING>(WHITE), pos.square<KING>(BLACK));
 
@@ -755,6 +765,7 @@ namespace {
                     + 12 * outflanking
                     + 16 * pawnsOnBothFlanks
                     + 48 * !pos.non_pawn_material()
+                    + 96 * livePawns
                     -118 ;
 
     // Now apply the bonus: note that we find the attacking side by extracting

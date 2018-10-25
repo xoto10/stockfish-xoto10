@@ -709,8 +709,8 @@ namespace {
     if (pos.non_pawn_material() < SpaceThreshold)
         return SCORE_ZERO;
 
-    constexpr Color     Them = (Us == WHITE ? BLACK : WHITE);
-    constexpr Bitboard  SpaceMask =
+    constexpr Color Them = (Us == WHITE ? BLACK : WHITE);
+    constexpr Bitboard SpaceMask =
       Us == WHITE ? CenterFiles & (Rank2BB | Rank3BB | Rank4BB)
                   : CenterFiles & (Rank7BB | Rank6BB | Rank5BB);
 
@@ -763,7 +763,7 @@ namespace {
                     + 12 * outflanking
                     + 16 * pawnsOnBothFlanks
                     + 48 * !pos.non_pawn_material()
-                    - 80 * !bool(livePawns)
+                    - 48 * !bool(livePawns)
                     -118 ;
 
     // Now apply the bonus: note that we find the attacking side by extracting

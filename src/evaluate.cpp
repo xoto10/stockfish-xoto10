@@ -728,7 +728,8 @@ namespace {
     Bitboard blocked = pe->backward_pawns(Us) | (shift<Down>(pos.pieces()) & pos.pieces(Us, PAWN));
     int bonus = popcount(safe) + popcount(behind & safe);
     int weight = pos.count<ALL_PIECES>(Us)
-                 - 2 * pe->open_files() * bool(pos.pieces(Us, PAWN) ^ blocked);
+                 - 2 * pe->open_files()
+                   * (2 * bool(pos.pieces(Us, PAWN) ^ blocked) - 1);
 
     Score score = make_score(bonus * weight * weight / 16, 0);
 

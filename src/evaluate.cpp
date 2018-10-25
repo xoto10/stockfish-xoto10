@@ -750,8 +750,6 @@ namespace {
     else if (eg < 0)
         livePawns = pos.pieces(BLACK, PAWN) ^
                     (pe->backward_pawns(BLACK) | (pos.pieces(BLACK, PAWN) & shift<NORTH>(pos.pieces())));
-    if (!livePawns)
-        return Score(0);
 
     int outflanking =  distance<File>(pos.square<KING>(WHITE), pos.square<KING>(BLACK))
                      - distance<Rank>(pos.square<KING>(WHITE), pos.square<KING>(BLACK));
@@ -760,12 +758,12 @@ namespace {
                             && (pos.pieces(PAWN) & KingSide);
 
     // Compute the initiative bonus for the attacking side
-    int complexity =   8 * pe->pawn_asymmetry()
+    int complexity =(  8 * pe->pawn_asymmetry()
                     + 12 * pos.count<PAWN>()
                     + 12 * outflanking
                     + 16 * pawnsOnBothFlanks
                     + 48 * !pos.non_pawn_material()
-                    -118 ;
+                    -118) * std::min(4, popcount(livePawns)) / 4;
 
     // Now apply the bonus: note that we find the attacking side by extracting
     // the sign of the endgame value, and that we carefully cap the bonus so

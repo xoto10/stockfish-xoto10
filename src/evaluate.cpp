@@ -709,8 +709,8 @@ namespace {
     if (pos.non_pawn_material() < SpaceThreshold)
         return SCORE_ZERO;
 
-    constexpr Color Them = (Us == WHITE ? BLACK : WHITE);
-    constexpr Bitboard SpaceMask =
+    constexpr Color     Them = (Us == WHITE ? BLACK : WHITE);
+    constexpr Bitboard  SpaceMask =
       Us == WHITE ? CenterFiles & (Rank2BB | Rank3BB | Rank4BB)
                   : CenterFiles & (Rank7BB | Rank6BB | Rank5BB);
 
@@ -749,12 +749,21 @@ namespace {
     bool pawnsOnBothFlanks =   (pos.pieces(PAWN) & QueenSide)
                             && (pos.pieces(PAWN) & KingSide);
 
+    bool livePawns = false;
+    if (eg > 0)
+        livePawns = pos.pieces(WHITE, PAWN) ^
+                    (pe->backward_pawns(WHITE) | (pos.pieces(WHITE, PAWN) & shift<SOUTH>(pos.pieces())));
+    else if (eg < 0)
+        livePawns = pos.pieces(BLACK, PAWN) ^
+                    (pe->backward_pawns(BLACK) | (pos.pieces(BLACK, PAWN) & shift<NORTH>(pos.pieces())));
+
     // Compute the initiative bonus for the attacking side
     int complexity =   8 * pe->pawn_asymmetry()
                     + 12 * pos.count<PAWN>()
                     + 12 * outflanking
                     + 16 * pawnsOnBothFlanks
                     + 48 * !pos.non_pawn_material()
+                    + 32 * livePawns
                     -118 ;
 
     // Now apply the bonus: note that we find the attacking side by extracting

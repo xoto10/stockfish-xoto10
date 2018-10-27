@@ -139,7 +139,7 @@ namespace {
             score -= Isolated, e->weakUnopposed[Us] += !opposed;
 
         else if (backward)
-            score -= Backward, e->weakUnopposed[Us] += !opposed;
+            score -= Backward, e->weakUnopposed[Us] += !opposed * (1 + more_than_one(leverPush));
 
         if (doubled && !supported)
             score -= Doubled;

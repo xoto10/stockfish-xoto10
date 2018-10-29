@@ -122,19 +122,13 @@ void init() {
       }
   }
   // A rook on h1/h8 deserve a lower mg score than a rook on a1/a8
-  psq[W_ROOK][SQ_A1] += make_score(15, 0);
-  psq[W_ROOK][SQ_H1] -= make_score(30, 0);
-  psq[W_ROOK][SQ_A2] += make_score( 7, 0);
-  psq[W_ROOK][SQ_H2] -= make_score(14, 0);
-  psq[W_ROOK][SQ_B1] += make_score( 7, 0);
-  psq[W_ROOK][SQ_G1] -= make_score(14, 0);
+  psq[W_ROOK][SQ_H1] -= make_score(20, 0);
+  psq[W_ROOK][SQ_H2] -= make_score( 7, 0);
+  psq[W_ROOK][SQ_G1] -= make_score( 7, 0);
 
-  psq[B_ROOK][SQ_A8] -= make_score(15, 0);
-  psq[B_ROOK][SQ_H8] += make_score(30, 0);
-  psq[B_ROOK][SQ_A7] -= make_score( 7, 0);
-  psq[B_ROOK][SQ_H7] += make_score(14, 0);
-  psq[B_ROOK][SQ_B8] -= make_score( 7, 0);
-  psq[B_ROOK][SQ_G8] += make_score(14, 0);
+  psq[B_ROOK][SQ_H8] += make_score(20, 0);
+  psq[B_ROOK][SQ_H7] += make_score( 7, 0);
+  psq[B_ROOK][SQ_G8] += make_score( 7, 0);
 }
 
 } // namespace PSQT

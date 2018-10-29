@@ -121,11 +121,7 @@ void init() {
           psq[~pc][~s] = -psq[pc][s];
       }
   }
-  // A rook on h1/h8 deserve a lower mg score than a rook on a1/a8
-  psq[W_ROOK][SQ_H1] -= make_score(20, 0);
-  psq[W_ROOK][SQ_H2] -= make_score( 7, 0);
-  psq[W_ROOK][SQ_G1] -= make_score( 7, 0);
-
+  // A rook on h8 deserve a lower mg score than a rook on a8
   psq[B_ROOK][SQ_H8] += make_score(20, 0);
   psq[B_ROOK][SQ_H7] += make_score( 7, 0);
   psq[B_ROOK][SQ_G8] += make_score( 7, 0);

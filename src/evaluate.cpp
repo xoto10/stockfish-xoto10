@@ -156,6 +156,7 @@ namespace {
 
   // Assorted bonuses and penalties
   constexpr Score BishopPawns        = S(  3,  7);
+  constexpr Score CastlingStopped    = S( 32,  0);
   constexpr Score CloseEnemies       = S(  6,  0);
   constexpr Score CorneredBishop     = S( 50, 50);
   constexpr Score Hanging            = S( 57, 32);
@@ -497,6 +498,9 @@ namespace {
 
     // King tropism bonus, to anticipate slow motion attacks on our king
     score -= CloseEnemies * tropism;
+
+    // Penalty if castling has been prevented in moves leading to this position
+    score -= CastlingStopped * pos.this_thread()->castlingStopped[Us];
 
     if (T)
         Trace::add(KING, Us, score);

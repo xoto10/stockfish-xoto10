@@ -839,10 +839,6 @@ namespace {
 
                 assert(depth >= 5 * ONE_PLY);
 
-                if (  pos.can_castle(us)
-                   && pos.piece_on(from_sq(move)) == make_piece(us, KING)
-                   && type_of(move) != CASTLING)
-                    thisThread->castlingStopped[us] = undoCastlingStopped = true;
                 pos.do_move(move, st);
 
                 // Perform a preliminary qsearch to verify that the move holds
@@ -853,8 +849,6 @@ namespace {
                     value = -search<NonPV>(pos, ss+1, -rbeta, -rbeta+1, depth - 4 * ONE_PLY, !cutNode);
 
                 pos.undo_move(move);
-                if (undoCastlingStopped)
-                    thisThread->castlingStopped[us] = undoCastlingStopped = false;
 
                 if (value >= rbeta)
                     return value;

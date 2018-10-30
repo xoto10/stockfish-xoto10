@@ -334,7 +334,7 @@ void Thread::search() {
 
   // No static contempt during opening phase, at most 2 bishops off or 3 pawns
   if (   rootPos.count<PAWN>() > 12
-      && rootPos.non_pawn_material(WHITE) + rootPos.non_pawn_material(BLACK) > 14800)
+      && rootPos.non_pawn_material(WHITE) + rootPos.non_pawn_material(BLACK) > 11600)
       ct = 0;
 
   // In analysis mode, adjust contempt in accordance with user preference

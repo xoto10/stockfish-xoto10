@@ -332,6 +332,11 @@ void Thread::search() {
 
   int ct = int(Options["Contempt"]) * PawnValueEg / 100; // From centipawns
 
+  // No static contempt during opening phase, at most 2 bishops off or 3 pawns
+  if (   rootPos.count<PAWN>() > 12
+      && rootPos.non_pawn_material(WHITE) + rootPos.non_pawn_material(BLACK) > 14800)
+      ct = 0;
+
   // In analysis mode, adjust contempt in accordance with user preference
   if (Limits.infinite || Options["UCI_AnalyseMode"])
       ct =  Options["Analysis Contempt"] == "Off"  ? 0

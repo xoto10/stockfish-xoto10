@@ -334,7 +334,7 @@ void Thread::search() {
 
   // No static contempt during opening phase, at most 2 bishops off or 3 pawns
   if (rootPos.count<ALL_PIECES>() > 27)
-      ct = 10;
+      ct = 0;
 
   // In analysis mode, adjust contempt in accordance with user preference
   if (Limits.infinite || Options["UCI_AnalyseMode"])

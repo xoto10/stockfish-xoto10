@@ -830,10 +830,11 @@ namespace {
     initialize<BLACK>();
 
     // Pieces should be evaluated first (populate attack tables)
-    score +=  pieces<WHITE, KNIGHT>() - pieces<BLACK, KNIGHT>()
-            + pieces<WHITE, BISHOP>() - pieces<BLACK, BISHOP>()
+    // Evaluate bishop and knight last for best chance at outpost detection
+    score +=  pieces<WHITE, QUEEN >() - pieces<BLACK, QUEEN >()
             + pieces<WHITE, ROOK  >() - pieces<BLACK, ROOK  >()
-            + pieces<WHITE, QUEEN >() - pieces<BLACK, QUEEN >();
+            + pieces<WHITE, BISHOP>() - pieces<BLACK, BISHOP>()
+            + pieces<WHITE, KNIGHT>() - pieces<BLACK, KNIGHT>();
 
     score += mobility[WHITE] - mobility[BLACK];
 

@@ -343,7 +343,7 @@ void Thread::search() {
   // Halve static mg contempt during opening phase (at most 6 minors and 5 pawns off)
   bool earlyInGame =    rootPos.count<PAWN>() > 10
                      && rootPos.non_pawn_material(WHITE) + rootPos.non_pawn_material(BLACK) > 11600;
-  int ctmg = earlyInGame ?  ct / 2 : ct;
+  int ctmg = earlyInGame ?  0 : ct;
 
   // In evaluate.cpp the evaluation is from the white point of view
   contempt = (us == WHITE ?  make_score(ctmg, ct / 2)
@@ -399,7 +399,7 @@ void Thread::search() {
 
               // Adjust contempt based on root move's previousScore (dynamic contempt)
               int dct = ct + 88 * previousScore / (abs(previousScore) + 200);
-              int dctmg = earlyInGame ?  dct / 2 : dct;
+              int dctmg = earlyInGame ?  0 : dct;
 
               contempt = (us == WHITE ?  make_score(dctmg, dct / 2)
                                       : -make_score(dctmg, dct / 2));

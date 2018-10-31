@@ -340,9 +340,15 @@ void Thread::search() {
           : Options["Analysis Contempt"] == "Black" && us == WHITE ? -ct
           : ct;
 
+  int ctmg = ct;
+  // No static mg contempt during opening phase (at most 6 minors and 5 pawns off)
+  if (   rootPos.count<PAWN>() > 10
+      && rootPos.non_pawn_material(WHITE) + rootPos.non_pawn_material(BLACK) > 11600)
+      ctmg = 0;
+
   // In evaluate.cpp the evaluation is from the white point of view
-  contempt = (us == WHITE ?  make_score(ct, ct / 2)
-                          : -make_score(ct, ct / 2));
+  contempt = (us == WHITE ?  make_score(ctmg, ct / 2)
+                          : -make_score(ctmg, ct / 2));
 
   // Iterative deepening loop until requested to stop or the target depth is reached
   while (   (rootDepth += ONE_PLY) < DEPTH_MAX
@@ -394,9 +400,10 @@ void Thread::search() {
 
               // Adjust contempt based on root move's previousScore (dynamic contempt)
               int dct = ct + 88 * previousScore / (abs(previousScore) + 200);
+              int dctmg = ctmg + 88 * previousScore / (abs(previousScore) + 200);
 
-              contempt = (us == WHITE ?  make_score(dct, dct / 2)
-                                      : -make_score(dct, dct / 2));
+              contempt = (us == WHITE ?  make_score(dctmg, dct / 2)
+                                      : -make_score(dctmg, dct / 2));
           }
 
           // Start with a small aspiration window and, in the case of a fail

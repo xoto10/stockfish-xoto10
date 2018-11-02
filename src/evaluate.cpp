@@ -163,6 +163,7 @@ namespace {
   constexpr Score KnightOnQueen      = S( 21, 11);
   constexpr Score LongDiagonalBishop = S( 46,  0);
   constexpr Score MinorBehindPawn    = S( 16,  0);
+  constexpr Score Neighbour2         = S( 16, 16);
   constexpr Score Overload           = S( 13,  6);
   constexpr Score PawnlessFlank      = S( 19, 84);
   constexpr Score RookOnPawn         = S( 10, 29);
@@ -584,6 +585,16 @@ namespace {
 
     b = pawn_attacks_bb<Us>(b) & nonPawnEnemies;
     score += ThreatBySafePawn * popcount(b);
+
+    // Bonus for pawns on same rank either side of our semiopen file facing an
+    // opponent's pawn
+    for (File f=FILE_A; f<FILE_G; ++f)
+    {
+        Bitboard pf = pos.pieces(Us, PAWN) & FileBB[f];
+        if (   pf && pe->semiopen_file(Us, File(f+1)) && !pe->semiopen_file(Them, File(f+1))
+            && (shift<EAST>(shift<EAST>(pf)) & (pos.pieces(Us, PAWN))) )
+            score += Neighbour2;
+    }
 
     // Bonus for threats on the next moves against enemy queen
     if (pos.count<QUEEN>(Them) == 1)

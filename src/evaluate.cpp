@@ -172,6 +172,7 @@ namespace {
   constexpr Score ThreatByRank       = S( 16,  3);
   constexpr Score ThreatBySafePawn   = S(173,102);
   constexpr Score TrappedRook        = S( 96,  5);
+  constexpr Score WeakPawnPush       = S( 16, 16);
   constexpr Score WeakQueen          = S( 50, 10);
   constexpr Score WeakUnopposedPawn  = S( 15, 19);
 
@@ -510,11 +511,15 @@ namespace {
   template<Tracing T> template<Color Us>
   Score Evaluation<T>::threats() const {
 
-    constexpr Color     Them     = (Us == WHITE ? BLACK   : WHITE);
-    constexpr Direction Up       = (Us == WHITE ? NORTH   : SOUTH);
-    constexpr Bitboard  TRank3BB = (Us == WHITE ? Rank3BB : Rank6BB);
+    constexpr Color     Them     = (Us == WHITE ? BLACK      : WHITE);
+    constexpr Direction Up       = (Us == WHITE ? NORTH      : SOUTH);
+    constexpr Direction UpEast   = (Us == WHITE ? NORTH_EAST : SOUTH_EAST);
+    constexpr Direction UpWest   = (Us == WHITE ? NORTH_WEST : SOUTH_WEST);
+    constexpr Direction DownEast = (Us == WHITE ? SOUTH_EAST : NORTH_EAST);
+    constexpr Direction DownWest = (Us == WHITE ? SOUTH_WEST : NORTH_WEST);
+    constexpr Bitboard  TRank3BB = (Us == WHITE ? Rank3BB    : Rank6BB);
 
-    Bitboard b, weak, defended, nonPawnEnemies, stronglyProtected, safe;
+    Bitboard b, weak, defended, nonPawnEnemies, stronglyProtected, safe, weakPush;
     Score score = SCORE_ZERO;
 
     // Non-pawn enemies
@@ -571,6 +576,11 @@ namespace {
     // Find squares where our pawns can push on the next move
     b  = shift<Up>(pos.pieces(Us, PAWN)) & ~pos.pieces();
     b |= shift<Up>(b & TRank3BB) & ~pos.pieces();
+
+    // Find our push squares attacked by 2 pawns and defended by none
+    weakPush = b & shift<DownEast>(pos.pieces(Them, PAWN)) & shift<DownWest>(pos.pieces(Them, PAWN))
+               & ~shift<UpEast>(pos.pieces(Us, PAWN)) & ~shift<UpWest>(pos.pieces(Us, PAWN));
+    score -= WeakPawnPush * popcount(weakPush);
 
     // Keep only the squares which are relatively safe
     b &= ~attackedBy[Them][PAWN] & safe;

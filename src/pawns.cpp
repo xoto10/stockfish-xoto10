@@ -35,7 +35,7 @@ namespace {
   constexpr Score Backward   = S( 9, 24);
   constexpr Score Doubled    = S(11, 56);
   constexpr Score Isolated   = S( 5, 15);
-  constexpr Score Neighbour2 = S( 8,  8);
+  constexpr Score TwoStoppers= S(16, 16);
 
   // Connected pawn bonus by opposed, phalanx, #support and rank
   Score Connected[2][2][3][RANK_NB];
@@ -71,6 +71,8 @@ namespace {
 
     constexpr Color     Them = (Us == WHITE ? BLACK : WHITE);
     constexpr Direction Up   = (Us == WHITE ? NORTH : SOUTH);
+    constexpr Bitboard  StopRanks = (Us == WHITE ? Rank4BB | Rank5BB | Rank6BB
+                                                 : Rank3BB | Rank4BB | Rank5BB);
 
     Bitboard b, neighbours, stoppers, doubled, supported, phalanx;
     Bitboard lever, leverPush;
@@ -147,8 +149,8 @@ namespace {
 
         // Bonus for pawns on same rank either side of our semiopen file facing an
         // opponent's pawn
-        if (!opposed && (shift<EAST>(stoppers) & shift<WEST>(stoppers)))
-            score -=Neighbour2;
+        if (!opposed && (shift<EAST>(stoppers) & shift<WEST>(stoppers) & StopRanks))
+            score -= TwoStoppers;
     }
 
     return score;

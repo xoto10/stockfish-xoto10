@@ -71,8 +71,6 @@ namespace {
 
     constexpr Color     Them = (Us == WHITE ? BLACK : WHITE);
     constexpr Direction Up   = (Us == WHITE ? NORTH : SOUTH);
-    constexpr Bitboard  StopRanks = (Us == WHITE ? Rank4BB | Rank5BB | Rank6BB
-                                                 : Rank3BB | Rank4BB | Rank5BB);
 
     Bitboard b, neighbours, stoppers, doubled, supported, phalanx;
     Bitboard lever, leverPush;
@@ -144,13 +142,11 @@ namespace {
         else if (backward)
             score -= Backward, e->weakUnopposed[Us] += !opposed;
 
+        else if (!opposed  && more_than_one(leverPush))
+            score -= TwoStoppers;
+
         if (doubled && !supported)
             score -= Doubled;
-
-        // Bonus for pawns on same rank either side of our semiopen file facing an
-        // opponent's pawn
-        if (!opposed && (shift<EAST>(stoppers) & shift<WEST>(stoppers) & StopRanks))
-            score -= TwoStoppers;
     }
 
     return score;

@@ -75,7 +75,7 @@ namespace {
     Bitboard b, neighbours, stoppers, doubled, supported, phalanx;
     Bitboard lever, leverPush;
     Square s;
-    bool opposed, backward, neighbour2;
+    bool opposed, backward;
     Score score = SCORE_ZERO;
     const Square* pl = pos.squares<PAWN>(Us);
 
@@ -108,8 +108,6 @@ namespace {
         neighbours = ourPawns   & adjacent_files_bb(f);
         phalanx    = neighbours & rank_bb(s);
         supported  = neighbours & rank_bb(s - Up);
-        neighbour2 = f < FILE_G && !(ourPawns & FileBB[f+1]) && (theirPawns & FileBB[f+1])
-                     && (ourPawns & Square(s+2));
 
         // A pawn is backward when it is behind all pawns of the same color
         // on the adjacent files and cannot be safely advanced.
@@ -149,8 +147,8 @@ namespace {
 
         // Bonus for pawns on same rank either side of our semiopen file facing an
         // opponent's pawn
-        if (neighbour2)
-            score += Neighbour2;
+        if (!opposed && (shift<EAST>(stoppers) & shift<WEST>(stoppers)))
+            score -=Neighbour2;
     }
 
     return score;

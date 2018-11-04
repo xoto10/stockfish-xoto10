@@ -1004,7 +1004,7 @@ moves_loop: // When in check, search starts from here
       // Step 15. Make the move
       if (  pos.can_castle(us)
          && pos.piece_on(from_sq(move)) == make_piece(us, KING)
-         && to_sq(move) == relative_square(us, SQ_F1))
+         && type_of(move) != CASTLING)
           thisThread->castlingStopped[us] = undoCastlingStopped = true;
       pos.do_move(move, st, givesCheck);
 

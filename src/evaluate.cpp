@@ -156,7 +156,6 @@ namespace {
 
   // Assorted bonuses and penalties
   constexpr Score BishopPawns        = S(  3,  7);
-  constexpr Score CastlingStopped    = S( 16,  0);
   constexpr Score CloseEnemies       = S(  6,  0);
   constexpr Score CorneredBishop     = S( 50, 50);
   constexpr Score Hanging            = S( 57, 32);
@@ -501,7 +500,7 @@ namespace {
 
     // Penalty if castling has been prevented in moves leading to this position
     if (pos.this_thread()->castlingStopped[Us])
-        score -= make_score(std::max(pos.non_pawn_material(Us) - 4100, Value(0)) / 128, 0);
+        score -= make_score(std::max(pos.non_pawn_material(Us) - 4100, Value(0)) / 256, 0);
 
     if (T)
         Trace::add(KING, Us, score);

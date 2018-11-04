@@ -409,6 +409,7 @@ namespace {
   Score Evaluation<T>::king() const {
 
     constexpr Color    Them = (Us == WHITE ? BLACK : WHITE);
+    constexpr Square   F8Sq = (Us == WHITE ? SQ_F1 : SQ_F8);
     constexpr Bitboard Camp = (Us == WHITE ? AllSquares ^ Rank6BB ^ Rank7BB ^ Rank8BB
                                            : AllSquares ^ Rank1BB ^ Rank2BB ^ Rank3BB);
 
@@ -500,7 +501,7 @@ namespace {
     score -= CloseEnemies * tropism;
 
     // Penalty if castling has been prevented in moves leading to this position
-    score -= CastlingStopped * pos.this_thread()->castlingStopped[Us];
+    score -= CastlingStopped * pos.this_thread()->castlingStopped[Us] * (1 + ksq == F8Sq);
 
     if (T)
         Trace::add(KING, Us, score);

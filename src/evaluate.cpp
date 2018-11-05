@@ -156,6 +156,7 @@ namespace {
 
   // Assorted bonuses and penalties
   constexpr Score BishopPawns        = S(  3,  7);
+  constexpr Score CastlingStopped    = S(112,  0);
   constexpr Score CloseEnemies       = S(  6,  0);
   constexpr Score CorneredBishop     = S( 50, 50);
   constexpr Score Hanging            = S( 57, 32);
@@ -384,7 +385,8 @@ namespace {
             {
                 File kf = file_of(pos.square<KING>(Us));
                 if ((kf < FILE_E) == (file_of(s) < kf))
-                    score -= (TrappedRook - make_score(mob * 22, 0)) * (1 + !pos.can_castle(Us));
+                    score -= (TrappedRook * (1 + !pos.can_castle(Us) + pos.this_thread()->castlingStopped[Us])
+                              - make_score(mob * 22, 0));
             }
         }
 
@@ -416,6 +418,7 @@ namespace {
 
     // King shelter and enemy pawns storm
     Score score = pe->king_safety<Us>(pos, ksq);
+    if (pos.this_thread()->castlingStopped[Us]) score = score / 2;
 
     // Find the squares that opponent attacks in our king flank, and the squares
     // which are attacked twice in that flank but not defended by our pawns.
@@ -494,6 +497,9 @@ namespace {
 
     // King tropism bonus, to anticipate slow motion attacks on our king
     score -= CloseEnemies * tropism;
+
+    // Penalty if castling has been prevented in moves leading to this position
+    score -= CastlingStopped * pos.this_thread()->castlingStopped[Us];
 
     if (T)
         Trace::add(KING, Us, score);

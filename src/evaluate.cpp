@@ -292,6 +292,7 @@ namespace {
     constexpr Bitboard OutpostRanks = (Us == WHITE ? Rank4BB | Rank5BB | Rank6BB
                                                    : Rank5BB | Rank4BB | Rank3BB);
     const Square* pl = pos.squares<Pt>(Us);
+    Bitboard NotH2H7 = (Us == WHITE ? ~SquareBB[SQ_H2] : ~SquareBB[SQ_H7]);
 
     Bitboard b, bb;
     Square s;
@@ -320,12 +321,11 @@ namespace {
             kingAttacksCount[Us] += popcount(b & attackedBy[Them][KING]);
         }
 
-        int mob = popcount(b & mobilityArea[Us]);
-
-        mobility[Us] += MobilityBonus[Pt - 2][mob];
-
         if (Pt == BISHOP || Pt == KNIGHT)
         {
+            int mob = popcount(b & mobilityArea[Us]);
+            mobility[Us] += MobilityBonus[Pt - 2][mob];
+
             // Bonus if piece is on an outpost square or can reach one
             bb = OutpostRanks & ~pe->pawn_attacks_span(Them);
             if (bb & s)
@@ -372,6 +372,10 @@ namespace {
 
         if (Pt == ROOK)
         {
+//          int mob = popcount(b & mobilityArea[Us]);
+            int mob = popcount(b & mobilityArea[Us] & NotH2H7);
+            mobility[Us] += MobilityBonus[Pt - 2][mob];
+
             // Bonus for aligning rook with enemy pawns on the same rank/file
             if (relative_rank(Us, s) >= RANK_5)
                 score += RookOnPawn * popcount(pos.pieces(Them, PAWN) & PseudoAttacks[ROOK][s]);
@@ -385,13 +389,18 @@ namespace {
             {
                 File kf = file_of(pos.square<KING>(Us));
                 if ((kf < FILE_E) == (file_of(s) < kf))
-                    score -= (TrappedRook * (1 + !pos.can_castle(Us) + pos.this_thread()->castlingStopped[Us])
-                              - make_score(mob * 22, 0));
+//                  score -= (TrappedRook * (1 + !pos.can_castle(Us) + pos.this_thread()->castlingStopped[Us])
+//                            - make_score(mob * 22, 0));
+                    score -= (TrappedRook - make_score(mob * 22, 0))
+                             * (1 + !pos.can_castle(Us) + pos.this_thread()->castlingStopped[Us]);
             }
         }
 
         if (Pt == QUEEN)
         {
+            int mob = popcount(b & mobilityArea[Us]);
+            mobility[Us] += MobilityBonus[Pt - 2][mob];
+
             // Penalty if any relative pin or discovered attack against the queen
             Bitboard queenPinners;
             if (pos.slider_blockers(pos.pieces(Them, ROOK, BISHOP), s, queenPinners))

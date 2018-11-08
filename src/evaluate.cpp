@@ -858,8 +858,13 @@ namespace {
         Trace::add(TOTAL, score);
     }
 
-    return  (pos.side_to_move() == WHITE ? v : -v) // Side to move point of view
-           + Eval::Tempo;
+    v = (pos.side_to_move() == WHITE ? v : -v) // Side to move point of view
+        + Eval::Tempo;
+    // Penalty for more material on board if losing
+    if (v < 0)
+        v -= pos.non_pawn_material(pos.side_to_move()) / 512;
+
+    return  v;
   }
 
 } // namespace

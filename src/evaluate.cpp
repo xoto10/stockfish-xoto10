@@ -175,7 +175,7 @@ namespace {
             Score B                  = S( 22,  0);
   constexpr Score WeakQueen          = S( 50, 10);
   constexpr Score WeakUnopposedPawn  = S( 15, 19);
-TUNE(SetRange(-150,150), MB[ROOK-2], A, B);
+TUNE(SetRange(-200,400), MB[ROOK-2], SetRange(-50,200), A, B);
 #undef S
 
   // Evaluation class computes and stores attacks tables and other working data

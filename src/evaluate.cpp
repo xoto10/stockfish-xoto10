@@ -107,9 +107,9 @@ namespace {
     { S(-48,-59), S(-20,-23), S( 16, -3), S( 26, 13), S( 38, 24), S( 51, 42), // Bishops
       S( 55, 54), S( 63, 57), S( 63, 65), S( 68, 73), S( 81, 78), S( 81, 86),
       S( 91, 88), S( 98, 97) },
-    { S(-58,-76), S(-27,-18), S(-15, 28), S(-10, 55), S( -5, 69), S( -2, 82), // Rooks
-      S(  9,112), S( 16,118), S( 23,132), S( 29,142), S( 34,155), S( 39,165),
-      S( 45,166), S( 51,169), S( 57,171) },
+    { S(-49,-73), S(-24,-19), S(  1, 21), S(  6, 54), S( 12, 63), S( 17, 86), // Rooks
+      S( 24,113), S( 35,119), S( 48,118), S( 44,140), S( 55,141), S( 49,163),
+      S( 63,161), S( 69,170), S( 51,184) },
     { S(-39,-36), S(-21,-15), S(  3,  8), S(  3, 18), S( 14, 34), S( 22, 54), // Queens
       S( 28, 61), S( 41, 73), S( 43, 79), S( 48, 92), S( 56, 94), S( 60,104),
       S( 60,113), S( 66,120), S( 67,123), S( 70,126), S( 71,133), S( 73,136),
@@ -171,11 +171,11 @@ namespace {
   constexpr Score ThreatByPawnPush   = S( 45, 40);
   constexpr Score ThreatByRank       = S( 16,  3);
   constexpr Score ThreatBySafePawn   = S(173,102);
-  constexpr Score TrappedRook        = S( 96,  5);
-  constexpr Score TrappedRookMob     = S( 22,  0);
+  constexpr Score TrappedRook        = S( 94,  6);
+  constexpr Score TrappedRookMob     = S( 17, -4);
   constexpr Score WeakQueen          = S( 50, 10);
   constexpr Score WeakUnopposedPawn  = S( 15, 19);
-Tune(SetRange(-150,150), MobilityBonus[ROOK-2], TrappedRook, TrappedRookMob);
+
 #undef S
 
   // Evaluation class computes and stores attacks tables and other working data

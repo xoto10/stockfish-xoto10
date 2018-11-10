@@ -385,8 +385,8 @@ TUNE(SetRange(-200,400), MB[ROOK-2], SetRange(-50,200), A, B);
             {
                 File kf = file_of(pos.square<KING>(Us));
                 if ((kf < FILE_E) == (file_of(s) < kf))
-                    score -= (A           * (1 + !pos.can_castle(Us))
-                                                 * (rank_of(pos.square<KING>(Us)) == rank_of(s)))
+                    score -= (A           * (1 + !pos.can_castle(Us)
+                                                 * (rank_of(pos.square<KING>(Us)) == rank_of(s))))
                              - B * mob;
             }
         }

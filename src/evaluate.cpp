@@ -173,6 +173,7 @@ namespace {
   constexpr Score ThreatByRank       = S( 16,  3);
   constexpr Score ThreatBySafePawn   = S(173,102);
   constexpr Score TrappedRook        = S( 96,  5);
+  constexpr Score TrappedRookMob     = S( 22,  0);
   constexpr Score WeakQueen          = S( 50, 10);
   constexpr Score WeakUnopposedPawn  = S( 15, 19);
 
@@ -385,9 +386,8 @@ namespace {
             {
                 File kf = file_of(pos.square<KING>(Us));
                 if ((kf < FILE_E) == (file_of(s) < kf))
-                    score -= (TrappedRook * (1 + !pos.can_castle(Us) * 2 // + pos.this_thread()->castlingStopped[Us])
-                                                 * (rank_of(pos.square<KING>(Us)) == rank_of(s)) )
-                              - make_score(mob * 22, 0));
+                    score -= (TrappedRook - TrappedRookMob * mob) * (1 + !pos.can_castle(Us));
+                    // + pos.this_thread()->castlingStopped[Us])
             }
         }
 

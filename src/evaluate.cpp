@@ -101,7 +101,7 @@ namespace {
 
   // MobilityBonus[PieceType-2][attacked] contains bonuses for middle and end game,
   // indexed by piece type and number of attacked squares in the mobility area.
-  constexpr Score MobilityBonus[][32] = {
+            Score M            [][32] = {
     { S(-62,-81), S(-53,-56), S(-12,-30), S( -4,-14), S(  3,  8), S( 13, 15), // Knights
       S( 22, 23), S( 28, 27), S( 33, 33) },
     { S(-48,-59), S(-20,-23), S( 16, -3), S( 26, 13), S( 38, 24), S( 51, 42), // Bishops
@@ -153,6 +153,8 @@ namespace {
 
   // Assorted bonuses and penalties
   constexpr Score BishopPawns        = S(  3,  7);
+            int   A                  = 128;
+            Score B                  = S( 36,  0);
   constexpr Score CloseEnemies       = S(  6,  0);
   constexpr Score CorneredBishop     = S( 50, 50);
   constexpr Score Hanging            = S( 57, 32);
@@ -168,10 +170,13 @@ namespace {
   constexpr Score ThreatByPawnPush   = S( 45, 40);
   constexpr Score ThreatByRank       = S( 16,  3);
   constexpr Score ThreatBySafePawn   = S(173,102);
-  constexpr Score TrappedRook        = S( 96,  5);
+            Score C                  = S( 96,  5);
+            Score D                  = S( 96,  5);
+            Score E                  = S( 96,  5);
+            Score F                  = S( 22,  0);
   constexpr Score WeakQueen          = S( 50, 10);
   constexpr Score WeakUnopposedPawn  = S( 15, 19);
-
+TUNE(SetRange(-200,400),M[ROOK-2],SetRange(0,256),A,B,SetRange(-50,200),C,D,E,F);
 #undef S
 
   // Evaluation class computes and stores attacks tables and other working data
@@ -318,7 +323,7 @@ namespace {
 
         int mob = popcount(b & mobilityArea[Us]);
 
-        mobility[Us] += MobilityBonus[Pt - 2][mob];
+        mobility[Us] += M[Pt - 2][mob];
 
         if (Pt == BISHOP || Pt == KNIGHT)
         {
@@ -381,7 +386,10 @@ namespace {
             {
                 File kf = file_of(pos.square<KING>(Us));
                 if ((kf < FILE_E) == (file_of(s) < kf))
-                    score -= (TrappedRook - make_score(mob * 22, 0)) * (1 + !pos.can_castle(Us));
+                    score -= (C
+                              + D * !pos.can_castle(Us)
+                              + E * pos.this_thread()->castlingStopped[Us]
+                              - F * mob);
             }
         }
 
@@ -413,6 +421,10 @@ namespace {
 
     // King shelter and enemy pawns storm
     Score score = pe->king_safety<Us>(pos);
+
+    // Penalty if castling has been prevented in moves leading to this position
+    if (pos.this_thread()->castlingStopped[Us])
+        score = score * A / 256 - B;
 
     // Find the squares that opponent attacks in our king flank, and the squares
     // which are attacked twice in that flank but not defended by our pawns.

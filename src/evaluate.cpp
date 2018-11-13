@@ -153,6 +153,8 @@ namespace {
 
   // Assorted bonuses and penalties
   constexpr Score BishopPawns        = S(  3,  7);
+  constexpr int   CastlingSafety     = 128;
+  constexpr Score CastlingStopped    = S( 36,  0);
   constexpr Score CloseEnemies       = S(  6,  0);
   constexpr Score CorneredBishop     = S( 50, 50);
   constexpr Score Hanging            = S( 57, 32);
@@ -168,7 +170,10 @@ namespace {
   constexpr Score ThreatByPawnPush   = S( 45, 40);
   constexpr Score ThreatByRank       = S( 16,  3);
   constexpr Score ThreatBySafePawn   = S(173,102);
-  constexpr Score TrappedRook        = S( 96,  5);
+  constexpr Score TrappedRook1       = S( 96,  5);
+  constexpr Score TrappedRook2       = S( 96,  5);
+  constexpr Score TrappedRook3       = S( 96,  5);
+  constexpr Score TrappedRookMob     = S( 22,  0);
   constexpr Score WeakQueen          = S( 50, 10);
   constexpr Score WeakUnopposedPawn  = S( 15, 19);
 
@@ -381,7 +386,10 @@ namespace {
             {
                 File kf = file_of(pos.square<KING>(Us));
                 if ((kf < FILE_E) == (file_of(s) < kf))
-                    score -= (TrappedRook - make_score(mob * 22, 0)) * (1 + !pos.can_castle(Us));
+                    score -= (TrappedRook1
+                              + TrappedRook2 * !pos.can_castle(Us)
+                              + TrappedRook3 * pos.this_thread()->castlingStopped[Us]
+                              - TrappedRookMob * mob);
             }
         }
 
@@ -413,6 +421,10 @@ namespace {
 
     // King shelter and enemy pawns storm
     Score score = pe->king_safety<Us>(pos);
+
+    // Penalty if castling has been prevented in moves leading to this position
+    if (pos.this_thread()->castlingStopped[Us])
+        score = score * CastlingSafety / 256 - CastlingStopped;
 
     // Find the squares that opponent attacks in our king flank, and the squares
     // which are attacked twice in that flank but not defended by our pawns.

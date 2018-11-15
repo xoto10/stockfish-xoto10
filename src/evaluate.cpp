@@ -858,8 +858,8 @@ namespace {
     v = (pos.side_to_move() == WHITE ? v : -v) // Side to move point of view
         + Eval::Tempo;
     // Fade score towards zero if 50 move counter > 18 moves
-    if (pos.rule50_count() > 36)
-        v = v * (100 - pos.rule50_count()) / 64;
+    if (pos.rule50_count() > 20)
+        v = v * std::max(0, 84 - pos.rule50_count()) / 64;
     return v;
   }
 

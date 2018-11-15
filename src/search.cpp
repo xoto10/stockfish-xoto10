@@ -505,10 +505,11 @@ void Thread::search() {
               // Use part of the gained time from a previous stable move for the current move
               double bestMoveInstability = 1.0 + mainThread->bestMoveChanges;
               bestMoveInstability *= std::pow(mainThread->previousTimeReduction, 0.528) / timeReduction;
+              bestMoveInstability = std::max(0.7, bestMoveInstability * improvingFactor / 581);
 
               // Stop the search if we have only one legal move, or if available time elapsed
               if (   rootMoves.size() == 1
-                  || Time.elapsed() > Time.optimum() * bestMoveInstability * improvingFactor / 581)
+                  || Time.elapsed() > Time.optimum() * bestMoveInstability)
               {
                   // If we are allowed to ponder do not stop the search now but
                   // keep pondering until the GUI sends "ponderhit" or "stop".

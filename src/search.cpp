@@ -65,6 +65,14 @@ namespace {
   constexpr int SkipSize[]  = { 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4 };
   constexpr int SkipPhase[] = { 0, 1, 0, 1, 2, 3, 0, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5, 6, 7 };
 
+  int IF1[2] = { 246, 246}, IF2[2] = { 832, 832}, IF3[2] = { 306, 306},
+      IF4[2] = { 119, 119}, IF5[2] = {   6,   6}, IF7[2] = { 581, 581};
+  int IF6    = 30;
+  int TR1[2] = {1000,1000}, TR2[2] = {1100,1100}, TR3[2] = {1250,1250}, TR4[2] = {1562,1562}, TR5[2] = {1953,1953};
+  int MI[2]  = { 528, 528};
+TUNE(IF1,IF2,IF3,IF4,IF5,IF6,IF7);
+TUNE(TR1,TR2,TR3,TR4,TR5,MI);
+
   // Razor and futility margins
   constexpr int RazorMargin = 600;
   Value futility_margin(Depth d, bool improving) {
@@ -492,24 +500,27 @@ void Thread::search() {
           && !Threads.stop
           && !Threads.stopOnPonderhit)
           {
+              const int wl = (mainThread->previousScore < 0);
               const int F[] = { failedLow,
                                 bestValue - mainThread->previousScore };
 
-              int improvingFactor = std::max(246, std::min(832, 306 + 119 * F[0] - 6 * F[1]));
+              int improvingFactor = std::max(IF1[wl], std::min(IF2[wl],
+                                                IF3[wl] + IF4[wl] * F[0] + IF6 * wl - IF5[wl] * F[1]));
 
               // If the bestMove is stable over several iterations, reduce time accordingly
-              timeReduction = 1.0;
-              for (int i : {3, 4, 5})
-                  if (lastBestMoveDepth * i < completedDepth)
-                     timeReduction *= 1.25;
+              timeReduction =   lastBestMoveDepth * 5 < completedDepth ? TR5[wl]/1000.0
+                              : lastBestMoveDepth * 4 < completedDepth ? TR4[wl]/1000.0
+                              : lastBestMoveDepth * 3 < completedDepth ? TR3[wl]/1000.0
+                              : lastBestMoveDepth * 2 < completedDepth ? TR2[wl]/1000.0
+                              : TR1[wl]/1000.0;
 
               // Use part of the gained time from a previous stable move for the current move
               double bestMoveInstability = 1.0 + mainThread->bestMoveChanges;
-              bestMoveInstability *= std::pow(mainThread->previousTimeReduction, 0.528) / timeReduction;
+              bestMoveInstability *= std::pow(mainThread->previousTimeReduction, MI[wl]/1000.0) / timeReduction;
 
               // Stop the search if we have only one legal move, or if available time elapsed
               if (   rootMoves.size() == 1
-                  || Time.elapsed() > Time.optimum() * bestMoveInstability * improvingFactor / 581)
+                  || Time.elapsed() > Time.optimum() * bestMoveInstability * improvingFactor / IF7[wl])
               {
                   // If we are allowed to ponder do not stop the search now but
                   // keep pondering until the GUI sends "ponderhit" or "stop".

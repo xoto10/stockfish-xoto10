@@ -503,9 +503,8 @@ void Thread::search() {
                      timeReduction *= 1.25;
 
               // Use part of the gained time from a previous stable move for the current move
-              double bestMoveInstability = 1.0 + mainThread->bestMoveChanges;
-              if (std::pow(mainThread->previousTimeReduction, 0.528) < timeReduction)
-                  bestMoveInstability *= std::pow(mainThread->previousTimeReduction, 0.528) / timeReduction;
+              double bestMoveInstability = 1.0 + mainThread->bestMoveChanges / 2.0;
+              bestMoveInstability *= mainThread->previousTimeReduction / timeReduction;
 
               // Stop the search if we have only one legal move, or if available time elapsed
               if (   rootMoves.size() == 1
@@ -523,7 +522,6 @@ void Thread::search() {
 
   if (!mainThread)
       return;
-
   mainThread->previousTimeReduction = timeReduction;
 
   // If skill level is enabled, swap best PV line with the sub-optimal one

@@ -69,9 +69,9 @@ namespace {
       IF4[2] = { 119, 119}, IF5[2] = {   6,   6}, IF7[2] = { 581, 581};
   int IF6    = 30;
   int TR1[2] = {1000,1000}, TR2[2] = {1100,1100}, TR3[2] = {1250,1250}, TR4[2] = {1562,1562}, TR5[2] = {1953,1953};
-  int MI[2]  = { 528, 528};
+  int MI1[2] = { 528, 528}, MI2[2] = {  60,  60};
 TUNE(IF1,IF2,IF3,IF4,IF5,IF6,IF7);
-TUNE(TR1,TR2,TR3,TR4,TR5,MI);
+TUNE(TR1,TR2,TR3,TR4,TR5,MI1,MI2);
 
   // Razor and futility margins
   constexpr int RazorMargin = 600;
@@ -515,8 +515,8 @@ void Thread::search() {
                               : TR1[wl]/1000.0;
 
               // Use part of the gained time from a previous stable move for the current move
-              double bestMoveInstability = 1.0 + mainThread->bestMoveChanges;
-              bestMoveInstability *= std::pow(mainThread->previousTimeReduction, MI[wl]/1000.0) / timeReduction;
+              double bestMoveInstability = 1.0 + MI2[wl] * mainThread->bestMoveChanges / 64;
+              bestMoveInstability *= std::pow(mainThread->previousTimeReduction, MI1[wl]/1000.0) / timeReduction;
 
               // Stop the search if we have only one legal move, or if available time elapsed
               if (   rootMoves.size() == 1

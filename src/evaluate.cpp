@@ -353,13 +353,18 @@ namespace {
                 if (more_than_one(attacks_bb<BISHOP>(s, pos.pieces(PAWN)) & Center))
                     score += LongDiagonalBishop;
             }
-            else if (   pos.pieces(Them, BISHOP)
-                     && (   (((f = file_of(s)) == FILE_A) && (pos.pieces(Them, BISHOP) & (s + EAST + EAST + EAST)))
-                         || ((f == FILE_H)                && (pos.pieces(Them, BISHOP) & (s + WEST + WEST + WEST)))
-                         || (((r = rank_of(s)) == RANK_1) && (pos.pieces(Them, BISHOP) & (s + NORTH + NORTH + NORTH)))
-                         || ((r == RANK_8)                && (pos.pieces(Them, BISHOP) & (s + SOUTH + SOUTH + SOUTH)))
-                    ))
+            else if (pos.pieces(Them, BISHOP))
+                // (Pt == KNIGHT)
+            {
+                f = file_of(s);
+                r = rank_of(s);
+                if (   ((f < FILE_F) && (pos.pieces(Them, BISHOP) & (s + EAST + EAST + EAST)))
+                    || ((f > FILE_C) && (pos.pieces(Them, BISHOP) & (s + WEST + WEST + WEST)))
+                    || ((r < RANK_6) && (pos.pieces(Them, BISHOP) & (s + NORTH + NORTH + NORTH)))
+                    || ((r > RANK_3) && (pos.pieces(Them, BISHOP) & (s + SOUTH + SOUTH + SOUTH)))
+                   )
                 score -= DominatedKnight;
+            }
 
             // An important Chess960 pattern: A cornered bishop blocked by a friendly
             // pawn diagonally in front of it is a very serious problem, especially

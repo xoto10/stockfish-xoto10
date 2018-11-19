@@ -162,7 +162,7 @@ namespace {
   constexpr Score MinorBehindPawn    = S( 16,  0);
   constexpr Score Overload           = S( 12,  6);
   constexpr Score PawnlessFlank      = S( 18, 94);
-//constexpr Score RestrictedPawn     = S(  3,  4);
+  constexpr Score RestrictedPawn     = S(  3,  4);
   constexpr Score RestrictedPiece    = S(  7,  6);
   constexpr Score RookOnPawn         = S( 10, 28);
   constexpr Score SliderOnQueen      = S( 49, 21);
@@ -569,8 +569,8 @@ namespace {
     b |= shift<Up>(b & TRank3BB) & ~pos.pieces();
 
     // Bonus for restricting their pawn and piece moves
-//  restricted = b & ~attackedBy[Them][ALL_PIECES] & attackedBy[Us][ALL_PIECES];
-//  score += RestrictedPawn * popcount(restricted);
+    restricted = b & ~attackedBy[Them][ALL_PIECES] & attackedBy[Us][ALL_PIECES];
+    score += RestrictedPawn * popcount(restricted);
 
     restricted =  attackedBy[Them][ALL_PIECES] & ~attackedBy[Them][PAWN]
                 & ~attackedBy2[Them] & attackedBy[Us][ALL_PIECES];

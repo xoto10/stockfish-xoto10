@@ -162,7 +162,7 @@ namespace {
   constexpr Score MinorBehindPawn    = S( 16,  0);
   constexpr Score Overload           = S( 12,  6);
   constexpr Score PawnlessFlank      = S( 18, 94);
-  constexpr Score RestrictedPawn     = S(  5,  6);
+  constexpr Score RestrictedPawn     = S(  4,  5);
   constexpr Score RestrictedPiece    = S(  7,  6);
   constexpr Score RookOnPawn         = S( 10, 28);
   constexpr Score SliderOnQueen      = S( 49, 21);
@@ -577,8 +577,8 @@ namespace {
 
     // Bonus for restricting their pawn moves
     restricted =  b
-                & ~attackedBy[Them][ALL_PIECES]
-                & attackedBy[Us][ALL_PIECES];
+                & (  (~attackedBy[Them][ALL_PIECES] & attackedBy[Us][ALL_PIECES])
+                   | (~attackedBy2[Them] & attackedBy2[Us]) );
     score += RestrictedPawn * popcount(restricted);
 
     // Keep only the squares which are relatively safe

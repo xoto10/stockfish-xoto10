@@ -153,7 +153,7 @@ namespace {
 
   // Assorted bonuses and penalties
 //constexpr Score Attack             = S(  3,  3);
-  constexpr Score AttackBy2          = S(  3,  1);
+  constexpr Score AttackBy2          = S(  1,  3);
   constexpr Score BishopPawns        = S(  3,  8);
   constexpr Score CloseEnemies       = S(  7,  0);
   constexpr Score CorneredBishop     = S( 50, 50);

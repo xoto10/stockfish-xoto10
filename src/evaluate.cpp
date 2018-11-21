@@ -162,6 +162,7 @@ namespace {
   constexpr Score MinorBehindPawn    = S( 16,  0);
   constexpr Score Overload           = S( 12,  6);
   constexpr Score PawnlessFlank      = S( 18, 94);
+  constexpr Score PawnPush           = S(  4,  5);
   constexpr Score RestrictedPiece    = S(  7,  6);
   constexpr Score RookOnPawn         = S( 10, 28);
   constexpr Score SliderOnQueen      = S( 49, 21);
@@ -576,6 +577,7 @@ namespace {
 
     // Keep only the squares which are relatively safe
     b &= ~attackedBy[Them][PAWN] & safe;
+    score += PawnPush * popcount(b);
 
     // Bonus for safe pawn threats on the next move
     b = pawn_attacks_bb<Us>(b) & pos.pieces(Them);

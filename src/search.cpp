@@ -65,11 +65,11 @@ namespace {
   constexpr int SkipSize[]  = { 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4 };
   constexpr int SkipPhase[] = { 0, 1, 0, 1, 2, 3, 0, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5, 6, 7 };
  
-  constexpr int IF1[2] = { 262, 253}, IF2[2] = { 851, 854}, IF3[2] = { 339, 305},
-                IF4[2] = { 115, 109}, IF5[2] = {   6,   5}, IF7[2] = { 571, 588};
+  constexpr int IF1[2] = { 260, 254}, IF2[2] = { 850, 847}, IF3[2] = { 339, 308},
+                IF4[2] = { 116, 108}, IF5[2] = {   6,   5}, IF7[2] = { 571, 592};
   constexpr int IF6    = 33;
-  constexpr int TR1[2] = {1060,1002}, TR2[2] = {1067,1133}, TR3[2] = {1186,1284}, TR4[2] = {1545,1467}, TR5[2] = {2032,2004};
-  constexpr int MI1[2] = { 533, 509}, MI2[2] = {  60,  59};
+  constexpr int TR1[2] = {1077, 996}, TR2[2] = {1074,1125}, TR3[2] = {1161,1271}, TR4[2] = {1574,1461}, TR5[2] = {2032,1993};
+  constexpr int MI1[2] = { 533, 513}, MI2[2] = {  61,  59};
 
   // Razor and futility margins
   constexpr int RazorMargin = 600;

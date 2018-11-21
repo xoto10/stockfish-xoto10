@@ -107,7 +107,7 @@ namespace {
     { S(-48,-59), S(-20,-23), S( 16, -3), S( 26, 13), S( 38, 24), S( 51, 42), // Bishops
       S( 55, 54), S( 63, 57), S( 63, 65), S( 68, 73), S( 81, 78), S( 81, 86),
       S( 91, 88), S( 98, 97) },
-    { S(-58,-76), S(-27,-18), S(-15, 28), S(-10, 55), S( -5, 69), S( -2, 82), // Rooks
+    { S(-90,-76), S(-27,-18), S(-15, 28), S(-10, 55), S( -5, 69), S( -2, 82), // Rooks
       S(  9,112), S( 16,118), S( 30,132), S( 29,142), S( 32,155), S( 38,165),
       S( 46,166), S( 48,169), S( 58,171) },
     { S(-39,-36), S(-21,-15), S(  3,  8), S(  3, 18), S( 14, 34), S( 22, 54), // Queens
@@ -153,6 +153,7 @@ namespace {
 
   // Assorted bonuses and penalties
   constexpr Score BishopPawns        = S(  3,  8);
+  constexpr Score CastlingStopped    = S(100,  0);
   constexpr Score CloseEnemies       = S(  7,  0);
   constexpr Score CorneredBishop     = S( 50, 50);
   constexpr Score Hanging            = S( 62, 34);
@@ -170,6 +171,7 @@ namespace {
   constexpr Score ThreatByRank       = S( 14,  3);
   constexpr Score ThreatBySafePawn   = S(169, 99);
   constexpr Score TrappedRook        = S( 98,  5);
+  constexpr Score TrappedRookMob     = S( 22,  0);
   constexpr Score WeakQueen          = S( 51, 10);
   constexpr Score WeakUnopposedPawn  = S( 14, 20);
 
@@ -382,7 +384,8 @@ namespace {
             {
                 File kf = file_of(pos.square<KING>(Us));
                 if ((kf < FILE_E) == (file_of(s) < kf))
-                    score -= (TrappedRook - make_score(mob * 22, 0)) * (1 + !pos.can_castle(Us));
+                    score -= (TrappedRook - TrappedRookMob * mob) * (1 + !pos.can_castle(Us));
+                    // + pos.this_thread()->castlingStopped[Us])
             }
         }
 
@@ -414,6 +417,10 @@ namespace {
 
     // King shelter and enemy pawns storm
     Score score = pe->king_safety<Us>(pos);
+
+    // Penalty if castling has been prevented in moves leading to this position
+    if (pos.this_thread()->castlingStopped[Us])
+        score = score / 2 - CastlingStopped;
 
     // Find the squares that opponent attacks in our king flank, and the squares
     // which are attacked twice in that flank.

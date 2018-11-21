@@ -152,6 +152,8 @@ namespace {
   };
 
   // Assorted bonuses and penalties
+  constexpr Score Attack             = S(  5,  5);
+//constexpr Score AttackBy2          = S(  5,  5);
   constexpr Score BishopPawns        = S(  3,  8);
   constexpr Score CloseEnemies       = S(  7,  0);
   constexpr Score CorneredBishop     = S( 50, 50);
@@ -160,7 +162,6 @@ namespace {
   constexpr Score KnightOnQueen      = S( 20, 12);
   constexpr Score LongDiagonalBishop = S( 44,  0);
   constexpr Score MinorBehindPawn    = S( 16,  0);
-  constexpr Score MobilityPiece      = S(  3,  3);
   constexpr Score Overload           = S( 12,  6);
   constexpr Score PawnlessFlank      = S( 18, 94);
   constexpr Score RestrictedPiece    = S(  7,  6);
@@ -567,12 +568,9 @@ namespace {
                 &  attackedBy[Us][ALL_PIECES];
     score += RestrictedPiece * popcount(restricted);
 
-    // Bonus for supported piece mobility
-    b =   attackedBy2[Us]
-       & ~pos.pieces()
-       & ~attackedBy[Them][PAWN]
-       & ~attackedBy2[Them];
-    score += MobilityPiece * popcount(b);
+    // Bonus for attacked pieces
+    score += Attack * popcount(attackedBy[Us][ALL_PIECES] & pos.pieces(Them));
+//  score += AttackBy2 * popcount(attackedBy2[Us] & pos.pieces(Them));
 
     // Bonus for enemy unopposed weak pawns
     if (pos.pieces(Us, ROOK, QUEEN))

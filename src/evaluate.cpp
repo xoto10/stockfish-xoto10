@@ -510,7 +510,7 @@ namespace {
     constexpr Direction Up       = (Us == WHITE ? NORTH   : SOUTH);
     constexpr Bitboard  TRank3BB = (Us == WHITE ? Rank3BB : Rank6BB);
 
-    Bitboard b, weak, defended, nonPawnEnemies, stronglyProtected, safe, /*restricted,*/ moves;
+    Bitboard b, weak, defended, nonPawnEnemies, stronglyProtected, safe, restricted;
     Score score = SCORE_ZERO;
 
     // Non-pawn enemies
@@ -561,18 +561,14 @@ namespace {
     }
 
     // Bonus for restricting their piece moves
-//  restricted =   attackedBy[Them][ALL_PIECES]
-//              & ~attackedBy[Them][PAWN]
-//              & ~attackedBy2[Them]
-//              &  attackedBy[Us][ALL_PIECES];
-//  score += RestrictedPiece * popcount(restricted);
+    restricted =   attackedBy[Them][ALL_PIECES]
+                & ~attackedBy[Them][PAWN]
+                & ~attackedBy2[Them]
+                &  attackedBy[Us][ALL_PIECES];
+    score += RestrictedPiece * popcount(restricted);
 
-    // Bonus for piece mobility
-    moves =  attackedBy[Us][ALL_PIECES]
-           & ~attackedBy[Us][PAWN]
-           & (  ~attackedBy[Them][ALL_PIECES]
-              | (~attackedBy[Them][PAWN] & ~attackedBy2[Them] & attackedBy[Us][ALL_PIECES]));
-    score += MobilityPiece * popcount(moves);
+    // Bonus for supported piece mobility
+    score += MobilityPiece * popcount(attackedBy2[Us]);
 
     // Bonus for enemy unopposed weak pawns
     if (pos.pieces(Us, ROOK, QUEEN))

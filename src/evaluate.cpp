@@ -575,12 +575,12 @@ namespace {
     b  = shift<Up>(pos.pieces(Us, PAWN)) & ~pos.pieces();
     b |= shift<Up>(b & TRank3BB) & ~pos.pieces();
 
-    // Bonus for restricting their pawn moves
+    // Penalty if our pawn moves restricted
     restricted =  b
-                & (  (attackedBy[Us][ALL_PIECES] & ~attackedBy[Them][ALL_PIECES])
-                   | (  attackedBy2[Us] & ~attackedBy2[Them]
-                      & (~attackedBy[Them][PAWN] | attackedBy[Us][PAWN])));
-    score += RestrictedPawn * popcount(restricted);
+                & (  (attackedBy[Them][ALL_PIECES] & ~attackedBy[Us][ALL_PIECES])
+                   | (  attackedBy2[Them] & ~attackedBy2[Us]
+                      & (attackedBy[Them][PAWN] | ~attackedBy[Us][PAWN])));
+    score -= RestrictedPawn * popcount(restricted);
 
     // Keep only the squares which are relatively safe
     b &= ~attackedBy[Them][PAWN] & safe;

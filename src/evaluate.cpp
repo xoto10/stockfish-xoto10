@@ -294,7 +294,8 @@ namespace {
 
     Bitboard b, bb;
     Square s;
-    Score score = SCORE_ZERO;
+    Score score   = SCORE_ZERO;
+    int   attacks = 0;
 
     attackedBy[Us][Pt] = 0;
 
@@ -311,6 +312,7 @@ namespace {
         attackedBy2[Us] |= attackedBy[Us][ALL_PIECES] & b;
         attackedBy[Us][Pt] |= b;
         attackedBy[Us][ALL_PIECES] |= b;
+        attacks += popcount(b & pos.pieces(Them));
 
         if (b & kingRing[Them])
         {
@@ -396,6 +398,9 @@ namespace {
                 score -= WeakQueen;
         }
     }
+
+    score += Attack * attacks;
+
     if (T)
         Trace::add(Pt, Us, score);
 
@@ -569,7 +574,7 @@ namespace {
     score += RestrictedPiece * popcount(restricted);
 
     // Bonus for attacked pieces
-    score += Attack * popcount(attackedBy[Us][ALL_PIECES] & pos.pieces(Them));
+//  score += Attack * popcount(attackedBy[Us][ALL_PIECES] & pos.pieces(Them));
 //  score += AttackBy2 * popcount(attackedBy2[Us] & pos.pieces(Them));
 
     // Bonus for enemy unopposed weak pawns

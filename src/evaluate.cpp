@@ -568,7 +568,11 @@ namespace {
     score += RestrictedPiece * popcount(restricted);
 
     // Bonus for supported piece mobility
-    score += MobilityPiece * popcount(attackedBy2[Us] & ~pos.pieces());
+    b =   attackedBy2[Us]
+       & ~pos.pieces()
+       & ~attackedBy[Them][PAWN]
+       & ~attackedBy2[Them];
+    score += MobilityPiece * popcount(b);
 
     // Bonus for enemy unopposed weak pawns
     if (pos.pieces(Us, ROOK, QUEEN))

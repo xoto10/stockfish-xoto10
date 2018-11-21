@@ -160,6 +160,7 @@ namespace {
   constexpr Score KnightOnQueen      = S( 20, 12);
   constexpr Score LongDiagonalBishop = S( 44,  0);
   constexpr Score MinorBehindPawn    = S( 16,  0);
+  constexpr Score MobilityPiece      = S(  3,  5);
   constexpr Score Overload           = S( 12,  6);
   constexpr Score PawnlessFlank      = S( 18, 94);
   constexpr Score PawnPush           = S(  4,  5);
@@ -510,7 +511,7 @@ namespace {
     constexpr Direction Up       = (Us == WHITE ? NORTH   : SOUTH);
     constexpr Bitboard  TRank3BB = (Us == WHITE ? Rank3BB : Rank6BB);
 
-    Bitboard b, weak, defended, nonPawnEnemies, stronglyProtected, safe, restricted;
+    Bitboard b, weak, defended, nonPawnEnemies, stronglyProtected, safe, restricted, moves;
     Score score = SCORE_ZERO;
 
     // Non-pawn enemies
@@ -566,6 +567,13 @@ namespace {
                 & ~attackedBy2[Them]
                 &  attackedBy[Us][ALL_PIECES];
     score += RestrictedPiece * popcount(restricted);
+
+    // Bonus for piece mobility
+    moves =  attackedBy[Us][ALL_PIECES]
+           & ~attackedBy[Us][PAWN]
+           & (  ~attackedBy[Them][ALL_PIECES]
+              | (~attackedBy[Them][PAWN] & ~attackedBy2[Them] & attackedBy[Us][ALL_PIECES]));
+    score += MobilityPiece * popcount(moves);
 
     // Bonus for enemy unopposed weak pawns
     if (pos.pieces(Us, ROOK, QUEEN))

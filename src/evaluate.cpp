@@ -577,8 +577,9 @@ namespace {
 
     // Bonus for restricting their pawn moves
     restricted =  b
-                & (  (~attackedBy[Them][ALL_PIECES] & attackedBy[Us][ALL_PIECES])
-                   | (~attackedBy2[Them] & attackedBy2[Us]) );
+                & (  (attackedBy[Us][ALL_PIECES] & ~attackedBy[Them][ALL_PIECES])
+                   | (  attackedBy2[Us] & ~attackedBy2[Them]
+                      & (~attackedBy[Them][PAWN] | attackedBy[Us][PAWN])));
     score += RestrictedPawn * popcount(restricted);
 
     // Keep only the squares which are relatively safe

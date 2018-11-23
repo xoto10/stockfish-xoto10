@@ -153,6 +153,7 @@ namespace {
 
   // Assorted bonuses and penalties
   constexpr Score BishopPawns        = S(  3,  8);
+  constexpr Score CastlingStopped    = S(100,  0);
   constexpr Score CloseEnemies       = S(  7,  0);
   constexpr Score CorneredBishop     = S( 50, 50);
   constexpr Score Hanging            = S( 62, 34);
@@ -414,6 +415,10 @@ namespace {
 
     // King shelter and enemy pawns storm
     Score score = pe->king_safety<Us>(pos);
+
+    // Penalty if castling has been prevented in moves leading to this position
+    if (pos.this_thread()->castlingStopped[Us])
+        score -= CastlingStopped;
 
     // Find the squares that opponent attacks in our king flank, and the squares
     // which are attacked twice in that flank.

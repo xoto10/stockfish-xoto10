@@ -344,6 +344,7 @@ void Thread::search() {
   // In evaluate.cpp the evaluation is from the white point of view
   contempt = (us == WHITE ?  make_score(ct, ct / 2)
                           : -make_score(ct, ct / 2));
+  castlingStopped[us] = false;
 
   // Iterative deepening loop until requested to stop or the target depth is reached
   while (   (rootDepth += ONE_PLY) < DEPTH_MAX
@@ -572,7 +573,7 @@ namespace {
     Move ttMove, move, excludedMove, bestMove;
     Depth extension, newDepth;
     Value bestValue, value, ttValue, eval, maxValue, pureStaticEval;
-    bool ttHit, inCheck, givesCheck, improving;
+    bool ttHit, inCheck, givesCheck, improving, undoCastlingStopped = false;
     bool captureOrPromotion, doFullDepthSearch, moveCountPruning, skipQuiets, ttCapture, pvExact;
     Piece movedPiece;
     int moveCount, captureCount, quietCount;
@@ -1010,6 +1011,10 @@ moves_loop: // When in check, search starts from here
       ss->continuationHistory = &thisThread->continuationHistory[movedPiece][to_sq(move)];
 
       // Step 15. Make the move
+      if (  pos.can_castle(us)
+         && pos.piece_on(from_sq(move)) == make_piece(us, KING)
+         && type_of(move) != CASTLING)
+          thisThread->castlingStopped[us] = undoCastlingStopped = true;
       pos.do_move(move, st, givesCheck);
 
       // Step 16. Reduced depth search (LMR). If the move fails high it will be
@@ -1088,6 +1093,8 @@ moves_loop: // When in check, search starts from here
 
       // Step 18. Undo move
       pos.undo_move(move);
+      if (undoCastlingStopped)
+          thisThread->castlingStopped[us] = undoCastlingStopped = false;
 
       assert(value > -VALUE_INFINITE && value < VALUE_INFINITE);
 

@@ -152,6 +152,7 @@ namespace {
   };
 
   // Assorted bonuses and penalties
+  constexpr Score AttackAhead        = S(  4,  4);
   constexpr Score BishopPawns        = S(  3,  8);
   constexpr Score CloseEnemies       = S(  7,  0);
   constexpr Score CorneredBishop     = S( 50, 50);
@@ -615,14 +616,16 @@ namespace {
   template<Tracing T> template<Color Us>
   Score Evaluation<T>::passed() const {
 
-    constexpr Color     Them = (Us == WHITE ? BLACK : WHITE);
-    constexpr Direction Up   = (Us == WHITE ? NORTH : SOUTH);
+    constexpr Color     Them  = (Us == WHITE ? BLACK : WHITE);
+    constexpr Direction Up    = (Us == WHITE ? NORTH : SOUTH);
+    constexpr Bitboard  Ahead = (Us == WHITE ? Rank5BB | Rank6BB | Rank7BB | Rank8BB
+                                             : Rank4BB | Rank3BB | Rank2BB | Rank1BB);
 
     auto king_proximity = [&](Color c, Square s) {
       return std::min(distance(pos.square<KING>(c), s), 5);
     };
 
-    Bitboard b, bb, squaresToQueen, defendedSquares, unsafeSquares;
+    Bitboard b, bb, squaresToQueen, defendedSquares, unsafeSquares, flank;
     Score score = SCORE_ZERO;
 
     b = pe->passed_pawns(Us);
@@ -689,6 +692,10 @@ namespace {
             bonus = bonus / 2;
 
         score += bonus + PassedFile[file_of(s)];
+
+        flank = KingFlank[file_of(s)] & Ahead;
+        score += AttackAhead * (  popcount(flank & attackedBy[Us][ALL_PIECES]) );
+//                              - popcount(flank & attackedBy[Them][ALL_PIECES]));
     }
 
     if (T)

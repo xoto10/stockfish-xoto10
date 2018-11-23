@@ -694,8 +694,8 @@ namespace {
         score += bonus + PassedFile[file_of(s)];
 
         flank = KingFlank[file_of(s)] & Ahead;
-        score += AttackAhead * (  popcount(flank & attackedBy[Us][ALL_PIECES]) );
-//                              - popcount(flank & attackedBy[Them][ALL_PIECES]));
+        score += AttackAhead * (  popcount(flank & attackedBy[Us][ALL_PIECES])
+                                - popcount(flank & attackedBy[Them][ALL_PIECES]));
     }
 
     if (T)

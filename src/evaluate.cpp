@@ -418,7 +418,7 @@ namespace {
 
     // Penalty if castling has been prevented in moves leading to this position
     if (pos.this_thread()->castlingStopped[Us])
-        score -= CastlingStopped;
+        score = score / 2;
 
     // Find the squares that opponent attacks in our king flank, and the squares
     // which are attacked twice in that flank.

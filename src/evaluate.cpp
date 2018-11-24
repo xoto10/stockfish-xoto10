@@ -853,6 +853,13 @@ namespace {
 
     v /= int(PHASE_MIDGAME);
 
+    if (pos.non_pawn_material(WHITE) != pos.non_pawn_material(BLACK))
+    {
+        // int x = (pos.this_thread()->nodes.load(std::memory_order_relaxed) % 16) - 8;
+        int x = (pos.key() & 3) + 4;
+        v += x * (!!(pos.key() & 4) - !(pos.key() & 4));
+    }
+
     // In case of tracing add all remaining individual evaluation terms
     if (T)
     {

@@ -417,7 +417,7 @@ namespace {
 
     // Adjust king safety if castled / castling has been prevented in moves leading to this position
     if (pos.this_thread()->castled[Us])
-        score += score / 4;
+        score += score / 8;
 //  else if (pos.this_thread()->castlingStopped[Us])
 //      score -= score / 2;
 

@@ -153,6 +153,7 @@ namespace {
 
   // Assorted bonuses and penalties
   constexpr Score BishopPawns        = S(  3,  8);
+  constexpr Score Castled            = S( 40,  0);
   constexpr Score CloseEnemies       = S(  7,  0);
   constexpr Score CorneredBishop     = S( 50, 50);
   constexpr Score Hanging            = S( 62, 34);
@@ -417,7 +418,7 @@ namespace {
 
     // Adjust king safety if castled / castling has been prevented in moves leading to this position
     if (pos.this_thread()->castled[Us])
-        score += score / 8;
+        score += Castled;
 //  else if (pos.this_thread()->castlingStopped[Us])
 //      score -= score / 2;
 

@@ -421,7 +421,7 @@ namespace {
     // Penalty if castling has been prevented in moves leading to this position
     // and opponent can still castle or their king is on opposite side of board to ours.
     if (   pos.this_thread()->castlingStopped[Us]
-        && (pos.can_castle(Them))) // || ((file_of(ksq[Us]) < FILE_E) != (file_of(ksq[Them]) < FILE_E))) )
+        && /*(pos.can_castle(Them))) ||*/ ((file_of(ksq[Us]) < FILE_E) != (file_of(ksq[Them]) < FILE_E)) )
         score = score / 2;
 
     // Find the squares that opponent attacks in our king flank, and the squares

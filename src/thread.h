@@ -73,6 +73,8 @@ public:
   CapturePieceToHistory captureHistory;
   ContinuationHistory continuationHistory;
   Score contempt;
+  bool castlingStopped[COLOR_NB];
+  bool castled[COLOR_NB];
 };
 
 

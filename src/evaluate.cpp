@@ -415,6 +415,12 @@ namespace {
     // King shelter and enemy pawns storm
     Score score = pe->king_safety<Us>(pos);
 
+    // Adjust king safety if castled / castling has been prevented in moves leading to this position
+    if (pos.this_thread()->castled[Us])
+        score += score / 2;
+//  else if (pos.this_thread()->castlingStopped[Us])
+//      score -= score / 2;
+
     // Find the squares that opponent attacks in our king flank, and the squares
     // which are attacked twice in that flank.
     kingFlank = KingFlank[file_of(ksq)];

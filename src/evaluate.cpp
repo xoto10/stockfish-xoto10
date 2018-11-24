@@ -107,7 +107,7 @@ namespace {
     { S(-48,-59), S(-20,-23), S( 16, -3), S( 26, 13), S( 38, 24), S( 51, 42), // Bishops
       S( 55, 54), S( 63, 57), S( 63, 65), S( 68, 73), S( 81, 78), S( 81, 86),
       S( 91, 88), S( 98, 97) },
-    { S(-90,-108), S(-43,-34), S(-15, 28), S(-10, 55), S( -5, 69), S( -2, 82), // Rooks
+    { S(-58,-76), S(-27,-18), S(-15, 28), S(-10, 55), S( -5, 69), S( -2, 82), // Rooks
       S(  9,112), S( 16,118), S( 30,132), S( 29,142), S( 32,155), S( 38,165),
       S( 46,166), S( 48,169), S( 58,171) },
     { S(-39,-36), S(-21,-15), S(  3,  8), S(  3, 18), S( 14, 34), S( 22, 54), // Queens
@@ -409,19 +409,24 @@ namespace {
     constexpr Bitboard Camp = (Us == WHITE ? AllSquares ^ Rank6BB ^ Rank7BB ^ Rank8BB
                                            : AllSquares ^ Rank1BB ^ Rank2BB ^ Rank3BB);
 
-    const Square ksq = pos.square<KING>(Us);
     Bitboard kingFlank, weak, b, b1, b2, safe, unsafeChecks;
+    Square   ksq[COLOR_NB];
+
+    ksq[Us]   = pos.square<KING>(Us);
+    ksq[Them] = pos.square<KING>(Them);
 
     // King shelter and enemy pawns storm
     Score score = pe->king_safety<Us>(pos);
 
     // Penalty if castling has been prevented in moves leading to this position
-    if (pos.this_thread()->castlingStopped[Us])
+    // and opponent can still castle or their king is on opposite side of board to ours.
+    if (   pos.this_thread()->castlingStopped[Us]
+        && (pos.can_castle(Them))) // || ((file_of(ksq[Us]) < FILE_E) != (file_of(ksq[Them]) < FILE_E))) )
         score = score / 2;
 
     // Find the squares that opponent attacks in our king flank, and the squares
     // which are attacked twice in that flank.
-    kingFlank = KingFlank[file_of(ksq)];
+    kingFlank = KingFlank[file_of(ksq[Us])];
     b1 = attackedBy[Them][ALL_PIECES] & kingFlank & Camp;
     b2 = b1 & attackedBy2[Them];
 
@@ -442,8 +447,8 @@ namespace {
         safe  = ~pos.pieces(Them);
         safe &= ~attackedBy[Us][ALL_PIECES] | (weak & attackedBy2[Them]);
 
-        b1 = attacks_bb<ROOK  >(ksq, pos.pieces() ^ pos.pieces(Us, QUEEN));
-        b2 = attacks_bb<BISHOP>(ksq, pos.pieces() ^ pos.pieces(Us, QUEEN));
+        b1 = attacks_bb<ROOK  >(ksq[Us], pos.pieces() ^ pos.pieces(Us, QUEEN));
+        b2 = attacks_bb<BISHOP>(ksq[Us], pos.pieces() ^ pos.pieces(Us, QUEEN));
 
         // Enemy queen safe checks
         if ((b1 | b2) & attackedBy[Them][QUEEN] & safe & ~attackedBy[Us][QUEEN])
@@ -465,7 +470,7 @@ namespace {
             unsafeChecks |= b2;
 
         // Enemy knights checks
-        b = pos.attacks_from<KNIGHT>(ksq) & attackedBy[Them][KNIGHT];
+        b = pos.attacks_from<KNIGHT>(ksq[Us]) & attackedBy[Them][KNIGHT];
         if (b & safe)
             kingDanger += KnightSafeCheck;
         else

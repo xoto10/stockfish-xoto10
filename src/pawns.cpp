@@ -139,8 +139,8 @@ namespace {
             score -= Backward;
             if (!opposed) // && !(ourPawns & forward_file_bb(Us, s))
             {
-                Square s2 = make_square(f, rank_of(Us==WHITE ? lsb(neighbours) : msb(neighbours)));
-                e->pawnTargets[Us] = e->pawnTargets[Us] | s2; // | s;
+//              Square s2 = make_square(f, rank_of(Us==WHITE ? lsb(neighbours) : msb(neighbours)));
+                e->pawnTargets[Us] = e->pawnTargets[Us] | s; // | s2;
                 e->weakUnopposed[Us]++;
             }
         }

@@ -77,7 +77,7 @@ namespace {
     Bitboard ourPawns   = pos.pieces(  Us, PAWN);
     Bitboard theirPawns = pos.pieces(Them, PAWN);
 
-    e->passedPawns[Us] = e->pawnAttacksSpan[Us] = e->weakUnopposed[Us] = 0;
+    e->passedPawns[Us] = e->pawnAttacksSpan[Us] = e->pawnTargets[Us] = e->weakUnopposed[Us] = 0;
     e->semiopenFiles[Us] = 0xFF;
     e->kingSquares[Us]   = SQ_NONE;
     e->pawnAttacks[Us]   = pawn_attacks_bb<Us>(ourPawns);
@@ -135,7 +135,15 @@ namespace {
             score -= Isolated, e->weakUnopposed[Us] += !opposed;
 
         else if (backward)
-            score -= Backward, e->weakUnopposed[Us] += !opposed;
+        {
+            score -= Backward;
+            if (!opposed) // && !(ourPawns & forward_file_bb(Us, s))
+            {
+//              Square s2 = make_square(f, rank_of(Us==WHITE ? lsb(neighbours) : msb(neighbours)));
+                e->pawnTargets[Us] = e->pawnTargets[Us] | s; // | s2;
+                e->weakUnopposed[Us]++;
+            }
+        }
 
         if (doubled && !supported)
             score -= Doubled;

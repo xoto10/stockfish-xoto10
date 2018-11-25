@@ -162,7 +162,7 @@ namespace {
   constexpr Score MinorBehindPawn    = S( 16,  0);
   constexpr Score Overload           = S( 12,  6);
   constexpr Score PawnlessFlank      = S( 18, 94);
-  constexpr Score PawnTargets        = S( 20, 20);
+  constexpr Score PawnTargets        = S( 10, 10);
   constexpr Score RestrictedPiece    = S(  7,  6);
   constexpr Score RookOnPawn         = S( 10, 28);
   constexpr Score SliderOnQueen      = S( 49, 21);
@@ -568,8 +568,8 @@ namespace {
     score += RestrictedPiece * popcount(restricted);
 
     // Bonus for attacking pawnTargets
-    score += PawnTargets * (  popcount(attackedBy[Us][ALL_PIECES] & pe->pawn_targets(Them)) );
-//                          + popcount(attackedBy2[Us] & pe->pawn_targets(Them)));
+    score += PawnTargets * (  popcount(attackedBy[Us][ALL_PIECES] & pe->pawn_targets(Them))
+                            + popcount(attackedBy2[Us] & pe->pawn_targets(Them)));
 
     // Bonus for enemy unopposed weak pawns
     if (pos.pieces(Us, ROOK, QUEEN))

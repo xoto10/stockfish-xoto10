@@ -162,6 +162,7 @@ namespace {
   constexpr Score MinorBehindPawn    = S( 16,  0);
   constexpr Score Overload           = S( 12,  6);
   constexpr Score PawnlessFlank      = S( 18, 94);
+  constexpr Score PawnTargets        = S( 10,  0);
   constexpr Score RestrictedPiece    = S(  7,  6);
   constexpr Score RookOnPawn         = S( 10, 28);
   constexpr Score SliderOnQueen      = S( 49, 21);
@@ -320,6 +321,9 @@ namespace {
         int mob = popcount(b & mobilityArea[Us]);
 
         mobility[Us] += MobilityBonus[Pt - 2][mob];
+
+        // Bonus for attacking pawnTargets
+        score += PawnTargets * popcount(b & pe->pawn_targets(Them));
 
         if (Pt == BISHOP || Pt == KNIGHT)
         {

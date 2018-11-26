@@ -159,6 +159,7 @@ namespace {
   constexpr Score KingProtector      = S(  6,  7);
   constexpr Score KnightOnQueen      = S( 20, 12);
   constexpr Score LongDiagonalBishop = S( 44,  0);
+  constexpr Score LowMobility        = S( 10, 20);
   constexpr Score MinorBehindPawn    = S( 16,  0);
   constexpr Score Overload           = S( 12,  6);
   constexpr Score PawnlessFlank      = S( 18, 94);
@@ -293,6 +294,7 @@ namespace {
     Bitboard b, bb;
     Square s;
     Score score = SCORE_ZERO;
+    int   lowMob = 0;
 
     attackedBy[Us][Pt] = 0;
 
@@ -318,6 +320,7 @@ namespace {
         }
 
         int mob = popcount(b & mobilityArea[Us]);
+        lowMob += (mob <= 1);
 
         mobility[Us] += MobilityBonus[Pt - 2][mob];
 
@@ -394,6 +397,10 @@ namespace {
                 score -= WeakQueen;
         }
     }
+
+    // Extra penalty for low mobility pieces
+    score -= LowMobility * lowMob * lowMob;
+
     if (T)
         Trace::add(Pt, Us, score);
 

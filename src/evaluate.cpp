@@ -153,6 +153,7 @@ namespace {
 
   // Assorted bonuses and penalties
   constexpr Score BishopPawns        = S(  3,  8);
+  constexpr Score BlockedPawns       = S(  4,  5);
   constexpr Score CloseEnemies       = S(  7,  0);
   constexpr Score CorneredBishop     = S( 50, 50);
   constexpr Score Hanging            = S( 62, 34);
@@ -505,9 +506,10 @@ namespace {
   template<Tracing T> template<Color Us>
   Score Evaluation<T>::threats() const {
 
-    constexpr Color     Them     = (Us == WHITE ? BLACK   : WHITE);
-    constexpr Direction Up       = (Us == WHITE ? NORTH   : SOUTH);
-    constexpr Bitboard  TRank3BB = (Us == WHITE ? Rank3BB : Rank6BB);
+    constexpr Color     Them      = (Us == WHITE ? BLACK   : WHITE);
+    constexpr Direction Up        = (Us == WHITE ? NORTH   : SOUTH);
+    constexpr Bitboard  TRank3BB  = (Us == WHITE ? Rank3BB : Rank6BB);
+    constexpr Bitboard  TRanksFar = (Us == WHITE ? Rank7BB|Rank8BB : Rank2BB|Rank1BB);
 
     Bitboard b, weak, defended, nonPawnEnemies, stronglyProtected, safe, restricted;
     Score score = SCORE_ZERO;
@@ -586,6 +588,10 @@ namespace {
 
     b = pawn_attacks_bb<Us>(b) & nonPawnEnemies;
     score += ThreatBySafePawn * popcount(b);
+
+    // Their blocked pawns
+    b = pos.pieces(Them, PAWN) & shift<Up>(pos.pieces() & ~TRanksFar);
+    score += BlockedPawns * popcount(b);
 
     // Bonus for threats on the next moves against enemy queen
     if (pos.count<QUEEN>(Them) == 1)

@@ -135,15 +135,9 @@ namespace {
             score -= Isolated, e->weakUnopposed[Us] += !opposed;
 
         else if (backward)
-        {
-            score -= Backward;
-            if (!opposed)
-            {
-//              Square s2 = make_square(f, rank_of(Us==WHITE ? lsb(neighbours) : msb(neighbours)));
+            score -= Backward, e->weakUnopposed[Us] += !opposed,
+//          Square s2 = make_square(f, rank_of(Us==WHITE ? lsb(neighbours) : msb(neighbours)));
                 e->pawnTargets[Us] = e->pawnTargets[Us] | s; // | s2;
-                e->weakUnopposed[Us]++;
-            }
-        }
 
         if (doubled && !supported)
             score -= Doubled;

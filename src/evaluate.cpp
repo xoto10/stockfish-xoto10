@@ -567,14 +567,12 @@ namespace {
                 &  attackedBy[Us][ALL_PIECES];
     score += RestrictedPiece * popcount(restricted);
 
-    if (pos.pieces(Us, ROOK, QUEEN))
-    {
-        // Bonus for enemy unopposed weak pawns
-        score += WeakUnopposedPawn * pe->weak_unopposed(Them);
+    // Bonus for attacking pawnTargets
+    score += PawnTargets * popcount(attackedBy2[Us] & pe->pawn_targets(Them));
 
-        // Bonus for attacking pawnTargets
-        score += PawnTargets * popcount(attackedBy2[Us] & pe->pawn_targets(Them));
-    }
+    // Bonus for enemy unopposed weak pawns
+    if (pos.pieces(Us, ROOK, QUEEN))
+        score += WeakUnopposedPawn * pe->weak_unopposed(Them);
 
     // Find squares where our pawns can push on the next move
     b  = shift<Up>(pos.pieces(Us, PAWN)) & ~pos.pieces();

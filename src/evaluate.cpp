@@ -162,6 +162,7 @@ namespace {
   constexpr Score MinorBehindPawn    = S( 16,  0);
   constexpr Score Overload           = S( 12,  6);
   constexpr Score PawnlessFlank      = S( 18, 94);
+  constexpr Score QueenKingAlign     = S(  5, 20);
   constexpr Score RestrictedPiece    = S(  7,  6);
   constexpr Score RookOnPawn         = S( 10, 28);
   constexpr Score SliderOnQueen      = S( 49, 21);
@@ -392,6 +393,11 @@ namespace {
             Bitboard queenPinners;
             if (pos.slider_blockers(pos.pieces(Them, ROOK, BISHOP), s, queenPinners))
                 score -= WeakQueen;
+
+            if (   pos.count<ROOK>(Them) > 0 
+                && (pos.attacks_from<ROOK>(s) & pos.square<KING>(Us)) 
+               )
+                score -= QueenKingAlign;
         }
     }
     if (T)

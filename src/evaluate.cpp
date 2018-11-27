@@ -153,6 +153,7 @@ namespace {
 
   // Assorted bonuses and penalties
   constexpr Score BishopPawns        = S(  3,  8);
+  constexpr Score BishopMajors       = S( 10, 10);
   constexpr Score CloseEnemies       = S(  7,  0);
   constexpr Score CorneredBishop     = S( 50, 50);
   constexpr Score Hanging            = S( 62, 34);
@@ -350,6 +351,16 @@ namespace {
                 // Bonus for bishop on a long diagonal which can "see" both center squares
                 if (more_than_one(attacks_bb<BISHOP>(s, pos.pieces(PAWN)) & Center))
                     score += LongDiagonalBishop;
+
+                // Bonus for their majors on same color square as our bishop
+                if (pos.count<BISHOP>(Us) == 1 && pos.pieces(Them, QUEEN, ROOK))
+                {
+                    if (DarkSquares & s)
+                        bb = pos.pieces(Them, QUEEN, ROOK) & DarkSquares;
+                    else
+                        bb = pos.pieces(Them, QUEEN, ROOK) & ~DarkSquares;
+                    score += BishopMajors * popcount(bb);
+                }
             }
 
             // An important Chess960 pattern: A cornered bishop blocked by a friendly

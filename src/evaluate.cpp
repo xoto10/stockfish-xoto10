@@ -322,10 +322,6 @@ namespace {
 
         mobility[Us] += MobilityBonus[Pt - 2][mob];
 
-        // Penalty for overloaded pieces
-        if (more_than_one(b & pos.pieces(Us) & attackedBy[Them][ALL_PIECES] & ~attackedBy2[Us]))
-            score -= OverloadedPiece;
-
         if (Pt == BISHOP || Pt == KNIGHT)
         {
             // Bonus if piece is on an outpost square or can reach one
@@ -397,6 +393,10 @@ namespace {
             Bitboard queenPinners;
             if (pos.slider_blockers(pos.pieces(Them, ROOK, BISHOP), s, queenPinners))
                 score -= WeakQueen;
+
+            // Penalty for overloaded pieces
+            if (more_than_one(b & pos.pieces(Us) & attackedBy[Them][ALL_PIECES] & ~attackedBy2[Us]))
+                score -= OverloadedPiece;
         }
     }
     if (T)

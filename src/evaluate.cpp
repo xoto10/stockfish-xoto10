@@ -161,6 +161,7 @@ namespace {
   constexpr Score LongDiagonalBishop = S( 44,  0);
   constexpr Score MinorBehindPawn    = S( 16,  0);
   constexpr Score Overload           = S( 12,  6);
+  constexpr Score OverloadedPiece    = S( 40, 40);
   constexpr Score PawnlessFlank      = S( 18, 94);
   constexpr Score RestrictedPiece    = S(  7,  6);
   constexpr Score RookOnPawn         = S( 10, 28);
@@ -320,6 +321,10 @@ namespace {
         int mob = popcount(b & mobilityArea[Us]);
 
         mobility[Us] += MobilityBonus[Pt - 2][mob];
+
+        // Penalty for overloaded pieces
+        if (more_than_one(b & pos.pieces(Us) & attackedBy[Them][ALL_PIECES] & ~attackedBy2[Us]))
+            score -= OverloadedPiece;
 
         if (Pt == BISHOP || Pt == KNIGHT)
         {

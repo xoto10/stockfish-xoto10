@@ -321,7 +321,7 @@ inline bool Position::advanced_pawn_push(Move m) const {
 
 inline bool Position::attacking_pawn_push(Move m) const {
   return   type_of(moved_piece(m)) == PAWN
-        && relative_rank(sideToMove, from_sq(m)) > RANK_3
+        && relative_rank(sideToMove, to_sq(m)) > RANK_3
         && std::abs(file_of(square<KING>(~sideToMove)) - file_of(to_sq(m))) <= 1;
 }
 

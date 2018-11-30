@@ -170,6 +170,7 @@ namespace {
   constexpr Score ThreatByRank       = S( 14,  3);
   constexpr Score ThreatBySafePawn   = S(169, 99);
   constexpr Score TrappedRook        = S( 98,  5);
+  constexpr Score Undefended         = S(  8,  8);
   constexpr Score WeakQueen          = S( 51, 10);
   constexpr Score WeakUnopposedPawn  = S( 14, 20);
 
@@ -565,6 +566,10 @@ namespace {
                 & ~attackedBy2[Them]
                 &  attackedBy[Us][ALL_PIECES];
     score += RestrictedPiece * popcount(restricted);
+
+    // Penalty for undefended pieces
+    b = pos.pieces(Us) & ~attackedBy[Us][ALL_PIECES];
+    score -= Undefended * popcount(b);
 
     // Bonus for enemy unopposed weak pawns
     if (pos.pieces(Us, ROOK, QUEEN))

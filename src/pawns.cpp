@@ -93,7 +93,7 @@ namespace {
 
         e->semiopenFiles[Us]   &= ~(1 << f);
         e->pawnAttacksSpan[Us] |= pawn_attack_span(Us, s);
-        e->pawnDistance[Us]    += RANK_8 - rank_of(s);
+        e->pawnDistance[Us]    += RANK_8 - relative_rank(Us, s);
 
         // Flag the pawn
         opposed    = theirPawns & forward_file_bb(Us, s);

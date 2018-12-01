@@ -760,7 +760,12 @@ namespace {
     // Now apply the bonus: note that we find the attacking side by extracting
     // the sign of the endgame value, and that we carefully cap the bonus so
     // that the endgame score will never change sign after the bonus.
-    int v = ((eg > 0) - (eg < 0)) * std::max(complexity, -abs(eg));
+    int v = 0, pawnDistance =  pe->pawn_distance(BLACK) - pe->pawn_distance(WHITE);
+
+    if (eg > 0)
+        v = std::max(complexity + 4*pawnDistance, -int(eg));
+    else if (eg < 0)
+        v = -std::max(complexity - 4*pawnDistance, int(eg));
 
     if (T)
         Trace::add(INITIATIVE, make_score(0, v));

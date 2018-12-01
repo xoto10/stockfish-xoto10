@@ -922,19 +922,23 @@ moves_loop: // When in check, search starts from here
 
       // Step 13. Extensions (~70 Elo)
 
+      // Extension if castling
+      if (type_of(move) == CASTLING)
+          extension = ONE_PLY;
+
       // Singular extension search (~60 Elo). If all moves but one fail low on a
       // search of (alpha-s, beta-s), and just one fails high on (alpha, beta),
       // then that move is singular and should be extended. To verify this we do
       // a reduced search on all the other moves but the ttMove and if the
       // result is lower than ttValue minus a margin then we will extend the ttMove.
-      if (    depth >= 8 * ONE_PLY
-          &&  move == ttMove
-          && !rootNode
-          && !excludedMove // Recursive singular search is not allowed
-          &&  ttValue != VALUE_NONE
-          && (tte->bound() & BOUND_LOWER)
-          &&  tte->depth() >= depth - 3 * ONE_PLY
-          &&  pos.legal(move))
+      else if (    depth >= 8 * ONE_PLY
+               &&  move == ttMove
+               && !rootNode
+               && !excludedMove // Recursive singular search is not allowed
+               &&  ttValue != VALUE_NONE
+               && (tte->bound() & BOUND_LOWER)
+               &&  tte->depth() >= depth - 3 * ONE_PLY
+               &&  pos.legal(move))
       {
           Value rBeta = std::max(ttValue - 2 * depth / ONE_PLY, -VALUE_MATE);
           ss->excludedMove = move;
@@ -946,10 +950,6 @@ moves_loop: // When in check, search starts from here
       }
       else if (    givesCheck // Check extension (~2 Elo)
                &&  pos.see_ge(move))
-          extension = ONE_PLY;
-
-      // Extension if castling
-      else if (type_of(move) == CASTLING)
           extension = ONE_PLY;
 
       // Calculate new depth for this move

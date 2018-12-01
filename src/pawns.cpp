@@ -142,6 +142,10 @@ namespace {
             score -= Doubled;
     }
 
+    // Calculate average distance to promotion, multiply by 64 to keep some accuracy
+    if (pos.count<PAWN>(Us))
+        e->pawnDistance[Us] = 64 * e->pawnDistance[Us] / pos.count<PAWN>(Us);
+
     return score;
   }
 

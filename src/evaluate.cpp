@@ -764,9 +764,9 @@ namespace {
     int v = 0, pawnDistance =  pe->pawn_distance(BLACK) - pe->pawn_distance(WHITE);
 
     if (eg > 0)
-        v = std::max(complexity + pawnDistance/2, -int(eg));
+        v = std::max(complexity + pawnDistance/4, -int(eg));
     else if (eg < 0)
-        v = -std::max(complexity - pawnDistance/2, int(eg));
+        v = -std::max(complexity - pawnDistance/4, int(eg));
 
     if (T)
         Trace::add(INITIATIVE, make_score(0, v));

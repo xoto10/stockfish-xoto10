@@ -20,11 +20,13 @@
 
 #include <algorithm>
 #include <cassert>
+#include <iostream>
 
 #include "bitboard.h"
 #include "pawns.h"
 #include "position.h"
 #include "thread.h"
+#include "uci.h"
 
 namespace {
 
@@ -77,7 +79,7 @@ namespace {
     Bitboard ourPawns   = pos.pieces(  Us, PAWN);
     Bitboard theirPawns = pos.pieces(Them, PAWN);
 
-    e->passedPawns[Us] = e->pawnAttacksSpan[Us] = e->pawnDistance[Us] = e->weakUnopposed[Us] = 0;
+    e->passedPawns[Us] = e->pawnAttacksSpan[Us] = e->weakUnopposed[Us] = 0;
     e->semiopenFiles[Us] = 0xFF;
     e->kingSquares[Us]   = SQ_NONE;
     e->pawnAttacks[Us]   = pawn_attacks_bb<Us>(ourPawns);
@@ -93,7 +95,6 @@ namespace {
 
         e->semiopenFiles[Us]   &= ~(1 << f);
         e->pawnAttacksSpan[Us] |= pawn_attack_span(Us, s);
-        e->pawnDistance[Us]    += RANK_8 - relative_rank(Us, s);
 
         // Flag the pawn
         opposed    = theirPawns & forward_file_bb(Us, s);
@@ -141,10 +142,6 @@ namespace {
         if (doubled && !supported)
             score -= Doubled;
     }
-
-    // Calculate average distance to promotion, multiply by 64 to keep some accuracy
-    if (pos.count<PAWN>(Us))
-        e->pawnDistance[Us] = 64 * e->pawnDistance[Us] / pos.count<PAWN>(Us);
 
     return score;
   }
@@ -202,7 +199,7 @@ Entry* probe(const Position& pos) {
 /// penalty for a king, looking at the king file and the two closest files.
 
 template<Color Us>
-Value Entry::evaluate_shelter(const Position& pos, Square ksq) {
+Value Entry::evaluate_shelter(const Position& pos, Square ksq, bool updDist) {
 
   constexpr Color     Them = (Us == WHITE ? BLACK : WHITE);
   constexpr Direction Down = (Us == WHITE ? SOUTH : NORTH);
@@ -214,20 +211,50 @@ Value Entry::evaluate_shelter(const Position& pos, Square ksq) {
 
   Value safety = (shift<Down>(theirPawns) & (FileABB | FileHBB) & BlockRanks & ksq) ?
                  Value(374) : Value(5);
+  int ourDist = 0, theirDist = 0, ourNum = 0, theirNum = 0;
+  int ourDist2, theirDist2;
+  pawnDistance[Us] = 0;
 
   File center = std::max(FILE_B, std::min(FILE_G, file_of(ksq)));
   for (File f = File(center - 1); f <= File(center + 1); ++f)
   {
-      b = ourPawns & file_bb(f);
-      int ourRank = b ? relative_rank(Us, backmost_sq(Us, b)) : 0;
-
       b = theirPawns & file_bb(f);
       int theirRank = b ? relative_rank(Us, frontmost_sq(Them, b)) : 0;
+
+      b = ourPawns & file_bb(f);
+      int ourRank = b ? relative_rank(Us, frontmost_sq(Us, b)) : 0;
+
+      if (ourRank)
+      {
+          ourDist += std::max(2, ourRank);
+          ourNum++;
+      }
+      if (theirRank)
+      {
+          theirDist += std::max(2, RANK_8 - theirRank);
+          theirNum++;
+      }
+
+      b = ourPawns & file_bb(f);
+      ourRank = b ? relative_rank(Us, backmost_sq(Us, b)) : 0;
 
       int d = std::min(f, ~f);
       safety += ShelterStrength[d][ourRank];
       safety -= (ourRank && (ourRank == theirRank - 1)) ? 66 * (theirRank == RANK_3)
                                                         : UnblockedStorm[d][theirRank];
+  }
+
+  // Calculate average rank, multiply by 32 to keep some accuracy
+  if (updDist)
+  {
+      ourDist2   = (ourNum > 0)   ? 32 * ourDist / ourNum     : 32 * 2;
+      theirDist2 = (theirNum > 0) ? 32 * theirDist / theirNum : 32 * 2;
+      pawnDistance[Us] = ourDist2 - theirDist2;
+
+//if (pawnDistance[Us] > 20)
+//sync_cout << "info string e: " << long(this) << " k: " << UCI::square(ksq) << " us: " << Us << " dist: " << pawnDistance[Us]
+//          << " our " << ourDist << "," << ourNum
+//          << " their " << theirDist << "," << theirNum << " ppos:\n" << pos << sync_endl;
   }
 
   return safety;
@@ -249,14 +276,14 @@ Score Entry::do_king_safety(const Position& pos) {
   if (pawns)
       while (!(DistanceRingBB[ksq][++minKingPawnDistance] & pawns)) {}
 
-  Value bonus = evaluate_shelter<Us>(pos, ksq);
+  Value bonus = evaluate_shelter<Us>(pos, ksq, true);
 
   // If we can castle use the bonus after the castling if it is bigger
   if (pos.can_castle(Us | KING_SIDE))
-      bonus = std::max(bonus, evaluate_shelter<Us>(pos, relative_square(Us, SQ_G1)));
+      bonus = std::max(bonus, evaluate_shelter<Us>(pos, relative_square(Us, SQ_G1),false));
 
   if (pos.can_castle(Us | QUEEN_SIDE))
-      bonus = std::max(bonus, evaluate_shelter<Us>(pos, relative_square(Us, SQ_C1)));
+      bonus = std::max(bonus, evaluate_shelter<Us>(pos, relative_square(Us, SQ_C1),false));
 
   return make_score(bonus, -16 * minKingPawnDistance);
 }

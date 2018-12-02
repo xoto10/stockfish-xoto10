@@ -23,7 +23,6 @@
 #include <cstring>   // For std::memset
 #include <iomanip>
 #include <sstream>
-#include <iostream>
 
 #include "bitboard.h"
 #include "evaluate.h"
@@ -569,6 +568,9 @@ namespace {
     if (pos.pieces(Us, ROOK, QUEEN))
         score += WeakUnopposedPawn * pe->weak_unopposed(Them);
 
+    // Bonus for average progress of pawns
+    score += make_score(1, 1) * pe->pawn_distance(Us) / 8;
+
     // Find squares where our pawns can push on the next move
     b  = shift<Up>(pos.pieces(Us, PAWN)) & ~pos.pieces();
     b |= shift<Up>(b & TRank3BB) & ~pos.pieces();
@@ -761,12 +763,7 @@ namespace {
     // Now apply the bonus: note that we find the attacking side by extracting
     // the sign of the endgame value, and that we carefully cap the bonus so
     // that the endgame score will never change sign after the bonus.
-    int v = 0, pawnDistance =  pe->pawn_distance(BLACK) - pe->pawn_distance(WHITE);
-
-    if (eg > 0)
-        v = std::max(complexity + pawnDistance/2, -int(eg));
-    else if (eg < 0)
-        v = -std::max(complexity - pawnDistance/2, int(eg));
+    int v = ((eg > 0) - (eg < 0)) * std::max(complexity, -abs(eg));
 
     if (T)
         Trace::add(INITIATIVE, make_score(0, v));

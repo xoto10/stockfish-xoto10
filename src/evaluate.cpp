@@ -569,7 +569,7 @@ namespace {
         score += WeakUnopposedPawn * pe->weak_unopposed(Them);
 
     // Bonus for average progress of pawns
-    score += make_score(1, 1) * pe->pawn_distance(Us) / 8;
+    score += make_score(1, 1) * pe->pawn_distance(Us) / 16;
 
     // Find squares where our pawns can push on the next move
     b  = shift<Up>(pos.pieces(Us, PAWN)) & ~pos.pieces();

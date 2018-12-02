@@ -180,6 +180,7 @@ void Search::clear() {
   Time.availableNodes = 0;
   TT.clear();
   Threads.clear();
+  Tablebases::init(Options["SyzygyPath"]); // Free up mapped files
 }
 
 
@@ -863,7 +864,7 @@ moves_loop: // When in check, search starts from here
     value = bestValue; // Workaround a bogus 'uninitialized' warning under gcc
 
     skipQuiets = false;
-    ttCapture = false;
+    ttCapture = ttMove && pos.capture_or_promotion(ttMove);
     pvExact = PvNode && ttHit && tte->bound() == BOUND_EXACT;
 
     // Step 12. Loop through all pseudo-legal moves until no moves remain
@@ -925,8 +926,11 @@ moves_loop: // When in check, search starts from here
               extension = ONE_PLY;
       }
       else if (    givesCheck // Check extension (~2 Elo)
-               && !moveCountPruning
                &&  pos.see_ge(move))
+          extension = ONE_PLY;
+
+      else if (   pos.can_castle(us) // Extension for king moves that change castling rights
+               && type_of(movedPiece) == KING)
           extension = ONE_PLY;
 
       // Calculate new depth for this move
@@ -981,9 +985,6 @@ moves_loop: // When in check, search starts from here
           ss->moveCount = --moveCount;
           continue;
       }
-
-      if (move == ttMove && captureOrPromotion)
-          ttCapture = true;
 
       // Update the current move (this must be done after singular extension search)
       ss->currentMove = move;
@@ -1128,6 +1129,8 @@ moves_loop: // When in check, search starts from here
                   break;
               }
           }
+          else if (PvNode && !rootNode && value == alpha)
+              update_pv(ss->pv, move, (ss+1)->pv);
       }
 
       if (move != bestMove)

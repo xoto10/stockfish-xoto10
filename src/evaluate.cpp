@@ -23,7 +23,6 @@
 #include <cstring>   // For std::memset
 #include <iomanip>
 #include <sstream>
-#include <iostream>
 
 #include "bitboard.h"
 #include "evaluate.h"
@@ -764,17 +763,9 @@ namespace {
     int v = 0;
 
     if (eg > 0)
-{
-        v = std::max(complexity - pe->pawn_distance(BLACK)/4, -int(eg));
-//sync_cout << "info string pe: " << long(pe) << " eg: " << eg << " cpxty: " << complexity << " pdist: "
-//          << pe->pawn_distance(BLACK) << " v: " << v << " pos:\n" << pos << sync_endl;
-}
+        v = std::max(complexity - pe->pawn_distance(BLACK)/8, -int(eg));
     else if (eg < 0)
-{
-        v = -std::max(complexity - pe->pawn_distance(WHITE)/4, int(eg));
-//sync_cout << "info string pe: " << long(pe) << " eg: " << eg << " cpxty: " << complexity << " pdist: "
-//          << pe->pawn_distance(WHITE) << " v: " << v << " pos:\n" << pos << sync_endl;
-}
+        v = -std::max(complexity - pe->pawn_distance(WHITE)/8, int(eg));
 
     if (T)
         Trace::add(INITIATIVE, make_score(0, v));

@@ -20,13 +20,11 @@
 
 #include <algorithm>
 #include <cassert>
-#include <iostream>
 
 #include "bitboard.h"
 #include "pawns.h"
 #include "position.h"
 #include "thread.h"
-#include "uci.h"
 
 namespace {
 
@@ -212,7 +210,6 @@ Value Entry::evaluate_shelter(const Position& pos, Square ksq, bool updDist) {
   Value safety = (shift<Down>(theirPawns) & (FileABB | FileHBB) & BlockRanks & ksq) ?
                  Value(374) : Value(5);
   int ourDist = 0, theirDist = 0, ourNum = 0, theirNum = 0;
-  int ourDist2, theirDist2;
   pawnDistance[Us] = 0;
 
   File center = std::max(FILE_B, std::min(FILE_G, file_of(ksq)));
@@ -225,15 +222,9 @@ Value Entry::evaluate_shelter(const Position& pos, Square ksq, bool updDist) {
       int ourRank = b ? relative_rank(Us, frontmost_sq(Us, b)) : 0;
 
       if (ourRank)
-      {
-          ourDist += std::max(2, ourRank);
-          ourNum++;
-      }
+          ourDist += std::max(2, ourRank),              ourNum++;
       if (theirRank)
-      {
-          theirDist += std::max(2, RANK_8 - theirRank);
-          theirNum++;
-      }
+          theirDist += std::max(2, RANK_8 - theirRank), theirNum++;
 
       b = ourPawns & file_bb(f);
       ourRank = b ? relative_rank(Us, backmost_sq(Us, b)) : 0;
@@ -244,17 +235,12 @@ Value Entry::evaluate_shelter(const Position& pos, Square ksq, bool updDist) {
                                                         : UnblockedStorm[d][theirRank];
   }
 
-  // Calculate average rank, multiply by 32 to keep some accuracy
+  // Calculate average rank (us - them), multiply by 32 to keep some accuracy
   if (updDist)
   {
-      ourDist2   = (ourNum > 0)   ? 32 * ourDist / ourNum     : 32 * 2;
-      theirDist2 = (theirNum > 0) ? 32 * theirDist / theirNum : 32 * 2;
-      pawnDistance[Us] = ourDist2 - theirDist2;
-
-//if (pawnDistance[Us] > 20)
-//sync_cout << "info string e: " << long(this) << " k: " << UCI::square(ksq) << " us: " << Us << " dist: " << pawnDistance[Us]
-//          << " our " << ourDist << "," << ourNum
-//          << " their " << theirDist << "," << theirNum << " ppos:\n" << pos << sync_endl;
+      ourDist   = (ourNum > 0)   ? 32 * ourDist / ourNum     : 32 * 2;
+      theirDist = (theirNum > 0) ? 32 * theirDist / theirNum : 32 * 2;
+      pawnDistance[Us] = ourDist - theirDist;
   }
 
   return safety;

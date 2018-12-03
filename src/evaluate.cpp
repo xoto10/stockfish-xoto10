@@ -152,6 +152,12 @@ namespace {
   };
 
   // Assorted bonuses and penalties
+  constexpr Score AttackPawnAsymm    = S(  8,  8);
+  constexpr Score AttackPawnCount    = S( 12, 12);
+  constexpr Score AttackOutflanking  = S( 12, 12);
+  constexpr Score AttackPBothFlanks  = S( 16, 16);
+  constexpr Score AttackOnlyPawns    = S(  0, 48);
+  constexpr Score AttackAdjustment   = S(118,118);
   constexpr Score BishopPawns        = S(  3,  8);
   constexpr Score CloseEnemies       = S(  7,  0);
   constexpr Score CorneredBishop     = S( 50, 50);
@@ -192,7 +198,7 @@ namespace {
     template<Color Us> Score passed() const;
     template<Color Us> Score space() const;
     ScaleFactor scale_factor(Value eg) const;
-    Score initiative(Value eg) const;
+    Score initiative(Score sc) const;
 
     const Position& pos;
     Material::Entry* me;
@@ -741,7 +747,8 @@ namespace {
   // known attacking/defending status of the players.
 
   template<Tracing T>
-  Score Evaluation<T>::initiative(Value eg) const {
+  Score Evaluation<T>::initiative(Score sc) const {
+    Value mg = mg_value(sc), eg = eg_value(sc);
 
     int outflanking =  distance<File>(pos.square<KING>(WHITE), pos.square<KING>(BLACK))
                      - distance<Rank>(pos.square<KING>(WHITE), pos.square<KING>(BLACK));
@@ -750,22 +757,24 @@ namespace {
                             && (pos.pieces(PAWN) & KingSide);
 
     // Compute the initiative bonus for the attacking side
-    int complexity =   8 * pe->pawn_asymmetry()
-                    + 12 * pos.count<PAWN>()
-                    + 12 * outflanking
-                    + 16 * pawnsOnBothFlanks
-                    + 48 * !pos.non_pawn_material()
-                    -118 ;
+    Score complexity =  AttackPawnAsymm   * pe->pawn_asymmetry()
+                      + AttackPawnCount   * pos.count<PAWN>()
+                      + AttackOutflanking * outflanking
+                      + AttackPBothFlanks * pawnsOnBothFlanks
+                      + AttackOnlyPawns   * !pos.non_pawn_material()
+                      - AttackAdjustment;
 
     // Now apply the bonus: note that we find the attacking side by extracting
     // the sign of the endgame value, and that we carefully cap the bonus so
     // that the endgame score will never change sign after the bonus.
-    int v = ((eg > 0) - (eg < 0)) * std::max(complexity, -abs(eg));
+    int c_mg = mg_value(complexity), c_eg = eg_value(complexity);
+    c_mg = ((mg > 0) - (mg < 0)) * std::max(c_mg, -abs(mg));
+    c_eg = ((eg > 0) - (eg < 0)) * std::max(c_eg, -abs(eg));
 
     if (T)
-        Trace::add(INITIATIVE, make_score(0, v));
+        Trace::add(INITIATIVE, make_score(c_mg, c_eg));
 
-    return make_score(0, v);
+    return make_score(c_mg, c_eg);
   }
 
 
@@ -842,7 +851,7 @@ namespace {
             + passed< WHITE>() - passed< BLACK>()
             + space<  WHITE>() - space<  BLACK>();
 
-    score += initiative(eg_value(score));
+    score += initiative(score);
 
     // Interpolate between a middlegame and a (scaled by 'sf') endgame score
     ScaleFactor sf = scale_factor(eg_value(score));

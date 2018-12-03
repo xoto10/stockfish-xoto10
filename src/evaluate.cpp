@@ -120,9 +120,9 @@ namespace {
   // Outpost[knight/bishop][supported by pawn] contains bonuses for minor
   // pieces if they occupy or can reach an outpost square, bigger if that
   // square is supported by a pawn.
-  constexpr Score Outpost[][2] = {
-    { S(22, 6), S(36,12) }, // Knight
-    { S( 9, 2), S(15, 5) }  // Bishop
+  constexpr Score Outpost[][3] = {
+    { S(22, 6), S(36,12), S(50,18) }, // Knight
+    { S( 9, 2), S(15, 5), S(17, 7) }  // Bishop
   };
 
   // RookOnFile[semiopen/open] contains bonuses for each rook when there is
@@ -325,10 +325,14 @@ namespace {
             // Bonus if piece is on an outpost square or can reach one
             bb = OutpostRanks & ~pe->pawn_attacks_span(Them);
             if (bb & s)
-                score += Outpost[Pt == BISHOP][bool(attackedBy[Us][PAWN] & s)] * 2;
+                score += Outpost[Pt == BISHOP]
+                                [ bool(attackedBy[Us][PAWN] & s)
+                                + bool(double_pawn_attacks_bb<Us>(pos.pieces(Us, PAWN)))] * 2;
 
             else if (bb &= b & ~pos.pieces(Us))
-                score += Outpost[Pt == BISHOP][bool(attackedBy[Us][PAWN] & bb)];
+                score += Outpost[Pt == BISHOP]
+                                [ bool(attackedBy[Us][PAWN] & bb)
+                                + bool(double_pawn_attacks_bb<Us>(pos.pieces(Us, PAWN)))];
 
             // Knight and Bishop bonus for being right behind a pawn
             if (shift<Down>(pos.pieces(PAWN)) & s)

@@ -152,12 +152,6 @@ namespace {
   };
 
   // Assorted bonuses and penalties
-  constexpr Score AttackPawnAsymm    = S(  8,  8);
-  constexpr Score AttackPawnCount    = S( 12, 12);
-  constexpr Score AttackOutflanking  = S( 12, 12);
-  constexpr Score AttackPBothFlanks  = S( 16, 16);
-  constexpr Score AttackOnlyPawns    = S(  0, 48);
-  constexpr Score AttackAdjustment   = S(118,118);
   constexpr Score BishopPawns        = S(  3,  8);
   constexpr Score CloseEnemies       = S(  7,  0);
   constexpr Score CorneredBishop     = S( 50, 50);
@@ -757,24 +751,25 @@ namespace {
                             && (pos.pieces(PAWN) & KingSide);
 
     // Compute the initiative bonus for the attacking side
-    Score complexity =  AttackPawnAsymm   * pe->pawn_asymmetry()
-                      + AttackPawnCount   * pos.count<PAWN>()
-                      + AttackOutflanking * outflanking
-                      + AttackPBothFlanks * pawnsOnBothFlanks
-                      + AttackOnlyPawns   * !pos.non_pawn_material()
-                      - AttackAdjustment;
+    int complexityMg =   8 * pe->pawn_asymmetry()
+                      + 12 * outflanking;
+    int complexityEg =   8 * pe->pawn_asymmetry()
+                      + 12 * pos.count<PAWN>()
+                      + 12 * outflanking
+                      + 16 * pawnsOnBothFlanks
+                      + 16 * !pos.non_pawn_material()
+                      -118;
 
     // Now apply the bonus: note that we find the attacking side by extracting
     // the sign of the endgame value, and that we carefully cap the bonus so
     // that the endgame score will never change sign after the bonus.
-    int c_mg = mg_value(complexity), c_eg = eg_value(complexity);
-    c_mg = ((mg > 0) - (mg < 0)) * std::max(c_mg, -abs(mg));
-    c_eg = ((eg > 0) - (eg < 0)) * std::max(c_eg, -abs(eg));
+    complexityMg = ((mg > 0) - (mg < 0)) * std::max(complexityMg, -abs(mg));
+    complexityEg = ((eg > 0) - (eg < 0)) * std::max(complexityEg, -abs(eg));
 
     if (T)
-        Trace::add(INITIATIVE, make_score(c_mg, c_eg));
+        Trace::add(INITIATIVE, make_score(complexityMg, complexityEg));
 
-    return make_score(c_mg, c_eg);
+    return make_score(complexityMg, complexityEg);
   }
 
 

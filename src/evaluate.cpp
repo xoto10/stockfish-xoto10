@@ -330,7 +330,7 @@ namespace {
 
             else if (bb &= b & ~pos.pieces(Us))
                 score += Outpost[Pt == BISHOP][bool(attackedBy[Us][PAWN] & bb)]
-                                [!(forward_file_bb(Us, s) & pos.pieces(Them, PAWN))];
+                                [!(forward_file_bb(Us, frontmost_sq(Us, bb)) & pos.pieces(Them, PAWN))];
 
             // Knight and Bishop bonus for being right behind a pawn
             if (shift<Down>(pos.pieces(PAWN)) & s)

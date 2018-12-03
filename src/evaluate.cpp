@@ -752,7 +752,8 @@ namespace {
 
     // Compute the initiative bonus for the attacking side
     int complexityMg =   8 * pe->pawn_asymmetry()
-                      + 12 * outflanking;
+                      + 12 * outflanking
+                      - 12;
     int complexityEg =   8 * pe->pawn_asymmetry()
                       + 12 * pos.count<PAWN>()
                       + 12 * outflanking

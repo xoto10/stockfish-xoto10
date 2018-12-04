@@ -767,14 +767,15 @@ namespace {
     // Now apply the bonus: note that we find the attacking side by extracting
     // the sign of the endgame value, and that we carefully cap the bonus so
     // that the endgame score will never change sign after the bonus.
-    int c_mg = mg_value(complexity), c_eg = eg_value(complexity);
-    c_mg = ((mg > 0) - (mg < 0)) * std::max(c_mg, -abs(mg));
-    c_eg = ((eg > 0) - (eg < 0)) * std::max(c_eg, -abs(eg));
+    int cmg = mg_value(complexity);
+    int ceg = eg_value(complexity);
+    cmg = ((mg > 0) - (mg < 0)) * std::max(cmg, -abs(mg));
+    ceg = ((eg > 0) - (eg < 0)) * std::max(ceg, -abs(eg));
 
     if (T)
-        Trace::add(INITIATIVE, make_score(c_mg, c_eg));
+        Trace::add(INITIATIVE, make_score(cmg, ceg));
 
-    return make_score(c_mg, c_eg);
+    return make_score(cmg, ceg);
   }
 
 

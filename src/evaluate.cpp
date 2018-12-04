@@ -152,12 +152,13 @@ namespace {
   };
 
   // Assorted bonuses and penalties
-  constexpr Score AttackPawnAsymm    = S(  2,  6);
-  constexpr Score AttackPawnCount    = S(  3,  9);
-  constexpr Score AttackOutflanking  = S(  3,  9);
-  constexpr Score AttackPBothFlanks  = S(  4, 12);
-  constexpr Score AttackOnlyPawns    = S(  0, 48);
-  constexpr Score AttackAdjustment   = S( 30, 88);
+            Score A0                 = S(  2,  6);
+            Score A1                 = S(  3,  9);
+            Score A2                 = S(  3,  9);
+            Score A3                 = S(  4, 12);
+            Score A4                 = S(  0, 48);
+            Score A5                 = S( 30, 88);
+TUNE(SetRange(-20,40),A0,A1,A2,A3, SetRange(-100,300),A4,A5);
   constexpr Score BishopPawns        = S(  3,  8);
   constexpr Score CloseEnemies       = S(  7,  0);
   constexpr Score CorneredBishop     = S( 50, 50);
@@ -757,12 +758,12 @@ namespace {
                             && (pos.pieces(PAWN) & KingSide);
 
     // Compute the initiative bonus for the attacking side
-    Score complexity =  AttackPawnAsymm   * pe->pawn_asymmetry()
-                      + AttackPawnCount   * pos.count<PAWN>()
-                      + AttackOutflanking * outflanking
-                      + AttackPBothFlanks * pawnsOnBothFlanks
-                      + AttackOnlyPawns   * !pos.non_pawn_material()
-                      - AttackAdjustment;
+    Score complexity =  A0                * pe->pawn_asymmetry()
+                      + A1                * pos.count<PAWN>()
+                      + A2                * outflanking
+                      + A3                * pawnsOnBothFlanks
+                      + A4                * !pos.non_pawn_material()
+                      - A5;
 
     // Now apply the bonus: note that we find the attacking side by extracting
     // the sign of the endgame value, and that we carefully cap the bonus so

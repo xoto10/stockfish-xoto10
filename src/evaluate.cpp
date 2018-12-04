@@ -751,19 +751,19 @@ namespace {
                             && (pos.pieces(PAWN) & KingSide);
 
     // Compute the initiative bonus for the attacking side
-    int complexityMg =   8 * pe->pawn_asymmetry()
-                      + 12 * outflanking;
-    int complexityEg =   8 * pe->pawn_asymmetry()
-                      + 12 * pos.count<PAWN>()
-                      + 12 * outflanking
-                      + 16 * pawnsOnBothFlanks
-                      + 16 * !pos.non_pawn_material()
-                      -118;
+    int complexityMg =   2 * pe->pawn_asymmetry()
+                      +  3 * outflanking;
+    int complexityEg =   6 * pe->pawn_asymmetry()
+                      +  9 * pos.count<PAWN>()
+                      +  9 * outflanking
+                      + 12 * pawnsOnBothFlanks
+                      + 12 * !pos.non_pawn_material()
+                      - 89;
 
     // Now apply the bonus: note that we find the attacking side by extracting
     // the sign of the endgame value, and that we carefully cap the bonus so
     // that the endgame score will never change sign after the bonus.
-    complexityMg = ((mg > 0) - (mg < 0)) * std::max(complexityMg/4, -abs(mg));
+    complexityMg = ((mg > 0) - (mg < 0)) * std::max(complexityMg, -abs(mg));
     complexityEg = ((eg > 0) - (eg < 0)) * std::max(complexityEg, -abs(eg));
 
     if (T)

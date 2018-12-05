@@ -757,9 +757,9 @@ namespace {
     int complexityEg =   6 * pe->pawn_asymmetry()
                       +  9 * pos.count<PAWN>()
                       +  9 * outflanking
-                      + 12 * pawnsOnBothFlanks
+                      + 14 * pawnsOnBothFlanks
                       + 48 * !pos.non_pawn_material()
-                      - 93;
+                      - 89;
 
     // Now apply the bonus: note that we find the attacking side by extracting
     // the sign of the endgame value, and that we carefully cap the bonus so

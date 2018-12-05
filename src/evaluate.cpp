@@ -157,7 +157,7 @@ namespace {
   constexpr Score AttackOutflanking  = S(  2,  9);
   constexpr Score AttackPBothFlanks  = S(  4, 14);
   constexpr Score AttackOnlyPawns    = S(  5, 50);
-  constexpr Score AttackAdjustment   = S( 15, 91);
+  constexpr Score AttackAdjustment   = S(  0, 91);
   constexpr Score BishopPawns        = S(  3,  8);
   constexpr Score CloseEnemies       = S(  7,  0);
   constexpr Score CorneredBishop     = S( 50, 50);

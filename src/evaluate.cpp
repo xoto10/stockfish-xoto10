@@ -416,7 +416,7 @@ namespace {
   Score Evaluation<T>::king() const {
 
     constexpr Color    Them = (Us == WHITE ? BLACK : WHITE);
-    constexpr Square   F8Sq = (Us == WHITE ? SQ_F1 : SQ_F8);
+//  constexpr Square   F8Sq = (Us == WHITE ? SQ_F1 : SQ_F8);
     constexpr Bitboard Camp = (Us == WHITE ? AllSquares ^ Rank6BB ^ Rank7BB ^ Rank8BB
                                            : AllSquares ^ Rank1BB ^ Rank2BB ^ Rank3BB);
 
@@ -428,7 +428,7 @@ namespace {
 
     // Penalty if castling has been prevented in moves leading to this position
     if (pos.this_thread()->castlingStopped[Us])
-        score =  score / 2 - CastlingStopped * (1 + ksq == F8Sq);
+        score =  score / 2 - CastlingStopped; // * (1 + ksq == F8Sq);
 
     // Find the squares that opponent attacks in our king flank, and the squares
     // which are attacked twice in that flank.

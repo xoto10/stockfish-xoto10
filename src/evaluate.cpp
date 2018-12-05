@@ -289,7 +289,7 @@ namespace {
     constexpr Bitboard OutpostRanks = (Us == WHITE ? Rank4BB | Rank5BB | Rank6BB
                                                    : Rank5BB | Rank4BB | Rank3BB);
     const Square* pl = pos.squares<Pt>(Us);
-    Bitboard NotH2H7 = (Us == WHITE ? ~SquareBB[SQ_H2] : ~SquareBB[SQ_H7]);
+//  Bitboard NotH2H7 = (Us == WHITE ? ~SquareBB[SQ_H2] : ~SquareBB[SQ_H7]);
 
     Bitboard b, bb;
     Square s;
@@ -369,7 +369,8 @@ namespace {
 
         if (Pt == ROOK)
         {
-            int mob = popcount(b & mobilityArea[Us] & NotH2H7);
+//          int mob = popcount(b & mobilityArea[Us] & NotH2H7);
+            int mob = popcount(b & mobilityArea[Us]);
             mobility[Us] += MobilityBonus[Pt - 2][mob];
 
             // Bonus for aligning rook with enemy pawns on the same rank/file
@@ -385,8 +386,10 @@ namespace {
             {
                 File kf = file_of(pos.square<KING>(Us));
                 if ((kf < FILE_E) == (file_of(s) < kf))
-                    score -= (TrappedRook - make_score(mob * 22, 0))
-                             * (1 + !pos.can_castle(Us) + pos.this_thread()->castlingStopped[Us]);
+//                  score -= (TrappedRook - make_score(mob * 22, 0))
+//                           * (1 + !pos.can_castle(Us) + pos.this_thread()->castlingStopped[Us]);
+                    score -= (TrappedRook * (1 + !pos.can_castle(Us) + pos.this_thread()->castlingStopped[Us])
+                              - make_score(mob * 22, 0));
             }
         }
 

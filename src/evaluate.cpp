@@ -152,12 +152,12 @@ namespace {
   };
 
   // Assorted bonuses and penalties
-  constexpr Score AttackPawnAsymm    = S(  2,  6);
-  constexpr Score AttackPawnCount    = S(  3,  9);
-  constexpr Score AttackOutflanking  = S(  3,  9);
-  constexpr Score AttackPBothFlanks  = S(  4, 12);
-  constexpr Score AttackOnlyPawns    = S(  0, 48);
-  constexpr Score AttackAdjustment   = S( 30, 88);
+  constexpr Score AttackPawnAsymm    = S(  3,  6);
+  constexpr Score AttackPawnCount    = S(  2, 11);
+  constexpr Score AttackOutflanking  = S(  2,  9);
+  constexpr Score AttackPBothFlanks  = S(  4, 14);
+  constexpr Score AttackOnlyPawns    = S(  5, 50);
+  constexpr Score AttackAdjustment   = S( 15, 91);
   constexpr Score BishopPawns        = S(  3,  8);
   constexpr Score CloseEnemies       = S(  7,  0);
   constexpr Score CorneredBishop     = S( 50, 50);

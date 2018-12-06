@@ -154,7 +154,7 @@ namespace {
   // Assorted bonuses and penalties
   constexpr Score BishopPawns        = S(  3,  8);
   constexpr Score CloseEnemies       = S(  7,  0);
-  constexpr Score Connectivity       = S(  1,  3);
+  constexpr Score Connectivity       = S(  4, 16);
   constexpr Score CorneredBishop     = S( 50, 50);
   constexpr Score Hanging            = S( 62, 34);
   constexpr Score KingProtector      = S(  6,  7);
@@ -605,7 +605,7 @@ namespace {
     }
 
     b = pos.pieces(Us) & ~pos.pieces(Us, PAWN) & attackedBy[Us][NON_PAWN];
-    score += Connectivity * popcount(b);
+    score += Connectivity * popcount(b) / 8;
 
     if (T)
         Trace::add(THREAT, Us, score);

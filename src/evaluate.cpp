@@ -255,6 +255,7 @@ namespace {
     // Initialise attackedBy bitboards for kings and pawns
     attackedBy[Us][KING] = pos.attacks_from<KING>(pos.square<KING>(Us));
     attackedBy[Us][PAWN] = pe->pawn_attacks(Us);
+    attackedBy[Us][NON_PAWN] = attackedBy[Us][KING];
     attackedBy[Us][ALL_PIECES] = attackedBy[Us][KING] | attackedBy[Us][PAWN];
     attackedBy2[Us]            = attackedBy[Us][KING] & attackedBy[Us][PAWN];
 
@@ -307,6 +308,7 @@ namespace {
 
         attackedBy2[Us] |= attackedBy[Us][ALL_PIECES] & b;
         attackedBy[Us][Pt] |= b;
+        attackedBy[Us][NON_PAWN] |= b;
         attackedBy[Us][ALL_PIECES] |= b;
 
         if (b & kingRing[Them] & ~double_pawn_attacks_bb<Them>(pos.pieces(Them, PAWN)))

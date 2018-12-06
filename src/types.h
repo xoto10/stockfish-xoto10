@@ -188,6 +188,7 @@ enum Value : int {
 enum PieceType {
   NO_PIECE_TYPE, PAWN, KNIGHT, BISHOP, ROOK, QUEEN, KING,
   ALL_PIECES = 0,
+  NON_PAWN = 7,
   PIECE_TYPE_NB = 8
 };
 

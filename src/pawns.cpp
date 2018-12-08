@@ -59,7 +59,7 @@ namespace {
   };
 
   // Danger of blocked enemy pawns storming our king, by rank
-  constexpr Value BlockedStorm[RANK_NB] = { V(0), V(34), V(98), V(66), V(34), V(1), V(15) };
+  constexpr Value BlockedStorm[RANK_NB] = { V(0), V(0), V(98), V(34), V(18), V(1), V(15) };
 
   #undef S
   #undef V

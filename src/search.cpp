@@ -1240,6 +1240,7 @@ assert(pv);
     {
         oldAlpha = alpha; // To flag BOUND_EXACT when eval above alpha and no available moves
         (ss+1)->pv = pv;
+assert(ss->pv);
         ss->pv[0] = MOVE_NONE;
     }
 
@@ -1454,7 +1455,7 @@ assert(pv);
   // update_pv() adds current move and appends child pv[]
 
   void update_pv(Move* pv, Move move, Move* childPv) {
-
+assert(pv);
     for (*pv++ = move; childPv && *childPv != MOVE_NONE; )
         *pv++ = *childPv++;
     *pv = MOVE_NONE;

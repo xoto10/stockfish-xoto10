@@ -406,7 +406,7 @@ void Thread::search() {
           while (true)
           {
               Depth adjustedDepth = std::max(ONE_PLY, rootDepth - failedHighCnt * ONE_PLY);
-//assert(ss->pv);
+assert(adjustedDepth>0 || ss->pv);
               bestValue = ::search<PV>(rootPos, ss, alpha, beta, adjustedDepth, false);
 
               // Bring the best move to the front. It is critical that sorting
@@ -553,6 +553,9 @@ namespace {
         if (alpha >= beta)
             return alpha;
     }
+
+//sync_cout << "info string search<> start: alpha " << alpha << " beta " << beta << " depth " << depth
+//          << " NT " << NT << " ss->pv " << ss->pv << sync_endl;
 
     // Dive into quiescence search when the depth reaches zero
     if (depth < ONE_PLY)
@@ -763,6 +766,7 @@ assert((NT != PV) || ss->pv);
     if (   depth < 2 * ONE_PLY
         && eval <= alpha - RazorMargin)
     {
+//sync_cout << "info string razoring: NT " << NT << " ss->pv " << ss->pv << sync_endl;
 assert((NT != PV) || ss->pv);
         return qsearch<NT>(pos, ss, alpha, beta);
     }

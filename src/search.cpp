@@ -406,6 +406,7 @@ void Thread::search() {
           while (true)
           {
               Depth adjustedDepth = std::max(ONE_PLY, rootDepth - failedHighCnt * ONE_PLY);
+//assert(ss->pv);
               bestValue = ::search<PV>(rootPos, ss, alpha, beta, adjustedDepth, false);
 
               // Bring the best move to the front. It is critical that sorting
@@ -555,7 +556,10 @@ namespace {
 
     // Dive into quiescence search when the depth reaches zero
     if (depth < ONE_PLY)
+    {
+assert((NT != PV) || ss->pv);
         return qsearch<NT>(pos, ss, alpha, beta);
+    }
 
     assert(-VALUE_INFINITE <= alpha && alpha < beta && beta <= VALUE_INFINITE);
     assert(PvNode || (alpha == beta - 1));
@@ -758,7 +762,10 @@ namespace {
     // Step 7. Razoring (~2 Elo)
     if (   depth < 2 * ONE_PLY
         && eval <= alpha - RazorMargin)
+    {
+assert((NT != PV) || ss->pv);
         return qsearch<NT>(pos, ss, alpha, beta);
+    }
 
     improving =   ss->staticEval >= (ss-2)->staticEval
                || (ss-2)->staticEval == VALUE_NONE;
@@ -861,6 +868,7 @@ namespace {
     if (    depth >= 8 * ONE_PLY
         && !ttMove)
     {
+assert((NT != PV) || ss->pv);
         search<NT>(pos, ss, alpha, beta, depth - 7 * ONE_PLY, cutNode);
 
         tte = TT.probe(posKey, ttHit);
@@ -1385,6 +1393,7 @@ assert(ss->pv);
 
       // Make and search the move
       pos.do_move(move, st, givesCheck);
+assert((NT != PV) || (ss+1)->pv);
       value = -qsearch<NT>(pos, ss+1, -beta, -alpha, depth - ONE_PLY);
       pos.undo_move(move);
 

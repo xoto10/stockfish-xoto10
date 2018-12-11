@@ -221,7 +221,7 @@ Value Entry::evaluate_shelter(const Position& pos, Square ksq) {
 
       int d = std::min(f, ~f);
       safety += ShelterStrength[d][ourRank];
-      safety -= (ourRank && (ourRank == theirRank - 1)) ? 66 * (theirRank == RANK_3)
+      safety -= (ourRank && (ourRank == theirRank - 1)) ? (!kingRooks[Us] ? 38 : 114) * (theirRank == RANK_3)
                                                         : UnblockedStorm[d][theirRank];
   }
 
@@ -234,9 +234,11 @@ Value Entry::evaluate_shelter(const Position& pos, Square ksq) {
 
 template<Color Us>
 Score Entry::do_king_safety(const Position& pos) {
+  constexpr Color Them = (Us == WHITE ? BLACK : WHITE);
 
   Square ksq = pos.square<KING>(Us);
   kingSquares[Us] = ksq;
+  kingRooks[Us] = pos.count<ROOK>(Them) + pos.count<QUEEN>(Them);
   castlingRights[Us] = pos.castling_rights(Us);
   int minKingPawnDistance = 0;
 

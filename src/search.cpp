@@ -57,6 +57,8 @@ using Eval::evaluate;
 using namespace Search;
 
 namespace {
+  int T2 = 20, T3 = 20;
+TUNE(SetRange(-40,120),T2,T3);
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV };
@@ -750,7 +752,7 @@ namespace {
             ss->staticEval = eval = pureStaticEval + bonus;
         }
         else
-            ss->staticEval = eval = pureStaticEval = -(ss-1)->staticEval + 2 * Eval::Tempo;
+            ss->staticEval = eval = pureStaticEval = -(ss-1)->staticEval + T2;
 
         tte->save(posKey, VALUE_NONE, BOUND_NONE, DEPTH_NONE, MOVE_NONE, pureStaticEval);
     }
@@ -1297,7 +1299,7 @@ moves_loop: // When in check, search starts from here
         else
             ss->staticEval = bestValue =
             (ss-1)->currentMove != MOVE_NULL ? evaluate(pos)
-                                             : -(ss-1)->staticEval + 2 * Eval::Tempo;
+                                             : -(ss-1)->staticEval + T3;
 
         // Stand pat. Return immediately if static value is at least beta
         if (bestValue >= beta)

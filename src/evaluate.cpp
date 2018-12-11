@@ -72,6 +72,8 @@ namespace Trace {
 using namespace Trace;
 
 namespace {
+            Value T1 = Value(20);
+TUNE(SetRange(-20,60),T1);
 
   constexpr Bitboard QueenSide   = FileABB | FileBBB | FileCBB | FileDBB;
   constexpr Bitboard CenterFiles = FileCBB | FileDBB | FileEBB | FileFBB;
@@ -862,7 +864,7 @@ namespace {
     }
 
     return  (pos.side_to_move() == WHITE ? v : -v) // Side to move point of view
-           + Eval::Tempo;
+           + T1;
   }
 
 } // namespace

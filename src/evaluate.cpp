@@ -199,7 +199,7 @@ namespace {
     Pawns::Entry* pe;
     Bitboard mobilityArea[COLOR_NB];
     Score mobility[COLOR_NB] = { SCORE_ZERO, SCORE_ZERO };
-    Score outpostDanger[COLOR_NB] = { SCORE_ZERO, SCORE_ZERO };
+    Value outpostDanger[COLOR_NB] = { Value(0), Value(0) };
 
     // attackedBy[color][piece type] is a bitboard representing all squares
     // attacked by a given color and piece type. Special "piece types" which
@@ -329,7 +329,7 @@ namespace {
             {
                 score += Outpost[Pt == BISHOP][bool(attackedBy[Us][PAWN] & s)] * 2;
                 if (std::abs(file_of(pos.square<KING>(Them)) - file_of(s)) <= 1)
-                    outpostDanger[Them] += Outpost[Pt == BISHOP][bool(attackedBy[Us][PAWN] & s)] * 2;
+                    outpostDanger[Them] += mg_value(Outpost[Pt == BISHOP][bool(attackedBy[Us][PAWN] & s)]) * 2;
             }
 
             else if (bb &= b & ~pos.pieces(Us))

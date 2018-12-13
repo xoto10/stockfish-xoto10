@@ -199,6 +199,7 @@ namespace {
     Pawns::Entry* pe;
     Bitboard mobilityArea[COLOR_NB];
     Score mobility[COLOR_NB] = { SCORE_ZERO, SCORE_ZERO };
+    Score outpostDanger[COLOR_NB] = { SCORE_ZERO, SCORE_ZERO };
 
     // attackedBy[color][piece type] is a bitboard representing all squares
     // attacked by a given color and piece type. Special "piece types" which
@@ -325,7 +326,11 @@ namespace {
             // Bonus if piece is on an outpost square or can reach one
             bb = OutpostRanks & ~pe->pawn_attacks_span(Them);
             if (bb & s)
+            {
                 score += Outpost[Pt == BISHOP][bool(attackedBy[Us][PAWN] & s)] * 2;
+                if (std::abs(file_of(pos.square<KING>(Them)) - file_of(s)) <= 1)
+                    outpostDanger[Them] += Outpost[Pt == BISHOP][bool(attackedBy[Us][PAWN] & s)] * 2;
+            }
 
             else if (bb &= b & ~pos.pieces(Us))
                 score += Outpost[Pt == BISHOP][bool(attackedBy[Us][PAWN] & bb)];
@@ -475,6 +480,7 @@ namespace {
                      + 185 * popcount(kingRing[Us] & weak)
                      + 150 * popcount(pos.blockers_for_king(Us) | unsafeChecks)
                      +       tropism * tropism / 4
+                     +   2 * outpostDanger[Us]
                      - 873 * !pos.count<QUEEN>(Them)
                      -   6 * mg_value(score) / 8
                      +       mg_value(mobility[Them] - mobility[Us])

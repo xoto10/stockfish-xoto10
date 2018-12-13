@@ -324,7 +324,7 @@ namespace {
             {
                 int fd = file_of(pos.square<KING>(Them)) - file_of(s);
                 score += Outpost[Pt == BISHOP][bool(attackedBy[Us][PAWN] & s)]
-                         * (2 + (std::abs(fd) <= 1));
+                         * (2 + (std::abs(fd) <= 2));
             }
 
             else if (bb &= b & ~pos.pieces(Us))

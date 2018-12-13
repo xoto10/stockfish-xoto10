@@ -117,12 +117,12 @@ namespace {
       S(106,184), S(109,191), S(113,206), S(116,212) }
   };
 
-  // Outpost[knight/bishop][supported by pawn] contains bonuses for minor
+  // Outpost[knight/bishop][supported by pawn][near opp king] contains bonuses for minor
   // pieces if they occupy or can reach an outpost square, bigger if that
   // square is supported by a pawn.
-  constexpr Score Outpost[][2] = {
-    { S(22, 6), S(36,12) }, // Knight
-    { S( 9, 2), S(15, 5) }  // Bishop
+  constexpr Score Outpost[][2][2] = {
+    { { S(22, 6), S(33, 9) }, { S(36,12), S(54,18) } }, // Knight
+    { { S( 9, 2), S(13, 3) }, { S(15, 5), S(22, 7) } }  // Bishop
   };
 
   // RookOnFile[semiopen/open] contains bonuses for each rook when there is
@@ -323,12 +323,14 @@ namespace {
             if (bb & s)
             {
                 int fd = file_of(pos.square<KING>(Them)) - file_of(s);
-                score += Outpost[Pt == BISHOP][bool(attackedBy[Us][PAWN] & s)]
-                         * (2 + (std::abs(fd) <= 2));
+                score += Outpost[Pt == BISHOP][bool(attackedBy[Us][PAWN] & s)][std::abs(fd) <= 1] * 2;
             }
 
             else if (bb &= b & ~pos.pieces(Us))
-                score += Outpost[Pt == BISHOP][bool(attackedBy[Us][PAWN] & bb)];
+            {
+                int fd = file_of(pos.square<KING>(Them)) - file_of(s);
+                score += Outpost[Pt == BISHOP][bool(attackedBy[Us][PAWN] & bb)][std::abs(fd) <= 1];
+            }
 
             // Knight and Bishop bonus for being right behind a pawn
             if (shift<Down>(pos.pieces(PAWN)) & s)

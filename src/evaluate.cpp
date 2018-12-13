@@ -321,7 +321,11 @@ namespace {
             // Bonus if piece is on an outpost square or can reach one
             bb = OutpostRanks & ~pe->pawn_attacks_span(Them);
             if (bb & s)
-                score += Outpost[Pt == BISHOP][bool(attackedBy[Us][PAWN] & s)] * 2;
+            {
+                int fd = file_of(pos.square<KING>(Them)) - file_of(s);
+                score += Outpost[Pt == BISHOP][bool(attackedBy[Us][PAWN] & s)]
+                         * (2 + (std::abs(fd) <= 1));
+            }
 
             else if (bb &= b & ~pos.pieces(Us))
                 score += Outpost[Pt == BISHOP][bool(attackedBy[Us][PAWN] & bb)];

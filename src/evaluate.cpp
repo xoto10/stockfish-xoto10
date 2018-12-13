@@ -161,6 +161,7 @@ namespace {
   constexpr Score LongDiagonalBishop = S( 45,  0);
   constexpr Score MinorBehindPawn    = S( 18,  3);
   constexpr Score PawnlessFlank      = S( 17, 95);
+  constexpr Score PossibleOutpost    = S(  5,  0);
   constexpr Score RestrictedPiece    = S(  7,  7);
   constexpr Score RookOnPawn         = S( 10, 32);
   constexpr Score SliderOnQueen      = S( 59, 18);
@@ -500,6 +501,8 @@ namespace {
     constexpr Color     Them     = (Us == WHITE ? BLACK   : WHITE);
     constexpr Direction Up       = (Us == WHITE ? NORTH   : SOUTH);
     constexpr Bitboard  TRank3BB = (Us == WHITE ? Rank3BB : Rank6BB);
+    constexpr Bitboard  OutpostRanks = (Us == WHITE ? Rank4BB | Rank5BB | Rank6BB
+                                                    : Rank5BB | Rank4BB | Rank3BB);
 
     Bitboard b, weak, defended, nonPawnEnemies, stronglyProtected, safe, restricted;
     Score score = SCORE_ZERO;
@@ -591,6 +594,13 @@ namespace {
            | (attackedBy[Us][ROOK  ] & pos.attacks_from<ROOK  >(s));
 
         score += SliderOnQueen * popcount(b & safe & attackedBy2[Us]);
+    }
+
+    // Bonus for possible outpost squares
+    if (pos.count<ROOK>(Us) + pos.count<KNIGHT>(Us) + pos.count<BISHOP>(Us) > 0)
+    {
+        b = attackedBy[Us][PAWN] & OutpostRanks & ~pe->pawn_attacks_span(Them);
+        score += PossibleOutpost * popcount(b);
     }
 
     if (T)

@@ -326,7 +326,7 @@ namespace {
             bb = OutpostRanks & ~pe->pawn_attacks_span(Them);
             if (bb & s)
                 score += Outpost[Pt == BISHOP][bool(attackedBy[Us][PAWN] & s)]
-                         * (9 - distance(s, pos.square<KING>(Them))) * 96 / 256;
+                         * (17 - distance(s, pos.square<KING>(Them))) * 48 / 256;
 
             else if (bb &= b & ~pos.pieces(Us))
                 score += Outpost[Pt == BISHOP][bool(attackedBy[Us][PAWN] & bb)];

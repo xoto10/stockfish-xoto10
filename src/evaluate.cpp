@@ -84,6 +84,12 @@ namespace {
     KingSide, KingSide, KingSide ^ FileEBB
   };
 
+  constexpr Bitboard KingFlank2[FILE_NB] = {
+    QueenSide ^ FileDBB, QueenSide, QueenSide,
+    (FileBBB | CenterFiles) ^ FileFBB, (CenterFiles | FileGBB) ^ FileCBB,
+    KingSide, KingSide, KingSide ^ FileEBB
+  };
+
   // Threshold for lazy and space evaluation
   constexpr Value LazyThreshold  = Value(1500);
   constexpr Value SpaceThreshold = Value(12222);
@@ -489,7 +495,7 @@ namespace {
     }
 
     // Penalty when they have pawns near our king
-    if (pos.pieces(Them, PAWN) & (kingFlank & Half))
+    if (pos.pieces(Them, PAWN) & (KingFlank2[file_of(ksq)] & Half))
         score -= KingRingPawn;
 
     // Penalty when our king is on a pawnless flank

@@ -157,7 +157,7 @@ namespace {
   constexpr Score CorneredBishop     = S( 50, 50);
   constexpr Score Hanging            = S( 69, 36);
   constexpr Score KingProtector      = S(  7,  8);
-  constexpr Score KingRingPawn       = S( 98,  0);
+  constexpr Score KingRingPawn       = S( 60,  0);
   constexpr Score KnightOnQueen      = S( 16, 12);
   constexpr Score LongDiagonalBishop = S( 45,  0);
   constexpr Score MinorBehindPawn    = S( 18,  3);
@@ -408,6 +408,8 @@ namespace {
     constexpr Color    Them = (Us == WHITE ? BLACK : WHITE);
     constexpr Bitboard Camp = (Us == WHITE ? AllSquares ^ Rank6BB ^ Rank7BB ^ Rank8BB
                                            : AllSquares ^ Rank1BB ^ Rank2BB ^ Rank3BB);
+    constexpr Bitboard Half = (Us == WHITE ? Rank1BB | Rank2BB | Rank3BB | Rank4BB
+                                           : Rank8BB | Rank7BB | Rank6BB | Rank5BB);
 
     const Square ksq = pos.square<KING>(Us);
     Bitboard kingFlank, weak, b, b1, b2, safe, unsafeChecks;
@@ -487,7 +489,7 @@ namespace {
     }
 
     // Penalty when they have pawns near our king
-    if (pos.pieces(Them, PAWN) & kingRing[Us])
+    if (pos.pieces(Them, PAWN) & (kingFlank & Half))
         score -= KingRingPawn;
 
     // Penalty when our king is on a pawnless flank

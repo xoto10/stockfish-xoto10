@@ -74,13 +74,13 @@ using namespace Trace;
 namespace {
 
   constexpr Bitboard QueenSide   = FileABB | FileBBB | FileCBB | FileDBB;
-  constexpr Bitboard CenterFiles = FileCBB | FileDBB | FileEBB | FileFBB;
+  constexpr Bitboard CenterFiles = FileDBB | FileEBB;
   constexpr Bitboard KingSide    = FileEBB | FileFBB | FileGBB | FileHBB;
   constexpr Bitboard Center      = (FileDBB | FileEBB) & (Rank4BB | Rank5BB);
 
   constexpr Bitboard KingFlank[FILE_NB] = {
     QueenSide ^ FileDBB, QueenSide, QueenSide,
-    CenterFiles, CenterFiles,
+    FileBBB | FileCBB | CenterFiles, CenterFiles | FileFBB | FileGBB,
     KingSide, KingSide, KingSide ^ FileEBB
   };
 

@@ -38,6 +38,7 @@ struct Entry {
   Bitboard passed_pawns(Color c) const { return passedPawns[c]; }
   Bitboard pawn_attacks_span(Color c) const { return pawnAttacksSpan[c]; }
   int weak_unopposed(Color c) const { return weakUnopposed[c]; }
+  int pawn_distance(Color c) const { return pawnDistance[c]; }
   int pawn_asymmetry() const { return asymmetry; }
   int open_files() const { return openFiles; }
 
@@ -59,7 +60,7 @@ struct Entry {
   Score do_king_safety(const Position& pos);
 
   template<Color Us>
-  Value evaluate_shelter(const Position& pos, Square ksq);
+  Value evaluate_shelter(const Position& pos, Square ksq, bool updDist);
 
   Key key;
   Score scores[COLOR_NB];
@@ -72,6 +73,7 @@ struct Entry {
   int castlingRights[COLOR_NB];
   int semiopenFiles[COLOR_NB];
   int pawnsOnSquares[COLOR_NB][COLOR_NB]; // [color][light/dark squares]
+  int pawnDistance[COLOR_NB];
   int asymmetry;
   int openFiles;
 };

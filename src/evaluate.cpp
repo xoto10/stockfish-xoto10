@@ -411,7 +411,6 @@ namespace {
 
     const Square ksq = pos.square<KING>(Us);
     Bitboard kingFlank, weak, b, b1, b2, safe, unsafeChecks;
-    int pawnAttack = std::max(0, -pe->pawn_distance(Us));
 
     // King shelter and enemy pawns storm
     Score score = pe->king_safety<Us>(pos);
@@ -480,7 +479,7 @@ namespace {
                      - 873 * !pos.count<QUEEN>(Them)
                      -   6 * mg_value(score) / 8
                      +       mg_value(mobility[Them] - mobility[Us])
-                     +       pawnAttack * pawnAttack * pawnAttack / 1024
+                     -       pe->pawn_distance(Us) * pe->pawn_distance(Us) * pe->pawn_distance(Us) / 1024
                      -   30;
 
         // Transform the kingDanger units into a Score, and subtract it from the evaluation

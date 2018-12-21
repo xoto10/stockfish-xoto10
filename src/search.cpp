@@ -267,7 +267,7 @@ void MainThread::search() {
       // Vote according to score and depth
       auto square = [](int64_t x) { return x * x; };
       for (Thread* th : Threads)
-          votes[th->rootMoves[0].pv[0]] += 200 + (square(std::max(1, int(th->rootMoves[0].score - (maxScore - 50))))
+          votes[th->rootMoves[0].pv[0]] += 200 + (square(std::max(1, int(th->rootMoves[0].score - (maxScore - 24))))
                                                   * int64_t(th->completedDepth));
 
       // Select best thread

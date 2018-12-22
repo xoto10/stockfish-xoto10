@@ -1,0 +1,12 @@
+#!/bin/bash
+
+
+
+br="$(git branch --no-color | grep '^*' | cut -c3-)"
+
+read -p "branch to push is $br - ok? " ans
+if [[ "$ans" = y ]] ; then
+   echo "git push origin $br"
+   git push origin "$br"
+fi
+

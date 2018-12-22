@@ -1,0 +1,25 @@
+#!/bin/bash
+
+
+
+if [[ ! -z "$1" ]] ; then
+   dest=ebench_${1}.out
+   ./Ethereal_${1:-new} bench >"$dest" 2>&1
+
+elif [[ "$(git branch --no-color | grep '^*' | cut -c3-)" = master ]] ; then
+   dest=ebench_master.out
+   ./Ethereal_master bench >"$dest" 2>&1
+
+else
+   br="$(git branch --no-color | grep '^*' | cut -c3-)"
+   dest=ebench_${br}.out
+   ./Ethereal_${1:-new} bench >"$dest" 2>&1
+fi
+
+
+echo ""
+echo "tail -5 $dest:"
+tail -5 "$dest"
+
+echo -e "\nmaster:\n$(grep "Nodes" ebench_master.out)"
+

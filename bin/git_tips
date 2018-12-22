@@ -1,0 +1,49 @@
+#!/bin/bash
+
+cat <<EOT
+
+https://stackoverflow.com/questions/5884784/how-to-pull-remote-branch-from-somebody-elses-repo
+
+git remote add coworker git://path/to/coworkers/repo.git
+git fetch coworker
+git checkout --track coworker/foo
+
+This will setup a local branch foo, tracking the remote branch coworker/foo. So when your co-worker 
+has made some changes, you can easily pull them:
+
+git checkout foo
+git pull
+
+Using stash:
+git stash
+git stash list
+git stash apply [ 'stash@{6}' ]
+git stash drop [ 'stash@{6}' ]
+
+
+git commit --amend                  # update commit message
+
+git push origin <branch> --force    # force updated commit message onto server
+
+Squashing commits:
+git reset --soft HEAD~3
+git commit -m "New message for the combined commit"
+
+git push origin +<branch>           # + sign forces local history up to server
+
+Nuke last commit and never see it again:
+git reset --hard HEAD~1
+
+
+git rebase master                   # merge changes from master into current branch
+
+git diff --cached                   # if diffs aren't showing up
+
+
+To debug:
+ulimit -c unlimited
+ulimit -a
+and edit Makefile
+
+EOT
+

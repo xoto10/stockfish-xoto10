@@ -1,0 +1,17 @@
+#!/bin/bash
+
+
+# show the md5 signatures of the two tested binaries
+md5sum stockfish_new
+md5sum stockfish_master
+
+# two long bench runs (depth 22), in parallel
+(./${1:-stockfish_master} bench 16 1 22 2>&1 | tail && echo "${1:-stockfish_master}") &
+(./${2:-stockfish_new}    bench 16 1 22 2>&1 | tail && echo "${2:-stockfish_new}") &
+
+wait
+
+# end of the speed test
+echo
+echo "... done"
+echo

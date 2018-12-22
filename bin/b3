@@ -1,0 +1,29 @@
+#!/bin/bash
+
+
+#(b ${1:-master}; b ${2:-new}) \
+
+echo "Time taken (ms):"
+(b ${1:-master}; b ${2:-new}; b ${1:-master}; b ${2:-new}; \
+    b ${1:-master}; b ${2:-new}; b ${1:-master}; b ${2:-new}; \
+    b ${1:-master}; b ${2:-new}; b ${1:-master}; b ${2:-new}; b ${1:-master}; b ${2:-new}; \
+    b ${1:-master}; b ${2:-new}; b ${1:-master}; b ${2:-new}; b ${1:-master}; b ${2:-new}) \
+    | grep time \
+    | nl \
+    | awk '{   if ($1 % 2 == 1)
+               {
+                   print "master: ", $6;
+                   sf += $6;
+               }
+               else
+               {
+                   print "   new: ", $6;
+                   new += $6;
+               }
+           }
+           END {
+                   print "\nTotals:";
+                   print "master: ", sf;
+                   print "   new: ", new;
+               }'
+

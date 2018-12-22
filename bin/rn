@@ -1,0 +1,9 @@
+#!/bin/bash
+
+uran=$(head -1 /dev/urandom | od -N 1 | head -1 | awk '{ print $2 }'| sed s/^0*//)
+
+#nsran=$(date +%N | rev)
+nsran=$(date +%N | rev | cut '-c1-4')
+
+echo "$nsran$uran"
+

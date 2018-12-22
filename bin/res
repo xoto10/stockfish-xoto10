@@ -1,0 +1,33 @@
+#!/bin/bash
+
+# res - analyse results from cutechess log file
+
+
+prev=n
+
+for log in $*
+do
+
+    if [[ "$prev" = y ]] ; then
+        echo
+    fi
+    if [[ "$#" -gt 1 ]] ; then
+        echo "$log:"
+    fi
+
+    d3r=$(grep -c fold $log)
+    d50=$(grep -c fifty $log)
+    dad=$(grep -c "Draw by adj" $log)
+    din=$(grep -c "insufficient" $log)
+
+    last=$(grep "^Score of" $log | tail -1)
+    tot=$(echo $last | sed 's/.* //')
+
+    echo " w%    l%    d%     3f%  adj% insu% 50mr%"
+    echo "$d3r $dad $din $d50 $last" \
+        | awk '{ printf "%5.2f %5.2f %5.2f  %5.2f %5.2f %5.2f %5.2f\n", \
+                        100*$10/$16, 100*$12/$16, 100*$14/$16, 100*$1/$16, 100*$2/$16, 100*$3/$16, 100*$4/$16; }'
+
+    prev=y
+done
+

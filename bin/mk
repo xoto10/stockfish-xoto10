@@ -1,0 +1,29 @@
+#!/bin/bash
+
+# mksf - build stockfish
+#        ./mksf [d|del] [jobs]
+
+case "$1" in
+   d*) make clean
+       ;;
+esac
+
+ps -f
+
+#make build ARCH=x86-64-modern -j ${2:-4}
+nice make build ARCH=x86-64-bmi2 -j ${2:-4}
+
+if [[ -x stockfish ]] ;  then
+   dest=stockfish_new
+   br="$(git branch --no-color | grep '^*' | cut -c3-)"
+
+   if [[ "$(git branch --no-color | grep '^*' | cut -c3-)" = master ]] ; then
+      dest=stockfish_main
+   fi
+
+   \cp -f stockfish "$dest"
+   \cp -f stockfish "stockfish_$br"
+   echo ""
+   \ls -lt | head -10
+fi
+

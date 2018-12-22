@@ -1,0 +1,11 @@
+#!/bin/bash
+
+
+#wine ~/Code/Wine/arena_3.5.1/Arena.exe
+
+cd ~/Data/sf/arenalinux_64bit_1.1/
+
+./Arena_x86_64_linux >error.out 2>&1
+
+cd -
+

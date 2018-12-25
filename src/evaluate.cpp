@@ -424,7 +424,7 @@ namespace {
     int tropism = popcount(b1) + popcount(b2);
 
     // Main king safety evaluation
-    {
+     {
         int kingDanger = 0;
         unsafeChecks = 0;
 

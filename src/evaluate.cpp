@@ -261,7 +261,7 @@ namespace {
     kingRing[Us] = kingAttackersCount[Them] = 0;
 
     // Init our king safety tables only if we are going to use them
-    if (pos.non_pawn_material(Them))
+    if (pos.non_pawn_material(Them) >= RookValueMg + KnightValueMg)
     {
         kingRing[Us] = attackedBy[Us][KING];
         if (relative_rank(Us, pos.square<KING>(Us)) == RANK_1)
@@ -424,7 +424,7 @@ namespace {
     int tropism = popcount(b1) + popcount(b2);
 
     // Main king safety evaluation
-    if (pos.non_pawn_material(Them))
+    if (pos.non_pawn_material(Them) >= RookValueMg + KnightValueMg)
 	{
         int kingDanger = 0;
         unsafeChecks = 0;

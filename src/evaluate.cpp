@@ -424,8 +424,7 @@ namespace {
     int tropism = popcount(b1) + popcount(b2);
 
     // Main king safety evaluation
-    if (kingAttackersCount[Them] > 1 - pos.count<QUEEN>(Them))
-    {
+     {
         int kingDanger = 0;
         unsafeChecks = 0;
 

@@ -424,7 +424,7 @@ namespace {
     int tropism = popcount(b1) + popcount(b2);
 
     // Main king safety evaluation
-    if (pos.non_pawn_material(Them) >= RookValueEg * 2)
+    if (pos.non_pawn_material(Them) >= BishopValueEg * 2)
 	{
         int kingDanger = 0;
         unsafeChecks = 0;

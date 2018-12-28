@@ -74,12 +74,11 @@ namespace {
     bool opposed, backward;
     Score score = SCORE_ZERO;
     const Square* pl = pos.squares<PAWN>(Us);
-    int minFile = 8, maxFile = -1;
 
     Bitboard ourPawns   = pos.pieces(  Us, PAWN);
     Bitboard theirPawns = pos.pieces(Them, PAWN);
 
-    e->passedPawns[Us] = e->pawnAttacksSpan[Us] = e->pawnWidth[Us] = e->weakUnopposed[Us] = 0;
+    e->passedPawns[Us] = e->pawnAttacksSpan[Us] = e->weakUnopposed[Us] = 0;
     e->semiopenFiles[Us] = 0xFF;
     e->kingSquares[Us]   = SQ_NONE;
     e->pawnAttacks[Us]   = pawn_attacks_bb<Us>(ourPawns);
@@ -92,8 +91,6 @@ namespace {
         assert(pos.piece_on(s) == make_piece(Us, PAWN));
 
         File f = file_of(s);
-        if (f < minFile) minFile = f;
-        if (f > maxFile) maxFile = f;
 
         e->semiopenFiles[Us]   &= ~(1 << f);
         e->pawnAttacksSpan[Us] |= pawn_attack_span(Us, s);
@@ -144,12 +141,9 @@ namespace {
         if (doubled && !support)
             score -= Doubled;
     }
-    if (minFile < 8) {
-//        int occupied = 0xFF ^ (e->semiopenFiles[Us]);
-//        int span = (occupied == 0 ? 0 : msb(occupied) - lsb(occupied));
 
-        e->pawnWidth[Us] = maxFile - minFile;
-    }
+    int occupied = 0xFF ^ (e->semiopenFiles[Us]);
+    e->span[Us] = (occupied == 0 ? 0 : msb(occupied) - lsb(occupied));
 
     return score;
   }

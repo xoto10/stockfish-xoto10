@@ -20,6 +20,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <iostream>
 
 #include "bitboard.h"
 #include "pawns.h"
@@ -143,8 +144,12 @@ namespace {
         if (doubled && !support)
             score -= Doubled;
     }
-    if (maxFile < 8)
+    if (minFile < 8) {
+//        int occupied = 0xFF ^ (e->semiopenFiles[Us]);
+//        int span = (occupied == 0 ? 0 : msb(occupied) - lsb(occupied));
+
         e->pawnWidth[Us] = maxFile - minFile;
+    }
 
     return score;
   }

@@ -199,6 +199,7 @@ namespace {
     Pawns::Entry* pe;
     Bitboard mobilityArea[COLOR_NB];
     Score mobility[COLOR_NB] = { SCORE_ZERO, SCORE_ZERO };
+    int mobTotal[COLOR_NB] = { 0, 0 };
 
     // attackedBy[color][piece type] is a bitboard representing all squares
     // attacked by a given color and piece type. Special "piece types" which
@@ -313,6 +314,7 @@ namespace {
         }
 
         int mob = popcount(b & mobilityArea[Us]);
+        mobTotal[Us] += mob;
 
         mobility[Us] += MobilityBonus[Pt - 2][mob];
 
@@ -741,6 +743,8 @@ namespace {
     bool pawnsOnBothFlanks =   (pos.pieces(PAWN) & QueenSide)
                             && (pos.pieces(PAWN) & KingSide);
 
+    int mobDiff = mobTotal[WHITE] - mobTotal[BLACK];
+
     // Compute the initiative bonus for the attacking side
     int complexity =   8 * pe->pawn_asymmetry()
                     + 12 * pos.count<PAWN>()
@@ -752,7 +756,11 @@ namespace {
     // Now apply the bonus: note that we find the attacking side by extracting
     // the sign of the endgame value, and that we carefully cap the bonus so
     // that the endgame score will never change sign after the bonus.
-    int v = ((eg > 0) - (eg < 0)) * std::max(complexity, -abs(eg));
+    int v = 0;
+    if (eg > 0)
+        v = std::max(complexity + mobDiff, int(-eg));
+    else if (eg < 0)
+        v = -std::max(complexity - mobDiff, int(eg));
 
     if (T)
         Trace::add(INITIATIVE, make_score(0, v));

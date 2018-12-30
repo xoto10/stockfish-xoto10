@@ -743,7 +743,7 @@ namespace {
     bool pawnsOnBothFlanks =   (pos.pieces(PAWN) & QueenSide)
                             && (pos.pieces(PAWN) & KingSide);
 
-    int mobDiff = (mobTotal[WHITE] - mobTotal[BLACK]) * 20 / 32;
+    int mobDiff = (mobTotal[WHITE] - mobTotal[BLACK]) * 48 / 32;
 
     // Compute the initiative bonus for the attacking side
     int complexity =   8 * pe->pawn_asymmetry()

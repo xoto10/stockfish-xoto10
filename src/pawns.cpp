@@ -20,6 +20,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <iostream>
 
 #include "bitboard.h"
 #include "pawns.h"
@@ -187,6 +188,14 @@ Entry* probe(const Position& pos) {
   e->scores[BLACK] = evaluate<BLACK>(pos, e);
   e->asymmetry = popcount(  (e->passedPawns[WHITE]   | e->passedPawns[BLACK])
                           | (e->semiopenFiles[WHITE] ^ e->semiopenFiles[BLACK]));
+//sync_cout << "info string tomove: " << pos.side_to_move() << " pos:\n" << pos
+//          << " passWh:\n" << Bitboards::pretty(e->passedPawns[WHITE])
+//          << " passBl:\n" << Bitboards::pretty(e->passedPawns[BLACK])
+//          << " semiWh: " << e->semiopenFiles[WHITE] << " semiBl:" << e->semiopenFiles[BLACK] << sync_endl;
+//assert(        popcount(  (e->passedPawns[WHITE]   | e->passedPawns[BLACK])
+//                        | (e->semiopenFiles[WHITE] ^ e->semiopenFiles[BLACK]))
+//        ==
+//               popcount((e->semiopenFiles[WHITE] ^ e->semiopenFiles[BLACK])) );
 
   return e;
 }

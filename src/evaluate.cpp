@@ -23,6 +23,7 @@
 #include <cstring>   // For std::memset
 #include <iomanip>
 #include <sstream>
+#include <iostream>
 
 #include "bitboard.h"
 #include "evaluate.h"
@@ -615,7 +616,10 @@ namespace {
     Bitboard b, bb, squaresToQueen, defendedSquares, unsafeSquares;
     Score score = SCORE_ZERO;
 
-    b = pe->passed_pawns(Us);
+    if (pos.side_to_move() == Us)
+        b = pe->passed_pawns(Us);
+    else
+        b = pe->passed_pawns(Us) & ~attackedBy[Them][PAWN];
 
     while (b)
     {
@@ -670,6 +674,8 @@ namespace {
 
                 bonus += make_score(k * w, k * w);
             }
+//sync_cout << "info string bonus: " << bonus << " tomove: " << pos.side_to_move() << " pos:\n" << pos << sync_endl;
+assert(1 == 2);
         } // rank > RANK_3
 
         // Scale down bonus for candidate passers which need more than one

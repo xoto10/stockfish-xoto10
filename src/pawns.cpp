@@ -189,7 +189,7 @@ Entry* probe(const Position& pos) {
 
   int realSemiopen = e->semiopenFiles[WHITE] ^ e->semiopenFiles[BLACK];
   e->asymmetry = popcount(realSemiopen | e->passedPawns[WHITE] | e->passedPawns[BLACK])
-                + (realSemiopen > 0) * (msb(realSemiopen) - lsb(realSemiopen)) / 2;
+                + (realSemiopen > 0 && msb(realSemiopen) > lsb(realSemiopen) + 1);
 //sync_cout << "info string semi: " << realSemiopen << " msb " << (realSemiopen > 0) * msb(realSemiopen)
 //          << " lsb " << (realSemiopen > 0) * lsb(realSemiopen) << sync_endl;
   return e;

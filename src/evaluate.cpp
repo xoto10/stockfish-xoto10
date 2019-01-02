@@ -84,6 +84,12 @@ namespace {
     KingSide, KingSide, KingSide ^ FileEBB
   };
 
+  constexpr Bitboard KingThree[FILE_NB] = {
+    QueenSide ^ FileDBB, QueenSide ^ FileDBB, QueenSide ^ FileABB,
+    CenterFiles ^ FileFBB, CenterFiles ^ FileCBB,
+    KingSide ^ FileHBB, KingSide ^ FileEBB, KingSide ^ FileEBB
+  };
+
   // Threshold for lazy and space evaluation
   constexpr Value LazyThreshold  = Value(1500);
   constexpr Value SpaceThreshold = Value(12222);
@@ -152,6 +158,7 @@ namespace {
   };
 
   // Assorted bonuses and penalties
+  constexpr Score BishopInFront      = S( 50,  0);
   constexpr Score BishopPawns        = S(  3,  7);
   constexpr Score CloseEnemies       = S(  8,  0);
   constexpr Score CorneredBishop     = S( 50, 50);
@@ -459,6 +466,11 @@ namespace {
         kingDanger += KnightSafeCheck;
     else
         unsafeChecks |= b;
+
+    // Bishop in front of king reduces kingdanger
+    b = RankBB[rank_of(ksq) + 1] & KingThree[file_of(ksq)];
+    if (pos.non_pawn_material(Us) > 3500 && (b & pos.pieces(Us, BISHOP)))
+        kingDanger -= BishopInFront;
 
     // Unsafe or occupied checking squares will also be considered, as long as
     // the square is in the attacker's mobility area.

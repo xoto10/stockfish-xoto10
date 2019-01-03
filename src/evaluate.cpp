@@ -410,6 +410,7 @@ namespace {
     constexpr Color    Them = (Us == WHITE ? BLACK : WHITE);
     constexpr Bitboard Camp = (Us == WHITE ? AllSquares ^ Rank6BB ^ Rank7BB ^ Rank8BB
                                            : AllSquares ^ Rank1BB ^ Rank2BB ^ Rank3BB);
+    constexpr Direction Up  = (Us == WHITE ? NORTH : SOUTH);
 
     const Square ksq = pos.square<KING>(Us);
     Bitboard kingFlank, weak, b, b1, b2, safe, unsafeChecks;
@@ -468,7 +469,7 @@ namespace {
         unsafeChecks |= b;
 
     // Bishop in front of king reduces kingdanger
-    b = RankBB[rank_of(ksq) + 1] & KingThree[file_of(ksq)];
+    b = shift<Up>(RankBB[rank_of(ksq)]) & KingThree[file_of(ksq)];
     if (pos.non_pawn_material(Us) > 3500 && (b & pos.pieces(Us, BISHOP)))
         kingDanger -= BishopInFront;
 

@@ -758,9 +758,11 @@ namespace {
     // that the endgame score will never change sign after the bonus.
     int v = 0;
     if (eg > 0)
-        v = std::max(complexity + 20 * (kingDangers[WHITE] <= 0), int(-eg));
+        v = std::max( complexity + 20 * (kingDangers[WHITE] <= 0 && pos.non_pawn_material(WHITE) > 5000)
+                    , int(-eg));
     else if (eg < 0)
-        v = -std::max(complexity + 20 * (kingDangers[BLACK] <= 0), int(eg));
+        v = -std::max( complexity + 20 * (kingDangers[BLACK] <= 0 && pos.non_pawn_material(BLACK) > 5000)
+                     , int(eg));
 
     if (T)
         Trace::add(INITIATIVE, make_score(0, v));

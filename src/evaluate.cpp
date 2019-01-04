@@ -255,6 +255,7 @@ namespace {
     // Initialise attackedBy bitboards for kings and pawns
     attackedBy[Us][KING] = pos.attacks_from<KING>(pos.square<KING>(Us));
     attackedBy[Us][PAWN] = pe->pawn_attacks(Us);
+    attackedBy[Us][NON_PAWN]   = attackedBy[Us][KING];
     attackedBy[Us][ALL_PIECES] = attackedBy[Us][KING] | attackedBy[Us][PAWN];
     attackedBy2[Us]            = attackedBy[Us][KING] & attackedBy[Us][PAWN];
 
@@ -303,6 +304,7 @@ namespace {
 
         attackedBy2[Us] |= attackedBy[Us][ALL_PIECES] & b;
         attackedBy[Us][Pt] |= b;
+        attackedBy[Us][NON_PAWN] |= b;
         attackedBy[Us][ALL_PIECES] |= b;
 
         if (b & kingRing[Them])
@@ -566,6 +568,7 @@ namespace {
 
     // Keep only the squares which are relatively safe
     b &= ~attackedBy[Them][PAWN] & safe;
+    score += make_score(1, 2) * popcount(pawn_attacks_bb<Us>(b) & attackedBy[Them][NON_PAWN]);
 
     // Bonus for safe pawn threats on the next move
     b = pawn_attacks_bb<Us>(b) & pos.pieces(Them);

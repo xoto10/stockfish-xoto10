@@ -568,7 +568,7 @@ namespace {
     b &= ~attackedBy[Them][PAWN] & safe;
 
     // bonus for possible pawn attacks to squares they attack twice
-    score += make_score(1, 2) * popcount(pawn_attacks_bb<Us>(b) & attackedBy2[Them]);
+    score += make_score(1, 2) * popcount((attackedBy[Them][ALL_PIECES] & ~attackedBy[Them][PAWN]));
 
     // Bonus for safe pawn threats on the next move
     b = pawn_attacks_bb<Us>(b) & pos.pieces(Them);

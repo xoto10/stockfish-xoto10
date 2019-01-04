@@ -742,7 +742,7 @@ namespace {
     bool pawnsOnBothFlanks =   (pos.pieces(PAWN) & QueenSide)
                             && (pos.pieces(PAWN) & KingSide);
 
-    bool materialDiff = pos.non_pawn_material() > 10000 &&
+    bool materialDiff = pos.non_pawn_material() < 10000 &&
                         (   pos.count<PAWN  >(WHITE) != pos.count<PAWN  >(BLACK)
                          || pos.count<KNIGHT>(WHITE) + pos.count<BISHOP>(WHITE)
                               != pos.count<KNIGHT>(BLACK) + pos.count<BISHOP>(BLACK)

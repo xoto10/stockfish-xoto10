@@ -758,10 +758,10 @@ namespace {
     // that the endgame score will never change sign after the bonus.
     int v = 0;
     if (eg > 0)
-        v = std::max( complexity + 28 * (kingDangers[WHITE] <= 0 && pos.non_pawn_material(WHITE) > 5000)
+        v = std::max( complexity + 16 * (kingDangers[WHITE] <= 0 && pos.non_pawn_material(WHITE) > 5000)
                     , int(-eg));
     else if (eg < 0)
-        v = -std::max( complexity + 28 * (kingDangers[BLACK] <= 0 && pos.non_pawn_material(BLACK) > 5000)
+        v = -std::max( complexity + 16 * (kingDangers[BLACK] <= 0 && pos.non_pawn_material(BLACK) > 5000)
                      , int(eg));
 
     if (T)

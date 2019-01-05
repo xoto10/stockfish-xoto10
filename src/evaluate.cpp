@@ -89,7 +89,10 @@ namespace {
   constexpr Value SpaceThreshold = Value(12222);
 
   // KingAttackWeights[PieceType] contains king attack weights by piece type
-  constexpr int KingAttackWeights[PIECE_TYPE_NB] = { 0,  5, 72, 51, 41,  9 };
+            int K                [PIECE_TYPE_NB] = { 0,  5, 72, 51, 41,  9 };
+            int C1 = 69, C2 = 185, C3= 150, C4 = 64, C5 = 873, C6 = 6, C7 = 1, C8 = 30;
+TUNE(SetRange(0,200), K, SetRange(0,20), C6, C7);
+TUNE(SetRange(0,400), C1, C2, C3, C4, C8, SetRange(0,2000), C5);
 
   // Penalties for enemy's safe checks
   constexpr int QueenSafeCheck  = 780;
@@ -272,7 +275,7 @@ namespace {
     kingRing[Us] &= ~double_pawn_attacks_bb<Us>(pos.pieces(Us, PAWN));
     kingAttacksCount[Them] = popcount(attackedBy[Us][KING] & pe->pawn_attacks(Them));
     kingAttackersCount[Them] = popcount(kingRing[Us] & pe->pawn_attacks(Them));
-    kingAttackersWeight[Them] = kingAttackersCount[Them] * KingAttackWeights[PAWN];
+    kingAttackersWeight[Them] = kingAttackersCount[Them] * K                [PAWN];
   }
 
 
@@ -309,7 +312,7 @@ namespace {
         if (b & kingRing[Them])
         {
             kingAttackersCount[Us]++;
-            kingAttackersWeight[Us] += KingAttackWeights[Pt];
+            kingAttackersWeight[Us] += K                [Pt];
             kingAttacksCount[Us] += popcount(b & attackedBy[Them][KING]);
         }
 
@@ -466,14 +469,14 @@ namespace {
     unsafeChecks &= mobilityArea[Them];
 
     kingDanger +=        kingAttackersCount[Them] * kingAttackersWeight[Them]
-                 +  69 * kingAttacksCount[Them]
-                 + 185 * popcount(kingRing[Us] & weak)
-                 + 150 * popcount(pos.blockers_for_king(Us) | unsafeChecks)
-                 +       tropism * tropism / 4
-                 - 873 * !pos.count<QUEEN>(Them)
-                 -   6 * mg_value(score) / 8
-                 +       mg_value(mobility[Them] - mobility[Us])
-                 -   30;
+                 +  C1 * kingAttacksCount[Them]
+                 +  C2 * popcount(kingRing[Us] & weak)
+                 +  C3 * popcount(pos.blockers_for_king(Us) | unsafeChecks)
+                 +  C4 * tropism * tropism / 256
+                 -  C5 * !pos.count<QUEEN>(Them)
+                 -  C6 * mg_value(score) / 8
+                 +  C7 * mg_value(mobility[Them] - mobility[Us])
+                 -  C8;
 
     // Transform the kingDanger units into a Score, and subtract it from the evaluation
     if (kingDanger > 0)

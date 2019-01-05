@@ -20,7 +20,6 @@
 
 #include <algorithm>
 #include <cassert>
-#include <iostream>
 
 #include "bitboard.h"
 #include "pawns.h"
@@ -189,9 +188,7 @@ Entry* probe(const Position& pos) {
 
   int realSemiopen = e->semiopenFiles[WHITE] ^ e->semiopenFiles[BLACK];
   e->asymmetry = popcount(realSemiopen | e->passedPawns[WHITE] | e->passedPawns[BLACK])
-                + (realSemiopen > 0 && msb(realSemiopen) > lsb(realSemiopen) + 1);
-//sync_cout << "info string semi: " << realSemiopen << " msb " << (realSemiopen > 0) * msb(realSemiopen)
-//          << " lsb " << (realSemiopen > 0) * lsb(realSemiopen) << sync_endl;
+                + (realSemiopen > 0) * (msb(realSemiopen) - lsb(realSemiopen)) / 4;
   return e;
 }
 

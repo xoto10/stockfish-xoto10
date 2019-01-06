@@ -89,7 +89,7 @@ namespace {
   constexpr Value SpaceThreshold = Value(12222);
 
   // KingAttackWeights[PieceType] contains king attack weights by piece type
-  constexpr int KingAttackWeights[PIECE_TYPE_NB] = { 0,  5, 72, 51, 41,  9 };
+  constexpr int KingAttackWeights[PIECE_TYPE_NB] = { 0,  3, 70, 40, 30,  2 };
 
   // Penalties for enemy's safe checks
   constexpr int QueenSafeCheck  = 780;
@@ -466,14 +466,14 @@ namespace {
     unsafeChecks &= mobilityArea[Them];
 
     kingDanger +=        kingAttackersCount[Them] * kingAttackersWeight[Them]
-                 +  69 * kingAttacksCount[Them]
-                 + 185 * popcount(kingRing[Us] & weak)
-                 + 150 * popcount(pos.blockers_for_king(Us) | unsafeChecks)
+                 +  65 * kingAttacksCount[Them]
+                 + 187 * popcount(kingRing[Us] & weak)
+                 + 144 * popcount(pos.blockers_for_king(Us) | unsafeChecks)
                  +       tropism * tropism / 4
-                 - 873 * !pos.count<QUEEN>(Them)
-                 -   6 * mg_value(score) / 8
+                 - 923 * !pos.count<QUEEN>(Them)
+                 -   7 * mg_value(score) / 8
                  +       mg_value(mobility[Them] - mobility[Us])
-                 -   30;
+                 -  36;
 
     // Transform the kingDanger units into a Score, and subtract it from the evaluation
     if (kingDanger > 0)

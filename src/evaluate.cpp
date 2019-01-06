@@ -489,8 +489,11 @@ namespace {
     score -= CloseEnemies * tropism;
 
     // Penalty for possible outpost squares
-    b = attackedBy[Them][PAWN] & LowRanks & ~pe->pawn_attacks_span(Us);
-    score -= PossibleOutpost * popcount(b);
+    if (pos.non_pawn_material(Them) > 2600)
+    {
+        b = attackedBy[Them][PAWN] & LowRanks & ~pe->pawn_attacks_span(Us);
+        score -= PossibleOutpost * popcount(b);
+    }
 
     if (T)
         Trace::add(KING, Us, score);

@@ -491,7 +491,7 @@ namespace {
     // Penalty for possible outpost squares
     if (pos.non_pawn_material(Them) > 2600)
     {
-        b = attackedBy[Them][PAWN] & LowRanks & ~pe->pawn_attacks_span(Us);
+        b = attackedBy[Them][PAWN] & LowRanks & kingFlank & ~pe->pawn_attacks_span(Us);
         score -= PossibleOutpost * popcount(b);
     }
 

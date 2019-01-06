@@ -501,8 +501,8 @@ namespace {
     constexpr Color     Them     = (Us == WHITE ? BLACK   : WHITE);
     constexpr Direction Up       = (Us == WHITE ? NORTH   : SOUTH);
     constexpr Bitboard  TRank3BB = (Us == WHITE ? Rank3BB : Rank6BB);
-    constexpr Bitboard  OutpostRanks = (Us == WHITE ? Rank5BB | Rank6BB | Rank7BB
-                                                    : Rank4BB | Rank3BB | Rank2BB);
+    constexpr Bitboard  FarRanks = (Us == WHITE ? Rank6BB | Rank7BB | Rank8BB
+                                                : Rank3BB | Rank2BB | Rank1BB);
 
     Bitboard b, weak, defended, nonPawnEnemies, stronglyProtected, safe, restricted;
     Score score = SCORE_ZERO;
@@ -599,7 +599,7 @@ namespace {
     // Bonus for possible outpost squares
     if (pos.count<ROOK>(Us) + pos.count<KNIGHT>(Us) + pos.count<BISHOP>(Us) > 0)
     {
-        b = attackedBy[Us][PAWN] & OutpostRanks & ~pe->pawn_attacks_span(Them);
+        b = attackedBy[Us][PAWN] & FarRanks & ~pe->pawn_attacks_span(Them);
         score += PossibleOutpost * popcount(b);
     }
 

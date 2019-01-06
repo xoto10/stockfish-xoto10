@@ -404,6 +404,8 @@ namespace {
     constexpr Color    Them = (Us == WHITE ? BLACK : WHITE);
     constexpr Bitboard Camp = (Us == WHITE ? AllSquares ^ Rank6BB ^ Rank7BB ^ Rank8BB
                                            : AllSquares ^ Rank1BB ^ Rank2BB ^ Rank3BB);
+    constexpr Bitboard LowRanks = (Us == WHITE ? Rank1BB | Rank2BB | Rank3BB
+                                               : Rank6BB | Rank7BB | Rank8BB);
 
     const Square ksq = pos.square<KING>(Us);
     Bitboard kingFlank, weak, b, b1, b2, safe, unsafeChecks;
@@ -486,6 +488,10 @@ namespace {
     // King tropism bonus, to anticipate slow motion attacks on our king
     score -= CloseEnemies * tropism;
 
+    // Penalty for possible outpost squares
+    b = attackedBy[Them][PAWN] & LowRanks & ~pe->pawn_attacks_span(Us);
+    score -= PossibleOutpost * popcount(b);
+
     if (T)
         Trace::add(KING, Us, score);
 
@@ -501,8 +507,6 @@ namespace {
     constexpr Color     Them     = (Us == WHITE ? BLACK   : WHITE);
     constexpr Direction Up       = (Us == WHITE ? NORTH   : SOUTH);
     constexpr Bitboard  TRank3BB = (Us == WHITE ? Rank3BB : Rank6BB);
-    constexpr Bitboard  FarRanks = (Us == WHITE ? Rank5BB | Rank6BB | Rank7BB
-                                                : Rank4BB | Rank3BB | Rank2BB);
 
     Bitboard b, weak, defended, nonPawnEnemies, stronglyProtected, safe, restricted;
     Score score = SCORE_ZERO;
@@ -594,13 +598,6 @@ namespace {
            | (attackedBy[Us][ROOK  ] & pos.attacks_from<ROOK  >(s));
 
         score += SliderOnQueen * popcount(b & safe & attackedBy2[Us]);
-    }
-
-    // Bonus for possible outpost squares
-    if (pos.count<ROOK>(Us) + pos.count<KNIGHT>(Us) + pos.count<BISHOP>(Us) > 0)
-    {
-        b = attackedBy[Us][PAWN] & FarRanks & ~pe->pawn_attacks_span(Them);
-        score += PossibleOutpost * popcount(b);
     }
 
     if (T)

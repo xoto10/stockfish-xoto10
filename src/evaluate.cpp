@@ -484,7 +484,7 @@ namespace {
         score -= PawnlessFlank;
 
     if (pos.non_pawn_material(Us) > 4000)
-        score -= FawnPawn * bool(attackedBy[Them][PAWN] * kingRing[Us]);
+        score -= FawnPawn * bool(attackedBy[Them][PAWN] & kingRing[Us]);
 
     // King tropism bonus, to anticipate slow motion attacks on our king
     score -= CloseEnemies * tropism;

@@ -35,6 +35,7 @@ namespace {
   constexpr Score Backward = S( 9, 24);
   constexpr Score Doubled  = S(11, 56);
   constexpr Score Isolated = S( 5, 15);
+  constexpr Score Thorn    = S(-20, 40);
 
   // Connected pawn bonus by opposed, phalanx, #support and rank
   Score Connected[2][2][3][RANK_NB];
@@ -128,6 +129,9 @@ namespace {
         }
 
         // Score this pawn
+        if (opposed && relative_rank(Us, s) == RANK_6 && ((f == FILE_A) | (f == FILE_H)) && !lever)
+            score += Thorn;
+
         if (support | phalanx)
             score += Connected[opposed][bool(phalanx)][popcount(support)][relative_rank(Us, s)];
 

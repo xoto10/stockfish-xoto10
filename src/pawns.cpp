@@ -67,6 +67,7 @@ namespace {
 
     constexpr Color     Them = (Us == WHITE ? BLACK : WHITE);
     constexpr Direction Up   = (Us == WHITE ? NORTH : SOUTH);
+    constexpr Bitboard  ThornFiles = FileABB | FileCBB | FileFBB | FileHBB;
 
     Bitboard b, neighbours, stoppers, doubled, support, phalanx;
     Bitboard lever, leverPush;
@@ -129,7 +130,7 @@ namespace {
         }
 
         // Score this pawn
-        if (opposed && relative_rank(Us, s) == RANK_6 && ((f == FILE_A) | (f == FILE_H)) && !lever)
+        if (opposed && relative_rank(Us, s) == RANK_6 && (s & ThornFiles) && !lever)
             score += Thorn;
 
         if (support | phalanx)

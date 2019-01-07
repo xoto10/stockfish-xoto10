@@ -155,7 +155,7 @@ namespace {
   constexpr Score BishopPawns        = S(  3,  7);
   constexpr Score CloseEnemies       = S(  8,  0);
   constexpr Score CorneredBishop     = S( 50, 50);
-  constexpr Score FawnPawn           = S( 20,  0);
+  constexpr Score FawnPawn           = S( 16,  0);
   constexpr Score Hanging            = S( 69, 36);
   constexpr Score KingProtector      = S(  7,  8);
   constexpr Score KnightOnQueen      = S( 16, 12);
@@ -483,7 +483,7 @@ namespace {
     if (!(pos.pieces(PAWN) & kingFlank))
         score -= PawnlessFlank;
 
-    if (pos.non_pawn_material(Us) > 3000)
+    if (pos.non_pawn_material(Us) > 4000)
         score -= FawnPawn * bool(attackedBy[Them][PAWN] & kingRing[Us]);
 
     // King tropism bonus, to anticipate slow motion attacks on our king

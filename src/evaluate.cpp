@@ -404,6 +404,7 @@ namespace {
     constexpr Color    Them = (Us == WHITE ? BLACK : WHITE);
     constexpr Bitboard Camp = (Us == WHITE ? AllSquares ^ Rank6BB ^ Rank7BB ^ Rank8BB
                                            : AllSquares ^ Rank1BB ^ Rank2BB ^ Rank3BB);
+    constexpr Bitboard TRank2BB = (Us == WHITE ? Rank2BB : Rank7BB);
 
     const Square ksq = pos.square<KING>(Us);
     Bitboard kingFlank, weak, b, b1, b2, safe, unsafeChecks;
@@ -484,7 +485,7 @@ namespace {
         score -= PawnlessFlank;
 
     if (pos.non_pawn_material(Us) > 4000)
-        score -= FawnPawn * bool(attackedBy[Them][PAWN] & kingRing[Us] & ~pe->pawn_attacks_span(Us));
+        score -= FawnPawn * bool(attackedBy[Them][PAWN] & kingRing[Us] & TRank2BB);
 
     // King tropism bonus, to anticipate slow motion attacks on our king
     score -= CloseEnemies * tropism;

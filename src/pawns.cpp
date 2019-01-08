@@ -225,7 +225,7 @@ Value Entry::evaluate_shelter(const Position& pos, Square ksq) {
       safety -= (ourRank && (ourRank == theirRank - 1)) ? 66 * (theirRank == RANK_3)
                                                         : UnblockedStorm[d][theirRank];
 
-      if (ourRank == RANK_2 && RANK_2 < theirRank && theirRank < 6)
+      if (ourRank == RANK_2 && RANK_2 < theirRank)
 //        && LineBB[theirPawn + SOUTH][] )
           safety -= ToRank6 * (5 - theirRank);
   }

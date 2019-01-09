@@ -35,7 +35,7 @@ namespace {
   constexpr Score Backward = S( 9, 24);
   constexpr Score Doubled  = S(11, 56);
   constexpr Score Isolated = S( 5, 15);
-  constexpr Score ToRank6  = S( 0, 20);
+  constexpr Score ToRank6  = S(-2,  4);
 
   // Connected pawn bonus by opposed, phalanx, #support and rank
   Score Connected[2][2][3][RANK_NB];
@@ -225,7 +225,7 @@ Value Entry::evaluate_shelter(const Position& pos, Square ksq) {
       safety -= (ourRank && (ourRank == theirRank - 1)) ? 66 * (theirRank == RANK_3)
                                                         : UnblockedStorm[d][theirRank];
 
-      if (ourRank == RANK_2 && RANK_2 < theirRank)
+      if (ourRank == RANK_2 && RANK_2 < theirRank && theirRank < 6)
 //        && LineBB[theirPawn + SOUTH][] )
           safety -= ToRank6 * (5 - theirRank);
   }

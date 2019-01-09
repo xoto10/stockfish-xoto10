@@ -224,7 +224,8 @@ Value Entry::evaluate_shelter(const Position& pos, Square ksq) {
       safety -= (ourRank && (ourRank == theirRank - 1)) ? 66 * (theirRank == RANK_3)
                                                         : UnblockedStorm[d][theirRank];
 
-      if (ourRank == RANK_2 && RANK_2 < theirRank && theirRank < RANK_6 && pos.non_pawn_material(Us) < 7400)
+      if (   ourRank == RANK_2 && RANK_2 < theirRank && theirRank < RANK_6
+          && 0 < pos.non_pawn_material(Us) && pos.non_pawn_material(Us) < 7400)
 
       {
           safety -= ToRank6 * (5 - theirRank);

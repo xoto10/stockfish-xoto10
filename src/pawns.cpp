@@ -35,7 +35,7 @@ namespace {
   constexpr Score Backward = S( 9, 24);
   constexpr Score Doubled  = S(11, 56);
   constexpr Score Isolated = S( 5, 15);
-  constexpr Score ToRank6  = S( 3,  3);
+  constexpr Score ToRank6  = S( 2,  2);
 
   // Connected pawn bonus by opposed, phalanx, #support and rank
   Score Connected[2][2][3][RANK_NB];
@@ -228,7 +228,7 @@ Value Entry::evaluate_shelter(const Position& pos, Square ksq) {
           && 0 < pos.non_pawn_material(Us) && pos.non_pawn_material(Us) < 7400)
 
       {
-          safety -= ToRank6 * (5 - theirRank);
+          safety -= ToRank6 * (5 - theirRank) * (5 - theirRank);
 
 //        Material::Entry* me;
 //        me = Material::probe(pos);

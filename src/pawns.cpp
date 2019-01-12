@@ -35,6 +35,7 @@ namespace {
   constexpr Score Backward = S( 9, 24);
   constexpr Score Doubled  = S(11, 56);
   constexpr Score Isolated = S( 5, 15);
+  constexpr Score Thorn    = S(50, 50);
 
   // Connected pawn bonus by opposed, phalanx, #support and rank
   Score Connected[2][2][3][RANK_NB];
@@ -66,6 +67,7 @@ namespace {
 
     constexpr Color     Them = (Us == WHITE ? BLACK : WHITE);
     constexpr Direction Up   = (Us == WHITE ? NORTH : SOUTH);
+    constexpr Rank      TRank6 = (Us == WHITE ? RANK_6 : RANK_3);
 
     Bitboard b, neighbours, stoppers, doubled, support, phalanx;
     Bitboard lever, leverPush;
@@ -139,6 +141,16 @@ namespace {
 
         if (doubled && !support)
             score -= Doubled;
+
+        if (   rank_of(s) == TRank6
+            && !lever
+            && (theirPawns & (s + Up))
+            && (   (f > FILE_A && (theirPawns & (s + WEST)))
+                || (f < FILE_H && (theirPawns & (s + EAST))))
+           )
+        {
+            score += Thorn;
+        }
     }
 
     return score;

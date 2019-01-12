@@ -35,7 +35,7 @@ namespace {
   constexpr Score Backward = S( 9, 24);
   constexpr Score Doubled  = S(11, 56);
   constexpr Score Isolated = S( 5, 15);
-  constexpr Score Thorn    = S(32, 32);
+  constexpr Score Thorn    = S(30, 30);
 
   // Connected pawn bonus by opposed, phalanx, #support and rank
   Score Connected[2][2][3][RANK_NB];
@@ -79,7 +79,7 @@ namespace {
     Bitboard ourPawns   = pos.pieces(  Us, PAWN);
     Bitboard theirPawns = pos.pieces(Them, PAWN);
 
-    e->passedPawns[Us] = e->pawnAttacksSpan[Us] = e->weakUnopposed[Us] = 0;
+    e->passedPawns[Us] = e->pawnAttacksSpan[Us] = e->thornPawns[Us] = e->weakUnopposed[Us] = 0;
     e->semiopenFiles[Us] = 0xFF;
     e->kingSquares[Us]   = SQ_NONE;
     e->pawnAttacks[Us]   = pawn_attacks_bb<Us>(ourPawns);
@@ -148,9 +148,7 @@ namespace {
             && (   (f > FILE_A && (theirPawns & (s + WEST)))
                 || (f < FILE_H && (theirPawns & (s + EAST))))
            )
-        {
-            score += Thorn;
-        }
+            score += Thorn, e->thornPawns[Us] |= s;
     }
 
     return score;

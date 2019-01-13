@@ -842,7 +842,7 @@ namespace {
     v =  mg_value(score) * int(me->game_phase())
        + eg_value(score) * int(25 + PHASE_MIDGAME - me->game_phase()) * sf / SCALE_FACTOR_NORMAL;
 
-    v /= int(10 + PHASE_MIDGAME);
+    v /= int(25 + PHASE_MIDGAME);
 
     // In case of tracing add all remaining individual evaluation terms
     if (T)

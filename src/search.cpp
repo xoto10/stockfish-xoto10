@@ -786,9 +786,9 @@ namespace {
     if (   !PvNode
         && (ss-1)->currentMove != MOVE_NULL
         && (ss-1)->statScore < 23200
-//      &&  eval >= beta                                            // avg 984
-//      &&  pureStaticEval >= beta - 36 * depth / ONE_PLY + 305     // avg 978
-        &&  eval >= beta - 36 * depth / ONE_PLY + 311
+//      &&  eval >= beta                                            // mean 1459  907  d28: 407
+//      &&  pureStaticEval >= beta - 36 * depth / ONE_PLY + 305     // mean 1393  824  d29: 347
+        &&  eval >= beta - 36 * depth / ONE_PLY + 375
         && !excludedMove
         &&  pos.non_pawn_material(us)
         && (ss->ply >= thisThread->nmpMinPly || us != thisThread->nmpColor))

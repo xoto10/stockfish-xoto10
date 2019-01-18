@@ -39,23 +39,32 @@ namespace {
   // Connected pawn bonus by opposed, phalanx, #support and rank
   Score Connected[2][2][3][RANK_NB];
 
+int A1 = 0, A2 = 0, A3 = 0, A4 = 0, A5 = 0, A6 = 0, A7 = 0;
+int B1 = 0, B2 = 0, B3 = 0, B4 = 0, B5 = 0, B6 = 0, B7 = 0;
+int C1 = 0, C2 = 0, C3 = 0, C4 = 0, C5 = 0, C6 = 0, C7 = 0;
+int D1 = 0, D2 = 0, D3 = 0, D4 = 0, D5 = 0, D6 = 0, D7 = 0;
+TUNE(SetRange(-50,50), A1, A2, A3, A4, A5, A6, A7);
+TUNE(SetRange(-50,50), B1, B2, B3, B4, B5, B6, B7);
+TUNE(SetRange(-50,50), C1, C2, C3, C4, C5, C6, C7);
+TUNE(SetRange(-50,50), D1, D2, D3, D4, D5, D6, D7);
+
   // Strength of pawn shelter for our king by [distance from edge][rank].
   // RANK_1 = 0 is used for files where we have no pawn, or pawn is behind our king.
-  constexpr Value ShelterStrength[int(FILE_NB) / 2][RANK_NB] = {
-    { V( -6), V( 81), V( 93), V( 58), V( 39), V( 18), V(  25) },
-    { V(-43), V( 61), V( 35), V(-49), V(-29), V(-11), V( -63) },
-    { V(-10), V( 75), V( 23), V( -2), V( 32), V(  3), V( -45) },
-    { V(-39), V(-13), V(-29), V(-52), V(-48), V(-67), V(-166) }
+            Value ShelterStrength[int(FILE_NB) / 2][RANK_NB] = {
+    { V( -6+A1), V( 81+A2), V( 93+A3), V( 58+A4), V( 39+A5), V( 18+A6), V(  25+A7) },
+    { V(-43+B1), V( 61+B2), V( 35+B3), V(-49+B4), V(-29+B5), V(-11+B6), V( -63+B7) },
+    { V(-10+C1), V( 75+C2), V( 23+C3), V( -2+C4), V( 32+C5), V(  3+C6), V( -45+C7) },
+    { V(-39+D1), V(-13+D2), V(-29+D3), V(-52+D4), V(-48+D5), V(-67+D6), V(-166+D7) }
   };
 
   // Danger of enemy pawns moving toward our king by [distance from edge][rank].
   // RANK_1 = 0 is used for files where the enemy has no pawn, or their pawn
   // is behind our king.
-  constexpr Value UnblockedStorm[int(FILE_NB) / 2][RANK_NB] = {
-    { V( 89), V(107), V(123), V(93), V(57), V( 45), V( 51) },
-    { V( 44), V(-18), V(123), V(46), V(39), V( -7), V( 23) },
-    { V(  4), V( 52), V(162), V(37), V( 7), V(-14), V( -2) },
-    { V(-10), V(-14), V( 90), V(15), V( 2), V( -7), V(-16) }
+            Value UnblockedStorm[int(FILE_NB) / 2][RANK_NB] = {
+    { V( 89-A1), V(107-A2), V(123-A3), V(93-A4), V(57-A5), V( 45-A6), V( 51-A7) },
+    { V( 44-B1), V(-18-B2), V(123-B3), V(46-B4), V(39-B5), V( -7-B6), V( 23-B7) },
+    { V(  4-C1), V( 52-C2), V(162-C3), V(37-C4), V( 7-C5), V(-14-C6), V( -2-C7) },
+    { V(-10-D1), V(-14-D2), V( 90-D3), V(15-D4), V( 2-D5), V( -7-D6), V(-16-D7) }
   };
 
   #undef S

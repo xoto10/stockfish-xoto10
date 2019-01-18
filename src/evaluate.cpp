@@ -59,7 +59,10 @@ namespace Trace {
 
   std::ostream& operator<<(std::ostream& os, Term t) {
 
-    if (t == MATERIAL || t == IMBALANCE || t == INITIATIVE || t == TOTAL)
+    if (t != TOTAL)
+        scores[TOTAL][WHITE] += scores[t][BLACK], scores[TOTAL][BLACK] += scores[t][BLACK];
+
+    if (t == MATERIAL || t == IMBALANCE || t == INITIATIVE)
         os << " ----  ----"    << " | " << " ----  ----";
     else
         os << scores[t][WHITE] << " | " << scores[t][BLACK];
@@ -890,7 +893,6 @@ std::string Eval::trace(const Position& pos) {
      << " ------------+-------------+-------------+------------\n"
      << "    Material | " << Term(MATERIAL)
      << "   Imbalance | " << Term(IMBALANCE)
-     << "  Initiative | " << Term(INITIATIVE)
      << "       Pawns | " << Term(PAWN)
      << "     Knights | " << Term(KNIGHT)
      << "     Bishops | " << Term(BISHOP)
@@ -901,6 +903,7 @@ std::string Eval::trace(const Position& pos) {
      << "     Threats | " << Term(THREAT)
      << "      Passed | " << Term(PASSED)
      << "       Space | " << Term(SPACE)
+     << "  Initiative | " << Term(INITIATIVE)
      << " ------------+-------------+-------------+------------\n"
      << "       Total | " << Term(TOTAL);
 

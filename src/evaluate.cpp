@@ -468,10 +468,10 @@ namespace {
     // the square is in the attacker's mobility area.
     unsafeChecks &= mobilityArea[Them];
 
-sync_cout << "info string us " << Us
-          << " atkrs# " << kingAttackersCount[Them] << " atkrswt " << kingAttackersWeight[Them]
-          << " atks# " << kingAttacksCount[Them] << " krweak " << popcount(kingRing[Us] & weak)
-          << " trop " << tropism << " ksafety " << mg_value(score) << sync_endl;
+//sync_cout << "info string us " << Us
+//          << " atkrs# " << kingAttackersCount[Them] << " atkrswt " << kingAttackersWeight[Them]
+//          << " atks# " << kingAttacksCount[Them] << " krweak " << popcount(kingRing[Us] & weak)
+//          << " trop " << tropism << " ksafety " << mg_value(score) << sync_endl;
     kingDanger +=        kingAttackersCount[Them] * kingAttackersWeight[Them]
                  +  69 * kingAttacksCount[Them]
                  + 185 * popcount(kingRing[Us] & weak)

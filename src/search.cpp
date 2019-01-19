@@ -360,7 +360,7 @@ void Thread::search() {
       // Distribute search depths across the helper threads
       if (Threads.size() > 1)
       {
-          int i = (((idx % 8) / 2 + 1)) + 1;
+          int i = (idx % 8) / 2 + 2;
           if (rootDepth / ONE_PLY % i)
               continue;  // Retry with an incremented rootDepth
       }

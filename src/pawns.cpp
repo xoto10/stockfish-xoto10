@@ -61,10 +61,10 @@ TUNE(SetRange(-50,50), D1, D2, D3, D4, D5, D6, D7);
   // RANK_1 = 0 is used for files where the enemy has no pawn, or their pawn
   // is behind our king.
             Value UnblockedStorm[int(FILE_NB) / 2][RANK_NB] = {
-    { V( 89-A1), V(107-A2), V(123-A3), V(93-A4), V(57-A5), V( 45-A6), V( 51-A7) },
-    { V( 44-B1), V(-18-B2), V(123-B3), V(46-B4), V(39-B5), V( -7-B6), V( 23-B7) },
-    { V(  4-C1), V( 52-C2), V(162-C3), V(37-C4), V( 7-C5), V(-14-C6), V( -2-C7) },
-    { V(-10-D1), V(-14-D2), V( 90-D3), V(15-D4), V( 2-D5), V( -7-D6), V(-16-D7) }
+    { V( 89-A1), V(107-A7), V(123-A6), V(93-A5), V(57-A4), V( 45-A3), V( 51-A2) },
+    { V( 44-B1), V(-18-B7), V(123-B6), V(46-B5), V(39-B4), V( -7-B3), V( 23-B2) },
+    { V(  4-C1), V( 52-C7), V(162-C6), V(37-C5), V( 7-C4), V(-14-C3), V( -2-C2) },
+    { V(-10-D1), V(-14-D7), V( 90-D6), V(15-D5), V( 2-D4), V( -7-D3), V(-16-D2) }
   };
 
   #undef S

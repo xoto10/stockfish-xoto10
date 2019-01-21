@@ -185,9 +185,12 @@ Entry* probe(const Position& pos) {
   e->key = key;
   e->scores[WHITE] = evaluate<WHITE>(pos, e);
   e->scores[BLACK] = evaluate<BLACK>(pos, e);
-  e->asymmetry = popcount(  (e->passedPawns[WHITE]   | e->passedPawns[BLACK])
-                          | (e->semiopenFiles[WHITE] ^ e->semiopenFiles[BLACK]));
 
+  int realSemiopen = e->semiopenFiles[WHITE] ^ e->semiopenFiles[BLACK];
+  e->asymmetry =  popcount(realSemiopen | e->passedPawns[WHITE] | e->passedPawns[BLACK])
+                + (   realSemiopen > 0
+                   && (msb(realSemiopen) - lsb(realSemiopen)) / 2 > 0
+                   && pos.count<PAWN>(WHITE) != pos.count<PAWN>(BLACK));
   return e;
 }
 

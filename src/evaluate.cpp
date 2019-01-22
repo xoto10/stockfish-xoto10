@@ -756,7 +756,7 @@ namespace {
     // the sign of the endgame value, and that we carefully cap the bonus so
     // that the endgame score will never change sign after the bonus.
     int v = ((eg > 0 && (mg > -50 || pos.non_pawn_material(WHITE) < 4100))
-            - (eg < 0 && (mg < 50 || pos.non_pawn_material(WHITE) < 4100))) * std::max(complexity, -abs(eg));
+            - (eg < 0 && (mg < 50 || pos.non_pawn_material(BLACK) < 4100))) * std::max(complexity, -abs(eg));
 
     if (T)
         Trace::add(INITIATIVE, make_score(0, v));

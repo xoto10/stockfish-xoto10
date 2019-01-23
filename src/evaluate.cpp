@@ -151,6 +151,9 @@ namespace {
     S(-30,-14), S(-9, -8), S( 0,  9), S( -1,  7)
   };
 
+  int A = 47, B = 4, C = 141, D = 12;
+  TUNE(A,B,C,D);
+
   // Assorted bonuses and penalties
   constexpr Score BishopPawns        = S(  3,  7);
   constexpr Score CloseEnemies       = S(  8,  0);
@@ -168,8 +171,8 @@ namespace {
   constexpr Score ThreatByPawnPush   = S( 48, 39);
   constexpr Score ThreatByRank       = S( 13,  0);
   constexpr Score ThreatBySafePawn   = S(173, 94);
-  constexpr Score TrappedRook1       = S( 47,  4);
-  constexpr Score TrappedRook2       = S(141, 12);
+            Score TrappedRook1       = S(  A,  B);
+            Score TrappedRook2       = S(  C,  D);
   constexpr Score WeakQueen          = S( 49, 15);
   constexpr Score WeakUnopposedPawn  = S( 12, 23);
 

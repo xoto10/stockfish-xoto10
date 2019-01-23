@@ -594,7 +594,7 @@ namespace {
         thisThread->selDepth = ss->ply + 1;
 
     // Set contempt in deeper parts of search
-    if (depth == thisThread->rootDepth/2)
+    if ( !pos.can_castle(ANY_CASTLING) )
         thisThread->contempt = thisThread->contemptStore;
 
     if (!rootNode)

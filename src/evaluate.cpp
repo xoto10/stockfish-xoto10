@@ -99,15 +99,18 @@ namespace {
 
 #define S(mg, eg) make_score(mg, eg)
 
+  int E = -58, F = -76, G = -27, H = -18, I = -15, J = 28;
+TUNE(E,F,G,H,I,J);
+
   // MobilityBonus[PieceType-2][attacked] contains bonuses for middle and end game,
   // indexed by piece type and number of attacked squares in the mobility area.
-  constexpr Score MobilityBonus[][32] = {
+            Score MobilityBonus[][32] = {
     { S(-62,-81), S(-53,-56), S(-12,-30), S( -4,-14), S(  3,  8), S( 13, 15), // Knights
       S( 22, 23), S( 28, 27), S( 33, 33) },
     { S(-48,-59), S(-20,-23), S( 16, -3), S( 26, 13), S( 38, 24), S( 51, 42), // Bishops
       S( 55, 54), S( 63, 57), S( 63, 65), S( 68, 73), S( 81, 78), S( 81, 86),
       S( 91, 88), S( 98, 97) },
-    { S(-58,-76), S(-27,-18), S(-15, 28), S(-10, 55), S( -5, 69), S( -2, 82), // Rooks
+    { S(  E,  F), S(  G,  H), S(  I,  J), S(-10, 55), S( -5, 69), S( -2, 82), // Rooks
       S(  9,112), S( 16,118), S( 30,132), S( 29,142), S( 32,155), S( 38,165),
       S( 46,166), S( 48,169), S( 58,171) },
     { S(-39,-36), S(-21,-15), S(  3,  8), S(  3, 18), S( 14, 34), S( 22, 54), // Queens
@@ -151,7 +154,10 @@ namespace {
     S(-30,-14), S(-9, -8), S( 0,  9), S( -1,  7)
   };
 
-  constexpr Score TrappedRook[2] = { S(47, 4), S(141, 12) };
+  int A = 47, B = 4, C = 141, D = 12;
+  // Trapped rook penalty, indexed by whether castling is not possible
+            Score TrappedRook[2] = { S(A, B), S(C, D) };
+TUNE(A,B,C,D);
 
   // Assorted bonuses and penalties
   constexpr Score BishopPawns        = S(  3,  7);
@@ -377,8 +383,9 @@ namespace {
             else if (mob <= 3)
             {
                 File kf = file_of(pos.square<KING>(Us));
-                if ((kf < FILE_E) == (file_of(s) < kf))
-                    score -= TrappedRook[pos.castling_rights(Us)];
+                if (   rank_of(s) == rank_of(pos.square<KING>(Us))
+                    && (kf < FILE_E) == (file_of(s) < kf))
+                    score -= TrappedRook[pos.castling_rights(Us) == NO_CASTLING];
             }
         }
 

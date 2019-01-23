@@ -347,10 +347,6 @@ void Thread::search() {
           : Options["Analysis Contempt"] == "Black" && us == WHITE ? -ct
           : ct;
 
-  // In evaluate.cpp the evaluation is from the white point of view
-  contempt = (us == WHITE ?  make_score(ct, ct / 2)
-                          : -make_score(ct, ct / 2));
-
   // Iterative deepening loop until requested to stop or the target depth is reached
   while (   (rootDepth += ONE_PLY) < DEPTH_MAX
          && !Threads.stop
@@ -391,6 +387,7 @@ void Thread::search() {
           selDepth = 0;
 
           // Reset aspiration window starting size
+          contempt = SCORE_ZERO;
           if (rootDepth >= 5 * ONE_PLY)
           {
               Value previousScore = rootMoves[pvIdx].previousScore;
@@ -401,9 +398,11 @@ void Thread::search() {
               // Adjust contempt based on root move's previousScore (dynamic contempt)
               int dct = ct + 88 * previousScore / (abs(previousScore) + 200);
 
-              contempt = (us == WHITE ?  make_score(dct, dct / 2)
-                                      : -make_score(dct, dct / 2));
+              contemptStore = (us == WHITE ?  make_score(dct, dct / 2)
+                                           : -make_score(dct, dct / 2));
           }
+          else
+              contemptStore = SCORE_ZERO;
 
           // Start with a small aspiration window and, in the case of a fail
           // high/low, re-search with a bigger window until we don't fail
@@ -593,6 +592,10 @@ namespace {
     // Used to send selDepth info to GUI (selDepth counts from 1, ply from 0)
     if (PvNode && thisThread->selDepth < ss->ply + 1)
         thisThread->selDepth = ss->ply + 1;
+
+    // Set contempt in deeper parts of search
+    if (depth == thisThread->rootDepth/2)
+        thisThread->contempt = thisThread->contemptStore;
 
     if (!rootNode)
     {

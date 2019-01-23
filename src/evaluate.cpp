@@ -151,6 +151,9 @@ namespace {
     S(-30,-14), S(-9, -8), S( 0,  9), S( -1,  7)
   };
 
+  // Trapped rook penalty, indexed by whether castling is not possible
+  constexpr Score TrappedRook[2] = { S(47, 4), S(141, 12) };
+
   // Assorted bonuses and penalties
   constexpr Score BishopPawns        = S(  3,  7);
   constexpr Score CloseEnemies       = S(  8,  0);
@@ -168,7 +171,6 @@ namespace {
   constexpr Score ThreatByPawnPush   = S( 48, 39);
   constexpr Score ThreatByRank       = S( 13,  0);
   constexpr Score ThreatBySafePawn   = S(173, 94);
-  constexpr Score TrappedRook        = S( 47,  4);
   constexpr Score WeakQueen          = S( 49, 15);
   constexpr Score WeakUnopposedPawn  = S( 12, 23);
 
@@ -376,8 +378,9 @@ namespace {
             else if (mob <= 3)
             {
                 File kf = file_of(pos.square<KING>(Us));
-                if ((kf < FILE_E) == (file_of(s) < kf))
-                    score -= TrappedRook * (1 + !pos.castling_rights(Us));
+                if (   (kf < FILE_E) == (file_of(s) < kf)
+                    && rank_of(s) == rank_of(pos.square<KING>(Us)))
+                    score -= TrappedRook[!pos.castling_rights(Us)];
             }
         }
 

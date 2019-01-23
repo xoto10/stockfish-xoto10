@@ -151,8 +151,13 @@ namespace {
     S(-30,-14), S(-9, -8), S( 0,  9), S( -1,  7)
   };
 
-  int A = 47, B = 4, C = 141, D = 12;
-  TUNE(A,B,C,D);
+  int A = 94, B = 8, C = 141, D = 12, E = 47, F = 4, G = 47, H = 4;
+  TUNE(A,B,C,D,E,F,G,H);
+  // Penalty for trapped rook based on whether we can still castle and whether king and
+  // rook are on the same rank:
+  //                      ranks!= ranks==
+  Score TrappedRook[2][2] = { { S(A,B), S(C,D) }    // can not castle
+                            , { S(E,F), S(G,H) } }; // can still castle
 
   // Assorted bonuses and penalties
   constexpr Score BishopPawns        = S(  3,  7);
@@ -171,8 +176,6 @@ namespace {
   constexpr Score ThreatByPawnPush   = S( 48, 39);
   constexpr Score ThreatByRank       = S( 13,  0);
   constexpr Score ThreatBySafePawn   = S(173, 94);
-            Score TrappedRook1       = S(  A,  B);
-            Score TrappedRook2       = S(  C,  D);
   constexpr Score WeakQueen          = S( 49, 15);
   constexpr Score WeakUnopposedPawn  = S( 12, 23);
 
@@ -381,7 +384,7 @@ namespace {
             {
                 File kf = file_of(pos.square<KING>(Us));
                 if ((kf < FILE_E) == (file_of(s) < kf))
-                    score -= (pos.castling_rights(Us) ? TrappedRook1 : TrappedRook2);
+                    score -= TrappedRook[pos.castling_rights(Us)][rank_of(s) == rank_of(pos.square<KING>(Us))];
             }
         }
 

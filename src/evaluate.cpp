@@ -99,8 +99,8 @@ namespace {
 
 #define S(mg, eg) make_score(mg, eg)
 
-  int E = -58, F = -76, G = -27, H = -18, I = -15, J = 28;
-TUNE(E,F,G,H,I,J);
+  int E = -58, F = -76, G = -27, H = -18, I = -15, J = 28, K= -10, L = 55;
+TUNE(E,F,G,H,I,J,K,L);
 
   // MobilityBonus[PieceType-2][attacked] contains bonuses for middle and end game,
   // indexed by piece type and number of attacked squares in the mobility area.
@@ -110,7 +110,7 @@ TUNE(E,F,G,H,I,J);
     { S(-48,-59), S(-20,-23), S( 16, -3), S( 26, 13), S( 38, 24), S( 51, 42), // Bishops
       S( 55, 54), S( 63, 57), S( 63, 65), S( 68, 73), S( 81, 78), S( 81, 86),
       S( 91, 88), S( 98, 97) },
-    { S(  E,  F), S(  G,  H), S(  I,  J), S(-10, 55), S( -5, 69), S( -2, 82), // Rooks
+    { S(  E,  F), S(  G,  H), S(  I,  J), S(  K,  L), S( -5, 69), S( -2, 82), // Rooks
       S(  9,112), S( 16,118), S( 30,132), S( 29,142), S( 32,155), S( 38,165),
       S( 46,166), S( 48,169), S( 58,171) },
     { S(-39,-36), S(-21,-15), S(  3,  8), S(  3, 18), S( 14, 34), S( 22, 54), // Queens

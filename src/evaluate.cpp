@@ -154,8 +154,6 @@ TUNE(E,F,G,H,I,J,K,L);
     S(-30,-14), S(-9, -8), S( 0,  9), S( -1,  7)
   };
 
-  int A = 141, B = 12;
-
   // Assorted bonuses and penalties
   constexpr Score BishopPawns        = S(  3,  7);
   constexpr Score CloseEnemies       = S(  8,  0);
@@ -173,10 +171,10 @@ TUNE(E,F,G,H,I,J,K,L);
   constexpr Score ThreatByPawnPush   = S( 48, 39);
   constexpr Score ThreatByRank       = S( 13,  0);
   constexpr Score ThreatBySafePawn   = S(173, 94);
-            Score TrappedRook        = S(  A,  B);
+            Score TR                 = S(141, 12);
   constexpr Score WeakQueen          = S( 49, 15);
   constexpr Score WeakUnopposedPawn  = S( 12, 23);
-TUNE(A,B);
+TUNE(TR);
 
 #undef S
 
@@ -278,6 +276,11 @@ TUNE(A,B);
     kingAttackersCount[Them] = popcount(kingRing[Us] & pe->pawn_attacks(Them));
     kingRing[Us] &= ~double_pawn_attacks_bb<Us>(pos.pieces(Us, PAWN));
     kingAttacksCount[Them] = kingAttackersWeight[Them] = 0;
+
+    MobilityBonus[ROOK-2][0] = make_score(E,F);
+    MobilityBonus[ROOK-2][1] = make_score(G,H);
+    MobilityBonus[ROOK-2][2] = make_score(I,J);
+    MobilityBonus[ROOK-2][3] = make_score(K,L);
   }
 
 
@@ -385,7 +388,7 @@ TUNE(A,B);
                 if (   !pos.castling_rights(Us)
                     && (kf < FILE_E) == (file_of(s) < kf)
                     && rank_of(s) == rank_of(pos.square<KING>(Us)))
-                    score -= TrappedRook;
+                    score -= TR;
             }
         }
 

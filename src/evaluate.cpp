@@ -99,7 +99,7 @@ namespace {
 
 #define S(mg, eg) make_score(mg, eg)
 
-  int E = -58, F = -76, G = -27, H = -18, I = -15, J = 28, K= -10, L = 55;
+  int E = -124, F = -79, G = -71, H = -20, I = -37, J = 27, K= -10, L = 55;
 TUNE(E,F,G,H,I,J,K,L);
 
   // MobilityBonus[PieceType-2][attacked] contains bonuses for middle and end game,
@@ -154,10 +154,7 @@ TUNE(E,F,G,H,I,J,K,L);
     S(-30,-14), S(-9, -8), S( 0,  9), S( -1,  7)
   };
 
-  int A = 47, B = 4, C = 141, D = 12;
-  // Trapped rook penalty, indexed by whether castling is not possible
-            Score TrappedRook[2] = { S(A, B), S(C, D) };
-TUNE(A,B,C,D);
+  int A = 141, B = 12;
 
   // Assorted bonuses and penalties
   constexpr Score BishopPawns        = S(  3,  7);
@@ -176,8 +173,10 @@ TUNE(A,B,C,D);
   constexpr Score ThreatByPawnPush   = S( 48, 39);
   constexpr Score ThreatByRank       = S( 13,  0);
   constexpr Score ThreatBySafePawn   = S(173, 94);
+            Score TrappedRook        = S(  A,  B);
   constexpr Score WeakQueen          = S( 49, 15);
   constexpr Score WeakUnopposedPawn  = S( 12, 23);
+TUNE(A,B);
 
 #undef S
 
@@ -383,9 +382,10 @@ TUNE(A,B,C,D);
             else if (mob <= 3)
             {
                 File kf = file_of(pos.square<KING>(Us));
-                if (   rank_of(s) == rank_of(pos.square<KING>(Us))
-                    && (kf < FILE_E) == (file_of(s) < kf))
-                    score -= TrappedRook[pos.castling_rights(Us) == NO_CASTLING];
+                if (   !pos.castling_rights(Us)
+                    && (kf < FILE_E) == (file_of(s) < kf)
+                    && rank_of(s) == rank_of(pos.square<KING>(Us)))
+                    score -= TrappedRook;
             }
         }
 

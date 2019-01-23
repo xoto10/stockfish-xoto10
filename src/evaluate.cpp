@@ -377,8 +377,7 @@ namespace {
             {
                 File kf = file_of(pos.square<KING>(Us));
                 if (   !pos.castling_rights(Us)
-                    && (kf < FILE_E) == (file_of(s) < kf)
-                    && rank_of(s) == rank_of(pos.square<KING>(Us)))
+                    && (kf < FILE_E) == (file_of(s) < kf))
                     score -= TrappedRook;
             }
         }

@@ -99,15 +99,18 @@ namespace {
 
 #define S(mg, eg) make_score(mg, eg)
 
+int E = -123, F = -79, G = -73, H = -21, I = -37, J = 27, K= -10, L = 58;
+TUNE(E,F,G,H,I,J,K,L);
+
   // MobilityBonus[PieceType-2][attacked] contains bonuses for middle and end game,
   // indexed by piece type and number of attacked squares in the mobility area.
-  constexpr Score MobilityBonus[][32] = {
+            Score MobilityBonus[][32] = {
     { S(-62,-81), S(-53,-56), S(-12,-30), S( -4,-14), S(  3,  8), S( 13, 15), // Knights
       S( 22, 23), S( 28, 27), S( 33, 33) },
     { S(-48,-59), S(-20,-23), S( 16, -3), S( 26, 13), S( 38, 24), S( 51, 42), // Bishops
       S( 55, 54), S( 63, 57), S( 63, 65), S( 68, 73), S( 81, 78), S( 81, 86),
       S( 91, 88), S( 98, 97) },
-    { S(-58,-76), S(-27,-18), S(-15, 28), S(-10, 55), S( -5, 69), S( -2, 82), // Rooks
+    { S(  E,  F), S(  G,  H), S(  I,  J), S(  K,  L), S( -5, 69), S( -2, 82), // Rooks
       S(  9,112), S( 16,118), S( 30,132), S( 29,142), S( 32,155), S( 38,165),
       S( 46,166), S( 48,169), S( 58,171) },
     { S(-39,-36), S(-21,-15), S(  3,  8), S(  3, 18), S( 14, 34), S( 22, 54), // Queens
@@ -151,14 +154,6 @@ namespace {
     S(-30,-14), S(-9, -8), S( 0,  9), S( -1,  7)
   };
 
-  int A = 94, B = 8, C = 141, D = 12, E = 47, F = 4, G = 47, H = 4;
-  TUNE(A,B,C,D,E,F,G,H);
-  // Penalty for trapped rook based on whether we can still castle and whether king and
-  // rook are on the same rank:
-  //                      ranks!= ranks==
-  Score TrappedRook[2][2] = { { S(A,B), S(C,D) }    // can not castle
-                            , { S(E,F), S(G,H) } }; // can still castle
-
   // Assorted bonuses and penalties
   constexpr Score BishopPawns        = S(  3,  7);
   constexpr Score CloseEnemies       = S(  8,  0);
@@ -176,8 +171,11 @@ namespace {
   constexpr Score ThreatByPawnPush   = S( 48, 39);
   constexpr Score ThreatByRank       = S( 13,  0);
   constexpr Score ThreatBySafePawn   = S(173, 94);
+            Score TR1                = S( 52,  4);
+            Score TR2                = S(156, 12);
   constexpr Score WeakQueen          = S( 49, 15);
   constexpr Score WeakUnopposedPawn  = S( 12, 23);
+TUNE(TR1, TR2);
 
 #undef S
 
@@ -279,6 +277,11 @@ namespace {
     kingAttackersCount[Them] = popcount(kingRing[Us] & pe->pawn_attacks(Them));
     kingRing[Us] &= ~double_pawn_attacks_bb<Us>(pos.pieces(Us, PAWN));
     kingAttacksCount[Them] = kingAttackersWeight[Them] = 0;
+
+    MobilityBonus[ROOK-2][0] = make_score(E,F);
+    MobilityBonus[ROOK-2][1] = make_score(G,H);
+    MobilityBonus[ROOK-2][2] = make_score(I,J);
+    MobilityBonus[ROOK-2][3] = make_score(K,L);
   }
 
 
@@ -384,7 +387,7 @@ namespace {
             {
                 File kf = file_of(pos.square<KING>(Us));
                 if ((kf < FILE_E) == (file_of(s) < kf))
-                    score -= TrappedRook[pos.castling_rights(Us)][rank_of(s) == rank_of(pos.square<KING>(Us))];
+                    score -= pos.castling_rights(Us) ? TR1 : TR2;
             }
         }
 

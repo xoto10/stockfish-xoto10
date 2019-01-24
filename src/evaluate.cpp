@@ -99,7 +99,7 @@ namespace {
 
 #define S(mg, eg) make_score(mg, eg)
 
-  int E = -124, F = -79, G = -71, H = -20, I = -37, J = 27, K= -10, L = 55;
+  int E = -123, F = -79, G = -73, H = -21, I = -37, J = 27, K= -10, L = 58;
 TUNE(E,F,G,H,I,J,K,L);
 
   // MobilityBonus[PieceType-2][attacked] contains bonuses for middle and end game,
@@ -171,7 +171,7 @@ TUNE(E,F,G,H,I,J,K,L);
   constexpr Score ThreatByPawnPush   = S( 48, 39);
   constexpr Score ThreatByRank       = S( 13,  0);
   constexpr Score ThreatBySafePawn   = S(173, 94);
-            Score TR                 = S(141, 12);
+            Score TR                 = S(133, 12);
   constexpr Score WeakQueen          = S( 49, 15);
   constexpr Score WeakUnopposedPawn  = S( 12, 23);
 TUNE(TR);
@@ -386,8 +386,8 @@ TUNE(TR);
             {
                 File kf = file_of(pos.square<KING>(Us));
                 if (   !pos.castling_rights(Us)
-                    && (kf < FILE_E) == (file_of(s) < kf)
-                    && rank_of(s) == rank_of(pos.square<KING>(Us)))
+                    && (kf < FILE_E) == (file_of(s) < kf))
+//                  && rank_of(s) == rank_of(pos.square<KING>(Us)))
                     score -= TR;
             }
         }

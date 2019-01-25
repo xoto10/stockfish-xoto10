@@ -99,8 +99,8 @@ namespace {
 
 #define S(mg, eg) make_score(mg, eg)
 
-int E = -123, F = -79, G = -73, H = -21, I = -37, J = 27, K= -10, L = 58;
-TUNE(E,F,G,H,I,J,K,L);
+int E = -58, F = -76, G = -27, H = -18, I = -15, J = 28, K= -10, L = 55;
+TUNE(SetRange(-100,100),E,F,G,H,I,J,K,L);
 
   // MobilityBonus[PieceType-2][attacked] contains bonuses for middle and end game,
   // indexed by piece type and number of attacked squares in the mobility area.
@@ -171,11 +171,11 @@ TUNE(E,F,G,H,I,J,K,L);
   constexpr Score ThreatByPawnPush   = S( 48, 39);
   constexpr Score ThreatByRank       = S( 13,  0);
   constexpr Score ThreatBySafePawn   = S(173, 94);
-            Score TR1                = S( 52,  4);
-            Score TR2                = S(156, 12);
+            Score TR1                = S( 47,  4);
+            Score TR2                = S(141, 12);
   constexpr Score WeakQueen          = S( 49, 15);
   constexpr Score WeakUnopposedPawn  = S( 12, 23);
-TUNE(TR1, TR2);
+TUNE(SetRange(-20,180), TR1, TR2);
 
 #undef S
 

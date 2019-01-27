@@ -107,7 +107,7 @@ namespace {
     { S(-48,-59), S(-20,-23), S( 16, -3), S( 26, 13), S( 38, 24), S( 51, 42), // Bishops
       S( 55, 54), S( 63, 57), S( 63, 65), S( 68, 73), S( 81, 78), S( 81, 86),
       S( 91, 88), S( 98, 97) },
-    {S(-114,-79), S(-68,-20), S(-33, 24), S( -8, 57), S( -5, 69), S( -2, 82), // Rooks
+    {S( -58,-79), S(-20,-12), S(-10, 28), S( -8, 56), S( -5, 69), S( -2, 82), // Rooks
       S(  9,112), S( 16,118), S( 30,132), S( 29,142), S( 32,155), S( 38,165),
       S( 46,166), S( 48,169), S( 58,171) },
     { S(-39,-36), S(-21,-15), S(  3,  8), S(  3, 18), S( 14, 34), S( 22, 54), // Queens
@@ -168,8 +168,8 @@ namespace {
   constexpr Score ThreatByPawnPush   = S( 48, 39);
   constexpr Score ThreatByRank       = S( 13,  0);
   constexpr Score ThreatBySafePawn   = S(173, 94);
-  constexpr Score TrappedRook1       = S( 51,  4);
-  constexpr Score TrappedRook2       = S(152, 11);
+  constexpr Score TrappedRook1       = S( 47, 11);
+  constexpr Score TrappedRook2       = S(137, 10);
   constexpr Score WeakQueen          = S( 49, 15);
   constexpr Score WeakUnopposedPawn  = S( 12, 23);
 

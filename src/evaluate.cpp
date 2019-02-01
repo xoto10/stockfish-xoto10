@@ -873,7 +873,7 @@ namespace {
     v = (pos.side_to_move() == WHITE ? v : -v); // Side to move point of view
 
     if (v < -100)
-        v += pos.rule50_count() / 20;
+        v += pos.rule50_count() / 16;
 
     return v + Eval::Tempo;
   }

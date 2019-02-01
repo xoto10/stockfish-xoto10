@@ -870,8 +870,12 @@ namespace {
         Trace::add(TOTAL, score);
     }
 
-    return  (pos.side_to_move() == WHITE ? v : -v) // Side to move point of view
-           + Eval::Tempo;
+    v = (pos.side_to_move() == WHITE ? v : -v); // Side to move point of view
+
+    if (v < -100)
+        v += pos.rule50_count() / 10;
+
+    return v + Eval::Tempo;
   }
 
 } // namespace

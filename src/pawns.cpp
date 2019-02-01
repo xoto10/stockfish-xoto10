@@ -58,6 +58,9 @@ namespace {
     { V(-10), V(-14), V( 90), V(15), V( 2), V( -7), V(-16) }
   };
 
+  // Bonus for king safety according to king file
+  constexpr Value safeKing[FILE_NB] = { V(10), V(10), V(0), V(-20), V(-20), V(-20), V(0), V(0) };
+
   #undef S
   #undef V
 
@@ -223,6 +226,8 @@ Value Entry::evaluate_shelter(const Position& pos, Square ksq) {
       safety -= (ourRank && (ourRank == theirRank - 1)) ? 66 * (theirRank == RANK_3)
                                                         : UnblockedStorm[d][theirRank];
   }
+
+  safety += safeKing[file_of(ksq)];
 
   return safety;
 }

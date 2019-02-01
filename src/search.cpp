@@ -505,8 +505,10 @@ void Thread::search() {
 
           // Stop the search if we have only one legal move, or if available time elapsed
           if (   rootMoves.size() == 1
-              || Time.elapsed() > Time.optimum() * bestMoveInstability * fallingEval)
+              || Time.elapsed() > Time.optimum() * bestMoveInstability * fallingEval * Time.get_timeToUse(5, 5))
           {
+              Time.save_timeFactor(rootMoves.size() == 1 ? 0.1 : bestMoveInstability * fallingEval);
+
               // If we are allowed to ponder do not stop the search now but
               // keep pondering until the GUI sends "ponderhit" or "stop".
               if (mainThread->ponder)

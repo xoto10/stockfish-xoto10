@@ -36,12 +36,28 @@ public:
   TimePoint elapsed() const { return Search::Limits.npmsec ?
                                      TimePoint(Threads.nodes_searched()) : now() - startTime; }
 
+  void save_timeFactor(double d)
+  {
+    timeFactor.push_front(d);
+    if (timeFactor.size() > 9)
+      timeFactor.pop_back();
+  }
+  double get_timeToUse(int lastN, int nextN)
+  {
+    double extra = 0.0;
+    for (int i=0; i < int(timeFactor.size()) && i < lastN; i++)
+      extra += 1.0 - timeFactor[i];
+    return(extra > 0 ? 1.0 + extra / nextN : 1.0);
+  }
+
   int64_t availableNodes; // When in 'nodes as time' mode
 
 private:
   TimePoint startTime;
   TimePoint optimumTime;
   TimePoint maximumTime;
+
+  std::deque<double> timeFactor;
 };
 
 extern TimeManagement Time;

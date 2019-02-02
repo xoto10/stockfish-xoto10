@@ -445,7 +445,6 @@ void Thread::search() {
 
                   if (mainThread)
                   {
-                      failedHighCnt = 0;
                       failedLow = true;
                       mainThread->stopOnPonderhit = false;
                   }

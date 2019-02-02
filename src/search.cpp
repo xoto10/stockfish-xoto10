@@ -373,6 +373,7 @@ void Thread::search() {
       for (RootMove& rm : rootMoves)
           rm.previousScore = rm.score;
 
+      int failedHighCnt = 0;
       size_t pvFirst = 0;
       pvLast = 0;
 
@@ -408,7 +409,6 @@ void Thread::search() {
           // Start with a small aspiration window and, in the case of a fail
           // high/low, re-search with a bigger window until we don't fail
           // high/low anymore.
-          int failedHighCnt = 0;
           while (true)
           {
               Depth adjustedDepth = std::max(ONE_PLY, rootDepth - failedHighCnt * ONE_PLY);
@@ -498,8 +498,10 @@ void Thread::search() {
           && !Threads.stop
           && !mainThread->stopOnPonderhit)
       {
-          double fallingEval = (306 + 119 * (failedLow && bestValue >= mainThread->previousScore - 20)
-                                + 6 * (mainThread->previousScore - bestValue)) / 581.0;
+          double fallingEval = (  306
+                                + 119 * ((failedLow || failedHighCnt) && bestValue >= mainThread->previousScore - 20)
+                                + 6 * (mainThread->previousScore - bestValue)
+                               ) / 581.0;
           fallingEval        = std::max(0.5, std::min(1.5, fallingEval));
 
           // If the bestMove is stable over several iterations, reduce time accordingly

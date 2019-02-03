@@ -32,9 +32,10 @@ namespace {
   #define S(mg, eg) make_score(mg, eg)
 
   // Pawn penalties
-  constexpr Score Backward = S( 9, 24);
-  constexpr Score Doubled  = S(11, 56);
-  constexpr Score Isolated = S( 5, 15);
+  constexpr Score Backward  = S( 9, 24);
+  constexpr Score Doubled   = S(11, 56);
+  constexpr Score Isolated  = S( 8, 20);
+  constexpr Score IDiscount = S( 2,  5);
 
   // Connected pawn bonus by opposed, phalanx, #support and rank
   Score Connected[2][2][3][RANK_NB];
@@ -71,6 +72,7 @@ namespace {
     Bitboard lever, leverPush;
     Square s;
     bool opposed, backward;
+    int n = 0;
     Score score = SCORE_ZERO;
     const Square* pl = pos.squares<PAWN>(Us);
 
@@ -132,7 +134,7 @@ namespace {
             score += Connected[opposed][bool(phalanx)][popcount(support)][relative_rank(Us, s)];
 
         else if (!neighbours)
-            score -= Isolated, e->weakUnopposed[Us] += !opposed;
+            ++n, e->weakUnopposed[Us] += !opposed;
 
         else if (backward)
             score -= Backward, e->weakUnopposed[Us] += !opposed;
@@ -140,6 +142,18 @@ namespace {
         if (doubled && !support)
             score -= Doubled;
     }
+
+    // Extra penalty for number of isolated pawns depending on total number of pawns
+    // (Could Isolated * n be some kind of quadratic/exponential?)
+    if (n && n + 5 > pos.count<PAWN>(Us))
+        score -= Isolated * n - IDiscount * (pos.count<PAWN>(Us) - n);
+
+//     0  1  2  3  4  5  6  7  8
+// 0   0  0  0  0  0  0  0  0  0
+// 1   - 12  -  6  3  0  0  0  -
+// 2   -  - 24  - 18 15 12  -  -
+// 3   -  -  - 36  - 30  -  -  -
+// 4   -  -  -  - 48  -  -  -  -
 
     return score;
   }

@@ -148,12 +148,15 @@ namespace {
     score -= Isolated * n
             - IDiscount * (n && n + 5 > pos.count<PAWN>(Us)) * (pos.count<PAWN>(Us) - n);
 
+//dbg_mean_of( eg_value(Isolated) * n); // 14.4
+//dbg_mean_of( eg_value(Isolated) * n
+//            - eg_value(IDiscount) * (n && n + 5 > pos.count<PAWN>(Us)) * (pos.count<PAWN>(Us) - n));  // 14.3
 //     0  1  2  3  4  5  6  7  8
 // 0   0  0  0  0  0  0  0  0  0
-// 1   - 12  -  6  3  0  0  0  -
-// 2   -  - 24  - 18 15 12  -  -
-// 3   -  -  - 36  - 30  -  -  -
-// 4   -  -  -  - 48  -  -  -  -
+// 1   - 20  - 10  5  0  0  0  -
+// 2   -  - 40  - 30 25 20  -  -
+// 3   -  -  - 60  - 50  -  -  -
+// 4   -  -  -  - 80  -  -  -  -
 
     return score;
   }

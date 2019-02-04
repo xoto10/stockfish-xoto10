@@ -498,7 +498,7 @@ void Thread::search() {
           && !mainThread->stopOnPonderhit)
       {
           double fallingEval = (  306
-                                + 119 * ((failedLow || failedHighCnt) && bestValue >= mainThread->previousScore - 20)
+                                + 119 * (failedLow || failedHighCnt)
                                 + 6 * (mainThread->previousScore - bestValue)
                                ) / 581.0;
           fallingEval        = std::max(0.5, std::min(1.5, fallingEval));

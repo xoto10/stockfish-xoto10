@@ -373,7 +373,7 @@ void Thread::search() {
       for (RootMove& rm : rootMoves)
           rm.previousScore = rm.score;
 
-      int failedHighCnt = 0;
+      int failedHighCnt;
       size_t pvFirst = 0;
       pvLast = 0;
 
@@ -409,6 +409,7 @@ void Thread::search() {
           // Start with a small aspiration window and, in the case of a fail
           // high/low, re-search with a bigger window until we don't fail
           // high/low anymore.
+          failedHighCnt = 0;
           while (true)
           {
               Depth adjustedDepth = std::max(ONE_PLY, rootDepth - failedHighCnt * ONE_PLY);

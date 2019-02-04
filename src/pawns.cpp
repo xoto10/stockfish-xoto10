@@ -34,7 +34,7 @@ namespace {
   // Pawn penalties
   constexpr Score Backward  = S( 9, 24);
   constexpr Score Doubled   = S(11, 56);
-  constexpr Score Isolated  = S( 7, 24);
+  constexpr Score Isolated  = S( 8, 25);
   constexpr Score IDiscount = S( 1,  3);
 
   // Connected pawn bonus by opposed, phalanx, #support and rank
@@ -146,8 +146,11 @@ namespace {
     // Penalty for number of isolated pawns adjusted depending on total number of pawns
     // (Could Isolated * n be some kind of quadratic/exponential?) e.g. (2,8) * (n^2+3)?
     if (n > 0)
+    {
         score -= Isolated * n
                 - IDiscount * (pos.count<PAWN>(Us) - n);
+//dbg_mean_of(pos.count<PAWN>(Us) - n); // 3.3
+    }
 
     return score;
   }

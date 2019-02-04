@@ -143,10 +143,10 @@ namespace {
             score -= Doubled;
     }
 
-    // Extra penalty for number of isolated pawns depending on total number of pawns
+    // Penalty for number of isolated pawns adjusted depending on total number of pawns
     // (Could Isolated * n be some kind of quadratic/exponential?)
-    if (n && n + 5 > pos.count<PAWN>(Us))
-        score -= Isolated * n - IDiscount * (pos.count<PAWN>(Us) - n);
+    score -= Isolated * n
+            - IDiscount * (n && n + 5 > pos.count<PAWN>(Us)) * (pos.count<PAWN>(Us) - n);
 
 //     0  1  2  3  4  5  6  7  8
 // 0   0  0  0  0  0  0  0  0  0

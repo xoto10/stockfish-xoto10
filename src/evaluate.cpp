@@ -765,8 +765,9 @@ namespace {
     // the sign of the endgame value, and that we carefully cap the bonus so
     // that the endgame score will never change sign after the bonus.
     Value mg = mg_value(sc), eg = eg_value(sc);
-    int   v =  mg * int(me->game_phase())
-             + eg * int(PHASE_MIDGAME - me->game_phase());
+    int   gp = std::min(43, int(me->game_phase()));
+    int   v =  mg * gp
+             + eg * int(PHASE_MIDGAME - gp);
 
     int e = 0;
     if (v > 0)

@@ -765,15 +765,10 @@ namespace {
     // the sign of the endgame value, and that we carefully cap the bonus so
     // that the endgame score will never change sign after the bonus.
     Value mg = mg_value(sc), eg = eg_value(sc);
-    int   gp = std::min(43, int(me->game_phase()));
-    int   v =  mg * gp
-             + eg * int(PHASE_MIDGAME - gp);
+    int   gp = int(me->game_phase()) / 4;
+    int   v =  mg * gp + eg * int(PHASE_MIDGAME - gp);
 
-    int e = 0;
-    if (v > 0)
-        e = std::max(complexity, -abs(eg));
-    else if (v < 0)
-        e = - std::max(complexity, -abs(eg));
+    int e = ((v > 0) - (v < 0)) * std::max(complexity, -abs(eg));
 
     if (T)
         Trace::add(INITIATIVE, make_score(0, e));

@@ -185,7 +185,7 @@ namespace {
     template<Color Us> Score passed() const;
     template<Color Us> Score space() const;
     ScaleFactor scale_factor(Value eg) const;
-    Score initiative(Score sc) const;
+    Score initiative(Value mg, Value eg) const;
 
     const Position& pos;
     Material::Entry* me;
@@ -745,7 +745,7 @@ namespace {
   // known attacking/defending status of the players.
 
   template<Tracing T>
-  Score Evaluation<T>::initiative(Score sc) const {
+  Score Evaluation<T>::initiative(Value mg, Value eg) const {
 
     int outflanking =  distance<File>(pos.square<KING>(WHITE), pos.square<KING>(BLACK))
                      - distance<Rank>(pos.square<KING>(WHITE), pos.square<KING>(BLACK));
@@ -764,9 +764,8 @@ namespace {
     // Now apply the bonus: note that we find the attacking side by extracting
     // the sign of the endgame value, and that we carefully cap the bonus so
     // that the endgame score will never change sign after the bonus.
-    Value mg = mg_value(sc), eg = eg_value(sc);
-    int   gp = int(me->game_phase()) / 4;
-    int   v =  mg * gp + eg * int(PHASE_MIDGAME - gp);
+    int gp = std::min(32, int(me->game_phase()));
+    int v =  mg * gp + eg * int(PHASE_MIDGAME - gp);
 
     int e = ((v > 0) - (v < 0)) * std::max(complexity, -abs(eg));
 
@@ -850,7 +849,7 @@ namespace {
             + passed< WHITE>() - passed< BLACK>()
             + space<  WHITE>() - space<  BLACK>();
 
-    score += initiative(score);
+    score += initiative(mg_value(score), eg_value(score));
 
     // Interpolate between a middlegame and a (scaled by 'sf') endgame score
     ScaleFactor sf = scale_factor(eg_value(score));

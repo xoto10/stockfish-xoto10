@@ -764,7 +764,7 @@ namespace {
     // Now apply the bonus: note that we find the attacking side by extracting
     // the sign of the endgame value, and that we carefully cap the bonus so
     // that the endgame score will never change sign after the bonus.
-    int gp = std::min(54, int(me->game_phase()));
+    int gp = std::min(32, int(me->game_phase()));
     int v =  mg * gp + eg * int(PHASE_MIDGAME - gp);
 
     int e = ((v > 0) - (v < 0)) * std::max(complexity, -abs(eg));

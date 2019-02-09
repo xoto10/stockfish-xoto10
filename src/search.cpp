@@ -152,6 +152,25 @@ namespace {
 } // namespace
 
 
+/// Debug functions used mainly to collect run-time statistics
+static int64_t shits[2], smeans[2];
+
+void sdbg_hit_on(bool b) { ++shits[0]; if (b) ++shits[1]; }
+void sdbg_hit_on(bool c, bool b) { if (c) sdbg_hit_on(b); }
+void sdbg_mean_of(int v) { ++smeans[0]; smeans[1] += v; }
+
+void sdbg_print() {
+
+  if (shits[0])
+      sync_cout << "info string Total " << shits[0] << " Hits " << shits[1]
+           << " hit rate (%) " << 100 * shits[1] / shits[0] << sync_endl;
+
+  if (smeans[0])
+      sync_cout << "info string Total " << smeans[0] << " Mean "
+           << (double)smeans[1] / smeans[0] << sync_endl;
+}
+
+
 /// Search::init() is called at startup to initialize various lookup tables
 
 void Search::init() {
@@ -382,8 +401,9 @@ void Thread::search() {
                       break;
           }
 
-          // Reset UCI info selDepth for each depth and each PV line
+          // Reset UCI info selDepth and bestDepth for each depth and each PV line
           selDepth = 0;
+//        bestDepth = DEPTH_ZERO;
 
           // Reset aspiration window starting size
           if (rootDepth >= 5 * ONE_PLY)
@@ -1108,7 +1128,10 @@ moves_loop: // When in check, search starts from here
                                     thisThread->rootMoves.end(), move);
 
           // PV move or new best move?
-          if (moveCount == 1 || value > alpha)
+          if (   moveCount == 1
+              || value > alpha
+//            || (value == alpha && thisThread->selDepth > rm.selDepth)
+             )
           {
               rm.score = value;
               rm.selDepth = thisThread->selDepth;
@@ -1136,9 +1159,12 @@ moves_loop: // When in check, search starts from here
       {
           bestValue = value;
 
-          if (value > alpha)
+          if (   value > alpha
+//            || (value == alpha && thisThread->selDepth > thisThread->bestDepth)
+             )
           {
               bestMove = move;
+//            thisThread->bestDepth = thisThread->selDepth;
 
               if (PvNode && !rootNode) // Update pv even in fail-high case
                   update_pv(ss->pv, move, (ss+1)->pv);
@@ -1399,9 +1425,12 @@ moves_loop: // When in check, search starts from here
       {
           bestValue = value;
 
-          if (value > alpha)
+          if (   value > alpha
+//            || (value == alpha && thisThread->selDepth > thisThread->bestDepth)
+              )
           {
               bestMove = move;
+//            thisThread->bestDepth = thisThread->selDepth;
 
               if (PvNode) // Update pv even in fail-high case
                   update_pv(ss->pv, move, (ss+1)->pv);

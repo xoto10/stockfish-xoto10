@@ -403,7 +403,7 @@ void Thread::search() {
 
           // Reset UCI info selDepth and bestDepth for each depth and each PV line
           selDepth = 0;
-//        bestDepth = DEPTH_ZERO;
+          bestDepth = DEPTH_ZERO;
 
           // Reset aspiration window starting size
           if (rootDepth >= 5 * ONE_PLY)
@@ -1160,11 +1160,11 @@ moves_loop: // When in check, search starts from here
           bestValue = value;
 
           if (   value > alpha
-//            || (value == alpha && thisThread->selDepth > thisThread->bestDepth)
+              || (value == alpha && thisThread->selDepth > thisThread->bestDepth)
              )
           {
               bestMove = move;
-//            thisThread->bestDepth = thisThread->selDepth;
+              thisThread->bestDepth = thisThread->selDepth;
 
               if (PvNode && !rootNode) // Update pv even in fail-high case
                   update_pv(ss->pv, move, (ss+1)->pv);
@@ -1426,11 +1426,11 @@ moves_loop: // When in check, search starts from here
           bestValue = value;
 
           if (   value > alpha
-//            || (value == alpha && thisThread->selDepth > thisThread->bestDepth)
+              || (value == alpha && thisThread->selDepth > thisThread->bestDepth)
               )
           {
               bestMove = move;
-//            thisThread->bestDepth = thisThread->selDepth;
+              thisThread->bestDepth = thisThread->selDepth;
 
               if (PvNode) // Update pv even in fail-high case
                   update_pv(ss->pv, move, (ss+1)->pv);

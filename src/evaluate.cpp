@@ -156,6 +156,7 @@ namespace {
   constexpr Score RestrictedPiece    = S(  7,  7);
   constexpr Score RookOnPawn         = S( 10, 32);
   constexpr Score SliderOnQueen      = S( 59, 18);
+  constexpr Score SpaceThreat        = S(  8,  0);
   constexpr Score ThreatByKing       = S( 24, 89);
   constexpr Score ThreatByPawnPush   = S( 48, 39);
   constexpr Score ThreatByRank       = S( 13,  0);
@@ -510,6 +511,9 @@ namespace {
     constexpr Color     Them     = (Us == WHITE ? BLACK   : WHITE);
     constexpr Direction Up       = (Us == WHITE ? NORTH   : SOUTH);
     constexpr Bitboard  TRank3BB = (Us == WHITE ? Rank3BB : Rank6BB);
+    constexpr Bitboard  TheirSpaceMask =
+      Us == WHITE ? CenterFiles & (Rank7BB | Rank6BB | Rank5BB)
+                  : CenterFiles & (Rank2BB | Rank3BB | Rank4BB);
 
     Bitboard b, weak, defended, nonPawnEnemies, stronglyProtected, safe, restricted;
     Score score = SCORE_ZERO;
@@ -565,6 +569,10 @@ namespace {
                 & ~stronglyProtected
                 &  attackedBy[Us][ALL_PIECES];
     score += RestrictedPiece * popcount(restricted);
+
+    // Bonus for attacking their central space
+    b = TheirSpaceMask & attackedBy[Us][ALL_PIECES];
+    score += SpaceThreat * popcount(b);
 
     // Bonus for enemy unopposed weak pawns
     if (pos.pieces(Us, ROOK, QUEEN))

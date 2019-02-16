@@ -496,7 +496,7 @@ void Thread::search() {
       {
           double fallingEval = (306 + 119 * failedLow + 6 * (mainThread->previousScore - bestValue)) / 581.0;
           if (20 < delta && delta < 200)
-              fallingEval += 40.0 * (std::log(int(delta)) - 2.0);
+              fallingEval += 0.069 * (std::log(int(delta)) - 2.0);
           fallingEval = std::max(0.5, std::min(1.5, fallingEval));
 
           // If the bestMove is stable over several iterations, reduce time accordingly

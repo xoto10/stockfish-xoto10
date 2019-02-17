@@ -149,6 +149,7 @@ namespace {
   constexpr Score FlankAttacks       = S(  8,  0);
   constexpr Score Hanging            = S( 69, 36);
   constexpr Score KingProtector      = S(  7,  8);
+  constexpr Score KSideAttack        = S( 30,  0);
   constexpr Score KnightOnQueen      = S( 16, 12);
   constexpr Score LongDiagonalBishop = S( 45,  0);
   constexpr Score MinorBehindPawn    = S( 18,  3);
@@ -602,6 +603,13 @@ namespace {
 
         score += SliderOnQueen * popcount(b & safe & attackedBy2[Us]);
     }
+
+    // Bonus for blocked qside if we have blocked pawn on e5
+    b = shift<Up>(pos.pieces(Us, PAWN)) & pos.pieces(Them, PAWN) & relative_square(Us, SQ_E6); // TRank6BB
+    if (   b
+        && file_of(pos.square<KING>(Them)) > FILE_D
+        && !(pe->pawn_levers(Them) & QueenSide))
+        score += KSideAttack;
 
     if (T)
         Trace::add(THREAT, Us, score);

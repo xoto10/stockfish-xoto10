@@ -607,7 +607,7 @@ namespace {
     // Bonus for blocked qside if we have blocked pawn on e5
     b = shift<Up>(pos.pieces(Us, PAWN)) & pos.pieces(Them, PAWN) & relative_square(Us, SQ_E6); // TRank6BB
     if (   b
-        && file_of(pos.square<KING>(Them)) > FILE_D
+//      && file_of(pos.square<KING>(Them)) > FILE_D
         && !(pe->pawn_levers(Them) & QueenSide))
         score += KSideAttack;
 

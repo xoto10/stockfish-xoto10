@@ -23,6 +23,7 @@
 #include <cstring>   // For std::memset
 #include <iomanip>
 #include <sstream>
+#include <iostream>
 
 #include "bitboard.h"
 #include "evaluate.h"
@@ -150,6 +151,7 @@ namespace {
   constexpr Score Hanging            = S( 69, 36);
   constexpr Score KingProtector      = S(  7,  8);
   constexpr Score KnightOnQueen      = S( 16, 12);
+  constexpr Score KSideAttack        = S( 30,  0);
   constexpr Score LongDiagonalBishop = S( 45,  0);
   constexpr Score MinorBehindPawn    = S( 18,  3);
   constexpr Score PawnlessFlank      = S( 17, 95);
@@ -509,6 +511,7 @@ namespace {
 
     constexpr Color     Them     = (Us == WHITE ? BLACK   : WHITE);
     constexpr Direction Up       = (Us == WHITE ? NORTH   : SOUTH);
+    constexpr Direction Down     = (Us == WHITE ? SOUTH   : NORTH);
     constexpr Bitboard  TRank3BB = (Us == WHITE ? Rank3BB : Rank6BB);
 
     Bitboard b, weak, defended, nonPawnEnemies, stronglyProtected, safe, restricted;
@@ -601,6 +604,18 @@ namespace {
            | (attackedBy[Us][ROOK  ] & pos.attacks_from<ROOK  >(s));
 
         score += SliderOnQueen * popcount(b & safe & attackedBy2[Us]);
+    }
+
+    // Bonus for blocked qside if we have blocked pawn on e5
+    b =  shift<Down>(pos.pieces(Them, PAWN))
+       & ~(pos.pieces(Us, PAWN) | pawn_double_attacks_bb<Us>(pos.pieces(Us, PAWN)));
+    if (   pos.count<PAWN>(Them) > 5
+        && shift<Up>(pos.pieces(Us, PAWN)) & pos.pieces(Them, PAWN) & relative_square(Us, SQ_E6)
+        && file_of(pos.square<KING>(Them)) > FILE_D
+        && !(b & QueenSide))
+    {
+        sync_cout << "info string ksa\n" << pos << "b\n" << Bitboards::pretty(b) << sync_endl;
+        score += KSideAttack;
     }
 
     if (T)

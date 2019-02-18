@@ -610,13 +610,10 @@ namespace {
     b =  shift<Down>(pos.pieces(Them, PAWN))
        & ~(pos.pieces(Us, PAWN) | pawn_double_attacks_bb<Us>(pos.pieces(Us, PAWN)));
     if (   pos.count<PAWN>(Them) > 5
-        && shift<Up>(pos.pieces(Us, PAWN)) & pos.pieces(Them, PAWN) & relative_square(Us, SQ_E6)
         && file_of(pos.square<KING>(Them)) > FILE_D
+        && shift<Up>(pos.pieces(Us, PAWN)) & pos.pieces(Them, PAWN) & relative_square(Us, SQ_E6)
         && !(b & QueenSide))
-    {
-        sync_cout << "info string ksa\n" << pos << "b\n" << Bitboards::pretty(b) << sync_endl;
         score += KSideAttack;
-    }
 
     if (T)
         Trace::add(THREAT, Us, score);

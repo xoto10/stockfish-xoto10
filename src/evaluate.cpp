@@ -149,7 +149,7 @@ namespace {
   constexpr Score CorneredBishop     = S( 50, 50);
   constexpr Score FlankAttacks       = S(  8,  0);
   constexpr Score Hanging            = S( 69, 36);
-  constexpr Score KingAttack         = S( 46,  0);
+  constexpr Score KingAttack         = S( 30,  0);
   constexpr Score KingProtector      = S(  7,  8);
   constexpr Score KnightOnQueen      = S( 16, 12);
   constexpr Score LongDiagonalBishop = S( 45,  0);
@@ -609,7 +609,7 @@ namespace {
     // Bonus for blocked qside if we have blocked pawn on e5
     b =  shift<Down>(pos.pieces(Them, PAWN))
        & ~(pos.pieces(Us, PAWN) | pawn_double_attacks_bb<Us>(pos.pieces(Us, PAWN)));
-    if (   pos.count<PAWN>(Them) > 5
+    if (   pos.count<PAWN>(Them) > 4
         && file_of(pos.square<KING>(Them)) > FILE_D
         && shift<Up>(pos.pieces(Us, PAWN)) & pos.pieces(Them, PAWN) & relative_square(Us, SQ_E6)
         && !(b & QueenSide))

@@ -23,6 +23,7 @@
 #include <cstring>   // For std::memset
 #include <iomanip>
 #include <sstream>
+#include <iostream>
 
 #include "bitboard.h"
 #include "evaluate.h"
@@ -150,7 +151,7 @@ namespace {
   constexpr Score Hanging            = S( 69, 36);
   constexpr Score KingProtector      = S(  7,  8);
   constexpr Score KnightOnQueen      = S( 16, 12);
-  constexpr Score KSideAttack        = S( 30,  0);
+  constexpr Score KingAttack         = S( 30,  0);
   constexpr Score LongDiagonalBishop = S( 45,  0);
   constexpr Score MinorBehindPawn    = S( 18,  3);
   constexpr Score PawnlessFlank      = S( 17, 95);
@@ -508,12 +509,10 @@ namespace {
   template<Tracing T> template<Color Us>
   Score Evaluation<T>::threats() const {
 
-    constexpr Color     Them      = (Us == WHITE ? BLACK   : WHITE);
-    constexpr Direction Up        = (Us == WHITE ? NORTH   : SOUTH);
-    constexpr Direction Down      = (Us == WHITE ? SOUTH   : NORTH);
-    constexpr Bitboard  TRank3BB  = (Us == WHITE ? Rank3BB : Rank6BB);
-    constexpr Piece     OurPawn   = (Us == WHITE ? W_PAWN  : B_PAWN);
-    constexpr Piece     TheirPawn = (Us == WHITE ? B_PAWN  : W_PAWN);
+    constexpr Color     Them     = (Us == WHITE ? BLACK   : WHITE);
+    constexpr Direction Up       = (Us == WHITE ? NORTH   : SOUTH);
+    constexpr Direction Down     = (Us == WHITE ? SOUTH   : NORTH);
+    constexpr Bitboard  TRank3BB = (Us == WHITE ? Rank3BB : Rank6BB);
 
     Bitboard b, weak, defended, nonPawnEnemies, stronglyProtected, safe, restricted;
     Score score = SCORE_ZERO;
@@ -610,12 +609,18 @@ namespace {
     // Bonus for blocked qside if we have blocked pawn on e5
     b =  shift<Down>(pos.pieces(Them, PAWN))
        & ~(pos.pieces(Us, PAWN) | pawn_double_attacks_bb<Us>(pos.pieces(Us, PAWN)));
-    if (   pos.count<PAWN>(Them) > 5
-        && file_of(pos.square<KING>(Them)) > FILE_D
-        && pos.piece_on(relative_square(Us, SQ_E5)) == OurPawn
-        && pos.piece_on(relative_square(Us, SQ_E6)) == TheirPawn
-        && !(b & QueenSide))
-        score += KSideAttack;
+    if (pos.count<PAWN>(Them) > 5)
+    {
+        if (file_of(pos.square<KING>(Them)) > FILE_D)
+        {
+            if (   shift<Up>(pos.pieces(Us, PAWN)) & pos.pieces(Them, PAWN) & relative_square(Us, SQ_E6)
+                && !(b & QueenSide))
+                score += KingAttack;
+        }
+        else if (   shift<Up>(pos.pieces(Us, PAWN)) & pos.pieces(Them, PAWN) & relative_square(Us, SQ_D6)
+                 && !(b & KingSide))
+            score += KingAttack;
+    }
 
     if (T)
         Trace::add(THREAT, Us, score);

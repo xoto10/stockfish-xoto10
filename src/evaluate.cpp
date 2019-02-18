@@ -609,18 +609,11 @@ namespace {
     // Bonus for blocked qside if we have blocked pawn on e5
     b =  shift<Down>(pos.pieces(Them, PAWN))
        & ~(pos.pieces(Us, PAWN) | pawn_double_attacks_bb<Us>(pos.pieces(Us, PAWN)));
-    if (pos.count<PAWN>(Them) > 5)
-    {
-        if (file_of(pos.square<KING>(Them)) > FILE_D)
-        {
-            if (   shift<Up>(pos.pieces(Us, PAWN)) & pos.pieces(Them, PAWN) & relative_square(Us, SQ_E6)
-                && !(b & QueenSide))
-                score += KingAttack;
-        }
-        else if (   shift<Up>(pos.pieces(Us, PAWN)) & pos.pieces(Them, PAWN) & relative_square(Us, SQ_D6)
-                 && !(b & KingSide))
-            score += KingAttack;
-    }
+    if (   pos.count<PAWN>(Them) > 6
+        && file_of(pos.square<KING>(Them)) > FILE_D
+        && shift<Up>(pos.pieces(Us, PAWN)) & pos.pieces(Them, PAWN) & relative_square(Us, SQ_E6)
+        && !(b & QueenSide))
+        score += KingAttack;
 
     if (T)
         Trace::add(THREAT, Us, score);

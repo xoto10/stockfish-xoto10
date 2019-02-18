@@ -23,7 +23,6 @@
 #include <cstring>   // For std::memset
 #include <iomanip>
 #include <sstream>
-#include <iostream>
 
 #include "bitboard.h"
 #include "evaluate.h"
@@ -509,10 +508,12 @@ namespace {
   template<Tracing T> template<Color Us>
   Score Evaluation<T>::threats() const {
 
-    constexpr Color     Them     = (Us == WHITE ? BLACK   : WHITE);
-    constexpr Direction Up       = (Us == WHITE ? NORTH   : SOUTH);
-    constexpr Direction Down     = (Us == WHITE ? SOUTH   : NORTH);
-    constexpr Bitboard  TRank3BB = (Us == WHITE ? Rank3BB : Rank6BB);
+    constexpr Color     Them      = (Us == WHITE ? BLACK   : WHITE);
+    constexpr Direction Up        = (Us == WHITE ? NORTH   : SOUTH);
+    constexpr Direction Down      = (Us == WHITE ? SOUTH   : NORTH);
+    constexpr Bitboard  TRank3BB  = (Us == WHITE ? Rank3BB : Rank6BB);
+    constexpr Piece     OurPawn   = (Us == WHITE ? W_PAWN  : B_PAWN);
+    constexpr Piece     TheirPawn = (Us == WHITE ? B_PAWN  : W_PAWN);
 
     Bitboard b, weak, defended, nonPawnEnemies, stronglyProtected, safe, restricted;
     Score score = SCORE_ZERO;
@@ -611,7 +612,8 @@ namespace {
        & ~(pos.pieces(Us, PAWN) | pawn_double_attacks_bb<Us>(pos.pieces(Us, PAWN)));
     if (   pos.count<PAWN>(Them) > 5
         && file_of(pos.square<KING>(Them)) > FILE_D
-        && shift<Up>(pos.pieces(Us, PAWN)) & pos.pieces(Them, PAWN) & relative_square(Us, SQ_E6)
+        && pos.piece_on(relative_square(Us, SQ_E5)) == OurPawn
+        && pos.piece_on(relative_square(Us, SQ_E6)) == TheirPawn
         && !(b & QueenSide))
         score += KSideAttack;
 

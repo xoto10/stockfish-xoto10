@@ -187,7 +187,15 @@ Entry* probe(const Position& pos) {
   e->scores[BLACK] = evaluate<BLACK>(pos, e);
   e->asymmetry = popcount(  (e->passedPawns[WHITE]   | e->passedPawns[BLACK])
                           | (e->semiopenFiles[WHITE] ^ e->semiopenFiles[BLACK]));
+  e->unopposedPawns[WHITE] = popcount((~e->semiopenFiles[WHITE] & e->semiopenFiles[BLACK]) | e->passedPawns[WHITE])
+                            - popcount(e->passedPawns[BLACK]);
+  e->unopposedPawns[BLACK] = popcount((~e->semiopenFiles[BLACK] & e->semiopenFiles[WHITE]) | e->passedPawns[BLACK])
+                            - popcount(e->passedPawns[WHITE]);
+// dbg_mean_of(e->asymm[WHITE]);  // with passed: 1.43856  without: 1.00525
 
+// dbg_mean_of(e->asymmetry);  3.56861
+// dbg_mean_of(popcount(e->passedPawns[BLACK] | e->semiopenFiles[WHITE]));  2.90991
+// dbg_mean_of(popcount(e->passedPawns[WHITE] | e->semiopenFiles[BLACK]));  2.96711
   return e;
 }
 

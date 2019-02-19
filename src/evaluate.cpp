@@ -765,10 +765,12 @@ namespace {
     // the sign of the endgame value, and that we carefully cap the bonus so
     // that the endgame score will never change sign after the bonus.
     int v = 0;
+// dbg_mean_of(popcount(pe->unopposed_pawns(WHITE) | pe->passed_pawns(WHITE)));  1.63126
     if (eg > 0)
-        v = std::max(complexity + 18 * pe->asymm[WHITE], int(-eg));
+        v = std::max(complexity + 18 * popcount(pe->unopposed_pawns(WHITE) | pe->passed_pawns(WHITE)), int(-eg));
     else if (eg < 0)
-        v = -std::max(complexity + 18 * pe->asymm[BLACK], int(eg));
+//      dbg_mean_of(popcount(pe->unopposed_pawns(BLACK) | pe->passed_pawns(BLACK)));  1.65531
+        v = -std::max(complexity + 18 * popcount(pe->unopposed_pawns(BLACK) | pe->passed_pawns(BLACK)), int(eg));
 
     if (T)
         Trace::add(INITIATIVE, make_score(0, v));

@@ -190,9 +190,6 @@ Entry* probe(const Position& pos) {
   e->unopposedPawns[WHITE] = (~e->semiopenFiles[WHITE] & e->semiopenFiles[BLACK]);
   e->unopposedPawns[BLACK] = (~e->semiopenFiles[BLACK] & e->semiopenFiles[WHITE]);
 
-// dbg_mean_of(e->asymm[WHITE]);  // with passed: 1.43856  without: 1.00525
-
-// dbg_mean_of(e->asymmetry);  3.56861
   return e;
 }
 

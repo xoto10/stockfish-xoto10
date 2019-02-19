@@ -754,8 +754,7 @@ namespace {
                             && (pos.pieces(PAWN) & KingSide);
 
     // Compute the initiative bonus for the attacking side
-    int complexity =  // 9 * pe->pawn_asymmetry()
-                      11 * pos.count<PAWN>()
+    int complexity =  11 * pos.count<PAWN>()
                     +  9 * outflanking
                     + 18 * pawnsOnBothFlanks
                     + 49 * !pos.non_pawn_material()
@@ -765,11 +764,9 @@ namespace {
     // the sign of the endgame value, and that we carefully cap the bonus so
     // that the endgame score will never change sign after the bonus.
     int v = 0;
-// dbg_mean_of(popcount(pe->unopposed_pawns(WHITE) | pe->passed_pawns(WHITE)));  1.63126
     if (eg > 0)
         v = std::max(complexity + 18 * popcount(pe->unopposed_pawns(WHITE) | pe->passed_pawns(WHITE)), int(-eg));
     else if (eg < 0)
-//      dbg_mean_of(popcount(pe->unopposed_pawns(BLACK) | pe->passed_pawns(BLACK)));  1.65531
         v = -std::max(complexity + 18 * popcount(pe->unopposed_pawns(BLACK) | pe->passed_pawns(BLACK)), int(eg));
 
     if (T)

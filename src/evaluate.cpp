@@ -766,9 +766,9 @@ namespace {
     // that the endgame score will never change sign after the bonus.
     int v = 0;
     if (eg > 0)
-        v = std::max(complexity + 22 * pe->asymm[WHITE], int(-eg));
+        v = std::max(complexity + 18 * pe->asymm[WHITE], int(-eg));
     else if (eg < 0)
-        v = -std::max(complexity + 22 * pe->asymm[BLACK], int(eg));
+        v = -std::max(complexity + 18 * pe->asymm[BLACK], int(eg));
 
     if (T)
         Trace::add(INITIATIVE, make_score(0, v));

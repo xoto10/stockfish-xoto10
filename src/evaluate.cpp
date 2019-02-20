@@ -765,11 +765,9 @@ namespace {
     // that the endgame score will never change sign after the bonus.
     int v = 0;
     if (eg > 0)
-        v = std::max(complexity + 18 * (  popcount(pe->unopposed_pawns(WHITE) | pe->passed_pawns(WHITE))
-                                        - popcount(pe->passed_pawns(BLACK))), int(-eg));
+        v = std::max(complexity + 18 * popcount(pe->unopposed_pawns(BLACK) | pe->passed_pawns(WHITE)), int(-eg));
     else if (eg < 0)
-        v = -std::max(complexity + 18 * (  popcount(pe->unopposed_pawns(BLACK) | pe->passed_pawns(BLACK))
-                                         - popcount(pe->passed_pawns(WHITE))), int(eg));
+        v = -std::max(complexity + 18 * popcount(pe->unopposed_pawns(WHITE) | pe->passed_pawns(BLACK)), int(eg));
 
     if (T)
         Trace::add(INITIATIVE, make_score(0, v));

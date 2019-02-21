@@ -152,6 +152,25 @@ namespace {
 } // namespace
 
 
+/// Debug functions used mainly to collect run-time statistics
+static int64_t shits[2], smeans[2];
+
+void sdbg_hit_on(bool b) { ++shits[0]; if (b) ++shits[1]; }
+void sdbg_hit_on(bool c, bool b) { if (c) sdbg_hit_on(b); }
+void sdbg_mean_of(int v) { ++smeans[0]; smeans[1] += v; }
+
+void sdbg_print() {
+
+  if (shits[0])
+      sync_cout << "info string Total " << shits[0] << " Hits " << shits[1]
+           << " hit rate (%) " << 100 * shits[1] / shits[0] << sync_endl;
+
+  if (smeans[0])
+      sync_cout << "info string Total " << smeans[0] << " Mean "
+           << (double)smeans[1] / smeans[0] << sync_endl;
+}
+
+
 /// Search::init() is called at startup to initialize various lookup tables
 
 void Search::init() {
@@ -394,9 +413,9 @@ void Thread::search() {
               beta  = std::min(previousScore + delta, VALUE_INFINITE);
 
               // Adjust contempt based on root move's previousScore (dynamic contempt)
-              int dct = (ct + 88 * previousScore / (abs(previousScore) + 200))
-                        * (MidgameLimit - rootPos.non_pawn_material()) / MidgameLimit;
-
+              int dct = ct + 88 * previousScore / (abs(previousScore) + 200);
+              if (dct > 0)
+                  dct = dct * (16384 - rootPos.non_pawn_material()) / 16384;
               contempt = (us == WHITE ?  make_score(dct, dct / 2)
                                       : -make_score(dct, dct / 2));
           }

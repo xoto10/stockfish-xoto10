@@ -47,7 +47,7 @@ public:
     double extra = 0.0;
     for (int i=0; i < int(timeFactor.size()) && i < lastN; i++)
       extra += 1.0 - timeFactor[i];
-    return(extra > 0 ? 1.0 + 2.0 * extra / nextN : 1.0);
+    return(extra > 0 ? 1.0 + extra / nextN : 1.0);
   }
 
   int64_t availableNodes; // When in 'nodes as time' mode

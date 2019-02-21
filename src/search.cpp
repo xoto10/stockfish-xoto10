@@ -506,7 +506,7 @@ void Thread::search() {
           // Stop the search if we have only one legal move, or if available time elapsed
           if (   rootMoves.size() == 1
               || Time.elapsed() > Time.optimum() * bestMoveInstability * fallingEval
-                                  * (Limits.time[us] > Limits.time[~us] ? Time.get_timeToUse(5, 5) : 1.0))
+                                  * (Limits.time[us] > Limits.time[~us] ? Time.get_timeToUse(5, 10) : 1.0))
           {
               Time.save_timeFactor(rootMoves.size() == 1 ? 0.1 : bestMoveInstability * fallingEval);
 

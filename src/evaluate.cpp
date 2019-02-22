@@ -278,6 +278,7 @@ namespace {
 
     constexpr Color     Them = (Us == WHITE ? BLACK : WHITE);
     constexpr Direction Down = (Us == WHITE ? SOUTH : NORTH);
+    constexpr Square    KingSq = (Us == WHITE ? SQ_E1 : SQ_E8);
     constexpr Bitboard OutpostRanks = (Us == WHITE ? Rank4BB | Rank5BB | Rank6BB
                                                    : Rank5BB | Rank4BB | Rank3BB);
     const Square* pl = pos.squares<Pt>(Us);
@@ -373,8 +374,10 @@ namespace {
             // Penalty when trapped by the king, even more if the king cannot castle
             else if (mob <= 3)
             {
-                File kf = file_of(pos.square<KING>(Us));
-                if ((kf < FILE_E) == (file_of(s) < kf))
+                //File kf = file_of(pos.square<KING>(Us));  // pos.square<KING>(Us)
+//dbg_mean_of((kf < FILE_E) == (file_of(s) < kf));  0.414
+//dbg_mean_of(bool(BetweenBB[KingSq][s] & pos.square<KING>(Us)));  0.2186
+                if (BetweenBB[KingSq][s] & pos.square<KING>(Us))
                     score -= TrappedRook * (1 + !pos.castling_rights(Us));
             }
         }

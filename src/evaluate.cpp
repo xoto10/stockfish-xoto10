@@ -185,7 +185,7 @@ namespace {
     template<Color Us> Score passed() const;
     template<Color Us> Score space() const;
     ScaleFactor scale_factor(Value eg) const;
-    Score initiative(Value eg) const;
+    Score initiative(Value eg, Score passedDiff) const;
 
     const Position& pos;
     Material::Entry* me;
@@ -745,7 +745,7 @@ namespace {
   // known attacking/defending status of the players.
 
   template<Tracing T>
-  Score Evaluation<T>::initiative(Value eg) const {
+  Score Evaluation<T>::initiative(Value eg, Score passedDiff) const {
 
     int outflanking =  distance<File>(pos.square<KING>(WHITE), pos.square<KING>(BLACK))
                      - distance<Rank>(pos.square<KING>(WHITE), pos.square<KING>(BLACK));
@@ -759,6 +759,7 @@ namespace {
                     +  9 * outflanking
                     + 18 * pawnsOnBothFlanks
                     + 49 * !pos.non_pawn_material()
+                    + 11 * ((eg>0) == (passedDiff>0))
                     -121 ;
 
     // Now apply the bonus: note that we find the attacking side by extracting
@@ -841,12 +842,14 @@ namespace {
 
     score += mobility[WHITE] - mobility[BLACK];
 
+    Score passedDiff = passed< WHITE>() - passed< BLACK>();
+
     score +=  king<   WHITE>() - king<   BLACK>()
             + threats<WHITE>() - threats<BLACK>()
-            + passed< WHITE>() - passed< BLACK>()
-            + space<  WHITE>() - space<  BLACK>();
+            + space<  WHITE>() - space<  BLACK>()
+            + passedDiff;
 
-    score += initiative(eg_value(score));
+    score += initiative(eg_value(score), passedDiff);
 
     // Interpolate between a middlegame and a (scaled by 'sf') endgame score
     ScaleFactor sf = scale_factor(eg_value(score));

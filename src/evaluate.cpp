@@ -759,8 +759,8 @@ namespace {
                     +  9 * outflanking
                     + 18 * pawnsOnBothFlanks
                     + 49 * !pos.non_pawn_material()
-                    + 20 * ((eg>0 && pos.count<QUEEN>(WHITE)==0) || (eg<0 && pos.count<QUEEN>(BLACK)==0))
-                    -121 ;
+                    + 22 * ((eg>0 && pos.count<QUEEN>(WHITE)==0) || (eg<0 && pos.count<QUEEN>(BLACK)==0))
+                    -130 ;
 
     // Now apply the bonus: note that we find the attacking side by extracting
     // the sign of the endgame value, and that we carefully cap the bonus so

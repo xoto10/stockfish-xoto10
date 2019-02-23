@@ -160,7 +160,7 @@ namespace {
   constexpr Score ThreatByPawnPush   = S( 48, 39);
   constexpr Score ThreatByRank       = S( 13,  0);
   constexpr Score ThreatBySafePawn   = S(173, 94);
-  constexpr Score TrappedRook        = S( 70,  4);
+  constexpr Score TrappedRook        = S( 78,  4);
   constexpr Score WeakQueen          = S( 49, 15);
   constexpr Score WeakUnopposedPawn  = S( 12, 23);
   constexpr Score Outpost            = S(  9,  3);
@@ -374,9 +374,6 @@ namespace {
             // Penalty when trapped by the king, even more if the king cannot castle
             else if (mob <= 3)
             {
-                //File kf = file_of(pos.square<KING>(Us));  // pos.square<KING>(Us)
-//dbg_mean_of((kf < FILE_E) == (file_of(s) < kf));  0.414
-//dbg_mean_of(bool(BetweenBB[KingSq][s] & pos.square<KING>(Us)));  0.2186
                 if (BetweenBB[KingSq][s] & pos.square<KING>(Us))
                     score -= TrappedRook * (1 + !pos.castling_rights(Us));
             }

@@ -34,7 +34,7 @@ namespace {
   // Pawn penalties
   constexpr Score Backward = S( 9, 24);
   constexpr Score Doubled  = S(11, 56);
-  constexpr Score A[] = { S(0,0), S(4,12), S(10,30), S(17,51), S(26,79), S(35,107), S(44,135), S(53,163), S(62,191) };
+  constexpr Score A[] = { S(0,0), S(4,12), S(10,31), S(16,52), S(25,78), S(35,106), S(45,135), S(57,162), S(64,187) };
 
   // Connected pawn bonus by opposed, phalanx, #support and rank
   Score Connected[2][2][3][RANK_NB];
@@ -141,7 +141,8 @@ namespace {
         if (doubled && !support)
             score -= Doubled;
     }
-    score -= A[numIsolated];
+    if (numIsolated > 0)
+        score -= A[numIsolated];
 
     return score;
   }

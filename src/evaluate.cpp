@@ -148,6 +148,7 @@ namespace {
   constexpr Score CorneredBishop     = S( 50, 50);
   constexpr Score FlankAttacks       = S(  8,  0);
   constexpr Score Hanging            = S( 69, 36);
+  constexpr Score IdealKnight        = S( 17,  5);
   constexpr Score KingProtector      = S(  7,  8);
   constexpr Score KnightOnQueen      = S( 16, 12);
   constexpr Score LongDiagonalBishop = S( 45,  0);
@@ -347,7 +348,7 @@ namespace {
             else if (   // Pt == KNIGHT
                         (shift<Down>(pos.pieces(PAWN)) & s)
                      && (b & pos.pieces(Them, PAWN)))
-                score += make_score(17, 5);
+                score += IdealKnight;
 
             // An important Chess960 pattern: A cornered bishop blocked by a friendly
             // pawn diagonally in front of it is a very serious problem, especially

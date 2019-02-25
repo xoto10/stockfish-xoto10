@@ -35,7 +35,7 @@ namespace {
   constexpr Score Backward = S( 9, 24);
   constexpr Score Doubled  = S(11, 56);
   constexpr Score Isolated = S( 4, 13);
-  constexpr Score IsolatedOver1 = S( 1, 3);
+  constexpr Score IsolatedOver2 = S( 2, 6);
 
   // Connected pawn bonus by opposed, phalanx, #support and rank
   Score Connected[2][2][3][RANK_NB];
@@ -142,8 +142,9 @@ namespace {
         if (doubled && !support)
             score -= Doubled;
     }
-    if (numIsolated)
-        score -= Isolated * numIsolated + IsolatedOver1 * (numIsolated - 1);
+    score -= Isolated * numIsolated;
+    if (numIsolated > 2)
+        score -= IsolatedOver2 * (numIsolated - 2);
 
     return score;
   }

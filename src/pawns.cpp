@@ -73,6 +73,7 @@ namespace {
     bool opposed, backward;
     Score score = SCORE_ZERO;
     const Square* pl = pos.squares<PAWN>(Us);
+    int numIsolated = 0;
 
     Bitboard ourPawns   = pos.pieces(  Us, PAWN);
     Bitboard theirPawns = pos.pieces(Them, PAWN);
@@ -132,7 +133,7 @@ namespace {
             score += Connected[opposed][bool(phalanx)][popcount(support)][relative_rank(Us, s)];
 
         else if (!neighbours)
-            score -= Isolated, e->weakUnopposed[Us] += !opposed;
+            ++numIsolated, e->weakUnopposed[Us] += !opposed;
 
         else if (backward)
             score -= Backward, e->weakUnopposed[Us] += !opposed;
@@ -140,6 +141,7 @@ namespace {
         if (doubled && !support)
             score -= Doubled;
     }
+    score -= Isolated * (numIsolated + (numIsolated > 1));
 
     return score;
   }

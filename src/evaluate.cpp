@@ -277,7 +277,6 @@ namespace {
   Score Evaluation<T>::pieces() {
 
     constexpr Color     Them = (Us == WHITE ? BLACK : WHITE);
-    constexpr Direction Up   = (Us == WHITE ? NORTH : SOUTH);
     constexpr Direction Down = (Us == WHITE ? SOUTH : NORTH);
     constexpr Bitboard OutpostRanks = (Us == WHITE ? Rank4BB | Rank5BB | Rank6BB
                                                    : Rank5BB | Rank4BB | Rank3BB);
@@ -346,10 +345,9 @@ namespace {
                     score += LongDiagonalBishop;
             }
             else if (   // Pt == KNIGHT
-                        // (shift<Down>(pos.pieces(Us, PAWN)) & s)
-                        (forward_file_bb(Us, s + Up) & pos.pieces(PAWN))
+                        (shift<Down>(pos.pieces(PAWN)) & s)
                      && (b & pos.pieces(Them, PAWN)))
-                score += make_score(20, 0);
+                score += make_score(17, 5);
 
             // An important Chess960 pattern: A cornered bishop blocked by a friendly
             // pawn diagonally in front of it is a very serious problem, especially

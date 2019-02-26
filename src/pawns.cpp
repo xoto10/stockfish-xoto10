@@ -35,6 +35,8 @@ namespace {
   constexpr Score Backward = S( 9, 24);
   constexpr Score Doubled  = S(11, 56);
   constexpr Score Isolated = S( 5, 15);
+  constexpr Bitboard DarkSquaresBtoG = DarkSquares & ~(FileABB | FileHBB);
+  constexpr Bitboard LightSquaresBtoG = ~DarkSquares & ~(FileABB | FileHBB);
 
   // Connected pawn bonus by opposed, phalanx, #support and rank
   Score Connected[2][2][3][RANK_NB];
@@ -81,8 +83,8 @@ namespace {
     e->semiopenFiles[Us] = 0xFF;
     e->kingSquares[Us]   = SQ_NONE;
     e->pawnAttacks[Us]   = pawn_attacks_bb<Us>(ourPawns);
-    e->pawnsOnSquares[Us][BLACK] = popcount(ourPawns & DarkSquares);
-    e->pawnsOnSquares[Us][WHITE] = pos.count<PAWN>(Us) - e->pawnsOnSquares[Us][BLACK];
+    e->pawnsOnSquares[Us][BLACK] = popcount(ourPawns & DarkSquaresBtoG);
+    e->pawnsOnSquares[Us][WHITE] = popcount(ourPawns & LightSquaresBtoG);
 
     // Loop through all pawns of the current color and score each pawn
     while ((s = *pl++) != SQ_NONE)

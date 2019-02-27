@@ -81,8 +81,8 @@ namespace {
     e->semiopenFiles[Us] = 0xFF;
     e->kingSquares[Us]   = SQ_NONE;
     e->pawnAttacks[Us]   = pawn_attacks_bb<Us>(ourPawns);
-    e->pawnsOnSquares[Us][BLACK] = std::max(0, popcount(ourPawns & DarkSquares) - 2);
-    e->pawnsOnSquares[Us][WHITE] = std::max(0, popcount(ourPawns & ~DarkSquares) - 2);
+    e->pawnsOnSquares[Us][BLACK] = std::max(0, popcount(ourPawns & DarkSquares) - 1);
+    e->pawnsOnSquares[Us][WHITE] = std::max(0, popcount(ourPawns & ~DarkSquares) - 1);
 
     // Loop through all pawns of the current color and score each pawn
     while ((s = *pl++) != SQ_NONE)

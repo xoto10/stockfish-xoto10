@@ -68,6 +68,8 @@ namespace {
 
     constexpr Color     Them = (Us == WHITE ? BLACK : WHITE);
     constexpr Direction Up   = (Us == WHITE ? NORTH : SOUTH);
+    constexpr Bitboard  DarkSq  = DarkSquaresBtoG & (Us == WHITE ? ~(Rank6BB | Rank7BB) : ~(Rank2BB | Rank3BB));
+    constexpr Bitboard  LightSq = LightSquaresBtoG & (Us == WHITE ? ~(Rank6BB | Rank7BB) : ~(Rank2BB | Rank3BB));
 
     Bitboard b, neighbours, stoppers, doubled, support, phalanx;
     Bitboard lever, leverPush;
@@ -83,8 +85,8 @@ namespace {
     e->semiopenFiles[Us] = 0xFF;
     e->kingSquares[Us]   = SQ_NONE;
     e->pawnAttacks[Us]   = pawn_attacks_bb<Us>(ourPawns);
-    e->pawnsOnSquares[Us][BLACK] = popcount(ourPawns & DarkSquaresBtoG);
-    e->pawnsOnSquares[Us][WHITE] = popcount(ourPawns & LightSquaresBtoG);
+    e->pawnsOnSquares[Us][BLACK] = popcount(ourPawns & DarkSq);
+    e->pawnsOnSquares[Us][WHITE] = popcount(ourPawns & LightSq);
 
     // Loop through all pawns of the current color and score each pawn
     while ((s = *pl++) != SQ_NONE)

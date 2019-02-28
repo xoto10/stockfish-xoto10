@@ -142,7 +142,7 @@ namespace {
         if (doubled && !support)
             score -= Doubled;
     }
-    if (numIsolated > 0)
+//  if (numIsolated > 0)
         score -= Isolated[numIsolated];
 
     return score;

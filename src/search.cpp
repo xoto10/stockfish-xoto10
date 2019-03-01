@@ -403,7 +403,7 @@ void Thread::search() {
 
           // Reset UCI info selDepth and bestDepth for each depth and each PV line
           selDepth = 0;
-          bestDepth = DEPTH_MAX;
+          bestDepth = DEPTH_ZERO;
 
           // Reset aspiration window starting size
           if (rootDepth >= 5 * ONE_PLY)
@@ -1129,7 +1129,7 @@ moves_loop: // When in check, search starts from here
 
           // PV move or new best move?
           if (moveCount == 1 || value > alpha)
-//            || (value == alpha && thisThread->selDepth > rm.selDepth))
+//            || (value == alpha && thisThread->selDepth > rm.selDepth))  causes hang??
           {
               rm.score = value;
               rm.selDepth = thisThread->selDepth;
@@ -1158,7 +1158,7 @@ moves_loop: // When in check, search starts from here
           bestValue = value;
 
           if (   value > alpha
-              || (value == alpha && thisThread->selDepth < thisThread->bestDepth)
+              || (value == alpha && thisThread->selDepth > thisThread->bestDepth)
              )
           {
               bestMove = move;
@@ -1424,7 +1424,7 @@ moves_loop: // When in check, search starts from here
           bestValue = value;
 
           if (   value > alpha
-              || (value == alpha && thisThread->selDepth < thisThread->bestDepth)
+              || (value == alpha && thisThread->selDepth > thisThread->bestDepth)
               )
           {
               bestMove = move;

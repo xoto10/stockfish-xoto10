@@ -549,23 +549,18 @@ namespace {
     assert(!(PvNode && cutNode));
     assert(depth / ONE_PLY * ONE_PLY == depth);
 
-    Move pv[MAX_PLY+1], capturesSearched[32], quietsSearched[64];
     StateInfo st;
     TTEntry* tte;
     Key posKey;
-    Move ttMove, move, excludedMove, bestMove;
-    Depth extension, newDepth;
+    Move ttMove, excludedMove;
     Value bestValue, value, ttValue, eval, maxValue, pureStaticEval;
-    bool ttHit, ttPv, inCheck, givesCheck, improving;
-    bool captureOrPromotion, doFullDepthSearch, moveCountPruning, ttCapture;
-    Piece movedPiece;
-    int moveCount, captureCount, quietCount;
+    bool ttHit, ttPv, inCheck, improving;
 
     // Step 1. Initialize node
     Thread* thisThread = pos.this_thread();
     inCheck = pos.checkers();
     Color us = pos.side_to_move();
-    moveCount = captureCount = quietCount = ss->moveCount = 0;
+    ss->moveCount = 0;
     bestValue = -VALUE_INFINITE;
     maxValue = VALUE_INFINITE;
 
@@ -601,7 +596,7 @@ namespace {
     assert(0 <= ss->ply && ss->ply < MAX_PLY);
 
     (ss+1)->ply = ss->ply + 1;
-    ss->currentMove = (ss+1)->excludedMove = bestMove = MOVE_NONE;
+    ss->currentMove = (ss+1)->excludedMove = MOVE_NONE;
     ss->continuationHistory = &thisThread->continuationHistory[NO_PIECE][0];
     (ss+2)->killers[0] = (ss+2)->killers[1] = MOVE_NONE;
     Square prevSq = to_sq((ss-1)->currentMove);
@@ -809,6 +804,7 @@ namespace {
     // Step 10. ProbCut (~10 Elo)
     // If we have a good enough capture and a reduced search returns a value
     // much above beta, we can (almost) safely prune the previous move.
+    Move move;
     if (   !PvNode
         &&  depth >= 5 * ONE_PLY
         &&  abs(beta) < VALUE_MATE_IN_MAX_PLY)
@@ -860,7 +856,12 @@ moves_loop: // When in check, search starts from here
     const PieceToHistory* contHist[] = { (ss-1)->continuationHistory, (ss-2)->continuationHistory,
                                           nullptr, (ss-4)->continuationHistory,
                                           nullptr, (ss-6)->continuationHistory };
+    Piece movedPiece;
+    Move pv[MAX_PLY+1], capturesSearched[32], quietsSearched[64];
     Move countermove = thisThread->counterMoves[pos.piece_on(prevSq)][prevSq];
+    Move bestMove = MOVE_NONE;
+    bool givesCheck, captureOrPromotion, doFullDepthSearch, moveCountPruning, ttCapture;
+    int moveCount = 0, captureCount = 0, quietCount = 0;
 
     MovePicker mp(pos, ttMove, depth, &thisThread->mainHistory,
                                       &thisThread->captureHistory,
@@ -898,7 +899,7 @@ moves_loop: // When in check, search starts from here
       if (PvNode)
           (ss+1)->pv = nullptr;
 
-      extension = DEPTH_ZERO;
+      Depth extension = DEPTH_ZERO;
       captureOrPromotion = pos.capture_or_promotion(move);
       movedPiece = pos.moved_piece(move);
       givesCheck = gives_check(pos, move);
@@ -946,7 +947,7 @@ moves_loop: // When in check, search starts from here
           extension = ONE_PLY;
 
       // Calculate new depth for this move
-      newDepth = depth - ONE_PLY + extension;
+      Depth newDepth = depth - ONE_PLY + extension;
 
       // Step 14. Pruning at shallow depth (~170 Elo)
       if (  !rootNode

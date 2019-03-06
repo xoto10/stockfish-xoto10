@@ -286,11 +286,7 @@ namespace {
                          : pos.attacks_from<Pt>(s);
 
         if (pos.blockers_for_king(Us) & s)
-        {
-            //sync_cout << "info string blk " << Us << " pos:\n" << pos << sync_endl;
             b &= LineBB[pos.square<KING>(Us)][s];
-            score -= Blockers;
-        }
 
         attackedBy2[Us] |= attackedBy[Us][ALL_PIECES] & b;
         attackedBy[Us][Pt] |= b;
@@ -599,7 +595,7 @@ namespace {
     }
 
     //sync_cout << "info string blk " << Us << " pos:\n" << pos << sync_endl;
-    //score += Blockers * popcount(pos.blockers_for_king(Them));
+    score += Blockers * popcount(pos.blockers_for_king(Them));
 
     if (T)
         Trace::add(THREAT, Us, score);

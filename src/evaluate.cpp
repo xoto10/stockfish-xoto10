@@ -595,8 +595,8 @@ namespace {
     }
 
     score += Blockers * popcount(pos.blockers_for_king(Them) & pos.pieces(Them)); // attackedBy2[Us]);
-    if (pos.blockers_for_king(Them) & pos.pieces(Them)) // attackedBy2[Us])
-        sync_cout << "info string blk " << Us << " pos:\n" << pos << sync_endl;
+//  if (pos.blockers_for_king(Them) & pos.pieces(Them)) // attackedBy2[Us])
+//      sync_cout << "info string blk " << Us << " pos:\n" << pos << sync_endl;
 
     if (T)
         Trace::add(THREAT, Us, score);

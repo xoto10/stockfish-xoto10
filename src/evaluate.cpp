@@ -23,6 +23,7 @@
 #include <cstring>   // For std::memset
 #include <iomanip>
 #include <sstream>
+#include <iostream>
 
 #include "bitboard.h"
 #include "evaluate.h"
@@ -134,7 +135,7 @@ namespace {
 
   // Assorted bonuses and penalties
   constexpr Score BishopPawns        = S(  3,  7);
-  constexpr Score Blockers           = S( 12, 12);
+  constexpr Score Blockers           = S( 20, 20);
   constexpr Score CorneredBishop     = S( 50, 50);
   constexpr Score FlankAttacks       = S(  8,  0);
   constexpr Score Hanging            = S( 69, 36);
@@ -593,7 +594,9 @@ namespace {
         score += SliderOnQueen * popcount(b & safe & attackedBy2[Us]);
     }
 
-    score += Blockers * popcount(pos.blockers_for_king(Them));
+    score += Blockers * popcount(pos.blockers_for_king(Them) & pos.pieces(Them)); // attackedBy2[Us]);
+    if (pos.blockers_for_king(Them) & pos.pieces(Them)) // attackedBy2[Us])
+        sync_cout << "info string blk " << Us << " pos:\n" << pos << sync_endl;
 
     if (T)
         Trace::add(THREAT, Us, score);

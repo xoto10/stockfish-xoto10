@@ -23,7 +23,6 @@
 #include <cstring>   // For std::memset
 #include <iomanip>
 #include <sstream>
-#include <iostream>
 
 #include "bitboard.h"
 #include "evaluate.h"
@@ -594,9 +593,7 @@ namespace {
         score += SliderOnQueen * popcount(b & safe & attackedBy2[Us]);
     }
 
-    score += Blockers * popcount(pos.blockers_for_king(Them) & pos.pieces(Them)); // attackedBy2[Us]);
-//  if (pos.blockers_for_king(Them) & pos.pieces(Them)) // attackedBy2[Us])
-//      sync_cout << "info string blk " << Us << " pos:\n" << pos << sync_endl;
+    score += Blockers * popcount(pos.blockers_for_king(Them) & pos.pieces(Them) & attackedBy2[Us]);
 
     if (T)
         Trace::add(THREAT, Us, score);

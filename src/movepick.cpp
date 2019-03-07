@@ -20,6 +20,7 @@
 
 #include <cassert>
 
+//#include "misc.h"
 #include "movepick.h"
 
 namespace {
@@ -105,27 +106,34 @@ void MovePicker::score() {
 
   static_assert(Type == CAPTURES || Type == QUIETS || Type == EVASIONS, "Wrong type");
 
+  // CAPTURES: 3220806  QUIETS: 11579926  EVASIONS(cap): 123157  ELSE: 1251345
+  // CAPTURES: 19.9%    QUIETS: 71.6%     EVASIONS(cap): 0.8%    ELSE: 7.7%
   for (auto& m : *this)
-      if (Type == CAPTURES)
-          m.value =  PieceValue[MG][pos.piece_on(to_sq(m))]
-                   + (*captureHistory)[pos.moved_piece(m)][to_sq(m)][type_of(pos.piece_on(to_sq(m)))] / 8;
-
-      else if (Type == QUIETS)
+      if (Type == QUIETS)
+          // dbg_mean_of((*mainHistory)[pos.side_to_move()][from_to(m)]),          // -4619.9
+          // dbg_mean_of((*continuationHistory[0])[pos.moved_piece(m)][to_sq(m)]), //  -951.063
+          // dbg_mean_of((*continuationHistory[1])[pos.moved_piece(m)][to_sq(m)]), // -1824.66
+          // dbg_mean_of((*continuationHistory[3])[pos.moved_piece(m)][to_sq(m)]), // -2120.51
+          // dbg_mean_of((*continuationHistory[5])[pos.moved_piece(m)][to_sq(m)]), // -2330.96
           m.value =  (*mainHistory)[pos.side_to_move()][from_to(m)]
                    + (*continuationHistory[0])[pos.moved_piece(m)][to_sq(m)]
                    + (*continuationHistory[1])[pos.moved_piece(m)][to_sq(m)]
                    + (*continuationHistory[3])[pos.moved_piece(m)][to_sq(m)]
                    + (*continuationHistory[5])[pos.moved_piece(m)][to_sq(m)] / 2;
 
+      else if (Type == CAPTURES)
+          m.value =  PieceValue[MG][pos.piece_on(to_sq(m))]
+                   + (*captureHistory)[pos.moved_piece(m)][to_sq(m)][type_of(pos.piece_on(to_sq(m)))] / 8;
+
       else // Type == EVASIONS
       {
-          if (pos.capture(m))
-              m.value =  PieceValue[MG][pos.piece_on(to_sq(m))]
-                       - Value(type_of(pos.moved_piece(m)));
-          else
+          if (!pos.capture(m))
               m.value =  (*mainHistory)[pos.side_to_move()][from_to(m)]
                        + (*continuationHistory[0])[pos.moved_piece(m)][to_sq(m)]
                        - (1 << 28);
+          else
+              m.value =  PieceValue[MG][pos.piece_on(to_sq(m))]
+                       - Value(type_of(pos.moved_piece(m)));
       }
 }
 

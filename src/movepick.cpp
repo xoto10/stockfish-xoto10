@@ -109,11 +109,13 @@ void MovePicker::score() {
   for (auto& m : *this)
       if (Type == CAPTURES)
       {
-          //dbg_mean_of((*captureHistory)[pos.moved_piece(m)][to_sq(m)][type_of(pos.piece_on(to_sq(m)))]), 2775.99
-          //if (mainHistory != NULL)
-              // dbg_mean_of((*mainHistory)[pos.side_to_move()][from_to(m)]);  -1969.98
+//        dbg_mean_of((*captureHistory)[pos.moved_piece(m)][to_sq(m)][type_of(pos.piece_on(to_sq(m)))]), 2775.99
+//        if (mainHistory != NULL)
+//            dbg_mean_of((*mainHistory)[pos.side_to_move()][from_to(m)]);  -1969.98
+//        if (continuationHistory != NULL)
+//            dbg_mean_of((*continuationHistory[0])[pos.moved_piece(m)][to_sq(m)]);  -56.3229
           m.value =  PieceValue[MG][pos.piece_on(to_sq(m))]
-                   + (  (mainHistory != NULL ? (*mainHistory)[pos.side_to_move()][from_to(m)] : 0)
+                   + (  (continuationHistory != NULL ? (*continuationHistory[0])[pos.moved_piece(m)][to_sq(m)] : 0)
                       + (*captureHistory)[pos.moved_piece(m)][to_sq(m)][type_of(pos.piece_on(to_sq(m)))]) / 8;
       }
 

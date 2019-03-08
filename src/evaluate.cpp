@@ -460,7 +460,7 @@ namespace {
     b2 = attackedBy[Us][ALL_PIECES] & KingFlank[file_of(ksq)] & Camp;
 
     int kingFlankAttacks =  popcount(b1) + popcount(b1 & attackedBy2[Them])
-                          - popcount(b2);
+                          - popcount(b2 & attackedBy2[Us]);
 
     kingDanger +=        kingAttackersCount[Them] * kingAttackersWeight[Them]
                  +  69 * kingAttacksCount[Them]

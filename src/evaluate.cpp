@@ -169,11 +169,12 @@ namespace {
   private:
     template<Color Us> void initialize();
     template<Color Us, PieceType Pt> Score pieces();
-    template<Color Us> Score king() const;
+    template<Color Us> Score king();
     template<Color Us> Score threats() const;
     template<Color Us> Score passed() const;
     template<Color Us> Score space() const;
     ScaleFactor scale_factor(Value eg) const;
+    Score adjustment() const;
     Score initiative(Value eg) const;
 
     const Position& pos;
@@ -181,6 +182,8 @@ namespace {
     Pawns::Entry* pe;
     Bitboard mobilityArea[COLOR_NB];
     Score mobility[COLOR_NB] = { SCORE_ZERO, SCORE_ZERO };
+    Score kingDangers[COLOR_NB] = { SCORE_ZERO, SCORE_ZERO };
+    Score kingSafety[COLOR_NB] = { SCORE_ZERO, SCORE_ZERO };
 
     // attackedBy[color][piece type] is a bitboard representing all squares
     // attacked by a given color and piece type. Special "piece types" which
@@ -385,7 +388,7 @@ namespace {
 
   // Evaluation::king() assigns bonuses and penalties to a king of a given color
   template<Tracing T> template<Color Us>
-  Score Evaluation<T>::king() const {
+  Score Evaluation<T>::king() {
 
     constexpr Color    Them = (Us == WHITE ? BLACK : WHITE);
     constexpr Bitboard Camp = (Us == WHITE ? AllSquares ^ Rank6BB ^ Rank7BB ^ Rank8BB
@@ -397,7 +400,7 @@ namespace {
     const Square ksq = pos.square<KING>(Us);
 
     // Init the score with king shelter and enemy pawns storm
-    Score score = pe->king_safety<Us>(pos);
+    Score score = kingSafety[Us] = pe->king_safety<Us>(pos);
 
     // Attacked squares defended at most once by our queen or king
     weak =  attackedBy[Them][ALL_PIECES]
@@ -482,6 +485,8 @@ namespace {
 
     // Penalty if king flank is under attack, potentially moving toward the king
     score -= FlankAttacks * kingFlankAttacks;
+
+    kingDangers[Us] = score;
 
     if (T)
         Trace::add(KING, Us, score);
@@ -729,6 +734,26 @@ namespace {
   }
 
 
+  // Evaluation::adjustment() computes a correction score
+  // for the position.
+
+  template<Tracing T>
+  Score Evaluation<T>::adjustment() const {
+
+    Score sc = SCORE_ZERO;
+
+    // If black king not in danger, reduce any white kingsafety advantage
+    // If white king not in danger, reduce any black kingsafety advantage
+    if (   (kingSafety[WHITE] > kingSafety[BLACK] && kingDangers[BLACK] >= kingSafety[BLACK])
+        || kingDangers[WHITE] >= kingSafety[WHITE])
+    {
+        sc = (kingSafety[BLACK] - kingSafety[WHITE]) / 2;
+    }
+
+    return sc;
+  }
+
+
   // Evaluation::initiative() computes the initiative correction value
   // for the position. It is a second order bonus/malus based on the
   // known attacking/defending status of the players.
@@ -835,6 +860,7 @@ namespace {
             + passed< WHITE>() - passed< BLACK>()
             + space<  WHITE>() - space<  BLACK>();
 
+    score += adjustment();
     score += initiative(eg_value(score));
 
     // Interpolate between a middlegame and a (scaled by 'sf') endgame score

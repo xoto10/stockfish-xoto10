@@ -490,11 +490,6 @@ void Thread::search() {
           // Use part of the gained time from a previous stable move for the current move
           double bestMoveInstability = 1.0 + mainThread->bestMoveChanges;
 
-          // Use slow moving average to adjust time use
-          timeEMA = 0.9 * timeEMA + 0.1 * fallingEval * reduction * bestMoveInstability;
-//sdbg_mean_of(fallingEval * reduction * bestMoveInstability / timeEMA); 0.29
-//sdbg_mean_of(timeEMA); 0.45
-
           // Stop the search if we have only one legal move, or if available time elapsed
           if (   rootMoves.size() == 1
               || Time.elapsed() > Time.optimum() * fallingEval * reduction * bestMoveInstability / timeEMA)
@@ -506,6 +501,9 @@ void Thread::search() {
               else
                   Threads.stop = true;
           }
+
+          // Use slow moving average to adjust time use
+          timeEMA = 0.9 * timeEMA + 0.1 * fallingEval * reduction * bestMoveInstability;
       }
   }
 

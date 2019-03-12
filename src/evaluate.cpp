@@ -182,8 +182,8 @@ namespace {
     Pawns::Entry* pe;
     Bitboard mobilityArea[COLOR_NB];
     Score mobility[COLOR_NB] = { SCORE_ZERO, SCORE_ZERO };
-    Score kingDangers[COLOR_NB] = { SCORE_ZERO, SCORE_ZERO };
-    Score kingSafety[COLOR_NB] = { SCORE_ZERO, SCORE_ZERO };
+    Value kingDangers[COLOR_NB] = { VALUE_ZERO, VALUE_ZERO };
+    Value kingSafety[COLOR_NB] = { VALUE_ZERO, VALUE_ZERO };
 
     // attackedBy[color][piece type] is a bitboard representing all squares
     // attacked by a given color and piece type. Special "piece types" which
@@ -400,7 +400,8 @@ namespace {
     const Square ksq = pos.square<KING>(Us);
 
     // Init the score with king shelter and enemy pawns storm
-    Score score = kingSafety[Us] = pe->king_safety<Us>(pos);
+    Score score = pe->king_safety<Us>(pos);
+    kingSafety[Us] = mg_value(score);
 
     // Attacked squares defended at most once by our queen or king
     weak =  attackedBy[Them][ALL_PIECES]
@@ -486,7 +487,7 @@ namespace {
     // Penalty if king flank is under attack, potentially moving toward the king
     score -= FlankAttacks * kingFlankAttacks;
 
-    kingDangers[Us] = score;
+    kingDangers[Us] = mg_value(score);
 
     if (T)
         Trace::add(KING, Us, score);
@@ -734,25 +735,23 @@ namespace {
   }
 
 
-  // Evaluation::adjustment() computes a correction score
-  // for the position.
+  // Evaluation::adjustment() computes a correction score for the position
+  // taking different parts of the eval into account.
 
   template<Tracing T>
   Score Evaluation<T>::adjustment() const {
 
-    Score sc = SCORE_ZERO;
+    Value v = VALUE_ZERO;
 
     // If black king not in danger, reduce any white kingsafety advantage
     // If white king not in danger, reduce any black kingsafety advantage
-    if (   (   mg_value(kingSafety[WHITE]) > mg_value(kingSafety[BLACK])
-            && mg_value(kingDangers[BLACK]) >= mg_value(kingSafety[BLACK]))
-        || (   mg_value(kingSafety[BLACK]) > mg_value(kingSafety[WHITE])
-            && mg_value(kingDangers[WHITE]) >= mg_value(kingSafety[WHITE])))
+    if (   (kingSafety[WHITE] > kingSafety[BLACK] && kingDangers[BLACK] >= kingSafety[BLACK])
+        || (kingSafety[BLACK] > kingSafety[WHITE] && kingDangers[WHITE] >= kingSafety[WHITE]))
     {
-        sc = (kingSafety[BLACK] - kingSafety[WHITE]) / 2;
+        v = (kingSafety[BLACK] - kingSafety[WHITE]) / 2;
     }
 
-    return sc;
+    return make_score(v, 0);
   }
 
 

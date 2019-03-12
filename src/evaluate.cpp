@@ -79,6 +79,9 @@ namespace {
 
   // KingAttackWeights[PieceType] contains king attack weights by piece type
   constexpr int KingAttackWeights[PIECE_TYPE_NB] = { 0, 0, 77, 55, 44, 10 };
+            int A = 89, B = 69, C = 59, D = 29;
+            int KingAttackCntWeights[PIECE_TYPE_NB] = {0, 0, 89, 69, 59, 29};
+TUNE(SetRange(-50,250), A, B, C, D);
 
   // Penalties for enemy's safe checks
   constexpr int QueenSafeCheck  = 780;
@@ -258,6 +261,11 @@ namespace {
 
     // Remove from kingRing[] the squares defended by two pawns
     kingRing[Us] &= ~pawn_double_attacks_bb<Us>(pos.pieces(Us, PAWN));
+
+    KingAttackCntWeights[2] = A;
+    KingAttackCntWeights[3] = B;
+    KingAttackCntWeights[4] = C;
+    KingAttackCntWeights[5] = D;
   }
 
 
@@ -294,7 +302,7 @@ namespace {
         {
             kingAttackersCount[Us]++;
             kingAttackersWeight[Us] += KingAttackWeights[Pt];
-            kingAttacksCount[Us] += popcount(b & attackedBy[Them][KING]);
+            kingAttacksCount[Us] += popcount(b & attackedBy[Them][KING]) * KingAttackCntWeights[Pt];
         }
 
         int mob = popcount(b & mobilityArea[Us]);
@@ -462,7 +470,7 @@ namespace {
     int kingFlankAttacks = popcount(b1) + popcount(b2);
 
     kingDanger +=        kingAttackersCount[Them] * kingAttackersWeight[Them]
-                 +  69 * kingAttacksCount[Them]
+                 +       kingAttacksCount[Them]
                  + 185 * popcount(kingRing[Us] & weak)
                  - 100 * bool(attackedBy[Us][KNIGHT] & attackedBy[Us][KING])
                  + 150 * popcount(pos.blockers_for_king(Us) | unsafeChecks)

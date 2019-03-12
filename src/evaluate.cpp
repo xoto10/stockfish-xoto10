@@ -27,6 +27,7 @@
 #include "bitboard.h"
 #include "evaluate.h"
 #include "material.h"
+#include "misc.h"
 #include "pawns.h"
 #include "thread.h"
 
@@ -745,9 +746,9 @@ namespace {
     // If black king not in danger, reduce any white kingsafety advantage
     // If white king not in danger, reduce any black kingsafety advantage
     if (   (kingSafety[WHITE] > kingSafety[BLACK] && kingDangers[BLACK] >= kingSafety[BLACK])
-        || kingDangers[WHITE] >= kingSafety[WHITE])
+        || (kingSafety[BLACK] > kingSafety[WHITE] && kingDangers[WHITE] >= kingSafety[WHITE]))
     {
-        sc = kingSafety[BLACK] - kingSafety[WHITE];
+        sc = (kingSafety[BLACK] - kingSafety[WHITE]) / 2;
     }
 
     return sc;

@@ -296,6 +296,7 @@ void Thread::search() {
   Depth lastBestMoveDepth = DEPTH_ZERO;
   MainThread* mainThread = (this == Threads.main() ? Threads.main() : nullptr);
   double timeReduction = 1.0;
+  double timeEMA = 1.0;
   Color us = rootPos.side_to_move();
 
   std::memset(ss-7, 0, 10 * sizeof(Stack));
@@ -489,9 +490,14 @@ void Thread::search() {
           // Use part of the gained time from a previous stable move for the current move
           double bestMoveInstability = 1.0 + mainThread->bestMoveChanges;
 
+          // Use slow moving average to adjust time use
+          timeEMA = 0.9 * timeEMA + 0.1 * fallingEval * reduction * bestMoveInstability;
+//sdbg_mean_of(fallingEval * reduction * bestMoveInstability / timeEMA); 0.29
+//sdbg_mean_of(timeEMA); 0.45
+
           // Stop the search if we have only one legal move, or if available time elapsed
           if (   rootMoves.size() == 1
-              || Time.elapsed() > Time.optimum() * fallingEval * reduction * bestMoveInstability)
+              || Time.elapsed() > Time.optimum() * fallingEval * reduction * bestMoveInstability / timeEMA)
           {
               // If we are allowed to ponder do not stop the search now but
               // keep pondering until the GUI sends "ponderhit" or "stop".

@@ -747,7 +747,7 @@ namespace {
     if (   (kingSafety[WHITE] > kingSafety[BLACK] && kingDangers[BLACK] >= kingSafety[BLACK])
         || kingDangers[WHITE] >= kingSafety[WHITE])
     {
-        sc = (kingSafety[BLACK] - kingSafety[WHITE]) / 2;
+        sc = kingSafety[BLACK] - kingSafety[WHITE];
     }
 
     return sc;

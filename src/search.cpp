@@ -156,6 +156,25 @@ namespace {
 } // namespace
 
 
+/// Debug functions used mainly to collect run-time statistics
+static int64_t shits[2], smeans[2];
+
+void sdbg_hit_on(bool b) { ++shits[0]; if (b) ++shits[1]; }
+void sdbg_hit_on(bool c, bool b) { if (c) sdbg_hit_on(b); }
+void sdbg_mean_of(int v) { ++smeans[0]; smeans[1] += v; }
+
+void sdbg_print() {
+
+  if (shits[0])
+      sync_cout << "info string Total " << shits[0] << " Hits " << shits[1]
+           << " hit rate (%) " << 100 * shits[1] / shits[0] << sync_endl;
+
+  if (smeans[0])
+      sync_cout << "info string Total " << smeans[0] << " Mean "
+           << (double)smeans[1] / smeans[0] << sync_endl;
+}
+
+
 /// Search::init() is called at startup to initialize various lookup tables
 
 void Search::init() {
@@ -296,6 +315,7 @@ void Thread::search() {
   Depth lastBestMoveDepth = DEPTH_ZERO;
   MainThread* mainThread = (this == Threads.main() ? Threads.main() : nullptr);
   double timeReduction = 1.0;
+  double timeAdjustment = timeEMA;
   Color us = rootPos.side_to_move();
 
   std::memset(ss-7, 0, 10 * sizeof(Stack));
@@ -489,9 +509,12 @@ void Thread::search() {
           // Use part of the gained time from a previous stable move for the current move
           double bestMoveInstability = 1.0 + mainThread->bestMoveChanges;
 
+          timeAdjustment = fallingEval * reduction * bestMoveInstability;
+
           // Stop the search if we have only one legal move, or if available time elapsed
           if (   rootMoves.size() == 1
-              || Time.elapsed() > Time.optimum() * fallingEval * reduction * bestMoveInstability)
+              || Time.elapsed() > Time.optimum() * timeAdjustment
+                                  / (timeEMA >= 0.7 ? 1.0 : 1.43 * timeEMA))
           {
               // If we are allowed to ponder do not stop the search now but
               // keep pondering until the GUI sends "ponderhit" or "stop".
@@ -502,6 +525,14 @@ void Thread::search() {
           }
       }
   }
+
+  // Use slow moving average to use extra time when regularly moving quickly
+  timeEMA = 0.9 * timeEMA + 0.1 * timeAdjustment;
+//if (timeEMA < 0.7)
+//    sdbg_mean_of(1000*timeEMA);  0.58
+//sdbg_mean_of(1000*timeEMA);  0.78 (maybe 0.7?)
+//sdbg_mean_of(1000*timeAdjustment);  0.69
+//sdbg_print();
 
   if (!mainThread)
       return;

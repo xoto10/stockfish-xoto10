@@ -527,7 +527,7 @@ void Thread::search() {
   }
 
   // Use slow moving average to use extra time when regularly moving quickly
-  timeEMA = 0.86 * timeEMA + 0.14 * timeAdjustment;
+  timeEMA = 0.82 * timeEMA + 0.18 * timeAdjustment;
 //if (timeEMA < 0.7)
 //    sdbg_mean_of(1000*timeEMA);  0.58
 //sdbg_mean_of(1000*timeEMA);  0.78 (maybe 0.7?)

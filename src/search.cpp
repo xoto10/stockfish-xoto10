@@ -156,25 +156,6 @@ namespace {
 } // namespace
 
 
-/// Debug functions used mainly to collect run-time statistics
-static int64_t shits[2], smeans[2];
-
-void sdbg_hit_on(bool b) { ++shits[0]; if (b) ++shits[1]; }
-void sdbg_hit_on(bool c, bool b) { if (c) sdbg_hit_on(b); }
-void sdbg_mean_of(int v) { ++smeans[0]; smeans[1] += v; }
-
-void sdbg_print() {
-
-  if (shits[0])
-      sync_cout << "info string Total " << shits[0] << " Hits " << shits[1]
-           << " hit rate (%) " << 100 * shits[1] / shits[0] << sync_endl;
-
-  if (smeans[0])
-      sync_cout << "info string Total " << smeans[0] << " Mean "
-           << (double)smeans[1] / smeans[0] << sync_endl;
-}
-
-
 /// Search::init() is called at startup to initialize various lookup tables
 
 void Search::init() {
@@ -499,14 +480,16 @@ void Thread::search() {
           && !Threads.stop
           && !mainThread->stopOnPonderhit)
       {
+          // Use more time if eval is falling
           double fallingEval = (306 + 9 * (mainThread->previousScore - bestValue)) / 581.0;
           fallingEval        = std::max(0.5, std::min(1.5, fallingEval));
 
           // If the bestMove is stable over several iterations, reduce time accordingly
+          // Compare with stability of previous move to decide more or less time
           timeReduction = lastBestMoveDepth + 10 * ONE_PLY < completedDepth ? 1.95 : 1.0;
           double reduction = std::pow(mainThread->previousTimeReduction, 0.528) / timeReduction;
 
-          // Use part of the gained time from a previous stable move for the current move
+          // Use more time if best move is unstable
           double bestMoveInstability = 1.0 + mainThread->bestMoveChanges;
 
           timeAdjustment = fallingEval * reduction * bestMoveInstability;
@@ -527,12 +510,7 @@ void Thread::search() {
   }
 
   // Use slow moving average to use extra time when regularly moving quickly
-  timeEMA = 0.82 * timeEMA + 0.18 * timeAdjustment;
-//if (timeEMA < 0.7)
-//    sdbg_mean_of(1000*timeEMA);  0.58
-//sdbg_mean_of(1000*timeEMA);  0.78 (maybe 0.7?)
-//sdbg_mean_of(1000*timeAdjustment);  0.69
-//sdbg_print();
+  timeEMA = 0.86 * timeEMA + 0.14 * timeAdjustment;
 
   if (!mainThread)
       return;

@@ -942,10 +942,6 @@ moves_loop: // When in check, search starts from here
                && (pos.blockers_for_king(~us) & from_sq(move) || pos.see_ge(move)))
           extension = ONE_PLY;
 
-      // Major piece move extension
-      else if (movedPiece == OurQueen || movedPiece == OurRook)
-          extension = ONE_PLY;
-
       // Castling extension
       else if (type_of(move) == CASTLING)
           extension = ONE_PLY;
@@ -1042,6 +1038,10 @@ moves_loop: // When in check, search starts from here
               else if (    type_of(move) == NORMAL
                        && !pos.see_ge(make_move(to_sq(move), from_sq(move))))
                   r -= 2 * ONE_PLY;
+
+              // Decrease reduction for major piece moves
+              if (movedPiece == OurQueen || movedPiece == OurRook)
+                  r -= ONE_PLY;
 
               ss->statScore =  thisThread->mainHistory[us][from_to(move)]
                              + (*contHist[0])[movedPiece][to_sq(move)]

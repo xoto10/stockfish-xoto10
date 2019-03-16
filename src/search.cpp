@@ -61,6 +61,11 @@ namespace {
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV };
 
+  // Adjust time use according to stability of current and previous move
+            int    S         [2][2] = { { 1000, 1423 },    // current move is unstable
+                                        { 0513, 0730 } };  // current move is stable
+TUNE(SetRange(0,2000), S);
+
   // Razor and futility margins
   constexpr int RazorMargin = 600;
   Value futility_margin(Depth d, bool improving) {
@@ -291,7 +296,7 @@ void Thread::search() {
   Move  lastBestMove = MOVE_NONE;
   Depth lastBestMoveDepth = DEPTH_ZERO;
   MainThread* mainThread = (this == Threads.main() ? Threads.main() : nullptr);
-  double timeReduction = 1.0;
+  bool timeReduction = false;
   Color us = rootPos.side_to_move();
 
   std::memset(ss-7, 0, 10 * sizeof(Stack));
@@ -471,8 +476,8 @@ void Thread::search() {
           fallingEval        = std::max(0.5, std::min(1.5, fallingEval));
 
           // If the bestMove is stable over several iterations, reduce time accordingly
-          timeReduction = lastBestMoveDepth + 10 * ONE_PLY < completedDepth ? 1.95 : 1.0;
-          double reduction = std::pow(mainThread->previousTimeReduction, 0.528) / timeReduction;
+          timeReduction = lastBestMoveDepth + 10 * ONE_PLY < completedDepth;
+          double reduction = S         [timeReduction][mainThread->previousTimeReduction] / 1000.0;
 
           // Use part of the gained time from a previous stable move for the current move
           double bestMoveInstability = 1.0 + mainThread->bestMoveChanges;

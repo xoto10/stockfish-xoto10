@@ -1040,7 +1040,7 @@ moves_loop: // When in check, search starts from here
                   r -= 2 * ONE_PLY;
 
               // Decrease reduction for major piece moves
-              if (movedPiece == OurQueen || movedPiece == OurRook)
+              else if (movedPiece == OurQueen || movedPiece == OurRook)
                   r -= ONE_PLY;
 
               ss->statScore =  thisThread->mainHistory[us][from_to(move)]

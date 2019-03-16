@@ -858,6 +858,8 @@ moves_loop: // When in check, search starts from here
     const PieceToHistory* contHist[] = { (ss-1)->continuationHistory, (ss-2)->continuationHistory,
                                           nullptr, (ss-4)->continuationHistory,
                                           nullptr, (ss-6)->continuationHistory };
+    const Piece OurQueen = us == WHITE ? W_QUEEN : B_QUEEN;
+    const Piece OurRook  = us == WHITE ? W_ROOK  : B_ROOK;
     Move countermove = thisThread->counterMoves[pos.piece_on(prevSq)][prevSq];
 
     MovePicker mp(pos, ttMove, depth, &thisThread->mainHistory,
@@ -938,6 +940,10 @@ moves_loop: // When in check, search starts from here
       // Check extension (~2 Elo)
       else if (    givesCheck
                && (pos.blockers_for_king(~us) & from_sq(move) || pos.see_ge(move)))
+          extension = ONE_PLY;
+
+      // Major piece move extension
+      else if (movedPiece == OurQueen || movedPiece == OurRook)
           extension = ONE_PLY;
 
       // Castling extension

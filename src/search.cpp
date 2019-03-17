@@ -63,7 +63,7 @@ namespace {
 
   // Adjust time use according to stability of current and previous move
   constexpr double StableMove[2][2] = { { 1.000, 1.423 },    // current move is unstable
-                                        { 0.513, 0.770 } };  // current move is stable
+                                        { 0.513, 0.690 } };  // current move is stable
 
   // Razor and futility margins
   constexpr int RazorMargin = 600;

@@ -62,7 +62,7 @@ namespace {
   enum NodeType { NonPV, PV };
 
   // Adjust time use according to stability of current and previous move
-  constexpr double StableMove[2][2] = { { 1.000, 1.423 },    // current move is unstable
+  constexpr double StableMove[2][2] = { { 1.000, 1.343 },    // current move is unstable
                                         { 0.513, 0.690 } };  // current move is stable
 
   // Razor and futility margins

@@ -476,6 +476,7 @@ void Thread::search() {
 
           // Use part of the gained time from a previous stable move for the current move
           double bestMoveInstability = 1.0 + mainThread->bestMoveChanges;
+          bestMoveInstability = 11.0 * std::pow(bestMoveInstability, 0.3) - 10;
 
           // Stop the search if we have only one legal move, or if available time elapsed
           if (   rootMoves.size() == 1

@@ -40,6 +40,8 @@
 /// pointer to an entry its life time is unlimited and we don't have
 /// to care about someone changing the entry under our feet.
 
+struct MainThread;
+
 class Thread {
 
   Mutex mutex;
@@ -56,6 +58,7 @@ public:
   void idle_loop();
   void start_searching();
   void wait_for_search_finished();
+  double adjust_time(MainThread*, double);
 
   Pawns::Table pawnsTable;
   Material::Table materialTable;
@@ -73,6 +76,8 @@ public:
   CapturePieceToHistory captureHistory;
   ContinuationHistory continuationHistory;
   Score contempt;
+  Value previousScore;
+  double bestMoveChanges, previousTimeReduction;
 };
 
 
@@ -85,8 +90,7 @@ struct MainThread : public Thread {
   void search() override;
   void check_time();
 
-  double bestMoveChanges, previousTimeReduction;
-  Value previousScore;
+  double timeAdjustment;
   int callsCnt;
   bool stopOnPonderhit;
   std::atomic_bool ponder;

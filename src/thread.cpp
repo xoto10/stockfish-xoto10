@@ -117,6 +117,15 @@ void Thread::idle_loop() {
   }
 }
 
+/// Thread::adjust_time
+
+double Thread::adjust_time(MainThread* main, double adj) {
+
+  std::lock_guard<Mutex> lk(mutex);
+  main->timeAdjustment = 0.8 * main->timeAdjustment + 0.2 * adj;
+  return(main->timeAdjustment);
+}
+
 /// ThreadPool::set() creates/destroys threads to match the requested number.
 /// Created and launched threads will immediately go to sleep in idle_loop.
 /// Upon resizing, threads are recreated to allow for binding if necessary.
@@ -150,8 +159,6 @@ void ThreadPool::clear() {
       th->clear();
 
   main()->callsCnt = 0;
-  main()->previousScore = VALUE_INFINITE;
-  main()->previousTimeReduction = 1.0;
 }
 
 /// ThreadPool::start_thinking() wakes up main thread waiting in idle_loop() and

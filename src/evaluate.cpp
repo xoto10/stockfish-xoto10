@@ -776,6 +776,17 @@ namespace {
             && pos.non_pawn_material(WHITE) == BishopValueMg
             && pos.non_pawn_material(BLACK) == BishopValueMg)
             sf = 16 + 4 * pe->passed_count();
+        else if (   pos.count<BISHOP>(strongSide) == 2
+                 && pos.count<BISHOP>(~strongSide) == 1
+                 && pos.count<KNIGHT>(~strongSide) == 1
+                 && pos.count<QUEEN>(strongSide) == 1
+                 && pos.count<ROOK>(strongSide) == 1)
+        {
+            bool pawnsOnBothFlanks =   (pos.pieces(PAWN) & QueenSide)
+                                    && (pos.pieces(PAWN) & KingSide);
+            int openFileInCenter = popcount(pe->semiopenFiles[WHITE] & pe->semiopenFiles[BLACK] & CenterFiles);
+            sf = 64 + 8 * pawnsOnBothFlanks + 4 * openFileInCenter;
+        }
         else
             sf = std::min(40 + (pos.opposite_bishops() ? 2 : 7) * pos.count<PAWN>(strongSide), sf);
 

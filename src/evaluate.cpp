@@ -779,8 +779,8 @@ namespace {
         else if (   pos.count<BISHOP>(strongSide) == 2
                  && pos.count<BISHOP>(~strongSide) == 1
                  && pos.count<KNIGHT>(~strongSide) == 1
-                 && pos.count<QUEEN>(strongSide) == 1
-                 && pos.count<ROOK>(strongSide) == 1)
+                 && pos.count<QUEEN>(~strongSide) == 0
+                 && pos.count<ROOK>(~strongSide) == 1)
         {
             bool pawnsOnBothFlanks =   (pos.pieces(PAWN) & QueenSide)
                                     && (pos.pieces(PAWN) & KingSide);

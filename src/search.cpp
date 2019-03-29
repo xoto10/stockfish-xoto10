@@ -296,7 +296,7 @@ void Thread::search() {
 
   if (mainThread)
       for (Thread* th : Threads)
-          th->bestMoveChanges = 0;
+          th->bestMoveChanges.store(0, std::memory_order_release);
 
   size_t multiPV = Options["MultiPV"];
   Skill skill(Options["Skill Level"]);
@@ -1108,9 +1108,13 @@ moves_loop: // When in check, search starts from here
               if (moveCount > 1)
               {
                   if (thisThread->fadeBestMoveChanges)
-                      thisThread->bestMoveChanges = thisThread->bestMoveChanges / 2,
-                          thisThread->fadeBestMoveChanges = false;
-                  thisThread->bestMoveChanges += 16;
+                  {
+                      thisThread->bestMoveChanges.store(
+                          thisThread->bestMoveChanges.load(std::memory_order_acquire) / 2,
+                          std::memory_order_release);
+                      thisThread->fadeBestMoveChanges = false;
+                  }
+                  thisThread->bestMoveChanges.fetch_add(16, std::memory_order_relaxed);
               }
           }
           else

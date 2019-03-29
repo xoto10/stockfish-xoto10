@@ -778,14 +778,15 @@ namespace {
             sf = 16 + 4 * pe->passed_count();
         else if (   pos.count<BISHOP>(strongSide) == 2
                  && pos.count<BISHOP>(~strongSide) == 1
-                 && pos.count<KNIGHT>(~strongSide) == 1
-                 && pos.count<QUEEN>(~strongSide) == 0
-                 && pos.count<ROOK>(~strongSide) == 1)
+                 && pos.count<KNIGHT>(~strongSide) == 1)
         {
+            bool noQueen = pos.count<QUEEN>(~strongSide) == 0;
+            bool oneRook = pos.count<ROOK>(~strongSide) == 1;
             bool pawnsOnBothFlanks =   (pos.pieces(PAWN) & QueenSide)
                                     && (pos.pieces(PAWN) & KingSide);
             int openFileInCenter = popcount(pe->semiopenFiles[WHITE] & pe->semiopenFiles[BLACK] & CenterFiles);
-            sf = 64 + 8 * pawnsOnBothFlanks + 4 * openFileInCenter;
+
+            sf = 48 + 8 * noQueen + 8 * oneRook + 8 * pawnsOnBothFlanks + 4 * openFileInCenter;
         }
         else
             sf = std::min(40 + (pos.opposite_bishops() ? 2 : 7) * pos.count<PAWN>(strongSide), sf);

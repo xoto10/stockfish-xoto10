@@ -86,7 +86,6 @@ void Thread::wait_for_search_finished() {
   cv.wait(lk, [&]{ return !searching; });
 }
 
-
 /// Thread::idle_loop() is where the thread is parked, blocked on the
 /// condition variable, when it has no work to do.
 

@@ -63,7 +63,9 @@ public:
   size_t pvIdx, pvLast;
   int selDepth, nmpMinPly;
   Color nmpColor;
-  std::atomic<uint64_t> nodes, tbHits;
+
+  std::atomic<uint64_t> nodes, tbHits, bestMoveChanges;
+  std::atomic_bool fadeBestMoveChanges;
 
   Position rootPos;
   Search::RootMoves rootMoves;
@@ -85,7 +87,7 @@ struct MainThread : public Thread {
   void search() override;
   void check_time();
 
-  double bestMoveChanges, previousTimeReduction;
+  double previousTimeReduction;
   Value previousScore;
   int callsCnt;
   bool stopOnPonderhit;
@@ -109,9 +111,6 @@ struct ThreadPool : public std::vector<Thread*> {
 
   std::atomic_bool stop;
 
-private:
-  StateListPtr setupStates;
-
   uint64_t accumulate(std::atomic<uint64_t> Thread::* member) const {
 
     uint64_t sum = 0;
@@ -119,6 +118,9 @@ private:
         sum += (th->*member).load(std::memory_order_relaxed);
     return sum;
   }
+
+private:
+  StateListPtr setupStates;
 };
 
 extern ThreadPool Threads;

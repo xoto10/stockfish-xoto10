@@ -141,6 +141,7 @@ namespace {
   constexpr Score LongDiagonalBishop = S( 45,  0);
   constexpr Score MinorBehindPawn    = S( 18,  3);
   constexpr Score Outpost            = S(  9,  3);
+  constexpr Score One                = S(  1,  1);
   constexpr Score PawnlessFlank      = S( 17, 95);
   constexpr Score RestrictedPiece    = S(  7,  7);
   constexpr Score RookOnPawn         = S( 10, 32);
@@ -589,6 +590,21 @@ namespace {
            | (attackedBy[Us][ROOK  ] & pos.attacks_from<ROOK  >(s));
 
         score += SliderOnQueen * popcount(b & safe & attackedBy2[Us]);
+    }
+
+    // Bonus for favourable material when BB vs BN
+    if (   pos.count<BISHOP>(Us) == 2
+        && pos.count<BISHOP>(Them) == 1
+        && pos.count<KNIGHT>(Them) == 1)
+    {
+        bool noQueen = pos.count<QUEEN>(Them) == 0;
+        bool oneRook = pos.count<ROOK>(Them) == 1;
+        bool pawnsOnBothFlanks =   (pos.pieces(PAWN) & QueenSide)
+                                && (pos.pieces(PAWN) & KingSide);
+        int openFileInCenter = popcount(pe->semiopenFiles[WHITE] & pe->semiopenFiles[BLACK] & CenterFiles);
+
+        score +=  One * (  std::min(64, 40 + 7 * pos.count<PAWN>(Us))
+                         + 6 * noQueen + 4 * oneRook + 4 * pawnsOnBothFlanks + 2 * openFileInCenter - 64);
     }
 
     if (T)

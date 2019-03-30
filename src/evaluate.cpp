@@ -787,7 +787,7 @@ namespace {
             int openFileInCenter = popcount(pe->semiopenFiles[WHITE] & pe->semiopenFiles[BLACK] & CenterFiles);
 
             sf =  std::min(sf, 40 + 7 * pos.count<PAWN>(strongSide))
-                + 4 * noQueen + 4 * oneRook + 4 * pawnsOnBothFlanks + 2 * openFileInCenter;
+                + 2 * noQueen + 4 * oneRook + 4 * pawnsOnBothFlanks + 2 * openFileInCenter;
         }
         else
             sf = std::min(40 + (pos.opposite_bishops() ? 2 : 7) * pos.count<PAWN>(strongSide), sf);

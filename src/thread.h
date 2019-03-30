@@ -65,7 +65,7 @@ public:
   Color nmpColor;
 
   std::atomic<uint64_t> nodes, tbHits, bestMoveChanges;
-  std::atomic_bool fadeBestMoveChanges;
+  std::atomic<uint64_t> fadeBestMoveChanges;
 
   Position rootPos;
   Search::RootMoves rootMoves;

@@ -781,13 +781,13 @@ namespace {
                  && pos.count<KNIGHT>(~strongSide) == 1)
         {
             bool noQueen = pos.count<QUEEN>(~strongSide) == 0;
-            bool oneRook = pos.count<ROOK>(~strongSide) == 1;
+//          bool oneRook = pos.count<ROOK>(~strongSide) == 1;
             bool pawnsOnBothFlanks =   (pos.pieces(PAWN) & QueenSide)
                                     && (pos.pieces(PAWN) & KingSide);
             int openFileInCenter = popcount(pe->semiopenFiles[WHITE] & pe->semiopenFiles[BLACK] & CenterFiles);
 
             sf =  std::min(sf, 40 + 7 * pos.count<PAWN>(strongSide))
-                + 6 * noQueen + 6 * oneRook + 4 * pawnsOnBothFlanks + 2 * openFileInCenter;
+                + 6 * noQueen + /*2 * oneRook +*/ 4 * pawnsOnBothFlanks + 2 * openFileInCenter;
         }
         else
             sf = std::min(40 + (pos.opposite_bishops() ? 2 : 7) * pos.count<PAWN>(strongSide), sf);

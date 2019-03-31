@@ -19,6 +19,7 @@
 */
 
 #include <cassert>
+#include <iostream>
 
 #include "bitboard.h"
 #include "pawns.h"
@@ -169,8 +170,13 @@ Entry* probe(const Position& pos) {
   e->scores[BLACK] = evaluate<BLACK>(pos, e);
 
   int realSemiopen = e->semiopenFiles[WHITE] ^ e->semiopenFiles[BLACK];
-  e->passedCount= msb(realSemiopen) - lsb(realSemiopen);
+  e->passedCount = realSemiopen ? msb(realSemiopen) - lsb(realSemiopen) : 0;
 
+//if (realSemiopen && msb(realSemiopen) > 10)
+//    sync_cout << "info string sow " << e->semiopenFiles[WHITE] << " sob " << e->semiopenFiles[BLACK]
+//              << " real " << realSemiopen << " msb " << msb(realSemiopen) << sync_endl;
+//dbg_mean_of(e->passedCount); (realsemiopen) 3.19
+//dbg_mean_of(popcount(e->passedPawns[WHITE] | e->passedPawns[BLACK])); 0.86
   return e;
 }
 

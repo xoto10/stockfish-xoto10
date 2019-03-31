@@ -85,7 +85,7 @@ struct MainThread : public Thread {
   void search() override;
   void check_time();
 
-  double bestMoveChanges, previousTimeReduction;
+  double previousTimeReduction;
   Value previousScore;
   int callsCnt;
   bool stopOnPonderhit;
@@ -108,6 +108,7 @@ struct ThreadPool : public std::vector<Thread*> {
   uint64_t tb_hits()        const { return accumulate(&Thread::tbHits); }
 
   std::atomic_bool stop;
+  std::atomic<int> bestMoveChanges;
 
 private:
   StateListPtr setupStates;

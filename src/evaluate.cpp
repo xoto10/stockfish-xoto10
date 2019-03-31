@@ -604,7 +604,7 @@ namespace {
         int openFileInCenter = popcount(pe->semiopenFiles[WHITE] & pe->semiopenFiles[BLACK] & CenterFiles);
 
         score +=  One * (  std::min(64, 40 + 7 * pos.count<PAWN>(Us))
-                         + 6 * noQueen + 4 * oneRook + 4 * pawnsOnBothFlanks + 2 * openFileInCenter - 64);
+                         + 6 * noQueen + 2 * oneRook + 4 * pawnsOnBothFlanks + 2 * openFileInCenter - 64);
     }
 
     if (T)

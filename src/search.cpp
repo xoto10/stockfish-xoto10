@@ -330,7 +330,13 @@ void Thread::search() {
       // Age out PV variability metric
       if (mainThread)
           for (Thread* th : Threads)
-              th->fadeBestMoveChanges.fetch_add(1, std::memory_order_relaxed);
+          {
+              th->fadeBestMoveChanges.fetch_add(
+                  th->bestMoveChanges.load(std::memory_order_relaxed),
+                  std::memory_order_relaxed);
+              th->bestMoveChanges.store(0, std::memory_order_relaxed);
+              th->fadeBestMoveChanges = th->fadeBestMoveChanges / 2;
+          }
 
       // Save the last iteration's scores before first PV line is searched and
       // all the move scores except the (new) PV are set to -VALUE_INFINITE.
@@ -469,8 +475,10 @@ void Thread::search() {
           double reduction = std::pow(mainThread->previousTimeReduction, 0.528) / timeReduction;
 
           // Use part of the gained time from a previous stable move for the current move
-          double bestMoveInstability = 1.0 + double(Threads.accumulate(&Thread::bestMoveChanges))
-                                             / Threads.size() / 256;
+          double bestMoveInstability = 1.0 + (  double(Threads.accumulate2(&Thread::bestMoveChanges,
+                                                                           &Thread::fadeBestMoveChanges))
+                                             ) / Threads.size() / 256;
+                                             // NOTE: with diff logic, bmc could be rounded up here after acc
 
           // Stop the search if we have only one legal move, or if available time elapsed
           if (   rootMoves.size() == 1
@@ -1106,16 +1114,7 @@ moves_loop: // When in check, search starts from here
               // iteration. This information is used for time management: When
               // the best move changes frequently, we allocate some more time.
               if (moveCount > 1)
-              {
-                  while (thisThread->fadeBestMoveChanges.load(std::memory_order_relaxed))
-                  {
-                      thisThread->bestMoveChanges.store(
-                          thisThread->bestMoveChanges.load(std::memory_order_acquire) / 2,
-                          std::memory_order_release);
-                      thisThread->fadeBestMoveChanges.fetch_sub(1, std::memory_order_relaxed);
-                  }
                   thisThread->bestMoveChanges.fetch_add(256, std::memory_order_relaxed);
-              }
           }
           else
               // All other moves but the PV are set to the lowest value: this

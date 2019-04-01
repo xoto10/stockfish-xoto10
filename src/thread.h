@@ -111,6 +111,19 @@ struct ThreadPool : public std::vector<Thread*> {
 
   std::atomic_bool stop;
 
+  uint64_t accumulate2(std::atomic<uint64_t> Thread::* member1,
+                       std::atomic<uint64_t> Thread::* member2) const {
+
+    uint64_t sum = 0;
+    for (Thread* th : *this)
+        sum += (th->*member1).load(std::memory_order_relaxed)
+               + (th->*member2).load(std::memory_order_relaxed);
+    return sum;
+  }
+
+private:
+  StateListPtr setupStates;
+
   uint64_t accumulate(std::atomic<uint64_t> Thread::* member) const {
 
     uint64_t sum = 0;
@@ -118,9 +131,6 @@ struct ThreadPool : public std::vector<Thread*> {
         sum += (th->*member).load(std::memory_order_relaxed);
     return sum;
   }
-
-private:
-  StateListPtr setupStates;
 };
 
 extern ThreadPool Threads;

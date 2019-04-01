@@ -170,13 +170,15 @@ Entry* probe(const Position& pos) {
   e->scores[BLACK] = evaluate<BLACK>(pos, e);
 
   int realSemiopen = e->semiopenFiles[WHITE] ^ e->semiopenFiles[BLACK];
-  e->passedCount = realSemiopen ? msb(realSemiopen) - lsb(realSemiopen) : 0;
+  e->passedCount = popcount(e->passedPawns[WHITE] | e->passedPawns[BLACK])
+                   + (realSemiopen > 0) * msb(realSemiopen) - lsb(realSemiopen) / 2;
 
 //if (realSemiopen && msb(realSemiopen) > 10)
 //    sync_cout << "info string sow " << e->semiopenFiles[WHITE] << " sob " << e->semiopenFiles[BLACK]
 //              << " real " << realSemiopen << " msb " << msb(realSemiopen) << sync_endl;
 //dbg_mean_of(e->passedCount); (realsemiopen) 3.19
-//dbg_mean_of(popcount(e->passedPawns[WHITE] | e->passedPawns[BLACK])); 0.86
+//dbg_mean_of(popcount(e->passedPawns[WHITE] | e->passedPawns[BLACK])); 0.824
+//dbg_mean_of(e->passedCount); 3.03 (master + span/2)
   return e;
 }
 

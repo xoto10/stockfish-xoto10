@@ -471,7 +471,6 @@ void Thread::search() {
           mainThread->fadeBestMoveChanges += Threads.accumulate_zero(&Thread::bestMoveChanges);
           double bestMoveInstability = 1.0 + double(mainThread->fadeBestMoveChanges)
                                              / Threads.size() / 256;
-                                             // NOTE: bmc could be rounded up here after acc
 
           // Stop the search if we have only one legal move, or if available time elapsed
           if (   rootMoves.size() == 1

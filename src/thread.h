@@ -63,7 +63,6 @@ public:
   size_t pvIdx, pvLast;
   int selDepth, nmpMinPly;
   Color nmpColor;
-
   std::atomic<uint64_t> nodes, tbHits, bestMoveChanges;
 
   Position rootPos;
@@ -114,10 +113,7 @@ struct ThreadPool : public std::vector<Thread*> {
 
     uint64_t sum = 0;
     for (Thread* th : *this)
-    {
-        sum += (th->*member).load(std::memory_order_relaxed);
-        (th->*member).store(0, std::memory_order_relaxed);
-    }
+        sum += (th->*member).exchange(0, std::memory_order_relaxed);
     return sum;
   }
 

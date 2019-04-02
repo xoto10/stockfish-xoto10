@@ -64,6 +64,7 @@ public:
   int selDepth, nmpMinPly;
   Color nmpColor;
   std::atomic<uint64_t> nodes, tbHits;
+  std::atomic<int> bestValue;
 
   Position rootPos;
   Search::RootMoves rootMoves;
@@ -106,8 +107,17 @@ struct ThreadPool : public std::vector<Thread*> {
   MainThread* main()        const { return static_cast<MainThread*>(front()); }
   uint64_t nodes_searched() const { return accumulate(&Thread::nodes); }
   uint64_t tb_hits()        const { return accumulate(&Thread::tbHits); }
+  int      highest_value()  const { return highest(&Thread::bestValue); }
 
   std::atomic_bool stop;
+
+  int highest(std::atomic<int> Thread::* member) const {
+
+    int max = -VALUE_INFINITE;
+    for (Thread* th : *this)
+        max = std::max(max, (th->*member).load(std::memory_order_relaxed));
+    return max;
+  }
 
 private:
   StateListPtr setupStates;

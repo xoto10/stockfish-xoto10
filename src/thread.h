@@ -64,10 +64,11 @@ public:
   int selDepth, nmpMinPly;
   Color nmpColor;
   std::atomic<uint64_t> nodes, tbHits;
+  std::atomic<int> completedDepth, lastBestMoveDepth;
 
   Position rootPos;
   Search::RootMoves rootMoves;
-  Depth rootDepth, completedDepth;
+  Depth rootDepth;
   CounterMoveHistory counterMoves;
   ButterflyHistory mainHistory;
   CapturePieceToHistory captureHistory;
@@ -108,6 +109,16 @@ struct ThreadPool : public std::vector<Thread*> {
   uint64_t tb_hits()        const { return accumulate(&Thread::tbHits); }
 
   std::atomic_bool stop;
+
+  int accumulate_diff(std::atomic<int> Thread::* member1,
+                           std::atomic<int> Thread::* member2) const {
+
+    int sum = 0;
+    for (Thread* th : *this)
+        sum += (th->*member1).load(std::memory_order_relaxed)
+               - (th->*member2).load(std::memory_order_relaxed);
+    return sum;
+  }
 
 private:
   StateListPtr setupStates;

@@ -256,7 +256,8 @@ void MainThread::search() {
 
   // Send again PV info if we have a new best thread
   if (bestThread != this)
-      sync_cout << UCI::pv(bestThread->rootPos, bestThread->completedDepth, -VALUE_INFINITE, VALUE_INFINITE) << sync_endl;
+      sync_cout << UCI::pv(bestThread->rootPos, Depth(bestThread->completedDepth.load(std::memory_order_relaxed)),
+                           -VALUE_INFINITE, VALUE_INFINITE) << sync_endl;
 
   sync_cout << "bestmove " << UCI::move(bestThread->rootMoves[0].pv[0], rootPos.is_chess960());
 
@@ -281,7 +282,6 @@ void Thread::search() {
   Move  pv[MAX_PLY+1];
   Value bestValue, alpha, beta, delta;
   Move  lastBestMove = MOVE_NONE;
-  Depth lastBestMoveDepth = DEPTH_ZERO;
   MainThread* mainThread = (this == Threads.main() ? Threads.main() : nullptr);
   double timeReduction = 1.0;
   Color us = rootPos.side_to_move();
@@ -291,6 +291,7 @@ void Thread::search() {
      (ss-i)->continuationHistory = &this->continuationHistory[NO_PIECE][0]; // Use as sentinel
   ss->pv = pv;
 
+  lastBestMoveDepth.store(0, std::memory_order_relaxed);
   bestValue = delta = alpha = -VALUE_INFINITE;
   beta = VALUE_INFINITE;
 
@@ -463,7 +464,9 @@ void Thread::search() {
           fallingEval = clamp(fallingEval, 0.5, 1.5);
 
           // If the bestMove is stable over several iterations, reduce time accordingly
-          timeReduction = lastBestMoveDepth + 10 * ONE_PLY < completedDepth ? 1.95 : 1.0;
+          int stableDepth = Threads.accumulate_diff(&Thread::completedDepth, &Thread::lastBestMoveDepth)
+                            / Threads.size();
+          timeReduction = stableDepth > 10 * ONE_PLY ? 1.95 : 1.0;
           double reduction = std::pow(mainThread->previousTimeReduction, 0.528) / timeReduction;
 
           // Use part of the gained time from a previous stable move for the current move

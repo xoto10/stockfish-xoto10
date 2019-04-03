@@ -64,6 +64,7 @@ public:
   int selDepth, nmpMinPly;
   Color nmpColor;
   std::atomic<uint64_t> nodes, tbHits, bestMoveChanges;
+  std::atomic<int> bestValue;
 
   Position rootPos;
   Search::RootMoves rootMoves;
@@ -104,8 +105,9 @@ struct ThreadPool : public std::vector<Thread*> {
   void set(size_t);
 
   MainThread* main()        const { return static_cast<MainThread*>(front()); }
-  uint64_t nodes_searched() const { return accumulate(&Thread::nodes); }
-  uint64_t tb_hits()        const { return accumulate(&Thread::tbHits); }
+  uint64_t nodes_searched() const { return accumulate<uint64_t, std::atomic<uint64_t>>(&Thread::nodes); }
+  uint64_t tb_hits()        const { return accumulate<uint64_t, std::atomic<uint64_t>>(&Thread::tbHits); }
+  Value    sum_value()      const { return accumulate<Value, std::atomic<int>>(&Thread::bestValue); }
 
   std::atomic_bool stop;
 
@@ -120,9 +122,10 @@ struct ThreadPool : public std::vector<Thread*> {
 private:
   StateListPtr setupStates;
 
-  uint64_t accumulate(std::atomic<uint64_t> Thread::* member) const {
+  template <class intT, class atomicT>
+  intT accumulate(atomicT Thread::* member) const {
 
-    uint64_t sum = 0;
+    intT sum = intT(0);
     for (Thread* th : *this)
         sum += (th->*member).load(std::memory_order_relaxed);
     return sum;

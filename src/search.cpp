@@ -317,6 +317,10 @@ void Thread::search() {
           : Options["Analysis Contempt"] == "Black" && us == WHITE ? -ct
           : ct;
 
+  // Vary contempt between threads, default on main, lower on helpers
+  int numThreads = Threads.size();
+  ct -= (get_idx() * ct / std::max(2, (numThreads-1)));
+
   // Evaluation score is from the white point of view
   contempt = (us == WHITE ?  make_score(ct, ct / 2)
                           : -make_score(ct, ct / 2));

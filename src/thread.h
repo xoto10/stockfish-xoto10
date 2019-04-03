@@ -65,6 +65,7 @@ public:
   Color nmpColor;
   std::atomic<uint64_t> nodes, tbHits;
   std::atomic<int> completedDepth, lastBestMoveDepth;
+  Value bestValue;
 
   Position rootPos;
   Search::RootMoves rootMoves;
@@ -107,8 +108,17 @@ struct ThreadPool : public std::vector<Thread*> {
   MainThread* main()        const { return static_cast<MainThread*>(front()); }
   uint64_t nodes_searched() const { return accumulate(&Thread::nodes); }
   uint64_t tb_hits()        const { return accumulate(&Thread::tbHits); }
+  Value    lowest_value()   const { return lowest(&Thread::bestValue); }
 
   std::atomic_bool stop;
+
+  Value lowest(Value Thread::* member) const {
+
+    Value min = VALUE_INFINITE;
+    for (Thread* th : *this)
+        min = std::min(min, th->*member);
+    return min;
+  }
 
   int accumulate_diff(std::atomic<int> Thread::* member1,
                            std::atomic<int> Thread::* member2) const {

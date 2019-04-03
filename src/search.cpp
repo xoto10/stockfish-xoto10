@@ -319,7 +319,7 @@ void Thread::search() {
 
   // Vary contempt between threads, default on main, lower on helpers
   int numThreads = Threads.size();
-  ct -= (get_idx() * ct / std::max(2, (numThreads-1)));
+  ct -= (get_idx() * ct / (4 * std::max(2, (numThreads-1))));
 
   // Evaluation score is from the white point of view
   contempt = (us == WHITE ?  make_score(ct, ct / 2)

@@ -291,8 +291,7 @@ void Thread::search() {
      (ss-i)->continuationHistory = &this->continuationHistory[NO_PIECE][0]; // Use as sentinel
   ss->pv = pv;
 
-  bestValue.store(-VALUE_INFINITE, std::memory_order_relaxed);
-  delta = alpha = -VALUE_INFINITE;
+  bestValue = delta = alpha = -VALUE_INFINITE;
   beta = VALUE_INFINITE;
 
   if (mainThread)
@@ -375,8 +374,7 @@ void Thread::search() {
           while (true)
           {
               Depth adjustedDepth = std::max(ONE_PLY, rootDepth - failedHighCnt * ONE_PLY);
-              bestValue.store( ::search<PV>(rootPos, ss, alpha, beta, adjustedDepth, false),
-                               std::memory_order_relaxed );
+              bestValue = ::search<PV>(rootPos, ss, alpha, beta, adjustedDepth, false);
 
               // Bring the best move to the front. It is critical that sorting
               // is done with a stable algorithm because all the values but the
@@ -405,7 +403,7 @@ void Thread::search() {
               if (bestValue <= alpha)
               {
                   beta = (alpha + beta) / 2;
-                  alpha = std::max(Value(int(bestValue)) - delta, -VALUE_INFINITE);
+                  alpha = std::max(bestValue - delta, -VALUE_INFINITE);
 
                   if (mainThread)
                   {
@@ -415,7 +413,7 @@ void Thread::search() {
               }
               else if (bestValue >= beta)
               {
-                  beta = std::min(Value(int(bestValue)) + delta, VALUE_INFINITE);
+                  beta = std::min(bestValue + delta, VALUE_INFINITE);
                   if (mainThread)
                       ++failedHighCnt;
               }
@@ -461,7 +459,7 @@ void Thread::search() {
           && !Threads.stop
           && !mainThread->stopOnPonderhit)
       {
-          double fallingEval = (306 + 9 * (mainThread->previousScore - Threads.highest_value())) / 581.0;
+          double fallingEval = (306 + 9 * (mainThread->previousScore - Threads.lowest_value())) / 581.0;
           fallingEval = clamp(fallingEval, 0.5, 1.5);
 
           // If the bestMove is stable over several iterations, reduce time accordingly

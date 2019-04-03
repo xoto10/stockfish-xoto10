@@ -105,12 +105,17 @@ struct ThreadPool : public std::vector<Thread*> {
   void clear();
   void set(size_t);
 
-  MainThread* main()        const { return static_cast<MainThread*>(front()); }
-  uint64_t nodes_searched() const { return accumulate(&Thread::nodes); }
-  uint64_t tb_hits()        const { return accumulate(&Thread::tbHits); }
-  Value    lowest_value()   const { return lowest(&Thread::bestValue); }
+  MainThread* main()           const { return static_cast<MainThread*>(front()); }
+  uint64_t nodes_searched()    const { return accumulate(&Thread::nodes); }
+  uint64_t tb_hits()           const { return accumulate(&Thread::tbHits); }
+  Value    lowest_value()      const { return lowest(&Thread::bestValue); }
+  int      lowest_depth_diff() const { return lowest_diff(&Thread::completedDepth,
+                                                          &Thread::lastBestMoveDepth); }
 
   std::atomic_bool stop;
+
+private:
+  StateListPtr setupStates;
 
   Value lowest(Value Thread::* member) const {
 
@@ -120,18 +125,15 @@ struct ThreadPool : public std::vector<Thread*> {
     return min;
   }
 
-  int accumulate_diff(std::atomic<int> Thread::* member1,
-                           std::atomic<int> Thread::* member2) const {
+  int lowest_diff(std::atomic<int> Thread::* member1,
+                  std::atomic<int> Thread::* member2) const {
 
-    int sum = 0;
+    int min = DEPTH_MAX;
     for (Thread* th : *this)
-        sum += (th->*member1).load(std::memory_order_relaxed)
-               - (th->*member2).load(std::memory_order_relaxed);
-    return sum;
+        min = std::min(min, (th->*member1).load(std::memory_order_relaxed)
+                            - (th->*member2).load(std::memory_order_relaxed));
+    return min;
   }
-
-private:
-  StateListPtr setupStates;
 
   uint64_t accumulate(std::atomic<uint64_t> Thread::* member) const {
 

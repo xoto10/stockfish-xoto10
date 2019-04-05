@@ -849,7 +849,7 @@ namespace {
 
     v /= PHASE_MIDGAME;
 
-    v += (64 - gp) * pos.count<PAWN>() / 128;
+    v += (64 - gp) * pos.count<PAWN>(Us) / 32;
 
     // In case of tracing add all remaining individual evaluation terms
     if (T)

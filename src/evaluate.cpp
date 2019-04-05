@@ -797,8 +797,6 @@ namespace {
 
     assert(!pos.checkers());
 
-    Color Us = pos.side_to_move();
-
     // Probe the material hash table
     me = Material::probe(pos);
 
@@ -819,7 +817,7 @@ namespace {
     // Early exit if score is high
     Value v = (mg_value(score) + eg_value(score)) / 2;
     if (abs(v) > LazyThreshold)
-       return Us == WHITE ? v : -v;
+       return pos.side_to_move() == WHITE ? v : -v;
 
     // Main evaluation begins here
 
@@ -849,7 +847,7 @@ namespace {
 
     v /= PHASE_MIDGAME;
 
-    v += (gp > 64) * (64 - gp) * pos.count<PAWN>(Us) / 32;
+    v += (64 - gp) * pos.count<PAWN>() / 128 - 2;
 
     // In case of tracing add all remaining individual evaluation terms
     if (T)
@@ -861,7 +859,7 @@ namespace {
         Trace::add(TOTAL, score);
     }
 
-    return  (Us == WHITE ? v : -v) // Side to move point of view
+    return  (pos.side_to_move() == WHITE ? v : -v) // Side to move point of view
            + Eval::Tempo;
   }
 

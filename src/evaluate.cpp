@@ -797,6 +797,8 @@ namespace {
 
     assert(!pos.checkers());
 
+    Color Us = pos.side_to_move();
+
     // Probe the material hash table
     me = Material::probe(pos);
 
@@ -817,7 +819,7 @@ namespace {
     // Early exit if score is high
     Value v = (mg_value(score) + eg_value(score)) / 2;
     if (abs(v) > LazyThreshold)
-       return pos.side_to_move() == WHITE ? v : -v;
+       return Us == WHITE ? v : -v;
 
     // Main evaluation begins here
 
@@ -841,10 +843,13 @@ namespace {
 
     // Interpolate between a middlegame and a (scaled by 'sf') endgame score
     ScaleFactor sf = scale_factor(eg_value(score));
-    v =  mg_value(score) * int(me->game_phase())
-       + eg_value(score) * int(PHASE_MIDGAME - me->game_phase()) * sf / SCALE_FACTOR_NORMAL;
+    int gp = me->game_phase();
+    v =  mg_value(score) * gp
+       + eg_value(score) * int(PHASE_MIDGAME - gp) * sf / SCALE_FACTOR_NORMAL;
 
     v /= PHASE_MIDGAME;
+
+    v += (64 - gp) * pos.count<PAWN>() / 128;
 
     // In case of tracing add all remaining individual evaluation terms
     if (T)
@@ -856,7 +861,7 @@ namespace {
         Trace::add(TOTAL, score);
     }
 
-    return  (pos.side_to_move() == WHITE ? v : -v) // Side to move point of view
+    return  (Us == WHITE ? v : -v) // Side to move point of view
            + Eval::Tempo;
   }
 

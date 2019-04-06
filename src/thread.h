@@ -87,7 +87,7 @@ struct MainThread : public Thread {
 
   double previousTimeReduction;
   Value previousScore;
-  int callsCnt;
+  int callsCnt, totBestMoveChanges;
   bool stopOnPonderhit;
   std::atomic_bool ponder;
 };
@@ -108,6 +108,14 @@ struct ThreadPool : public std::vector<Thread*> {
   uint64_t tb_hits()        const { return accumulate(&Thread::tbHits); }
 
   std::atomic_bool stop;
+
+  uint64_t accumulate_zero(std::atomic<uint64_t> Thread::* member) const {
+
+    uint64_t sum = 0;
+    for (Thread* th : *this)
+        sum += (th->*member).exchange(0, std::memory_order_relaxed);
+    return sum;
+  }
 
 private:
   StateListPtr setupStates;

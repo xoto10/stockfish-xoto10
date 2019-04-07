@@ -76,6 +76,8 @@ namespace {
   constexpr Value LazyThreshold  = Value(1500);
   constexpr Value SpaceThreshold = Value(12222);
 
+  constexpr Value PawnsTaken     = Value(5);
+
   // KingAttackWeights[PieceType] contains king attack weights by piece type
   constexpr int KingAttackWeights[PIECE_TYPE_NB] = { 0, 0, 77, 55, 44, 10 };
 
@@ -142,7 +144,6 @@ namespace {
   constexpr Score MinorBehindPawn    = S( 18,  3);
   constexpr Score Outpost            = S(  9,  3);
   constexpr Score PawnlessFlank      = S( 17, 95);
-  constexpr Score PawnsTaken         = S(  2,  0);
   constexpr Score RestrictedPiece    = S(  7,  7);
   constexpr Score RookOnPawn         = S( 10, 32);
   constexpr Score SliderOnQueen      = S( 59, 18);
@@ -811,9 +812,6 @@ namespace {
     // imbalance. Score is computed internally from the white point of view.
     Score score = pos.psq_score() + me->imbalance() + pos.this_thread()->contempt;
 
-    // Bonus for pawns taken
-    score += PawnsTaken * (16 - pos.count<PAWN>());
-
     // Probe the pawn hash table
     pe = Pawns::probe(pos);
     score += pe->pawn_score(WHITE) - pe->pawn_score(BLACK);
@@ -845,10 +843,17 @@ namespace {
 
     // Interpolate between a middlegame and a (scaled by 'sf') endgame score
     ScaleFactor sf = scale_factor(eg_value(score));
-    v =  mg_value(score) * int(me->game_phase())
-       + eg_value(score) * int(PHASE_MIDGAME - me->game_phase()) * sf / SCALE_FACTOR_NORMAL;
-
+    int gp = int(me->game_phase());
+    v =  mg_value(score) * gp
+       + eg_value(score) * (PHASE_MIDGAME - gp) * sf / SCALE_FACTOR_NORMAL;
     v /= PHASE_MIDGAME;
+
+    // Side to move point of view and Tempo
+    v = (pos.side_to_move() == WHITE ? v : -v) + Eval::Tempo;
+
+    // Bonus for pawns taken
+    if (v > 0)
+        v += PawnsTaken * (16 - pos.count<PAWN>()) * gp / PHASE_MIDGAME;
 
     // In case of tracing add all remaining individual evaluation terms
     if (T)
@@ -860,8 +865,7 @@ namespace {
         Trace::add(TOTAL, score);
     }
 
-    return  (pos.side_to_move() == WHITE ? v : -v) // Side to move point of view
-           + Eval::Tempo;
+    return v;
   }
 
 } // namespace

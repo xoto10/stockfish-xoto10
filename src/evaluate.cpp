@@ -142,6 +142,7 @@ namespace {
   constexpr Score MinorBehindPawn    = S( 18,  3);
   constexpr Score Outpost            = S(  9,  3);
   constexpr Score PawnlessFlank      = S( 17, 95);
+  constexpr Score PawnsTaken         = S(  5,  0);
   constexpr Score RestrictedPiece    = S(  7,  7);
   constexpr Score RookOnPawn         = S( 10, 32);
   constexpr Score SliderOnQueen      = S( 59, 18);
@@ -809,6 +810,9 @@ namespace {
     // the position object (material + piece square tables) and the material
     // imbalance. Score is computed internally from the white point of view.
     Score score = pos.psq_score() + me->imbalance() + pos.this_thread()->contempt;
+
+    // Bonus for pawns taken
+    score += PawnsTaken * (16 - pos.count<PAWN>());
 
     // Probe the pawn hash table
     pe = Pawns::probe(pos);

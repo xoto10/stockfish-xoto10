@@ -76,7 +76,7 @@ namespace {
   constexpr Value LazyThreshold  = Value(1500);
   constexpr Value SpaceThreshold = Value(12222);
 
-  constexpr Value PawnsTaken     = Value(3);
+  constexpr Value PawnsTaken     = Value(2);
 
   // KingAttackWeights[PieceType] contains king attack weights by piece type
   constexpr int KingAttackWeights[PIECE_TYPE_NB] = { 0, 0, 77, 55, 44, 10 };
@@ -853,7 +853,7 @@ namespace {
 
     // Bonus for pawns taken
     if (v < 0)
-        v += PawnsTaken * (16 - pos.count<ALL_PIECES>(pos.side_to_move())) * gp / PHASE_MIDGAME;
+        v += PawnsTaken * (16 - pos.count<PAWN>()) * gp / PHASE_MIDGAME;
 
     // In case of tracing add all remaining individual evaluation terms
     if (T)

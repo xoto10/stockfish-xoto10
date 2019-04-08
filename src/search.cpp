@@ -287,7 +287,6 @@ void Thread::search() {
   Depth lastBestMoveDepth = DEPTH_ZERO;
   MainThread* mainThread = (this == Threads.main() ? Threads.main() : nullptr);
   double timeReduction = 1;
-  int totBestMoveChanges = 0;
   Color us = rootPos.side_to_move();
 
   std::memset(ss-7, 0, 10 * sizeof(Stack));
@@ -297,6 +296,9 @@ void Thread::search() {
 
   bestValue = delta = alpha = -VALUE_INFINITE;
   beta = VALUE_INFINITE;
+
+  if (mainThread)
+      mainThread->totBestMoveChanges = 0;
 
   size_t multiPV = Options["MultiPV"];
   Skill skill(Options["Skill Level"]);
@@ -329,7 +331,7 @@ void Thread::search() {
   {
       // Age out PV variability metric
       if (mainThread)
-          totBestMoveChanges /= 2;
+          mainThread->totBestMoveChanges /= 2;
 
       // Save the last iteration's scores before first PV line is searched and
       // all the move scores except the (new) PV are set to -VALUE_INFINITE.
@@ -470,10 +472,11 @@ void Thread::search() {
           // Use part of the gained time from a previous stable move for the current move
           for (Thread* th : Threads)
           {
-              totBestMoveChanges += th->bestMoveChanges.load(std::memory_order_relaxed);
+              mainThread->totBestMoveChanges += th->bestMoveChanges.load(std::memory_order_relaxed);
               th->bestMoveChanges.store(0, std::memory_order_relaxed);
           }
-          double bestMoveInstability = 1 + double(totBestMoveChanges) / Threads.size() / 256;
+          double bestMoveInstability = 1 + double(mainThread->totBestMoveChanges)
+                                           / Threads.size() / 256;
 
           // Stop the search if we have only one legal move, or if available time elapsed
           if (   rootMoves.size() == 1

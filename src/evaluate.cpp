@@ -853,7 +853,7 @@ namespace {
 
     // Bonus for pawns taken
     if (v < 0)
-        v += PawnsTaken * (16 - pos.count<PAWN>()) * gp / PHASE_MIDGAME;
+        v += PawnsTaken * (16 - pos.count<ALL_PIECES>(pos.side_to_move())) * gp / PHASE_MIDGAME;
 
     // In case of tracing add all remaining individual evaluation terms
     if (T)

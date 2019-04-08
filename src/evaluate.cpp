@@ -852,7 +852,7 @@ namespace {
     v = (pos.side_to_move() == WHITE ? v : -v) + Eval::Tempo;
 
     // Bonus for pawns taken
-    v += ((v < 0) - (v > 0)) * PawnsTaken * (16 - pos.count<PAWN>()) * gp / PHASE_MIDGAME;
+    v += PawnsTaken * (16 - std::max(v > 0 ? 12 : 0, pos.count<PAWN>())) * gp / PHASE_MIDGAME;
 
     // In case of tracing add all remaining individual evaluation terms
     if (T)

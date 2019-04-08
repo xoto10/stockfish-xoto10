@@ -192,7 +192,7 @@ void MainThread::search() {
   {
       for (Thread* th : Threads)
       {
-          th->bestMoveChanges = 0;
+          th->bestMoveChanges.store(0, std::memory_order_relaxed);
           if (th != this)
               th->start_searching();
       }

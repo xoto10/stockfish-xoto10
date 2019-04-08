@@ -286,7 +286,8 @@ void Thread::search() {
   Move  lastBestMove = MOVE_NONE;
   Depth lastBestMoveDepth = DEPTH_ZERO;
   MainThread* mainThread = (this == Threads.main() ? Threads.main() : nullptr);
-  double timeReduction = 1, totBestMoveChanges = 0;
+  double timeReduction = 1;
+  int totBestMoveChanges = 0;
   Color us = rootPos.side_to_move();
 
   std::memset(ss-7, 0, 10 * sizeof(Stack));
@@ -469,10 +470,10 @@ void Thread::search() {
           // Use part of the gained time from a previous stable move for the current move
           for (Thread* th : Threads)
           {
-              totBestMoveChanges += th->bestMoveChanges;
-              th->bestMoveChanges = 0;
+              totBestMoveChanges += th->bestMoveChanges.load(std::memory_order_relaxed);
+              th->bestMoveChanges.store(0, std::memory_order_relaxed);
           }
-          double bestMoveInstability = 1 + totBestMoveChanges / Threads.size();
+          double bestMoveInstability = 1 + double(totBestMoveChanges) / Threads.size() / 256;
 
           // Stop the search if we have only one legal move, or if available time elapsed
           if (   rootMoves.size() == 1
@@ -1109,7 +1110,7 @@ moves_loop: // When in check, search starts from here
               // iteration. This information is used for time management: When
               // the best move changes frequently, we allocate some more time.
               if (moveCount > 1)
-                  ++thisThread->bestMoveChanges;
+                  thisThread->bestMoveChanges.fetch_add(256, std::memory_order_relaxed);
           }
           else
               // All other moves but the PV are set to the lowest value: this

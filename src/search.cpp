@@ -192,7 +192,7 @@ void MainThread::search() {
   {
       for (Thread* th : Threads)
       {
-          th->bestMoveChanges.store(0, std::memory_order_relaxed);
+          th->bestMoveChanges = 0;
           if (th != this)
               th->start_searching();
       }
@@ -471,8 +471,7 @@ void Thread::search() {
 
           // Use part of the gained time from a previous stable move for the current move
           mainThread->totBestMoveChanges += Threads.accumulate_zero(&Thread::bestMoveChanges);
-          double bestMoveInstability = 1.0 + double(mainThread->totBestMoveChanges)
-                                             / Threads.size() / 256;
+          double bestMoveInstability = 1.0 + mainThread->totBestMoveChanges / Threads.size();
 
           // Stop the search if we have only one legal move, or if available time elapsed
           if (   rootMoves.size() == 1
@@ -1109,7 +1108,7 @@ moves_loop: // When in check, search starts from here
               // iteration. This information is used for time management: When
               // the best move changes frequently, we allocate some more time.
               if (moveCount > 1)
-                  thisThread->bestMoveChanges.fetch_add(256, std::memory_order_relaxed);
+                  ++thisThread->bestMoveChanges;
           }
           else
               // All other moves but the PV are set to the lowest value: this

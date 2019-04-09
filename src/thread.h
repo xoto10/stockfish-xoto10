@@ -85,9 +85,9 @@ struct MainThread : public Thread {
   void search() override;
   void check_time();
 
-  double previousTimeReduction;
+  double previousTimeReduction, totBestMoveChanges;
   Value previousScore;
-  int callsCnt, totBestMoveChanges;
+  int callsCnt;
   bool stopOnPonderhit;
   std::atomic_bool ponder;
 };

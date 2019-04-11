@@ -243,8 +243,8 @@ void MainThread::search() {
       {
           int64_t s = th->rootMoves[0].score - minScore + 1;
           votes[th->rootMoves[0].pv[0]] +=  200
-                                          + s * s * (th->completedDepth + th->selDepth) / 2
-                                          + 3 * log10(double(th->nodes+1));
+                                          + s * s * (th->completedDepth + th->selDepth)
+                                          + 6 * log10(double(th->nodes+1));
       }
 
       // Select best thread

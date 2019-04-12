@@ -144,7 +144,7 @@ namespace {
         if (doubled && !support)
             score -= Doubled;
 
-        if (!opposed && more_than_one(leverPush))
+        if (!opposed && !phalanx && more_than_one(leverPush))
             score -= NoPush;
     }
 

@@ -741,8 +741,8 @@ namespace {
     int outflanking =  distance<File>(pos.square<KING>(WHITE), pos.square<KING>(BLACK))
                      - distance<Rank>(pos.square<KING>(WHITE), pos.square<KING>(BLACK));
 
-    int  pawnMoves = popcount((shift<NORTH>(pos.pieces(WHITE, PAWN)) | shift<SOUTH>(pos.pieces(BLACK, PAWN)))
-                              & ~pos.pieces());
+    int  pawnsBlocked = popcount((shift<NORTH>(pos.pieces(WHITE, PAWN))
+                                  | shift<SOUTH>(pos.pieces(BLACK, PAWN))) & pos.pieces());
 
     bool pawnsOnBothFlanks =   (pos.pieces(PAWN) & QueenSide)
                             && (pos.pieces(PAWN) & KingSide);
@@ -750,11 +750,11 @@ namespace {
     // Compute the initiative bonus for the attacking side
     int complexity =   9 * pe->passed_count()
                     + 11 * pos.count<PAWN>()
-                    +  3 * pawnMoves
                     +  9 * outflanking
                     + 18 * pawnsOnBothFlanks
                     + 49 * !pos.non_pawn_material()
-                    -124 ;
+                    - 10 * pawnsBlocked
+                    -103 ;
 
     // Now apply the bonus: note that we find the attacking side by extracting
     // the sign of the endgame value, and that we carefully cap the bonus so

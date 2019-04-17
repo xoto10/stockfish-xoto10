@@ -306,6 +306,11 @@ namespace {
 
         mobility[Us] += MobilityBonus[Pt - 2][mob];
 
+        // Penalty for piece that doesn't attack anything in our mobility area
+        // apart from the sides of the board
+        if (!(b & mobilityArea[Us] & ~boardSide))
+            score -= SideAttackPiece;
+
         if (Pt == BISHOP || Pt == KNIGHT)
         {
             // Bonus if piece is on an outpost square or can reach one
@@ -338,11 +343,6 @@ namespace {
                 if (more_than_one(attacks_bb<BISHOP>(s, pos.pieces(PAWN)) & Center))
                     score += LongDiagonalBishop;
             }
-
-            // Penalty for piece that doesn't attack anything in our mobility area
-            // apart from the sides of the board
-            if (!(b & mobilityArea[Us] & ~boardSide))
-                score -= SideAttackPiece;
 
             // An important Chess960 pattern: A cornered bishop blocked by a friendly
             // pawn diagonally in front of it is a very serious problem, especially

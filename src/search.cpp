@@ -567,7 +567,9 @@ namespace {
             || pos.is_draw(ss->ply)
             || ss->ply >= MAX_PLY)
             return (ss->ply >= MAX_PLY && !inCheck) ? evaluate(pos)
-                                                    : value_draw(depth, pos.this_thread());
+                                                    : (std::min(50, ss->ply) * evaluate(pos)
+                                                       + (50 - std::min(50, ss->ply)) * value_draw(depth, pos.this_thread())
+                                                      ) / 50;
 
         // Step 3. Mate distance pruning. Even if we mate at the next move our score
         // would be at best mate_in(ss->ply+1), but if alpha is already bigger because
@@ -1233,8 +1235,10 @@ moves_loop: // When in check, search starts from here
     // Check for an immediate draw or maximum ply reached
     if (   pos.is_draw(ss->ply)
         || ss->ply >= MAX_PLY)
-        return (ss->ply >= MAX_PLY && !inCheck) ? evaluate(pos) : VALUE_DRAW;
-
+        return (ss->ply >= MAX_PLY && !inCheck) ? evaluate(pos)
+                                                : (std::min(50, ss->ply) * evaluate(pos)
+                                                   + (50 - std::min(50, ss->ply)) * VALUE_DRAW
+                                                  ) / 50;
     assert(0 <= ss->ply && ss->ply < MAX_PLY);
 
     // Decide whether or not to include checks: this fixes also the type of

@@ -248,10 +248,14 @@ void MainThread::search() {
 
       // Select best thread
       auto bestVote = votes[this->rootMoves[0].pv[0]];
-      int  totScore = 0, numScores = 0;
+      int  totScore = 0, numScores = 0, i = 0;
+sync_cout << "info string       first move " << UCI::move(this->rootMoves[0].pv[0], rootPos.is_chess960()) << sync_endl;
       for (Thread* th : Threads)
+      {
           if (votes[th->rootMoves[0].pv[0]] > bestVote)
           {
+sync_cout << "info string th " << i << " better move " << UCI::move(th->rootMoves[0].pv[0], rootPos.is_chess960())
+          << " " << UCI::value(th->rootMoves[0].score) << sync_endl;
               bestVote = votes[th->rootMoves[0].pv[0]];
               bestThread = th;
               totScore = th->rootMoves[0].score;
@@ -259,11 +263,20 @@ void MainThread::search() {
           }
           else if (votes[th->rootMoves[0].pv[0]] == bestVote)
           {
+sync_cout << "info string th " << i << "                  " << UCI::value(th->rootMoves[0].score)
+          << (th->rootMoves[0].score > bestThread->rootMoves[0].score ? " new best thread" : "")
+          << sync_endl;
               totScore += th->rootMoves[0].score;
               numScores++;
+              if (   th->rootMoves[0].score > bestThread->rootMoves[0].score
+                  || (   th->rootMoves[0].score == bestThread->rootMoves[0].score
+                      && th->rootMoves[0].pv.size() > bestThread->rootMoves[0].pv.size()))
+                  bestThread = th;
           }
+          ++i;
+      }
 
-      bestThread->rootMoves[0].score = Value(totScore / numScores);
+//    bestThread->rootMoves[0].score = Value(totScore / numScores);
   }
 
   previousScore = bestThread->rootMoves[0].score;

@@ -141,8 +141,8 @@ namespace {
   constexpr Score LongDiagonalBishop = S( 45,  0);
   constexpr Score MinorBehindPawn    = S( 18,  3);
   constexpr Score Outpost            = S(  9,  3);
-  constexpr Score One                = S(  1,  1);
   constexpr Score PawnlessFlank      = S( 17, 95);
+  constexpr Score RankOne            = S(  2,  0);
   constexpr Score RestrictedPiece    = S(  7,  7);
   constexpr Score RookOnPawn         = S( 10, 32);
   constexpr Score SliderOnQueen      = S( 59, 18);
@@ -301,7 +301,7 @@ namespace {
         }
 
         int mob = popcount(b & mobilityArea[Us]);
-        mobility[Us] += MobilityBonus[Pt - 2][mob] + One * (rank_of(s) > RANK_1);
+        mobility[Us] += MobilityBonus[Pt - 2][mob] + RankOne * (rank_of(s) > RANK_1);
 
         if (Pt == BISHOP || Pt == KNIGHT)
         {

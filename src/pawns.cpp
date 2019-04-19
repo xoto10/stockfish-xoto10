@@ -35,6 +35,44 @@ namespace {
   constexpr Score Doubled  = S(11, 56);
   constexpr Score Isolated = S( 5, 15);
 
+  int A=0,B=0,C=3,D=0,E=10,F=5,G=15,H=9,I=20,J=12;
+TUNE(SetRange(-20,60),A,B,C,D,E,F,G,H,I,J);
+
+  // Penalise different pawn structures according to which files are semiopen
+            Score Semiopen[256] = {
+    S( A, B), S( A, B), S( E, F), S( A, B), S( A, B), S( E, F), S( E, F), S( A, B),
+    S( A, B), S( A, B), S( E, F), S( E, F), S( A, B), S( E, F), S( E, F), S( A, B),
+    S( A, B), S( A, B), S( E, F), S( A, B), S( E, F), S( E, F), S( E, F), S( E, F),
+    S( A, B), S( A, B), S( E, F), S( E, F), S( A, B), S( E, F), S( E, F), S( A, B),
+    S( A, B), S( A, B), S( E, F), S( A, B), S( A, B), S( E, F), S( E, F), S( A, B),
+    S( E, F), S( E, F), S( G, H), S( E, F), S( E, F), S( E, F), S( E, F), S( A, B),
+    S( A, B), S( A, B), S( E, F), S( A, B), S( E, F), S( E, F), S( E, F), S( A, B),
+    S( A, B), S( A, B), S( E, F), S( A, B), S( A, B), S( E, F), S( A, B), S( A, B),
+    S( E, F), S( E, F), S( E, F), S( E, F), S( E, F), S( E, F), S( E, F), S( E, F),
+    S( E, F), S( E, F), S( G, H), S( E, F), S( E, F), S( E, F), S( E, F), S( A, B),
+    S( E, F), S( E, F), S( G, H), S( E, F), S( G, H), S( I, J), S( I, J), S( G, H),
+    S( E, F), S( E, F), S( I, J), S( G, H), S( E, F), S( G, H), S( G, H), S( E, F),
+    S( E, F), S( A, B), S( E, F), S( A, B), S( E, F), S( E, F), S( E, F), S( A, B),
+    S( E, F), S( E, F), S( I, J), S( G, H), S( E, F), S( G, H), S( G, H), S( E, F),
+    S( E, F), S( E, F), S( E, F), S( A, B), S( E, F), S( G, H), S( G, H), S( E, F),
+    S( E, F), S( A, B), S( G, H), S( E, F), S( A, B), S( E, F), S( E, F), S( A, B),
+    S( A, B), S( A, B), S( E, F), S( A, B), S( A, B), S( E, F), S( E, F), S( A, B),
+    S( A, B), S( A, B), S( E, F), S( E, F), S( A, B), S( E, F), S( E, F), S( A, B),
+    S( A, B), S( A, B), S( E, F), S( A, B), S( E, F), S( E, F), S( E, F), S( A, B),
+    S( A, B), S( A, B), S( E, F), S( A, B), S( A, B), S( A, B), S( A, B), S( A, B),
+    S( E, F), S( E, F), S( E, F), S( E, F), S( E, F), S( E, F), S( E, F), S( A, B),
+    S( E, F), S( E, F), S( I, J), S( G, H), S( E, F), S( G, H), S( G, H), S( E, F),
+    S( E, F), S( E, F), S( E, F), S( A, B), S( E, F), S( G, H), S( G, H), S( E, F),
+    S( E, F), S( A, B), S( G, H), S( E, F), S( A, B), S( E, F), S( E, F), S( A, B),
+    S( A, B), S( A, B), S( E, F), S( A, B), S( A, B), S( E, F), S( E, F), S( A, B),
+    S( A, B), S( A, B), S( E, F), S( E, F), S( A, B), S( E, F), S( A, B), S( A, B),
+    S( E, F), S( E, F), S( E, F), S( A, B), S( E, F), S( G, H), S( G, H), S( E, F),
+    S( E, F), S( A, B), S( G, H), S( E, F), S( E, F), S( E, F), S( E, F), S( C, D),
+    S( A, B), S( A, B), S( E, F), S( A, B), S( A, B), S( A, B), S( A, B), S( A, B),
+    S( E, F), S( A, B), S( G, H), S( E, F), S( A, B), S( E, F), S( E, F), S( C, D),
+    S( A, B), S( A, B), S( A, B), S( A, B), S( A, B), S( E, F), S( E, F), S( C, D),
+    S( A, B), S( A, B), S( E, F), S( C, D), S( A, B), S( A, B), S( A, B), S( A, B) };
+
   // Connected pawn bonus
   constexpr int Connected[RANK_NB] = { 0, 13, 17, 24, 59, 96, 171 };
 
@@ -72,6 +110,7 @@ namespace {
     bool opposed, backward;
     Score score = SCORE_ZERO;
     const Square* pl = pos.squares<PAWN>(Us);
+    int files = 0;
 
     Bitboard ourPawns   = pos.pieces(  Us, PAWN);
     Bitboard theirPawns = pos.pieces(Them, PAWN);
@@ -88,6 +127,7 @@ namespace {
         File f = file_of(s);
         Rank r = relative_rank(Us, s);
 
+        files |= 1 << f;
         e->pawnAttacksSpan[Us] |= pawn_attack_span(Us, s);
 
         // Flag the pawn
@@ -138,6 +178,7 @@ namespace {
         if (doubled && !support)
             score -= Doubled;
     }
+    score -= Semiopen[255-files];
 
     return score;
   }

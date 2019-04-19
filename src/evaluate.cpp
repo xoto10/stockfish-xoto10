@@ -142,7 +142,7 @@ namespace {
   constexpr Score MinorBehindPawn    = S( 18,  3);
   constexpr Score Outpost            = S(  9,  3);
   constexpr Score PawnlessFlank      = S( 17, 95);
-  constexpr Score RankOne            = S(  0,  2);
+  constexpr Score RankOne            = S(  1,  1);
   constexpr Score RestrictedPiece    = S(  7,  7);
   constexpr Score RookOnPawn         = S( 10, 32);
   constexpr Score SliderOnQueen      = S( 59, 18);
@@ -197,6 +197,9 @@ namespace {
     // if black's king is on g8, kingRing[BLACK] is f8, h8, f7, g7, h7, f6, g6
     // and h6.
     Bitboard kingRing[COLOR_NB];
+
+    // developed[color] is the number of pieces of the given color not on rank1
+    int developed[COLOR_NB];
 
     // kingAttackersCount[color] is the number of pieces of the given color
     // which attack a square in the kingRing of the enemy king.
@@ -261,6 +264,8 @@ namespace {
 
     // Remove from kingRing[] the squares defended by two pawns
     kingRing[Us] &= ~dblAttackByPawn;
+
+    developed[Us] = 0;
   }
 
 
@@ -302,11 +307,10 @@ namespace {
 
         int mob = popcount(b & mobilityArea[Us]);
         mobility[Us] += MobilityBonus[Pt - 2][mob];
+        developed[Us] += relative_rank(Us, s) > RANK_1;
 
         if (Pt == BISHOP || Pt == KNIGHT)
         {
-            mobility[Us] += RankOne * (rank_of(s) > RANK_1);
-
             // Bonus if piece is on an outpost square or can reach one
             bb = OutpostRanks & ~pe->pawn_attacks_span(Them);
             if (bb & s)
@@ -374,8 +378,6 @@ namespace {
 
         if (Pt == QUEEN)
         {
-            mobility[Us] += RankOne * (rank_of(s) > RANK_1);
-
             // Penalty if any relative pin or discovered attack against the queen
             Bitboard queenPinners;
             if (pos.slider_blockers(pos.pieces(Them, ROOK, BISHOP), s, queenPinners))
@@ -835,6 +837,8 @@ namespace {
             + pieces<WHITE, QUEEN >() - pieces<BLACK, QUEEN >();
 
     score += mobility[WHITE] - mobility[BLACK];
+    int ddiff = developed[WHITE] - developed[BLACK];
+    score += RankOne * (ddiff * ddiff * ddiff);
 
     score +=  king<   WHITE>() - king<   BLACK>()
             + threats<WHITE>() - threats<BLACK>()

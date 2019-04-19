@@ -305,7 +305,7 @@ namespace {
 
         if (Pt == BISHOP || Pt == KNIGHT)
         {
-            mobility[Us] -= RankOne * (rank_of(s) == RANK_1);
+            mobility[Us] += RankOne * (rank_of(s) > RANK_1);
 
             // Bonus if piece is on an outpost square or can reach one
             bb = OutpostRanks & ~pe->pawn_attacks_span(Them);
@@ -374,7 +374,7 @@ namespace {
 
         if (Pt == QUEEN)
         {
-            mobility[Us] -= RankOne * (rank_of(s) == RANK_1);
+            mobility[Us] += RankOne * (rank_of(s) > RANK_1);
 
             // Penalty if any relative pin or discovered attack against the queen
             Bitboard queenPinners;

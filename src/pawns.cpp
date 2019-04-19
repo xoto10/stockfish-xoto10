@@ -35,8 +35,9 @@ namespace {
   constexpr Score Doubled  = S(11, 56);
   constexpr Score Isolated = S( 5, 15);
 
+  void upd_semiopen();
   int A=0,B=0,C=3,D=0,E=10,F=5,G=15,H=9,I=20,J=12;
-TUNE(SetRange(-20,60),A,B,C,D,E,F,G,H,I,J);
+TUNE(SetRange(-20,60),A,B,C,D,E,F,G,H,I,J,upd_semiopen);
 
   // Penalise different pawn structures according to which files are semiopen
             Score Semiopen[256] = {
@@ -94,6 +95,45 @@ TUNE(SetRange(-20,60),A,B,C,D,E,F,G,H,I,J);
     { V(  4), V( 52), V(162), V(37), V( 7), V(-14), V( -2) },
     { V(-10), V(-14), V( 90), V(15), V( 2), V( -7), V(-16) }
   };
+
+  void upd_semiopen() {
+    Score Semiopen2[256] = {
+    S( A, B), S( A, B), S( E, F), S( A, B), S( A, B), S( E, F), S( E, F), S( A, B),
+    S( A, B), S( A, B), S( E, F), S( E, F), S( A, B), S( E, F), S( E, F), S( A, B),
+    S( A, B), S( A, B), S( E, F), S( A, B), S( E, F), S( E, F), S( E, F), S( E, F),
+    S( A, B), S( A, B), S( E, F), S( E, F), S( A, B), S( E, F), S( E, F), S( A, B),
+    S( A, B), S( A, B), S( E, F), S( A, B), S( A, B), S( E, F), S( E, F), S( A, B),
+    S( E, F), S( E, F), S( G, H), S( E, F), S( E, F), S( E, F), S( E, F), S( A, B),
+    S( A, B), S( A, B), S( E, F), S( A, B), S( E, F), S( E, F), S( E, F), S( A, B),
+    S( A, B), S( A, B), S( E, F), S( A, B), S( A, B), S( E, F), S( A, B), S( A, B),
+    S( E, F), S( E, F), S( E, F), S( E, F), S( E, F), S( E, F), S( E, F), S( E, F),
+    S( E, F), S( E, F), S( G, H), S( E, F), S( E, F), S( E, F), S( E, F), S( A, B),
+    S( E, F), S( E, F), S( G, H), S( E, F), S( G, H), S( I, J), S( I, J), S( G, H),
+    S( E, F), S( E, F), S( I, J), S( G, H), S( E, F), S( G, H), S( G, H), S( E, F),
+    S( E, F), S( A, B), S( E, F), S( A, B), S( E, F), S( E, F), S( E, F), S( A, B),
+    S( E, F), S( E, F), S( I, J), S( G, H), S( E, F), S( G, H), S( G, H), S( E, F),
+    S( E, F), S( E, F), S( E, F), S( A, B), S( E, F), S( G, H), S( G, H), S( E, F),
+    S( E, F), S( A, B), S( G, H), S( E, F), S( A, B), S( E, F), S( E, F), S( A, B),
+    S( A, B), S( A, B), S( E, F), S( A, B), S( A, B), S( E, F), S( E, F), S( A, B),
+    S( A, B), S( A, B), S( E, F), S( E, F), S( A, B), S( E, F), S( E, F), S( A, B),
+    S( A, B), S( A, B), S( E, F), S( A, B), S( E, F), S( E, F), S( E, F), S( A, B),
+    S( A, B), S( A, B), S( E, F), S( A, B), S( A, B), S( A, B), S( A, B), S( A, B),
+    S( E, F), S( E, F), S( E, F), S( E, F), S( E, F), S( E, F), S( E, F), S( A, B),
+    S( E, F), S( E, F), S( I, J), S( G, H), S( E, F), S( G, H), S( G, H), S( E, F),
+    S( E, F), S( E, F), S( E, F), S( A, B), S( E, F), S( G, H), S( G, H), S( E, F),
+    S( E, F), S( A, B), S( G, H), S( E, F), S( A, B), S( E, F), S( E, F), S( A, B),
+    S( A, B), S( A, B), S( E, F), S( A, B), S( A, B), S( E, F), S( E, F), S( A, B),
+    S( A, B), S( A, B), S( E, F), S( E, F), S( A, B), S( E, F), S( A, B), S( A, B),
+    S( E, F), S( E, F), S( E, F), S( A, B), S( E, F), S( G, H), S( G, H), S( E, F),
+    S( E, F), S( A, B), S( G, H), S( E, F), S( E, F), S( E, F), S( E, F), S( C, D),
+    S( A, B), S( A, B), S( E, F), S( A, B), S( A, B), S( A, B), S( A, B), S( A, B),
+    S( E, F), S( A, B), S( G, H), S( E, F), S( A, B), S( E, F), S( E, F), S( C, D),
+    S( A, B), S( A, B), S( A, B), S( A, B), S( A, B), S( E, F), S( E, F), S( C, D),
+    S( A, B), S( A, B), S( E, F), S( C, D), S( A, B), S( A, B), S( A, B), S( A, B) };
+
+    for (int i=0; i<256; i++)
+      Semiopen[i] = Semiopen2[i];
+  }
 
   #undef S
   #undef V

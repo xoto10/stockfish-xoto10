@@ -301,10 +301,12 @@ namespace {
         }
 
         int mob = popcount(b & mobilityArea[Us]);
-        mobility[Us] += MobilityBonus[Pt - 2][mob] + RankOne * (rank_of(s) > RANK_1);
+        mobility[Us] += MobilityBonus[Pt - 2][mob];
 
         if (Pt == BISHOP || Pt == KNIGHT)
         {
+            mobility[Us] -= RankOne * (rank_of(s) == RANK_1);
+
             // Bonus if piece is on an outpost square or can reach one
             bb = OutpostRanks & ~pe->pawn_attacks_span(Them);
             if (bb & s)
@@ -372,6 +374,8 @@ namespace {
 
         if (Pt == QUEEN)
         {
+            mobility[Us] -= RankOne * (rank_of(s) == RANK_1);
+
             // Penalty if any relative pin or discovered attack against the queen
             Bitboard queenPinners;
             if (pos.slider_blockers(pos.pieces(Them, ROOK, BISHOP), s, queenPinners))

@@ -566,8 +566,10 @@ namespace {
         if (   Threads.stop.load(std::memory_order_relaxed)
             || pos.is_draw(ss->ply)
             || ss->ply >= MAX_PLY)
-            return (ss->ply >= MAX_PLY && !inCheck) ? evaluate(pos)
-                                                    : value_draw(depth, pos.this_thread());
+            return (ss->ply >= MAX_PLY && !inCheck)
+                   ? evaluate(pos)
+                   : value_draw(depth, pos.this_thread())
+                     + Value( (pos.this_thread()->rootMoves[0].score > 0) * ss->ply / 16);
 
         // Step 3. Mate distance pruning. Even if we mate at the next move our score
         // would be at best mate_in(ss->ply+1), but if alpha is already bigger because

@@ -248,11 +248,18 @@ void UCI::loop(int argc, char* argv[]) {
 /// mate <y>  Mate in y moves, not plies. If the engine is getting mated
 ///           use negative values for y.
 
-string UCI::value(Value v) {
+string UCI::value(const Position& pos, Value v) {
 
   assert(-VALUE_INFINITE < v && v < VALUE_INFINITE);
 
   stringstream ss;
+  int npm = clamp(pos.non_pawn_material(WHITE) + pos.non_pawn_material(BLACK),
+                  EndgameLimit, MidgameLimit);
+
+  if (1 < std::abs(v) && std::abs(v) < VALUE_KNOWN_WIN)
+      v -=  eg_value(pos.this_thread()->contempt)
+          + mg_value(pos.this_thread()->contempt)
+              * (npm - EndgameLimit) /  (MidgameLimit - EndgameLimit) / 4;
 
   if (abs(v) < VALUE_MATE - MAX_PLY)
       ss << "cp " << v * 100 / PawnValueEg;

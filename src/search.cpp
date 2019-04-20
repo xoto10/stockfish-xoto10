@@ -518,7 +518,7 @@ namespace {
         && pos.has_game_cycle(ss->ply))
     {
         alpha = value_draw(depth, pos.this_thread())
-                + Value(pos.this_thread()->rootMoves[0].score > 0 ? ss->ply / 16 : 0);
+                + Value(pos.this_thread()->rootMoves[0].score > 0 ? 0 : -ss->ply / 16);
         if (alpha >= beta)
             return alpha;
     }

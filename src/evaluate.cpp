@@ -142,7 +142,7 @@ namespace {
   constexpr Score MinorBehindPawn    = S( 18,  3);
   constexpr Score Outpost            = S(  9,  3);
   constexpr Score PawnlessFlank      = S( 17, 95);
-  constexpr Score RankOne            = S(  1,  0);
+  constexpr Score RankOne            = S(  0,  1);
   constexpr Score RestrictedPiece    = S(  7,  7);
   constexpr Score RookOnPawn         = S( 10, 32);
   constexpr Score SliderOnQueen      = S( 59, 18);
@@ -307,10 +307,11 @@ namespace {
 
         int mob = popcount(b & mobilityArea[Us]);
         mobility[Us] += MobilityBonus[Pt - 2][mob];
-        developed[Us] += relative_rank(Us, s) > RANK_1;
 
         if (Pt == BISHOP || Pt == KNIGHT)
         {
+            developed[Us] += relative_rank(Us, s) > RANK_1;
+
             // Bonus if piece is on an outpost square or can reach one
             bb = OutpostRanks & ~pe->pawn_attacks_span(Them);
             if (bb & s)

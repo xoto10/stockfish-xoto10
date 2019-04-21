@@ -757,6 +757,11 @@ namespace {
     // that the endgame score will never change sign after the bonus.
     int v = ((eg > 0) - (eg < 0)) * std::max(complexity, -abs(eg));
 
+    // No positive initiative if #rams > 3
+    int rams = popcount(shift<NORTH>(pos.pieces(WHITE, PAWN)) & pos.pieces(BLACK, PAWN));
+    if (rams > 3)
+        v = std::min(0, v);
+
     if (T)
         Trace::add(INITIATIVE, make_score(0, v));
 

@@ -68,7 +68,6 @@ public:
   Position rootPos;
   Search::RootMoves rootMoves;
   Depth rootDepth, completedDepth;
-  CounterMoveHistory counterMoves;
   ButterflyHistory mainHistory;
   CapturePieceToHistory captureHistory;
   ContinuationHistory continuationHistory;
@@ -108,6 +107,7 @@ struct ThreadPool : public std::vector<Thread*> {
   uint64_t tb_hits()        const { return accumulate(&Thread::tbHits); }
 
   std::atomic_bool stop;
+  std::atomic<uint16_t> counterMoves[PIECE_NB][SQUARE_NB];
 
 private:
   StateListPtr setupStates;

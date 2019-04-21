@@ -19,6 +19,7 @@
 */
 
 #include <cassert>
+#include <cstring>   // For std::memset
 
 #include "movegen.h"
 #include "search.h"
@@ -56,7 +57,6 @@ Thread::~Thread() {
 
 void Thread::clear() {
 
-  counterMoves.fill(MOVE_NONE);
   mainHistory.fill(0);
   captureHistory.fill(0);
 
@@ -145,6 +145,7 @@ void ThreadPool::set(size_t requested) {
 
 void ThreadPool::clear() {
 
+  std::memset(Threads.counterMoves, 0, sizeof(Threads.counterMoves));
   for (Thread* th : *this)
       th->clear();
 

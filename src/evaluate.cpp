@@ -759,7 +759,7 @@ namespace {
 
     // No positive initiative if #rams > 3
     int rams = popcount(shift<NORTH>(pos.pieces(WHITE, PAWN)) & pos.pieces(BLACK, PAWN));
-    v = std::min(54 - 18 * rams, v);
+    v = std::min(66 - 22 * rams, v);
 
     if (T)
         Trace::add(INITIATIVE, make_score(0, v));

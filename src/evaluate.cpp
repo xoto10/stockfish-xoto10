@@ -752,9 +752,12 @@ namespace {
                     + 49 * !pos.non_pawn_material()
                     -103 ;
 
-    // Limit complexity according to number of rams
-    int rams = popcount(shift<NORTH>(pos.pieces(WHITE, PAWN)) & pos.pieces(BLACK, PAWN));
-    complexity = std::min(60 - 20 * rams, complexity);
+    // Limit complexity according to number of rams if many pawns still left
+    if (pos.count<PAWN>() > 10)
+    {
+        int rams = popcount(shift<NORTH>(pos.pieces(WHITE, PAWN)) & pos.pieces(BLACK, PAWN));
+        complexity = std::min(58 - 10 * rams - 2 * pos.count<PAWN>(), complexity);
+    }
 
     // Now apply the bonus: note that we find the attacking side by extracting
     // the sign of the endgame value, and that we carefully cap the bonus so

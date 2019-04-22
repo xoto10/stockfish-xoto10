@@ -752,14 +752,14 @@ namespace {
                     + 49 * !pos.non_pawn_material()
                     -103 ;
 
+    // Limit complexity according to number of rams
+    int rams = popcount(shift<NORTH>(pos.pieces(WHITE, PAWN)) & pos.pieces(BLACK, PAWN));
+    complexity = std::min(60 - 20 * rams, complexity);
+
     // Now apply the bonus: note that we find the attacking side by extracting
     // the sign of the endgame value, and that we carefully cap the bonus so
     // that the endgame score will never change sign after the bonus.
     int v = ((eg > 0) - (eg < 0)) * std::max(complexity, -abs(eg));
-
-    // No positive initiative if #rams > 3
-    int rams = popcount(shift<NORTH>(pos.pieces(WHITE, PAWN)) & pos.pieces(BLACK, PAWN));
-    v = ((eg > 0) - (eg < 0)) * std::min(60 - 20 * rams, v);
 
     if (T)
         Trace::add(INITIATIVE, make_score(0, v));

@@ -745,7 +745,7 @@ namespace {
                             && (pos.pieces(PAWN) & KingSide);
 
     // No positive initiative if #rams > 3
-    int rams = popcount(shift<NORTH>(pos.pieces(WHITE, PAWN)) & pos.pieces(BLACK, PAWN));
+    int rams = popcount(shift<NORTH>(pos.pieces(WHITE, PAWN)) & pos.pieces(BLACK, PAWN)) - 2;
 
     // Compute the initiative bonus for the attacking side
     int complexity =   9 * pe->passed_count()

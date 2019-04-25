@@ -70,6 +70,9 @@ namespace {
     constexpr Direction Up   = (Us == WHITE ? NORTH : SOUTH);
     constexpr Piece     OurPawn   = (Us == WHITE ? W_PAWN : B_PAWN);
     constexpr Piece     TheirPawn = (Us == WHITE ? B_PAWN : W_PAWN);
+    constexpr Square    RelD4     = (Us == WHITE ? SQ_D4 : SQ_D5);
+    constexpr Square    RelD5     = (Us == WHITE ? SQ_D5 : SQ_D4);
+    constexpr Square    RelE5     = (Us == WHITE ? SQ_E5 : SQ_E4);
 
     Bitboard b, neighbours, stoppers, doubled, support, phalanx;
     Bitboard lever, leverPush;
@@ -144,9 +147,9 @@ namespace {
             score -= Doubled;
     }
 
-    if (   pos.piece_on(relative_square(Us, SQ_D4)) == OurPawn
-        && pos.piece_on(relative_square(Us, SQ_E5)) == OurPawn
-        && pos.piece_on(relative_square(Us, SQ_D5)) == TheirPawn)
+    if (   pos.piece_on(RelD4) == OurPawn
+        && pos.piece_on(RelE5) == OurPawn
+        && pos.piece_on(RelD5) == TheirPawn)
         score += CenterPawns;
 
     return score;

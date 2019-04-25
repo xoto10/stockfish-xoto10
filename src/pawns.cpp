@@ -35,6 +35,9 @@ namespace {
   constexpr Score Doubled  = S(11, 56);
   constexpr Score Isolated = S( 5, 15);
 
+  // Center pawn bonus
+  constexpr Score CenterPawns = S(40,0);
+
   // Connected pawn bonus
   constexpr int Connected[RANK_NB] = { 0, 13, 17, 24, 59, 96, 171 };
 
@@ -65,6 +68,8 @@ namespace {
 
     constexpr Color     Them = (Us == WHITE ? BLACK : WHITE);
     constexpr Direction Up   = (Us == WHITE ? NORTH : SOUTH);
+    constexpr Piece     OurPawn   = (Us == WHITE ? W_PAWN : B_PAWN);
+    constexpr Piece     TheirPawn = (Us == WHITE ? B_PAWN : W_PAWN);
 
     Bitboard b, neighbours, stoppers, doubled, support, phalanx;
     Bitboard lever, leverPush;
@@ -138,6 +143,11 @@ namespace {
         if (doubled && !support)
             score -= Doubled;
     }
+
+    if (   pos.piece_on(relative_square(Us, SQ_D4)) == OurPawn
+        && pos.piece_on(relative_square(Us, SQ_E5)) == OurPawn
+        && pos.piece_on(relative_square(Us, SQ_D5)) == TheirPawn)
+        score += CenterPawns;
 
     return score;
   }

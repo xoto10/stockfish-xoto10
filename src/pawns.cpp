@@ -36,7 +36,7 @@ namespace {
   constexpr Score Isolated = S( 5, 15);
 
   // Center pawn bonus
-  constexpr Score CenterPawns = S(40,0);
+  constexpr Score CenterPawns = S(20,0);
 
   // Connected pawn bonus
   constexpr int Connected[RANK_NB] = { 0, 13, 17, 24, 59, 96, 171 };

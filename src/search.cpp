@@ -925,7 +925,7 @@ moves_loop: // When in check, search starts from here
 
       // Castling extension
       else if (   type_of(movedPiece) == KING
-               && pos.castling_rights(us)
+               && pos.can_castle(CastlingRight(us | KING_SIDE | QUEEN_SIDE))
                && depth < 12 * ONE_PLY)
           extension = ONE_PLY;
 

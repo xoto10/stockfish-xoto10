@@ -253,13 +253,17 @@ string UCI::value(const Position& pos, Value v) {
   assert(-VALUE_INFINITE < v && v < VALUE_INFINITE);
 
   stringstream ss;
-  int npm = clamp(pos.non_pawn_material(WHITE) + pos.non_pawn_material(BLACK),
-                  EndgameLimit, MidgameLimit);
 
   if (1 < std::abs(v) && std::abs(v) < VALUE_KNOWN_WIN)
-      v -=  eg_value(pos.this_thread()->contempt)
-          + mg_value(pos.this_thread()->contempt)
-              * (npm - EndgameLimit) /  (MidgameLimit - EndgameLimit) / 4;
+  {
+      int npm = clamp(pos.non_pawn_material(WHITE) + pos.non_pawn_material(BLACK),
+                      EndgameLimit, MidgameLimit);
+      Value v2 =  eg_value(pos.this_thread()->contempt)
+                + mg_value(pos.this_thread()->contempt)
+                  * (npm - EndgameLimit) /  (MidgameLimit - EndgameLimit) / 4;
+      // Use VALUE_ZERO if adjustment changes sign of v
+      v = v * int(v - v2) < 0 ? VALUE_ZERO : v - v2;
+  }
 
   if (abs(v) < VALUE_MATE - MAX_PLY)
       ss << "cp " << v * 100 / PawnValueEg;

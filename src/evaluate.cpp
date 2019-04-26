@@ -137,6 +137,7 @@ namespace {
   constexpr Score FlankAttacks       = S(  8,  0);
   constexpr Score Hanging            = S( 69, 36);
   constexpr Score KingProtector      = S(  7,  8);
+  constexpr Score KRPawnAttack       = S( 20,  0);
   constexpr Score KnightOnQueen      = S( 16, 12);
   constexpr Score LongDiagonalBishop = S( 45,  0);
   constexpr Score MinorBehindPawn    = S( 18,  3);
@@ -484,6 +485,9 @@ namespace {
 
     // Penalty if king flank is under attack, potentially moving toward the king
     score -= FlankAttacks * kingFlankAttacks;
+
+    // Penalty if pawn attacking pawn in king ring
+    score -= KRPawnAttack * popcount(pos.pieces(Us, PAWN) & attackedBy[Them][PAWN] & kingRing[Us]);
 
     if (T)
         Trace::add(KING, Us, score);

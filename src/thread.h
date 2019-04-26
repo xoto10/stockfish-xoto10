@@ -84,6 +84,7 @@ struct MainThread : public Thread {
 
   void search() override;
   void check_time();
+  Value remove_contempt(int, Value);
 
   double previousTimeReduction;
   Value previousScore;

@@ -166,6 +166,20 @@ void Search::clear() {
 }
 
 
+Value MainThread::remove_contempt(int npm, Value v)
+{
+    if (1 < std::abs(v) && std::abs(v) < VALUE_KNOWN_WIN)
+    {
+        Value v2 =  eg_value(contempt)
+                  + mg_value(contempt)
+                    * (npm - EndgameLimit) /  (MidgameLimit - EndgameLimit) / 4;
+        // Use VALUE_ZERO if adjustment changes sign of v
+        v = v * int(v - v2) < 0 ? VALUE_ZERO : v - v2;
+    }
+    return v;
+}
+
+
 /// MainThread::search() is started when the program receives the UCI 'go'
 /// command. It searches from the root position and outputs the "bestmove".
 
@@ -186,7 +200,7 @@ void MainThread::search() {
   {
       rootMoves.emplace_back(MOVE_NONE);
       sync_cout << "info depth 0 score "
-                << UCI::value(rootPos, rootPos.checkers() ? -VALUE_MATE : VALUE_DRAW)
+                << UCI::value(rootPos.checkers() ? -VALUE_MATE : VALUE_DRAW)
                 << sync_endl;
   }
   else
@@ -248,28 +262,29 @@ void MainThread::search() {
       }
 
       // Select best thread
-      auto bestVote = votes[this->rootMoves[0].pv[0]];
-      int  totScore = 0, numScores = 0, i = 0;
+      auto  bestVote = votes[this->rootMoves[0].pv[0]];
+      Value totScore = Value(0);
+      int   numScores = 0;
+      int   npm = clamp(rootPos.non_pawn_material(WHITE) + rootPos.non_pawn_material(BLACK),
+                        EndgameLimit, MidgameLimit);
+
       for (Thread* th : Threads)
-      {
           if (votes[th->rootMoves[0].pv[0]] > bestVote)
           {
               bestVote = votes[th->rootMoves[0].pv[0]];
               bestThread = th;
-              totScore = th->rootMoves[0].score;
+              totScore = remove_contempt(npm, th->rootMoves[0].score);
               numScores = 1;
           }
           else if (votes[th->rootMoves[0].pv[0]] == bestVote)
           {
-              totScore += th->rootMoves[0].score;
+              totScore += remove_contempt(npm, th->rootMoves[0].score);
               numScores++;
               if (   th->rootMoves[0].score > bestThread->rootMoves[0].score
                   || (   th->rootMoves[0].score == bestThread->rootMoves[0].score
                       && th->rootMoves[0].pv.size() > bestThread->rootMoves[0].pv.size()))
                   bestThread = th;
           }
-          ++i;
-      }
 
       bestThread->rootMoves[0].score = Value(totScore / numScores);
   }
@@ -1638,7 +1653,7 @@ string UCI::pv(const Position& pos, Depth depth, Value alpha, Value beta) {
          << " depth "    << d / ONE_PLY
          << " seldepth " << rootMoves[i].selDepth
          << " multipv "  << i + 1
-         << " score "    << UCI::value(pos, v);
+         << " score "    << UCI::value(v);
 
       if (!tb && i == pvIdx)
           ss << (v >= beta ? " lowerbound" : v <= alpha ? " upperbound" : "");

@@ -924,7 +924,9 @@ moves_loop: // When in check, search starts from here
           extension = ONE_PLY;
 
       // Castling extension
-      else if (type_of(move) == CASTLING)
+      else if (   type_of(movedPiece) == KING
+               && pos.castling_rights(us)
+               && depth < 12 * ONE_PLY)
           extension = ONE_PLY;
 
       // Passed pawn extension

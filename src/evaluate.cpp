@@ -756,7 +756,7 @@ namespace {
     if (pos.count<PAWN>() > 10)
     {
         int rams = popcount(shift<NORTH>(pos.pieces(WHITE, PAWN)) & pos.pieces(BLACK, PAWN));
-        complexity = std::min(49 -  8 * rams - 2 * pos.count<PAWN>(), complexity);
+        complexity = std::min(57 - 12 * rams - 2 * pos.count<PAWN>(), complexity);
     }
 
     // Now apply the bonus: note that we find the attacking side by extracting

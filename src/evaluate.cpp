@@ -132,6 +132,7 @@ namespace {
   };
 
   // Assorted bonuses and penalties
+  constexpr Score AttackZone         = S(  2,  2);
   constexpr Score BishopPawns        = S(  3,  7);
   constexpr Score CorneredBishop     = S( 50, 50);
   constexpr Score FlankAttacks       = S(  8,  0);
@@ -550,6 +551,14 @@ namespace {
            | (nonPawnEnemies & attackedBy2[Us]);
         score += Hanging * popcount(weak & b);
     }
+
+    // Bonus for attacks on the best side
+    if (pe->attackZone == ATTACK_KSIDE)
+        score += AttackZone * (  popcount(attackedBy[Us][ALL_PIECES] & KingSide)
+                               + popcount(attackedBy[Us][ALL_PIECES] & KingSide & pos.pieces(Them)));
+    else if (pe->attackZone == ATTACK_QSIDE)
+        score += AttackZone * (  popcount(attackedBy[Us][ALL_PIECES] & QueenSide)
+                               + popcount(attackedBy[Us][ALL_PIECES] & QueenSide & pos.pieces(Them)));
 
     // Bonus for restricting their piece moves
     b =   attackedBy[Them][ALL_PIECES]

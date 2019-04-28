@@ -62,7 +62,7 @@ public:
   Endgames endgames;
   size_t pvIdx, pvLast;
   int selDepth, nmpMinPly;
-  Color nmpColor;
+  Color nmpColor, playing;
   std::atomic<uint64_t> nodes, tbHits, bestMoveChanges;
 
   Position rootPos;

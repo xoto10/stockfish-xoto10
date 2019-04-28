@@ -193,6 +193,7 @@ void MainThread::search() {
       for (Thread* th : Threads)
       {
           th->bestMoveChanges = 0;
+          th->playing = us;
           if (th != this)
               th->start_searching();
       }
@@ -538,7 +539,7 @@ namespace {
     Key posKey;
     Move ttMove, move, excludedMove, bestMove;
     Depth extension, newDepth;
-    Value bestValue, value, ttValue, eval, maxValue;
+    Value bestValue, bestValue2, value, ttValue, eval, maxValue;
     bool ttHit, ttPv, inCheck, givesCheck, improving;
     bool captureOrPromotion, doFullDepthSearch, moveCountPruning, ttCapture;
     Piece movedPiece;
@@ -549,7 +550,7 @@ namespace {
     inCheck = pos.checkers();
     Color us = pos.side_to_move();
     moveCount = captureCount = quietCount = ss->moveCount = 0;
-    bestValue = -VALUE_INFINITE;
+    bestValue = bestValue2 = -VALUE_INFINITE;
     maxValue = VALUE_INFINITE;
 
     // Check for the available remaining time
@@ -689,7 +690,7 @@ namespace {
                 if (PvNode)
                 {
                     if (b == BOUND_LOWER)
-                        bestValue = value, alpha = std::max(alpha, bestValue);
+                        bestValue = bestValue2 = value, alpha = std::max(alpha, bestValue);
                     else
                         maxValue = value;
                 }
@@ -1128,6 +1129,7 @@ moves_loop: // When in check, search starts from here
 
       if (value > bestValue)
       {
+          bestValue2 = bestValue;
           bestValue = value;
 
           if (value > alpha)
@@ -1206,6 +1208,19 @@ moves_loop: // When in check, search starts from here
                   depth, bestMove, ss->staticEval);
 
     assert(bestValue > -VALUE_INFINITE && bestValue < VALUE_INFINITE);
+
+//  if (   (ss->ply & 1)
+    if (   ss->ply < 6
+        && us != thisThread->playing
+        && bestValue - bestValue2 < 5
+       )
+    {
+//      sync_cout << "info string us " << us
+//                << " ply " << ss->ply
+//                << " best " << bestValue << " b2 " << bestValue2
+//                << sync_endl;
+        return (bestValue + bestValue2) / 2;
+    }
 
     return bestValue;
   }

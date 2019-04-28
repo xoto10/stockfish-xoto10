@@ -744,10 +744,10 @@ namespace {
 
     bool pawnsOnBothFlanks =   (pos.pieces(PAWN) & QueenSide)
                             && (pos.pieces(PAWN) & KingSide);
-
+//dbg_mean_of(pos.count<PAWN>()); // Total 1684982 Mean 9.16399
     // Compute the initiative bonus for the attacking side
     int complexity =   9 * pe->passed_count()
-                    + 12 * pos.count<PAWN>()
+                    +      pos.count<PAWN>() * pos.count<PAWN>() * 305 / 256
                     +  9 * outflanking
                     + 18 * pawnsOnBothFlanks
                     + 49 * !pos.non_pawn_material()

@@ -1210,7 +1210,7 @@ moves_loop: // When in check, search starts from here
     assert(bestValue > -VALUE_INFINITE && bestValue < VALUE_INFINITE);
 
 //  if (   (ss->ply & 1)
-    if (   ss->ply < 6
+    if (   ss->ply > 5
         && us != thisThread->playing
         && bestValue - bestValue2 < 5
        )

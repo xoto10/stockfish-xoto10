@@ -167,7 +167,7 @@ void Search::clear() {
 
 Value MainThread::remove_contempt(int npm, Value v)
 {
-    if (1 < std::abs(v) && std::abs(v) < VALUE_KNOWN_WIN)
+    if (abs(contempt)/2 < std::abs(v) && std::abs(v) < VALUE_KNOWN_WIN)
     {
         Value v2 =  eg_value(contempt)
                   + mg_value(contempt)

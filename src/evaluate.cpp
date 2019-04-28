@@ -556,7 +556,7 @@ namespace {
 
     // Bonus for attacks on the best side if center is blocked
     b = shift<Up>(pos.pieces(Us, PAWN)) & pos.pieces(Them, PAWN);
-    if (popcount(b & CenterFiles) >= 2)
+    if (more_than_one(b & CenterFiles))
     {
         if (pos.pieces(Us, PAWN) & TSqE5)
             score += AttackZone * (  popcount(attackedBy[Us][ALL_PIECES] & KingSide)

@@ -165,6 +165,20 @@ void Search::clear() {
 }
 
 
+Value MainThread::remove_contempt(int npm, Value v)
+{
+    if (1 < std::abs(v) && std::abs(v) < VALUE_KNOWN_WIN)
+    {
+        Value v2 =  eg_value(contempt)
+                  + mg_value(contempt)
+                    * (npm - EndgameLimit) /  (MidgameLimit - EndgameLimit) / 4;
+        // Use VALUE_ZERO if adjustment changes sign of v
+        v = v * int(v - v2) < 0 ? VALUE_ZERO : v - v2;
+    }
+    return v;
+}
+
+
 /// MainThread::search() is started when the program receives the UCI 'go'
 /// command. It searches from the root position and outputs the "bestmove".
 
@@ -224,6 +238,7 @@ void MainThread::search() {
       Time.availableNodes += Limits.inc[us] - Threads.nodes_searched();
 
   Thread* bestThread = this;
+  Value   oldScore = this->rootMoves[0].score;
 
   // Check if there are threads with a better score than main thread
   if (    Options["MultiPV"] == 1
@@ -246,19 +261,37 @@ void MainThread::search() {
       }
 
       // Select best thread
-      auto bestVote = votes[this->rootMoves[0].pv[0]];
+      auto  bestVote = votes[this->rootMoves[0].pv[0]];
+      Value totScore = Value(0);
+      int   numScores = 0;
+      int   npm = clamp(rootPos.non_pawn_material(WHITE) + rootPos.non_pawn_material(BLACK),
+                        EndgameLimit, MidgameLimit);
+
       for (Thread* th : Threads)
           if (votes[th->rootMoves[0].pv[0]] > bestVote)
           {
               bestVote = votes[th->rootMoves[0].pv[0]];
               bestThread = th;
+              totScore = remove_contempt(npm, th->rootMoves[0].score);
+              numScores = 1;
           }
+          else if (votes[th->rootMoves[0].pv[0]] == bestVote)
+          {
+              totScore += remove_contempt(npm, th->rootMoves[0].score);
+              numScores++;
+              if (   th->rootMoves[0].score > bestThread->rootMoves[0].score
+                  || (   th->rootMoves[0].score == bestThread->rootMoves[0].score
+                      && th->rootMoves[0].pv.size() > bestThread->rootMoves[0].pv.size()))
+                  bestThread = th;
+          }
+
+      bestThread->rootMoves[0].score = Value(totScore / numScores);
   }
 
   previousScore = bestThread->rootMoves[0].score;
 
   // Send again PV info if we have a new best thread
-  if (bestThread != this)
+  if (bestThread != this || this->rootMoves[0].score != oldScore)
       sync_cout << UCI::pv(bestThread->rootPos, bestThread->completedDepth, -VALUE_INFINITE, VALUE_INFINITE) << sync_endl;
 
   sync_cout << "bestmove " << UCI::move(bestThread->rootMoves[0].pv[0], rootPos.is_chess960());

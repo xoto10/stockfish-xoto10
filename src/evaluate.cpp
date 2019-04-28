@@ -502,6 +502,8 @@ namespace {
     constexpr Color     Them     = (Us == WHITE ? BLACK   : WHITE);
     constexpr Direction Up       = (Us == WHITE ? NORTH   : SOUTH);
     constexpr Bitboard  TRank3BB = (Us == WHITE ? Rank3BB : Rank6BB);
+    constexpr Square    TSqD5    = (Us == WHITE ? SQ_D5   : SQ_D4);
+    constexpr Square    TSqE5    = (Us == WHITE ? SQ_E5   : SQ_E4);
 
     Bitboard b, weak, defended, nonPawnEnemies, stronglyProtected, safe;
     Score score = SCORE_ZERO;
@@ -552,13 +554,17 @@ namespace {
         score += Hanging * popcount(weak & b);
     }
 
-    // Bonus for attacks on the best side
-    if (pe->attackZone == ATTACK_KSIDE)
-        score += AttackZone * (  popcount(attackedBy[Us][ALL_PIECES] & KingSide)
-                               + popcount(attackedBy[Us][ALL_PIECES] & KingSide & pos.pieces(Them)));
-    else if (pe->attackZone == ATTACK_QSIDE)
-        score += AttackZone * (  popcount(attackedBy[Us][ALL_PIECES] & QueenSide)
-                               + popcount(attackedBy[Us][ALL_PIECES] & QueenSide & pos.pieces(Them)));
+    // Bonus for attacks on the best side if center is blocked
+    b = shift<Up>(pos.pieces(Us, PAWN)) & pos.pieces(Them, PAWN);
+    if (popcount(b & CenterFiles) >= 2)
+    {
+        if (pos.pieces(Us, PAWN) & TSqE5)
+            score += AttackZone * (  popcount(attackedBy[Us][ALL_PIECES] & KingSide)
+                                   + popcount(attackedBy[Us][ALL_PIECES] & KingSide & pos.pieces(Them)));
+        else if (pos.pieces(Us, PAWN) & TSqD5)
+            score += AttackZone * (  popcount(attackedBy[Us][ALL_PIECES] & QueenSide)
+                                   + popcount(attackedBy[Us][ALL_PIECES] & QueenSide & pos.pieces(Them)));
+    }
 
     // Bonus for restricting their piece moves
     b =   attackedBy[Them][ALL_PIECES]

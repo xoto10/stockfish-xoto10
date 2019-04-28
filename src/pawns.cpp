@@ -65,8 +65,6 @@ namespace {
 
     constexpr Color     Them = (Us == WHITE ? BLACK : WHITE);
     constexpr Direction Up   = (Us == WHITE ? NORTH : SOUTH);
-              Bitboard  D4E5 = (Us == WHITE ? SquareBB[SQ_D4] | SQ_E5 : SquareBB[SQ_D5] | SQ_E4);
-              Bitboard  D5E4 = (Us == WHITE ? SquareBB[SQ_D5] | SQ_E4 : SquareBB[SQ_D4] | SQ_E5);
 
     Bitboard b, neighbours, stoppers, doubled, support, phalanx;
     Bitboard lever, leverPush;
@@ -77,9 +75,8 @@ namespace {
 
     Bitboard ourPawns   = pos.pieces(  Us, PAWN);
     Bitboard theirPawns = pos.pieces(Them, PAWN);
-    Bitboard dblAttackByPawn = pawn_double_attacks_bb<Them>(pos.pieces(Them, PAWN));
 
-    e->blockedPawns[Us] = e->passedPawns[Us] = e->pawnAttacksSpan[Us] = e->weakUnopposed[Us] = 0;
+    e->passedPawns[Us] = e->pawnAttacksSpan[Us] = e->weakUnopposed[Us] = 0;
     e->kingSquares[Us]   = SQ_NONE;
     e->pawnAttacks[Us]   = pawn_attacks_bb<Us>(ourPawns);
 
@@ -140,17 +137,7 @@ namespace {
 
         if (doubled && !support)
             score -= Doubled;
-
-        if (   ((s + Up) & theirPawns)
-            || (((s + Up) & dblAttackByPawn) && !(phalanx || support)))
-            e->blockedPawns[Us] |= s;
     }
-
-    e->attackZone = ATTACK_DEFAULT;
-    if ((e->blockedPawns[Us] & D4E5) == D4E5)
-        e->attackZone = ATTACK_KSIDE;
-    else if ((e->blockedPawns[Us] & D5E4) == D5E4)
-        e->attackZone = ATTACK_QSIDE;
 
     return score;
   }

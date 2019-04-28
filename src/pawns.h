@@ -54,13 +54,11 @@ struct Entry {
 
   Key key;
   Score scores[COLOR_NB];
-  Bitboard blockedPawns[COLOR_NB];
   Bitboard passedPawns[COLOR_NB];
   Bitboard pawnAttacks[COLOR_NB];
   Bitboard pawnAttacksSpan[COLOR_NB];
   Square kingSquares[COLOR_NB];
   Score kingSafety[COLOR_NB];
-  Attacks attackZone;
   int weakUnopposed[COLOR_NB];
   int castlingRights[COLOR_NB];
   int pawnsOnSquares[COLOR_NB][COLOR_NB]; // [color][light/dark squares]

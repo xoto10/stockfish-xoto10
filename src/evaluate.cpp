@@ -308,11 +308,11 @@ namespace {
 
         mobility[Us] += MobilityBonus[Pt - 2][mob];
 
-        if (b & attackedBy[Us][KING])
-            kingDefenders[Us] += KingDefendWeights[Pt];
-
         if (Pt == BISHOP || Pt == KNIGHT)
         {
+            if (b & attackedBy[Us][KING])
+                kingDefenders[Us] += KingDefendWeights[Pt];
+
             // Bonus if piece is on an outpost square or can reach one
             bb = OutpostRanks & ~pe->pawn_attacks_span(Them);
             if (bb & s)
@@ -361,6 +361,9 @@ namespace {
 
         if (Pt == ROOK)
         {
+            if (b & attackedBy[Us][KING])
+                kingDefenders[Us] += KingDefendWeights[Pt];
+
             // Bonus for aligning rook with enemy pawns on the same rank/file
             if (relative_rank(Us, s) >= RANK_5)
                 score += RookOnPawn * popcount(pos.pieces(Them, PAWN) & PseudoAttacks[ROOK][s]);

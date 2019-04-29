@@ -760,21 +760,21 @@ namespace {
 
     if (eg > 0)
     {
-        Bitboard p = pos.pieces(WHITE, PAWN);
-        u = p ? relative_rank(WHITE, frontmost_sq(WHITE, p)) > RANK_3 : 0;
+        Bitboard p = pos.pieces(WHITE, PAWN) & (Rank5BB | Rank6BB | Rank7BB);
+        u = 10 * popcount(p);
         v = std::max(complexity, -int(eg));
     }
     else if (eg < 0)
     {
-        Bitboard p = pos.pieces(BLACK, PAWN);
-        u = p ? -relative_rank(BLACK, frontmost_sq(BLACK, p)) > RANK_3 : 0;
+        Bitboard p = pos.pieces(BLACK, PAWN) & (Rank2BB | Rank3BB | Rank4BB);
+        u = 10 * popcount(p);
         v = - std::max(complexity, int(eg));
     }
 
     if (T)
-        Trace::add(INITIATIVE, make_score(20*u, v));
+        Trace::add(INITIATIVE, make_score(u, v));
 
-    return make_score(20*u, v);
+    return make_score(u, v);
   }
 
 

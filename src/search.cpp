@@ -1214,7 +1214,7 @@ moves_loop: // When in check, search starts from here
         && bestValue - bestValue2 < 5
        )
     {
-        return bestValue2;
+        return bestValue - 3;
     }
 
     return bestValue;

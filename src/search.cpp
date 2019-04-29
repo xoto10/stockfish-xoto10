@@ -1209,17 +1209,12 @@ moves_loop: // When in check, search starts from here
 
     assert(bestValue > -VALUE_INFINITE && bestValue < VALUE_INFINITE);
 
-//  if (   (ss->ply & 1)
     if (   ss->ply > 5
         && us != thisThread->playing
         && bestValue - bestValue2 < 5
        )
     {
-//      sync_cout << "info string us " << us
-//                << " ply " << ss->ply
-//                << " best " << bestValue << " b2 " << bestValue2
-//                << sync_endl;
-        return (bestValue + bestValue2) / 2;
+        return bestValue2;
     }
 
     return bestValue;

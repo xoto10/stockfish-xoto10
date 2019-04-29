@@ -751,17 +751,30 @@ namespace {
                     +  9 * outflanking
                     + 18 * pawnsOnBothFlanks
                     + 49 * !pos.non_pawn_material()
-                    -103 ;
+                    -105 ;
 
     // Now apply the bonus: note that we find the attacking side by extracting
     // the sign of the endgame value, and that we carefully cap the bonus so
     // that the endgame score will never change sign after the bonus.
-    int v = ((eg > 0) - (eg < 0)) * std::max(complexity, -abs(eg));
+    int u = 0, v = 0;
+
+    if (eg > 0)
+    {
+        Bitboard p = pos.pieces(WHITE, PAWN);
+        u = p ? relative_rank(WHITE, frontmost_sq(WHITE, p)) : 0;
+        v = std::max(complexity, -int(eg));
+    }
+    else if (eg < 0)
+    {
+        Bitboard p = pos.pieces(BLACK, PAWN);
+        u = p ? -relative_rank(BLACK, frontmost_sq(BLACK, p)) : 0;
+        v = - std::max(complexity, int(eg));
+    }
 
     if (T)
-        Trace::add(INITIATIVE, make_score(0, v));
+        Trace::add(INITIATIVE, make_score(u, v));
 
-    return make_score(0, v);
+    return make_score(u, v);
   }
 
 

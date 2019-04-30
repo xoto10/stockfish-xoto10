@@ -65,6 +65,7 @@ namespace {
 
     constexpr Color     Them = (Us == WHITE ? BLACK : WHITE);
     constexpr Direction Up   = (Us == WHITE ? NORTH : SOUTH);
+    constexpr Bitboard  AdvBB = (Us == WHITE ? Rank5BB | Rank6BB | Rank7BB : Rank4BB | Rank3BB | Rank2BB);
 
     Bitboard b, neighbours, stoppers, doubled, support, phalanx;
     Bitboard lever, leverPush;
@@ -80,6 +81,8 @@ namespace {
     e->kingSquares[Us]   = SQ_NONE;
     e->pawnAttacks[Us]   = pawn_attacks_bb<Us>(ourPawns);
 
+    int advance = ourPawns & AdvBB ? relative_rank(Us, frontmost_sq(Us, ourPawns)) : 0;
+
     // Loop through all pawns of the current color and score each pawn
     while ((s = *pl++) != SQ_NONE)
     {
@@ -87,6 +90,9 @@ namespace {
 
         File f = file_of(s);
         Rank r = relative_rank(Us, s);
+
+        if (r == advance)
+            score += make_score((r - 3) * 6, 0);
 
         e->pawnAttacksSpan[Us] |= pawn_attack_span(Us, s);
 

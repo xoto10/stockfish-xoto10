@@ -60,6 +60,11 @@ namespace {
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV };
 
+  // First thread number for excluded rootMove search
+  constexpr double ExcludedRootMoveTime = 0.1;
+  constexpr int ExcludedRootMoveThread = 2;
+  constexpr int ExcludedRootMoveInc = 16;
+
   // Razor and futility margins
   constexpr int RazorMargin = 600;
   Value futility_margin(Depth d, bool improving) {
@@ -271,6 +276,32 @@ void MainThread::search() {
 }
 
 
+/// think_time() calculates the time to use on this move
+
+double think_time(Value previousScore, Value bestValue, Depth lastBestMoveDepth,
+                  Depth completedDepth, double previousTimeReduction,
+                  double *totBestMoveChanges, double *timeReduction)
+{
+    // If eval is falling, increase time
+    double fallingEval = (314 + 9 * (previousScore - bestValue)) / 581.0;
+    fallingEval = clamp(fallingEval, 0.5, 1.5);
+
+    // If the bestMove is stable over several iterations, reduce time
+    *timeReduction = lastBestMoveDepth + 10 * ONE_PLY < completedDepth ? 1.95 : 1.0;
+    double reduction = std::pow(previousTimeReduction, 0.528) / *timeReduction;
+
+    // Use part of the gained time from a previous stable move for the current move
+    for (Thread* th : Threads)
+    {
+        *totBestMoveChanges += th->bestMoveChanges;
+        th->bestMoveChanges = 0;
+    }
+    double bestMoveInstability = 1 + *totBestMoveChanges / Threads.size();
+
+    return Time.optimum() * fallingEval * reduction * bestMoveInstability;
+}
+
+
 /// Thread::search() is the main iterative deepening loop. It calls search()
 /// repeatedly with increasing depth until the allocated thinking time has been
 /// consumed, the user stops the search, or the maximum search depth is reached.
@@ -460,55 +491,27 @@ void Thread::search() {
           && !Threads.stop
           && !mainThread->stopOnPonderhit)
       {
-          // Mid-way change
-          if (Threads.size() > 1 && mainMove == MOVE_NULL)
+          double thinkTime = think_time(mainThread->previousScore, bestValue, lastBestMoveDepth,
+                                        completedDepth, mainThread->previousTimeReduction,
+                                        &totBestMoveChanges, &timeReduction);
+
+          // Set mainMove part-way through think
+          if (Threads.size() > ExcludedRootMoveThread && mainMove == MOVE_NULL)
           {
-              double fallingEval = (314 + 9 * (mainThread->previousScore - bestValue)) / 581.0;
-              fallingEval = clamp(fallingEval, 0.5, 1.5);
-
-              // If the bestMove is stable over several iterations, reduce time accordingly
-              timeReduction = lastBestMoveDepth + 10 * ONE_PLY < completedDepth ? 1.95 : 1.0;
-              double reduction = std::pow(mainThread->previousTimeReduction, 0.528) / timeReduction;
-
-              // Use part of the gained time from a previous stable move for the current move
-              for (Thread* th : Threads)
+              if (Time.elapsed() > thinkTime * ExcludedRootMoveTime)
               {
-                  totBestMoveChanges += th->bestMoveChanges;
-                  th->bestMoveChanges = 0;
-              }
-              double bestMoveInstability = 1 + totBestMoveChanges / Threads.size();
-
-              // Stop the search if we have only one legal move, or if available time elapsed
-              if (Time.elapsed() > Time.optimum() * fallingEval * reduction * bestMoveInstability * 0.1)
-              {
-                  // Set mainMove on mainThread and threads we want to exclude that move
+                  // Set mainMove in mainThread and in threads that should exclude it from now on
                   mainMove = rootMoves[0].pv[0];
-                  for (unsigned i = 7; i < Threads.size(); i += 8)
+                  for (unsigned i = ExcludedRootMoveThread; i < Threads.size(); i += ExcludedRootMoveInc)
 
                       Threads[i]->mainMove.store( mainMove.load(std::memory_order_relaxed)
                                                 , std::memory_order_relaxed );
               }
           }
 
-          // Final stop
-          double fallingEval = (314 + 9 * (mainThread->previousScore - bestValue)) / 581.0;
-          fallingEval = clamp(fallingEval, 0.5, 1.5);
-
-          // If the bestMove is stable over several iterations, reduce time accordingly
-          timeReduction = lastBestMoveDepth + 10 * ONE_PLY < completedDepth ? 1.95 : 1.0;
-          double reduction = std::pow(mainThread->previousTimeReduction, 0.528) / timeReduction;
-
-          // Use part of the gained time from a previous stable move for the current move
-          for (Thread* th : Threads)
-          {
-              totBestMoveChanges += th->bestMoveChanges;
-              th->bestMoveChanges = 0;
-          }
-          double bestMoveInstability = 1 + totBestMoveChanges / Threads.size();
-
           // Stop the search if we have only one legal move, or if available time elapsed
           if (   rootMoves.size() == 1
-              || Time.elapsed() > Time.optimum() * fallingEval * reduction * bestMoveInstability)
+              || Time.elapsed() > thinkTime)
           {
               // If we are allowed to ponder do not stop the search now but
               // keep pondering until the GUI sends "ponderhit" or "stop".
@@ -630,7 +633,7 @@ namespace {
     // Step 4. Transposition table lookup. We don't want the score of a partial
     // search to overwrite a previous full search TT value, so we use a different
     // position key in case of an excluded move.
-    if (thisThread->get_idx() > 0 && rootNode)
+    if (rootNode)
         excludedMove = Move( thisThread->mainMove.load(std::memory_order_relaxed) );
     else
         excludedMove = ss->excludedMove;

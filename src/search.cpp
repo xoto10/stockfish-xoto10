@@ -193,6 +193,7 @@ void MainThread::search() {
       for (Thread* th : Threads)
       {
           th->bestMoveChanges = 0;
+          th->mainMove = MOVE_NULL;
           if (th != this)
               th->start_searching();
       }
@@ -459,6 +460,37 @@ void Thread::search() {
           && !Threads.stop
           && !mainThread->stopOnPonderhit)
       {
+          // Mid-way change
+          if (Threads.size() > 1 && mainMove == MOVE_NULL)
+          {
+              double fallingEval = (314 + 9 * (mainThread->previousScore - bestValue)) / 581.0;
+              fallingEval = clamp(fallingEval, 0.5, 1.5);
+
+              // If the bestMove is stable over several iterations, reduce time accordingly
+              timeReduction = lastBestMoveDepth + 10 * ONE_PLY < completedDepth ? 1.95 : 1.0;
+              double reduction = std::pow(mainThread->previousTimeReduction, 0.528) / timeReduction;
+
+              // Use part of the gained time from a previous stable move for the current move
+              for (Thread* th : Threads)
+              {
+                  totBestMoveChanges += th->bestMoveChanges;
+                  th->bestMoveChanges = 0;
+              }
+              double bestMoveInstability = 1 + totBestMoveChanges / Threads.size();
+
+              // Stop the search if we have only one legal move, or if available time elapsed
+              if (Time.elapsed() > Time.optimum() * fallingEval * reduction * bestMoveInstability * 0.1)
+              {
+                  // Set mainMove on mainThread and threads we want to exclude that move
+                  mainMove = rootMoves[0].pv[0];
+                  for (unsigned i = 7; i < Threads.size(); i += 8)
+
+                      Threads[i]->mainMove.store( mainMove.load(std::memory_order_relaxed)
+                                                , std::memory_order_relaxed );
+              }
+          }
+
+          // Final stop
           double fallingEval = (314 + 9 * (mainThread->previousScore - bestValue)) / 581.0;
           fallingEval = clamp(fallingEval, 0.5, 1.5);
 
@@ -598,7 +630,10 @@ namespace {
     // Step 4. Transposition table lookup. We don't want the score of a partial
     // search to overwrite a previous full search TT value, so we use a different
     // position key in case of an excluded move.
-    excludedMove = ss->excludedMove;
+    if (thisThread->get_idx() > 0 && rootNode)
+        excludedMove = Move( thisThread->mainMove.load(std::memory_order_relaxed) );
+    else
+        excludedMove = ss->excludedMove;
     posKey = pos.key() ^ Key(excludedMove << 16); // Isn't a very good hash
     tte = TT.probe(posKey, ttHit);
     ttValue = ttHit ? value_from_tt(tte->value(), ss->ply) : VALUE_NONE;

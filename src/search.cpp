@@ -289,11 +289,12 @@ void Thread::search() {
   Stack stack[MAX_PLY+10], *ss = stack+7;
   Move  pv[MAX_PLY+1];
   Value bestValue, alpha, beta, delta;
-  Move  lastBestMove = MOVE_NONE, mainMove = MOVE_NONE;
+  Move  lastBestMove = MOVE_NONE;
   Depth lastBestMoveDepth = DEPTH_ZERO;
   MainThread* mainThread = (this == Threads.main() ? Threads.main() : nullptr);
   double timeReduction = 1, totBestMoveChanges = 0;
   Color us = rootPos.side_to_move();
+  bool excludedRootMoveSet = false;
 
   std::memset(ss-7, 0, 10 * sizeof(Stack));
   for (int i = 7; i > 0; i--)
@@ -483,14 +484,14 @@ void Thread::search() {
 
           double thinkTime = Time.optimum() * fallingEval * reduction * bestMoveInstability;
 
-          // If using many threads set mainMove and excludedRootMoves part-way through think
+          // If using many threads set excludedRootMove values part-way through think
           if (   Threads.size() > ExcludedRootMoveThread
-              && mainMove == MOVE_NONE
+              && !excludedRootMoveSet
               && Time.elapsed() > thinkTime * ExcludedRootMoveTime)
           {
-              mainMove = rootMoves[0].pv[0];
+              excludedRootMoveSet = true;
               for (unsigned i = ExcludedRootMoveThread; i < Threads.size(); i += ExcludedRootMoveInc)
-                  Threads[i]->excludedRootMove.store(mainMove, std::memory_order_relaxed);
+                  Threads[i]->excludedRootMove.store(rootMoves[0].pv[0], std::memory_order_relaxed);
           }
 
           // Stop the search if we have only one legal move, or if available time elapsed

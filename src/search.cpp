@@ -61,8 +61,8 @@ namespace {
   enum NodeType { NonPV, PV };
 
   // Data for excluded rootMove
-  constexpr double ExcludedRootMoveTime = 0.1;
-  constexpr int ExcludedRootMoveThread = 7;
+  constexpr double ExcludedRootMoveTime = 0.05;
+  constexpr int ExcludedRootMoveThread = 2;
   constexpr int ExcludedRootMoveInc = 16;
 
   // Razor and futility margins
@@ -253,12 +253,27 @@ void MainThread::search() {
 
       // Select best thread
       auto bestVote = votes[this->rootMoves[0].pv[0]];
+//    int i=0;
       for (Thread* th : Threads)
+      {
           if (votes[th->rootMoves[0].pv[0]] > bestVote)
           {
               bestVote = votes[th->rootMoves[0].pv[0]];
               bestThread = th;
           }
+
+//        if (th->get_idx() == 2)
+//        sync_cout << "info string th " << i << " sc " << UCI::value(th->rootMoves[0].score) << " pv: "
+//                      << UCI::pv(th->rootPos, th->completedDepth, -VALUE_INFINITE, VALUE_INFINITE) << sync_endl;
+//        ++i;
+      }
+
+//    if (   bestThread->rootMoves[0].pv[0] == Threads[2]->rootMoves[0].pv[0]
+//        && Threads[2]->rootMoves[0].pv[0] != int(Threads[2]->excludedRootMove)
+//        && (  Threads[2]->rootMoves[0].pv[0] != Threads[0]->rootMoves[0].pv[0]
+//           || Threads[2]->rootMoves[0].pv[0] != Threads[1]->rootMoves[0].pv[0])
+//       )
+//        sync_cout << "info string th 2 move CHOSEN!" << sync_endl;
   }
 
   previousScore = bestThread->rootMoves[0].score;
@@ -475,23 +490,30 @@ void Thread::search() {
           double reduction = std::pow(mainThread->previousTimeReduction, 0.528) / timeReduction;
 
           // Use part of the gained time from a previous stable move for the current move
+          int tot = 0;
           for (Thread* th : Threads)
           {
               totBestMoveChanges += th->bestMoveChanges;
+              tot += th->bestMoveChanges;
               th->bestMoveChanges = 0;
           }
           double bestMoveInstability = 1 + totBestMoveChanges / Threads.size();
+          sync_cout << "info string totch " << totBestMoveChanges << sync_endl;
 
           double thinkTime = Time.optimum() * fallingEval * reduction * bestMoveInstability;
 
           // If using many threads set excludedRootMove values part-way through think
           if (   Threads.size() > ExcludedRootMoveThread
               && !excludedRootMoveSet
-              && Time.elapsed() > thinkTime * ExcludedRootMoveTime)
+              && Time.elapsed() > thinkTime * ExcludedRootMoveTime
+             )
           {
               excludedRootMoveSet = true;
-              for (unsigned i = ExcludedRootMoveThread; i < Threads.size(); i += ExcludedRootMoveInc)
-                  Threads[i]->excludedRootMove.store(rootMoves[0].pv[0], std::memory_order_relaxed);
+//            if (totBestMoveChanges > 1)
+              if (tot)
+                  for (unsigned i = ExcludedRootMoveThread; i < Threads.size(); i += ExcludedRootMoveInc)
+                      Threads[i]->excludedRootMove.store(rootMoves[0].pv[0], std::memory_order_relaxed);
+//            sync_cout << "info string th 2 excl: " << UCI::move(rootMoves[0].pv[0], rootPos.is_chess960()) << sync_endl;
           }
 
           // Stop the search if we have only one legal move, or if available time elapsed
@@ -618,8 +640,16 @@ namespace {
     // Step 4. Transposition table lookup. We don't want the score of a partial
     // search to overwrite a previous full search TT value, so we use a different
     // position key in case of an excluded move.
-    if (rootNode && thisThread->get_idx() >= ExcludedRootMoveThread)
+    if (ss->ply == 0)
+    {
         excludedMove = Move( thisThread->excludedRootMove.load(std::memory_order_relaxed) );
+//      if (thisThread->get_idx() == 2 && excludedMove)
+//      {
+//          thisThread->rootMoves[0].score -= 200;
+//          sync_cout << "info string exmv: " << UCI::move(excludedMove, pos.is_chess960())
+//                    << " depth " << depth << sync_endl;
+//      }
+    }
     else
         excludedMove = ss->excludedMove;
     posKey = pos.key() ^ Key(excludedMove << 16); // Isn't a very good hash

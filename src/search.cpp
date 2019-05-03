@@ -61,6 +61,11 @@ namespace {
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV };
 
+  // Data for excluded rootMove
+  constexpr double ExcludedRootMoveTime = 0.05;
+  constexpr int ExcludedRootMoveThread = 7;
+  constexpr int ExcludedRootMoveInc = 16;
+
   // Razor and futility margins
   constexpr int RazorMargin = 600;
   Value futility_margin(Depth d, bool improving) {
@@ -194,6 +199,7 @@ void MainThread::search() {
       for (Thread* th : Threads)
       {
           th->bestMoveChanges = 0;
+          th->excludedRootMove = MOVE_NONE;
           if (th != this)
               th->start_searching();
       }
@@ -289,6 +295,7 @@ void Thread::search() {
   MainThread* mainThread = (this == Threads.main() ? Threads.main() : nullptr);
   double timeReduction = 1, totBestMoveChanges = 0;
   Color us = rootPos.side_to_move();
+  bool excludedRootMoveSet = false;
 
   std::memset(ss-7, 0, 10 * sizeof(Stack));
   for (int i = 7; i > 0; i--)
@@ -451,15 +458,38 @@ void Thread::search() {
       if (!mainThread)
           continue;
 
+
       // If skill level is enabled and time is up, pick a sub-optimal best move
       if (skill.enabled() && skill.time_to_pick(rootDepth))
           skill.pick_best(multiPV);
+
+      // Total up move changes across threads
+      unsigned tot = 0;
+      for (Thread* th : Threads)
+      {
+          tot += th->bestMoveChanges;
+          th->bestMoveChanges = 0;
+      }
+
+      // If using many threads set excludedRootMove values part-way through think
+      if (   Threads.size() > ExcludedRootMoveThread
+          && !excludedRootMoveSet
+          && rootDepth == 10
+          && rootMoves.size() > 33
+         )
+      {
+          excludedRootMoveSet = true;
+          if (tot)
+              for (unsigned i = ExcludedRootMoveThread; i < Threads.size(); i += ExcludedRootMoveInc)
+                  Threads[i]->excludedRootMove.store(rootMoves[0].pv[0], std::memory_order_relaxed);
+      }
 
       // Do we have time for the next iteration? Can we stop searching now?
       if (    Limits.use_time_management()
           && !Threads.stop
           && !mainThread->stopOnPonderhit)
       {
+          // If eval is falling, increase time
           double fallingEval = (314 + 9 * (mainThread->previousScore - bestValue)) / 581.0;
           fallingEval = clamp(fallingEval, 0.5, 1.5);
 
@@ -468,11 +498,7 @@ void Thread::search() {
           double reduction = std::pow(mainThread->previousTimeReduction, 0.528) / timeReduction;
 
           // Use part of the gained time from a previous stable move for the current move
-          for (Thread* th : Threads)
-          {
-              totBestMoveChanges += th->bestMoveChanges;
-              th->bestMoveChanges = 0;
-          }
+          totBestMoveChanges += tot;
           double bestMoveInstability = 1 + totBestMoveChanges / Threads.size();
 
           // Stop the search if we have only one legal move, or if available time elapsed
@@ -599,7 +625,10 @@ namespace {
     // Step 4. Transposition table lookup. We don't want the score of a partial
     // search to overwrite a previous full search TT value, so we use a different
     // position key in case of an excluded move.
-    excludedMove = ss->excludedMove;
+    if (ss->ply == 0)
+        excludedMove = Move( thisThread->excludedRootMove.load(std::memory_order_relaxed) );
+    else
+        excludedMove = ss->excludedMove;
     posKey = pos.key() ^ Key(excludedMove << 16); // Isn't a very good hash
     tte = TT.probe(posKey, ttHit);
     ttValue = ttHit ? value_from_tt(tte->value(), ss->ply) : VALUE_NONE;

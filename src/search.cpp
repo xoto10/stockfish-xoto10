@@ -478,6 +478,14 @@ void Thread::search() {
           skill.pick_best(multiPV);
 
 
+      // Total up move changes across threads
+      int tot = 0;
+      for (Thread* th : Threads)
+      {
+          tot += th->bestMoveChanges;
+          th->bestMoveChanges = 0;
+      }
+
       // If using many threads set excludedRootMove values part-way through think
       if (   Threads.size() > ExcludedRootMoveThread
           && !excludedRootMoveSet
@@ -486,11 +494,11 @@ void Thread::search() {
       {
 //            sync_cout << "info string totch " << totBestMoveChanges << sync_endl;
           excludedRootMoveSet = true;
-//            if (tot)
-//            if (totBestMoveChanges >= 1)
-          for (unsigned i = ExcludedRootMoveThread; i < Threads.size(); i += ExcludedRootMoveInc)
-              Threads[i]->excludedRootMove.store(rootMoves[0].pv[0], std::memory_order_relaxed);
-//            sync_cout << "info string th 2 excl: " << UCI::move(rootMoves[0].pv[0], rootPos.is_chess960()) << sync_endl;
+//        if (totBestMoveChanges >= 1)
+          if (tot)
+              for (unsigned i = ExcludedRootMoveThread; i < Threads.size(); i += ExcludedRootMoveInc)
+                  Threads[i]->excludedRootMove.store(rootMoves[0].pv[0], std::memory_order_relaxed);
+//        sync_cout << "info string th 2 excl: " << UCI::move(rootMoves[0].pv[0], rootPos.is_chess960()) << sync_endl;
       }
 
       // Do we have time for the next iteration? Can we stop searching now?
@@ -507,13 +515,7 @@ void Thread::search() {
           double reduction = std::pow(mainThread->previousTimeReduction, 0.528) / timeReduction;
 
           // Use part of the gained time from a previous stable move for the current move
-          int tot = 0;
-          for (Thread* th : Threads)
-          {
-              totBestMoveChanges += th->bestMoveChanges;
-              tot += th->bestMoveChanges;
-              th->bestMoveChanges = 0;
-          }
+          totBestMoveChanges += tot;
           double bestMoveInstability = 1 + totBestMoveChanges / Threads.size();
 
           double thinkTime = Time.optimum() * fallingEval * reduction * bestMoveInstability;

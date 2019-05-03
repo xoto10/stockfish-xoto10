@@ -271,7 +271,7 @@ void MainThread::search() {
 //    if (   bestThread->rootMoves[0].pv[0] == Threads[2]->rootMoves[0].pv[0]
 //        && Threads[2]->rootMoves[0].pv[0] != int(Threads[2]->excludedRootMove)
 //        && (  Threads[2]->rootMoves[0].pv[0] != Threads[0]->rootMoves[0].pv[0]
-//           || Threads[2]->rootMoves[0].pv[0] != Threads[1]->rootMoves[0].pv[0])
+//           && Threads[2]->rootMoves[0].pv[0] != Threads[1]->rootMoves[0].pv[0])
 //       )
 //        sync_cout << "info string th 2 move CHOSEN!" << sync_endl;
   }
@@ -472,9 +472,26 @@ void Thread::search() {
       if (!mainThread)
           continue;
 
+
       // If skill level is enabled and time is up, pick a sub-optimal best move
       if (skill.enabled() && skill.time_to_pick(rootDepth))
           skill.pick_best(multiPV);
+
+
+      // If using many threads set excludedRootMove values part-way through think
+      if (   Threads.size() > ExcludedRootMoveThread
+          && !excludedRootMoveSet
+          && rootDepth == 10
+         )
+      {
+//            sync_cout << "info string totch " << totBestMoveChanges << sync_endl;
+          excludedRootMoveSet = true;
+//            if (tot)
+//            if (totBestMoveChanges >= 1)
+          for (unsigned i = ExcludedRootMoveThread; i < Threads.size(); i += ExcludedRootMoveInc)
+              Threads[i]->excludedRootMove.store(rootMoves[0].pv[0], std::memory_order_relaxed);
+//            sync_cout << "info string th 2 excl: " << UCI::move(rootMoves[0].pv[0], rootPos.is_chess960()) << sync_endl;
+      }
 
       // Do we have time for the next iteration? Can we stop searching now?
       if (    Limits.use_time_management()
@@ -498,23 +515,23 @@ void Thread::search() {
               th->bestMoveChanges = 0;
           }
           double bestMoveInstability = 1 + totBestMoveChanges / Threads.size();
-          sync_cout << "info string totch " << totBestMoveChanges << sync_endl;
 
           double thinkTime = Time.optimum() * fallingEval * reduction * bestMoveInstability;
 
-          // If using many threads set excludedRootMove values part-way through think
-          if (   Threads.size() > ExcludedRootMoveThread
-              && !excludedRootMoveSet
-              && Time.elapsed() > thinkTime * ExcludedRootMoveTime
-             )
-          {
-              excludedRootMoveSet = true;
-//            if (totBestMoveChanges > 1)
-              if (tot)
-                  for (unsigned i = ExcludedRootMoveThread; i < Threads.size(); i += ExcludedRootMoveInc)
-                      Threads[i]->excludedRootMove.store(rootMoves[0].pv[0], std::memory_order_relaxed);
-//            sync_cout << "info string th 2 excl: " << UCI::move(rootMoves[0].pv[0], rootPos.is_chess960()) << sync_endl;
-          }
+//          // If using many threads set excludedRootMove values part-way through think
+//          if (   Threads.size() > ExcludedRootMoveThread
+//              && !excludedRootMoveSet
+//              && Time.elapsed() > thinkTime * ExcludedRootMoveTime
+//             )
+//          {
+////            sync_cout << "info string totch " << totBestMoveChanges << sync_endl;
+//              excludedRootMoveSet = true;
+////            if (tot)
+////            if (totBestMoveChanges >= 1)
+//                  for (unsigned i = ExcludedRootMoveThread; i < Threads.size(); i += ExcludedRootMoveInc)
+//                      Threads[i]->excludedRootMove.store(rootMoves[0].pv[0], std::memory_order_relaxed);
+////            sync_cout << "info string th 2 excl: " << UCI::move(rootMoves[0].pv[0], rootPos.is_chess960()) << sync_endl;
+//          }
 
           // Stop the search if we have only one legal move, or if available time elapsed
           if (   rootMoves.size() == 1

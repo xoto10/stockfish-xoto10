@@ -195,6 +195,9 @@ void MainThread::search() {
   }
   else
   {
+//sdbg_mean_of(rootMoves.size());  // info string Total 40 Mean 25.775
+//if (rootMoves.size() > 25)
+//  sdbg_mean_of(rootMoves.size());  // info string Total 20 Mean 37.45  (as high as 48)
       for (Thread* th : Threads)
       {
           th->bestMoveChanges = 0;
@@ -273,6 +276,7 @@ void MainThread::search() {
 //        && (  Threads[2]->rootMoves[0].pv[0] != Threads[0]->rootMoves[0].pv[0]
 //           && Threads[2]->rootMoves[0].pv[0] != Threads[1]->rootMoves[0].pv[0])
 //       )
+//        sync_cout << "info string root moves " << rootMoves.size() << sync_endl;
 //        sync_cout << "info string th 2 move CHOSEN!" << sync_endl;
   }
 
@@ -490,6 +494,7 @@ void Thread::search() {
       if (   Threads.size() > ExcludedRootMoveThread
           && !excludedRootMoveSet
           && rootDepth == 10
+          && rootMoves.size() > 33
          )
       {
 //            sync_cout << "info string totch " << totBestMoveChanges << sync_endl;

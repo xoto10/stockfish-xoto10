@@ -63,7 +63,7 @@ namespace {
 
   // Data for excluded rootMove
   constexpr double ExcludedRootMoveTime = 0.05;
-  constexpr int ExcludedRootMoveThread = 7;
+  constexpr int ExcludedRootMoveThread = 2;
   constexpr int ExcludedRootMoveInc = 16;
 
   // Razor and futility margins
@@ -464,7 +464,7 @@ void Thread::search() {
           skill.pick_best(multiPV);
 
       // Total up move changes across threads
-      unsigned tot = 0;
+      double tot = 0;
       for (Thread* th : Threads)
       {
           tot += th->bestMoveChanges;
@@ -479,7 +479,7 @@ void Thread::search() {
          )
       {
           excludedRootMoveSet = true;
-          if (tot)
+          if (tot > 0)
               for (unsigned i = ExcludedRootMoveThread; i < Threads.size(); i += ExcludedRootMoveInc)
                   Threads[i]->excludedRootMove.store(rootMoves[0].pv[0], std::memory_order_relaxed);
       }

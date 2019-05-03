@@ -468,7 +468,7 @@ void Thread::search() {
           double reduction = std::pow(mainThread->previousTimeReduction, 0.528) / timeReduction;
 
           // Use part of the gained time from a previous stable move for the current move
-          int tot = 0;
+          unsigned tot = 0;
           for (Thread* th : Threads)
           {
               tot += th->bestMoveChanges;

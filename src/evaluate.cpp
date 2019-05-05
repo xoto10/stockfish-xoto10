@@ -720,7 +720,7 @@ namespace {
 
     int bonus = popcount(safe) + popcount(behind & safe);
     int weight =  pos.count<ALL_PIECES>(Us)
-               - (8 - pos.count<PAWN>(Them)) / 2;
+               - (8 - pos.count<PAWN>(Us)) / 2;
 
     Score score = make_score(bonus * weight * weight / 16, 0);
 

@@ -258,7 +258,7 @@ namespace {
     kingAttacksCount[Them] = kingAttackersWeight[Them] = 0;
 
     // Remove from kingRing[] the squares defended by two pawns
-    kingRing[Us] &= ~dblAttackByPawn;
+//  kingRing[Us] &= ~dblAttackByPawn;
   }
 
 
@@ -828,6 +828,10 @@ namespace {
             + pieces<WHITE, BISHOP>() - pieces<BLACK, BISHOP>()
             + pieces<WHITE, ROOK  >() - pieces<BLACK, ROOK  >()
             + pieces<WHITE, QUEEN >() - pieces<BLACK, QUEEN >();
+
+    // Exclude double defended squares from kingring
+    kingRing[WHITE] &= ~attackedBy2[WHITE];
+    kingRing[BLACK] &= ~attackedBy2[BLACK];
 
     score += mobility[WHITE] - mobility[BLACK];
 

@@ -183,7 +183,6 @@ void Entry::evaluate_shelter(const Position& pos, Square ksq, Score& shelter) {
   Bitboard ourPawns = b & pos.pieces(Us);
   Bitboard theirPawns = b & pos.pieces(Them);
 
-  Value bonusMg = mg_value(shelter);
   Value safetyMg = (shift<Down>(theirPawns) & BlockSquares & ksq) ? Value(374) : Value(5);
   Value safetyEg = Value(0);
 
@@ -199,12 +198,12 @@ void Entry::evaluate_shelter(const Position& pos, Square ksq, Score& shelter) {
       int d = std::min(f, ~f);
       safetyMg += ShelterStrength[d][ourRank];
       if (ourRank && (ourRank == theirRank - 1))
-          safetyMg -= 66 * (theirRank == RANK_3),   safetyEg -= 66 * (theirRank == RANK_3);
+          safetyMg -= 82 * (theirRank == RANK_3),   safetyEg -= 82 * (theirRank == RANK_3);
       else
           safetyMg -= UnblockedStorm[d][theirRank];
   }
 
-  if (safetyMg > bonusMg)
+  if (safetyMg > mg_value(shelter))
       shelter = make_score(safetyMg, safetyEg);
 }
 

@@ -189,8 +189,18 @@ Value Entry::evaluate_shelter(const Position& pos, Square ksq) {
   for (File f = File(center - 1); f <= File(center + 1); ++f)
   {
       b = ourPawns & file_bb(f);
-      Rank ourRank = b ? relative_rank(Us, backmost_sq(Us, b)) : RANK_1;
-      bool opposed = pos.pieces(Them, PAWN) & forward_file_bb(Us, backmost_sq(Us, b));
+      Rank ourRank;
+      bool opposed;
+      if (b)
+      {
+          ourRank = relative_rank(Us, backmost_sq(Us, b));
+          opposed = pos.pieces(Them, PAWN) & forward_file_bb(Us, backmost_sq(Us, b));
+      }
+      else
+      {
+          ourRank = RANK_1;
+          opposed = pos.pieces(Them, PAWN) & file_bb(f);
+      }
 
       b = theirPawns & file_bb(f);
       Rank theirRank = b ? relative_rank(Us, frontmost_sq(Them, b)) : RANK_1;

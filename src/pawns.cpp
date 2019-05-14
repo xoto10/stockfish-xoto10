@@ -35,6 +35,7 @@ namespace {
   constexpr Score Backward = S( 9, 24);
   constexpr Score Doubled  = S(11, 56);
   constexpr Score Isolated = S( 5, 15);
+  constexpr Score NoAttack = S(10, 10);
 
   // Connected pawn bonus
   constexpr int Connected[RANK_NB] = { 0, 7, 8, 12, 29, 48, 86 };
@@ -94,6 +95,7 @@ namespace {
         // Flag the pawn
         opposed    = theirPawns & forward_file_bb(Us, s);
         stoppers   = theirPawns & passed_pawn_span(Us, s);
+//      attackers  = stoppers   & adjacent_files_bb(f);
         lever      = theirPawns & PawnAttacks[Us][s];
         leverPush  = theirPawns & PawnAttacks[Us][s + Up];
         doubled    = ourPawns   & (s - Up);
@@ -117,6 +119,7 @@ namespace {
 
         else if (stoppers == square_bb(s + Up) && r >= RANK_5)
         {
+            score += NoAttack;
             b = shift<Up>(support) & ~theirPawns;
             while (b)
                 if (!more_than_one(theirPawns & PawnAttacks[Us][pop_lsb(&b)]))

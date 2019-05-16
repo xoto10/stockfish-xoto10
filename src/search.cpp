@@ -945,10 +945,6 @@ moves_loop: // When in check, search starts from here
                && pos.pawn_passed(us, to_sq(move)))
           extension = ONE_PLY;
 
-      // Pawn attacks extension
-      else if (pos.pawn_harass(us, move))
-          extension = ONE_PLY;
-
       // Calculate new depth for this move
       newDepth = depth - ONE_PLY + extension;
 
@@ -1007,6 +1003,7 @@ moves_loop: // When in check, search starts from here
       ss->continuationHistory = &thisThread->continuationHistory[movedPiece][to_sq(move)];
 
       // Step 15. Make the move
+      bool pawnHarass = pos.pawn_harass(us, move);
       pos.do_move(move, st, givesCheck);
 
       // Step 16. Reduced depth search (LMR). If the move fails high it will be
@@ -1067,6 +1064,10 @@ moves_loop: // When in check, search starts from here
 
           value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, d, true);
 
+          // Pawn attacks bonus
+          if (pawnHarass && value > alpha)
+              value += 1;
+
           doFullDepthSearch = (value > alpha && d != newDepth);
       }
       else
@@ -1074,7 +1075,13 @@ moves_loop: // When in check, search starts from here
 
       // Step 17. Full depth search when LMR is skipped or fails high
       if (doFullDepthSearch)
+      {
           value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, newDepth, !cutNode);
+
+          // Pawn attacks bonus
+          if (pawnHarass && value > alpha)
+              value += 1;
+      }
 
       // For PV nodes only, do a full PV search on the first move or after a fail
       // high (in the latter case search only if value < beta), otherwise let the

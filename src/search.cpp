@@ -1066,7 +1066,7 @@ moves_loop: // When in check, search starts from here
 
           // Pawn attacks bonus
           if (pawnHarass && value > alpha)
-              value += 1;
+              value += 5;
 
           doFullDepthSearch = (value > alpha && d != newDepth);
       }
@@ -1080,7 +1080,7 @@ moves_loop: // When in check, search starts from here
 
           // Pawn attacks bonus
           if (pawnHarass && value > alpha)
-              value += 1;
+              value += 5;
       }
 
       // For PV nodes only, do a full PV search on the first move or after a fail

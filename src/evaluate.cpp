@@ -391,7 +391,7 @@ namespace {
     constexpr Color    Them = (Us == WHITE ? BLACK : WHITE);
     constexpr Bitboard Camp = (Us == WHITE ? AllSquares ^ Rank6BB ^ Rank7BB ^ Rank8BB
                                            : AllSquares ^ Rank1BB ^ Rank2BB ^ Rank3BB);
-    constexpr Piece    OurPawn   = (Us == WHITE ? W_PAWN : B_PAWN);
+//  constexpr Piece    OurPawn   = (Us == WHITE ? W_PAWN : B_PAWN);
     constexpr Piece    TheirPawn = (Us == WHITE ? B_PAWN : W_PAWN);
 
     Bitboard weak, b1, b2, safe, unsafeChecks = 0;
@@ -489,7 +489,7 @@ namespace {
 
     // Penalty if queenside attack needs defending
     if (   pos.piece_on(relative_square(Us, SQ_D4)) == TheirPawn
-        && pos.piece_on(relative_square(Us, SQ_D3)) == OurPawn
+//      && pos.piece_on(relative_square(Us, SQ_D3)) == OurPawn
         && file_of(ksq) > FILE_D)
     {
         int attackMass =  popcount(pos.pieces(Us) & ~pos.pieces(Us, PAWN) & KingSide)

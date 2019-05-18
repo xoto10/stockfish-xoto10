@@ -20,7 +20,6 @@
 
 #include <algorithm>
 #include <cassert>
-#include <iostream>
 
 #include "bitboard.h"
 #include "pawns.h"
@@ -62,7 +61,7 @@ namespace {
   // Danger of enemy pawns on our rank 3 blocked by our pawns by [distance from edge].
   // Extra value is added later if in front of our king.
   constexpr Value BlockedStorm[FILE_NB] =
-      { V(32), V(32), V(32), V(32) };
+      { V(12), V(12), V(12), V(12) };
 
   #undef S
   #undef V
@@ -217,8 +216,8 @@ void Entry::evaluate_shelter(const Position& pos, Square ksq, Score& shelter) {
   {
       f = file_of(pop_lsb(&b));
       d = std::min(f, ~f);
-      bonus[MG] -= BlockedStorm[d] + (abs(f - file_of(ksq)) < 2) * 50;
-      bonus[EG] -= BlockedStorm[d] + (abs(f - file_of(ksq)) < 2) * 50;
+      bonus[MG] -= BlockedStorm[d] + (abs(f - file_of(ksq)) < 2) * 70;
+      bonus[EG] -= BlockedStorm[d] + (abs(f - file_of(ksq)) < 2) * 70;
   }
 
   if (bonus[MG] > mg_value(shelter))

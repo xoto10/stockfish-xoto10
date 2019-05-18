@@ -175,10 +175,11 @@ Entry* probe(const Position& pos) {
 template<Color Us>
 void Entry::evaluate_shelter(const Position& pos, Square ksq, Score& shelter) {
 
-  constexpr Color     Them = (Us == WHITE ? BLACK : WHITE);
-  constexpr Direction Down = (Us == WHITE ? SOUTH : NORTH);
-  constexpr Bitboard BlockSquares =  (Rank1BB | Rank2BB | Rank7BB | Rank8BB)
-                                   & (FileABB | FileHBB);
+  constexpr Color     Them     = (Us == WHITE ? BLACK   : WHITE);
+  constexpr Direction Down     = (Us == WHITE ? SOUTH   : NORTH);
+  constexpr Bitboard  TRank2BB = (Us == WHITE ? Rank2BB : Rank7BB);
+  constexpr Bitboard  BlockSquares =  (Rank1BB | Rank2BB | Rank7BB | Rank8BB)
+                                    & (FileABB | FileHBB);
 
   Bitboard b = pos.pieces(PAWN) & ~forward_ranks_bb(Them, ksq);
   Bitboard ourPawns = b & pos.pieces(Us);
@@ -203,8 +204,8 @@ void Entry::evaluate_shelter(const Position& pos, Square ksq, Score& shelter) {
           bonus[MG] -= UnblockedStorm[d][theirRank];
   }
 
-  int blocked =  popcount(shift<Down>(theirPawns) & ourPawns & Rank2BB)
-               + 3 * popcount(shift<Down>(theirPawns) & ourPawns & Rank2BB & KingFlank[file_of(ksq)]);
+  int blocked =      popcount(shift<Down>(theirPawns) & ourPawns & TRank2BB)
+               + 3 * popcount(shift<Down>(theirPawns) & ourPawns & TRank2BB & KingFlank[file_of(ksq)]);
   bonus[MG] -= 20 * blocked, bonus[EG] -= 20 * blocked;
 
   if (bonus[MG] > mg_value(shelter))

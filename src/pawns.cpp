@@ -62,7 +62,7 @@ namespace {
   // Danger of enemy pawns on our rank 3 blocked by our pawns by [distance from edge].
   // Extra value is added later if in front of our king.
   constexpr Value BlockedStorm[FILE_NB] =
-      { V(52), V(12), V(32), V(32) };
+      { V(32), V(32), V(32), V(32) };
 
   #undef S
   #undef V

@@ -199,11 +199,13 @@ void Entry::evaluate_shelter(const Position& pos, Square ksq, Score& shelter) {
       int d = std::min(f, ~f);
       bonus[MG] += ShelterStrength[d][ourRank];
 
-      if (ourRank && (ourRank == theirRank - 1))
-          bonus[MG] -= 82 * (theirRank == RANK_3), bonus[EG] -= 82 * (theirRank == RANK_3);
-      else
+      if (!ourRank || (ourRank != theirRank - 1))
           bonus[MG] -= UnblockedStorm[d][theirRank];
   }
+
+  int blocked =  popcount(shift<Down>(theirPawns) & ourPawns & Rank2BB)
+               + popcount(shift<Down>(theirPawns) & ourPawns & Rank2BB & KingFlank[file_of(ksq)]);
+  bonus[MG] -= 41 * blocked, bonus[EG] -= 41 * blocked;
 
   if (bonus[MG] > mg_value(shelter))
       shelter = make_score(bonus[MG], bonus[EG]);

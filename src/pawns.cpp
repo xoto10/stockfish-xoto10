@@ -204,8 +204,8 @@ void Entry::evaluate_shelter(const Position& pos, Square ksq, Score& shelter) {
   }
 
   int blocked =  popcount(shift<Down>(theirPawns) & ourPawns & Rank2BB)
-               + popcount(shift<Down>(theirPawns) & ourPawns & Rank2BB & KingFlank[file_of(ksq)]);
-  bonus[MG] -= 41 * blocked, bonus[EG] -= 41 * blocked;
+               + 2 * popcount(shift<Down>(theirPawns) & ourPawns & Rank2BB & KingFlank[file_of(ksq)]);
+  bonus[MG] -= 27 * blocked, bonus[EG] -= 27 * blocked;
 
   if (bonus[MG] > mg_value(shelter))
       shelter = make_score(bonus[MG], bonus[EG]);

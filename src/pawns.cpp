@@ -60,7 +60,7 @@ namespace {
 
   // Danger of enemy pawns on our rank 3 blocked by our pawns by [distance from edge].
   // Extra value is added later if in front of our king.
-            Value B           [FILE_NB] =
+            Value B           [int(FILE_NB) / 2] =
       { V(12), V(12), V(12), V(12) };
             Value C = V(70);
 TUNE(SetRange(-50,150), B, C);

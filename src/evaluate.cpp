@@ -367,6 +367,9 @@ namespace {
                 if ((kf < FILE_E) == (file_of(s) < kf))
                     score -= TrappedRook * (1 + !pos.castling_rights(Us));
             }
+
+            // Penalty for number of pawns on board
+            score -= make_score(0, 4) * std::max(0, pos.count<PAWN>() - 10);
         }
 
         if (Pt == QUEEN)

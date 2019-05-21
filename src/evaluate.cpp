@@ -106,6 +106,10 @@ namespace {
       S(106,184), S(109,191), S(113,206), S(116,212) }
   };
 
+  // AheadOfPawns[knight/bishop] gives bonus for each square piece can see
+  // in front of our pawns.
+  constexpr Score AheadOfPawns[] = { S(2, 0), S(3, 0) };
+
   // RookOnFile[semiopen/open] contains bonuses for each rook when there is
   // no (friendly) pawn on the rook file.
   constexpr Score RookOnFile[] = { S(18, 7), S(44, 20) };
@@ -316,13 +320,15 @@ namespace {
 
             // Knight and Bishop bonus for being right behind a pawn
             if (shift<Down>(pos.pieces(PAWN)) & s)
-                score += MinorBehindPawn;
 
             // Penalty if the piece is far from the king
             score -= KingProtector * distance(s, pos.square<KING>(Us));
 
             if (Pt == BISHOP)
             {
+                // Knight and Bishop bonus for seeing squares ahead of pawns or on open files
+                score += AheadOfPawns[1] * popcount(b & pe->ahead_of_pawns(Us));
+
                 // Penalty according to number of pawns on the same color square as the
                 // bishop, bigger when the center files are blocked with pawns.
                 Bitboard blocked = pos.pieces(Us, PAWN) & shift<Down>(pos.pieces());

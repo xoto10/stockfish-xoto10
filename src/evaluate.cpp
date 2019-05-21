@@ -108,7 +108,7 @@ namespace {
 
   // AheadOfPawns[knight/bishop] gives bonus for each square piece can see
   // in front of our pawns.
-  constexpr Score AheadOfPawns[] = { S(2, 0), S(3, 0) };
+  constexpr Score AheadOfPawns[] = { S(8, 0), S(10, 0) };
 
   // RookOnFile[semiopen/open] contains bonuses for each rook when there is
   // no (friendly) pawn on the rook file.
@@ -328,7 +328,7 @@ namespace {
             if (Pt == BISHOP)
             {
                 // Knight and Bishop bonus for seeing squares ahead of pawns or on open files
-                score += AheadOfPawns[1] * popcount(b & pe->ahead_of_pawns(Us));
+                score += AheadOfPawns[1] * bool(b & pe->ahead_of_pawns(Us));
 
                 // Penalty according to number of pawns on the same color square as the
                 // bishop, bigger when the center files are blocked with pawns.

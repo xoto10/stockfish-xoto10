@@ -58,10 +58,11 @@ namespace {
     { V(-10), V(-14), V( 90), V(15), V( 2), V( -7), V(-16) }
   };
 
-  // Danger of enemy pawns on our rank 3 blocked by our pawns by [distance from edge].
-  // Extra value is added later if in front of our king.
-  constexpr Value BlockedStorm[FILE_NB] =
-      { V(12), V(12), V(12), V(12) };
+  // Danger of rank 3 enemy pawns blocked by our pawns by [distance from edge].
+  constexpr Value BlockedStormFile[FILE_NB] =
+      { V(23), V(6), V(6), V(13) };
+  // Danger of rank 3 enemy pawns blocked by our pawns and in front of our king.
+  constexpr Value BlockedStormKing = V(64);
 
   #undef S
   #undef V
@@ -216,8 +217,8 @@ void Entry::evaluate_shelter(const Position& pos, Square ksq, Score& shelter) {
   {
       f = file_of(pop_lsb(&b));
       d = std::min(f, ~f);
-      bonus[MG] -= BlockedStorm[d] + (abs(f - file_of(ksq)) < 2) * 70;
-      bonus[EG] -= BlockedStorm[d] + (abs(f - file_of(ksq)) < 2) * 70;
+      bonus[MG] -= BlockedStormFile[d] + (abs(f - file_of(ksq)) < 2) * BlockedStormKing;
+      bonus[EG] -= BlockedStormFile[d] + (abs(f - file_of(ksq)) < 2) * BlockedStormKing;
   }
 
   if (bonus[MG] > mg_value(shelter))

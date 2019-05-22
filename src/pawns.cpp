@@ -204,11 +204,13 @@ void Entry::evaluate_shelter(const Position& pos, Square ksq, Score& shelter) {
           bonus[MG] -= UnblockedStorm[d][theirRank];
   }
 
+  File f;
+  int pen;
   b = shift<Down>(theirPawns) & ourPawns & TRank2BB;
   while (b)
   {
-      File f = file_of(pop_lsb(&b));
-      int pen = 8 + 15 * !(f % 7) + (abs(f - file_of(ksq)) < 2) * 64;
+      f = file_of(pop_lsb(&b));
+      pen = 8 + 15 * !(f % 7) + (abs(f - file_of(ksq)) < 2) * 64;
       bonus[MG] -= pen, bonus[EG] -= pen;
   }
 

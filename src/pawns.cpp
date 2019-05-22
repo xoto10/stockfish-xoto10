@@ -210,7 +210,7 @@ void Entry::evaluate_shelter(const Position& pos, Square ksq, Score& shelter) {
   while (b)
   {
       f = file_of(pop_lsb(&b));
-      pen = 8 + 15 * !(f % 7) + (abs(f - file_of(ksq)) < 2) * 64;
+      pen = 12 + (abs(f - file_of(ksq)) < 2) * 70;
       bonus[MG] -= pen, bonus[EG] -= pen;
   }
 

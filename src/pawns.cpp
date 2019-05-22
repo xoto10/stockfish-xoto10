@@ -58,6 +58,11 @@ namespace {
     { V(-10), V(-14), V( 90), V(15), V( 2), V( -7), V(-16) }
   };
 
+  // Danger of enemy pawns on our rank 3 blocked by one of our pawns.
+  // Extra value if within one file of our king.
+  constexpr Value BlockedStorm = V(12);
+  constexpr Value BlockedStormKing = V(64);
+
   #undef S
   #undef V
 
@@ -177,6 +182,7 @@ void Entry::evaluate_shelter(const Position& pos, Square ksq, Score& shelter) {
 
   constexpr Color     Them = (Us == WHITE ? BLACK : WHITE);
   constexpr Direction Down = (Us == WHITE ? SOUTH : NORTH);
+  constexpr Bitboard  TRank2BB = (Us == WHITE ? Rank2BB : Rank7BB);
   constexpr Bitboard BlockSquares =  (Rank1BB | Rank2BB | Rank7BB | Rank8BB)
                                    & (FileABB | FileHBB);
 
@@ -199,10 +205,17 @@ void Entry::evaluate_shelter(const Position& pos, Square ksq, Score& shelter) {
       int d = std::min(f, ~f);
       bonus[MG] += ShelterStrength[d][ourRank];
 
-      if (ourRank && (ourRank == theirRank - 1))
-          bonus[MG] -= 82 * (theirRank == RANK_3), bonus[EG] -= 82 * (theirRank == RANK_3);
-      else
+      if (!ourRank || (ourRank != theirRank - 1))
           bonus[MG] -= UnblockedStorm[d][theirRank];
+  }
+
+  File f;
+  b = shift<Down>(theirPawns) & ourPawns & TRank2BB;
+  while (b)
+  {
+      f = file_of(pop_lsb(&b));
+      bonus[MG] -= BlockedStorm + (abs(f - file_of(ksq)) < 2) * BlockedStormKing;
+      bonus[EG] -= BlockedStorm + (abs(f - file_of(ksq)) < 2) * BlockedStormKing;
   }
 
   if (bonus[MG] > mg_value(shelter))

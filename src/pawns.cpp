@@ -179,7 +179,14 @@ void Entry::evaluate_shelter(const Position& pos, Square ksq, Score& shelter) {
   constexpr Direction Down = (Us == WHITE ? SOUTH : NORTH);
   constexpr Bitboard BlockSquares =  (Rank1BB | Rank2BB | Rank7BB | Rank8BB)
                                    & (FileABB | FileHBB);
+  constexpr Bitboard TRanks5 = (Us == WHITE ? Rank1BB | Rank2BB | Rank3BB | Rank4BB | Rank5BB
+                                            : Rank4BB | Rank5BB | Rank6BB | Rank7BB | Rank8BB);
 
+  File     kf = file_of(ksq);
+  Bitboard inUp = (Us == WHITE ? (kf > FILE_D ? shift<NORTH_WEST>(pos.pieces(Them, PAWN) & KingSide )
+                                              : shift<NORTH_EAST>(pos.pieces(Them, PAWN) & QueenSide ))
+                               : (kf > FILE_D ? shift<SOUTH_WEST>(pos.pieces(Them, PAWN) & KingSide )
+                                              : shift<SOUTH_EAST>(pos.pieces(Them, PAWN) & QueenSide )) );
   Bitboard b = pos.pieces(PAWN) & ~forward_ranks_bb(Them, ksq);
   Bitboard ourPawns = b & pos.pieces(Us);
   Bitboard theirPawns = b & pos.pieces(Them);
@@ -204,6 +211,11 @@ void Entry::evaluate_shelter(const Position& pos, Square ksq, Score& shelter) {
       else
           bonus[MG] -= UnblockedStorm[d][theirRank];
   }
+
+  // Penalty for pawn chains into our half pointing towards our king's corner
+  b = inUp & TRanks5 & pos.pieces(Them, PAWN);
+  bonus[MG] -= 40 * popcount(b), bonus[EG] -= 40 * popcount(b);
+
 
   if (bonus[MG] > mg_value(shelter))
       shelter = make_score(bonus[MG], bonus[EG]);

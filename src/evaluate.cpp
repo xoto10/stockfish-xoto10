@@ -151,6 +151,7 @@ namespace {
   constexpr Score ThreatByRank       = S( 13,  0);
   constexpr Score ThreatBySafePawn   = S(173, 94);
   constexpr Score TrappedRook        = S( 47,  4);
+  constexpr Score WeakPawnAttacks    = S(  2,  4);
   constexpr Score WeakQueen          = S( 49, 15);
   constexpr Score WeakUnopposedPawn  = S( 12, 23);
 
@@ -499,6 +500,7 @@ namespace {
 
     constexpr Color     Them     = (Us == WHITE ? BLACK   : WHITE);
     constexpr Direction Up       = (Us == WHITE ? NORTH   : SOUTH);
+    constexpr Bitboard  TRank2BB = (Us == WHITE ? Rank2BB : Rank7BB);
     constexpr Bitboard  TRank3BB = (Us == WHITE ? Rank3BB : Rank6BB);
 
     Bitboard b, weak, defended, nonPawnEnemies, stronglyProtected, safe;
@@ -560,6 +562,28 @@ namespace {
     // Bonus for enemy unopposed weak pawns
     if (pos.pieces(Us, ROOK, QUEEN))
         score += WeakUnopposedPawn * pe->weak_unopposed(Them);
+
+    // Bonus for being able to attack enemy pawn targets
+    if (pos.pieces(Us, BISHOP, QUEEN) || pos.pieces(Us, KNIGHT))
+    {
+        b = pe->pawn_targets(Them);
+        while (b)
+        {
+            Square s = pop_lsb(&b);
+            if (attacks_bb<BISHOP>(s, pos.pieces(PAWN)) & TRank2BB)
+            {
+                if (pos.pieces(Us, QUEEN))
+                   score += WeakPawnAttacks;
+                if (pos.pieces(Us, BISHOP) & ((DarkSquares & s) ? DarkSquares : ~DarkSquares))
+                    score += WeakPawnAttacks;
+            }
+            if (   pos.pieces(Us, KNIGHT)
+                && (  pos.attacks_from<KNIGHT>(s)
+                    & forward_ranks_bb(Them, s)
+                    & ~(pos.pieces(PAWN) | attackedBy[Them][PAWN])))
+                 score += WeakPawnAttacks;
+        }
+    }
 
     // Find squares where our pawns can push on the next move
     b  = shift<Up>(pos.pieces(Us, PAWN)) & ~pos.pieces();

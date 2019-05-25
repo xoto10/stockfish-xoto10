@@ -106,6 +106,10 @@ namespace {
       S(106,184), S(109,191), S(113,206), S(116,212) }
   };
 
+  // AheadOfPawns[knight/bishop] gives bonus for each square piece can see
+  // in front of our pawns.
+  constexpr Score AheadOfPawns[] = { S(10, 0), S(10, 0) };
+
   // RookOnFile[semiopen/open] contains bonuses for each rook when there is
   // no (friendly) pawn on the rook file.
   constexpr Score RookOnFile[] = { S(18, 7), S(44, 20) };
@@ -334,6 +338,9 @@ namespace {
                 if (more_than_one(attacks_bb<BISHOP>(s, pos.pieces(PAWN)) & Center))
                     score += LongDiagonalBishop;
             }
+            else
+                // Knight bonus for seeing squares ahead of pawns or on open files
+                score += AheadOfPawns[0] * bool(b & pe->ahead_of_pawns(Us));
 
             // An important Chess960 pattern: A cornered bishop blocked by a friendly
             // pawn diagonally in front of it is a very serious problem, especially

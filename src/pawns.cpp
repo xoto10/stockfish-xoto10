@@ -214,7 +214,7 @@ void Entry::evaluate_shelter(const Position& pos, Square ksq, Score& shelter) {
 
   // Penalty for pawn chains into our half pointing towards our king's corner
   b = inUp & TRanks5 & pos.pieces(Them, PAWN);
-  bonus[MG] -= 40 * popcount(b), bonus[EG] -= 40 * popcount(b);
+  bonus[MG] -= 20 * popcount(b), bonus[EG] -= 20 * popcount(b);
 
 
   if (bonus[MG] > mg_value(shelter))

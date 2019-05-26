@@ -743,9 +743,9 @@ namespace {
                             && (pos.pieces(PAWN) & KingSide);
 
     int attacks =  (eg > 0) * (  popcount(pos.pieces(BLACK) & attackedBy[WHITE][ALL_PIECES])
-                               + popcount(pos.pieces(BLACK) & attackedBy2[WHITE]))
+                               + popcount(pos.blockers_for_king(BLACK)))
                  + (eg < 0) * (  popcount(pos.pieces(WHITE) & attackedBy[BLACK][ALL_PIECES])
-                               + popcount(pos.pieces(WHITE) & attackedBy2[BLACK]));
+                               + popcount(pos.blockers_for_king(WHITE)));
 
     // Compute the initiative bonus for the attacking side
     int complexity =   9 * pe->passed_count()

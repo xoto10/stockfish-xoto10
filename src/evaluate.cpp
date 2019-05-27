@@ -476,7 +476,7 @@ namespace {
     // Transform the kingDanger units into a Score, and subtract it from the evaluation
     if (kingDanger > 100)
     {
-        if (kingDanger > 200)
+        if (kingDanger > 300)
             kingDanger -= 100 * bool(attackedBy[Us][KNIGHT] & attackedBy[Us][KING]);
 
         score -= make_score(kingDanger * kingDanger / 4096, kingDanger / 16);

@@ -736,17 +736,14 @@ namespace {
   template<Tracing T>
   Score Evaluation<T>::initiative(Value eg) const {
 
-    constexpr Bitboard Ranks1to4 = Rank1BB | Rank2BB | Rank3BB | Rank4BB;
-    constexpr Bitboard Ranks5to8 = Rank5BB | Rank6BB | Rank7BB | Rank8BB;
-
     int outflanking =  distance<File>(pos.square<KING>(WHITE), pos.square<KING>(BLACK))
                      - distance<Rank>(pos.square<KING>(WHITE), pos.square<KING>(BLACK));
 
     bool pawnsOnBothFlanks =   (pos.pieces(PAWN) & QueenSide)
                             && (pos.pieces(PAWN) & KingSide);
 
-    int attacks =  (eg > 0) * popcount(pos.pieces(BLACK) & attackedBy[WHITE][ALL_PIECES] & Ranks5to8)
-                 + (eg < 0) * popcount(pos.pieces(WHITE) & attackedBy[BLACK][ALL_PIECES] & Ranks1to4);
+    int attacks =  (eg > 0) * popcount((pos.pieces(BLACK) & ~attackedBy[BLACK][PAWN]) & attackedBy[WHITE][ALL_PIECES])
+                 + (eg < 0) * popcount((pos.pieces(WHITE) & ~attackedBy[WHITE][PAWN]) & attackedBy[BLACK][ALL_PIECES]);
 
     // Compute the initiative bonus for the attacking side
     int complexity =   9 * pe->passed_count()
@@ -754,8 +751,8 @@ namespace {
                     +  9 * outflanking
                     + 18 * pawnsOnBothFlanks
                     + 49 * !pos.non_pawn_material()
-                    +  4 * attacks
-                    -109 ;
+                    +  5 * attacks
+                    -110 ;
 
     // Now apply the bonus: note that we find the attacking side by extracting
     // the sign of the endgame value, and that we carefully cap the bonus so

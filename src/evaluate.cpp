@@ -736,6 +736,8 @@ namespace {
   template<Tracing T>
   Score Evaluation<T>::initiative(Value eg) const {
 
+    Bitboard Center2Files = FileDBB | FileEBB;
+
     int outflanking =  distance<File>(pos.square<KING>(WHITE), pos.square<KING>(BLACK))
                      - distance<Rank>(pos.square<KING>(WHITE), pos.square<KING>(BLACK));
 
@@ -744,11 +746,14 @@ namespace {
 
     // Compute the initiative bonus for the attacking side
     int complexity =   9 * pe->passed_count()
-                    + 11 * pos.count<PAWN>()
+                    + 25 * popcount(pos.pieces(PAWN) & CenterFiles)
                     +  9 * outflanking
                     + 18 * pawnsOnBothFlanks
                     + 49 * !pos.non_pawn_material()
                     -103 ;
+//dbg_mean_of(pos.count<PAWN>()); // Total 1943258 Mean 9.3232
+//dbg_mean_of(popcount(pos.pieces(PAWN) & CenterFiles)); // Total 1943258 Mean 3.92204
+//dbg_mean_of(popcount(pos.pieces(PAWN) & Center2Files)); // Total 1943258 Mean 1.46564
 
     // Now apply the bonus: note that we find the attacking side by extracting
     // the sign of the endgame value, and that we carefully cap the bonus so
@@ -852,7 +857,6 @@ namespace {
         Trace::add(MOBILITY, mobility[WHITE], mobility[BLACK]);
         Trace::add(TOTAL, score);
     }
-
     return  (pos.side_to_move() == WHITE ? v : -v) // Side to move point of view
            + Eval::Tempo;
   }

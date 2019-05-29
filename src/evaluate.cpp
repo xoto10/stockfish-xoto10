@@ -745,14 +745,11 @@ namespace {
     // Compute the initiative bonus for the attacking side
     int complexity =   9 * pe->passed_count()
                     + 11 * pos.count<PAWN>()
-                    + 13 * pe->center_pawns()
+                    +  5 * pe->center_pawns()
                     +  9 * outflanking
                     + 18 * pawnsOnBothFlanks
                     + 49 * !pos.non_pawn_material()
-                    -122 ;
-//dbg_mean_of(pos.count<PAWN>()); // Total 1943258 Mean 9.3232
-//dbg_mean_of(popcount(pos.pieces(PAWN) & CenterFiles)); // Total 1943258 Mean 3.92204
-//dbg_mean_of(popcount(pos.pieces(PAWN) & Center2Files)); // Total 1943258 Mean 1.46564
+                    -110 ;
 
     // Now apply the bonus: note that we find the attacking side by extracting
     // the sign of the endgame value, and that we carefully cap the bonus so

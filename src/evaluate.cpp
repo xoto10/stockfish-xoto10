@@ -745,11 +745,11 @@ namespace {
     // Compute the initiative bonus for the attacking side
     int complexity =   9 * pe->passed_count()
                     + 11 * pos.count<PAWN>()
-                    + 10 * pe->center_pawns()
+                    +  7 * pe->center_pawns()
                     +  9 * outflanking
                     + 18 * pawnsOnBothFlanks
                     + 49 * !pos.non_pawn_material()
-                    -118 ;
+                    -113 ;
 //dbg_mean_of(pos.count<PAWN>()); // Total 1943258 Mean 9.3232
 //dbg_mean_of(popcount(pos.pieces(PAWN) & CenterFiles)); // Total 1943258 Mean 3.92204
 //dbg_mean_of(popcount(pos.pieces(PAWN) & Center2Files)); // Total 1943258 Mean 1.46564

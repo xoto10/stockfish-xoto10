@@ -31,6 +31,8 @@ namespace {
   #define V Value
   #define S(mg, eg) make_score(mg, eg)
 
+  constexpr Bitboard Center2Files = FileDBB | FileEBB;
+
   // Pawn penalties
   constexpr Score Backward = S( 9, 24);
   constexpr Score Doubled  = S(11, 56);
@@ -140,6 +142,8 @@ namespace {
         if (doubled && !support)
             score -= Doubled;
     }
+
+    e->centerPawns = popcount(pos.pieces(PAWN) & Center2Files);
 
     return score;
   }

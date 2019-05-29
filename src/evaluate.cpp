@@ -736,8 +736,6 @@ namespace {
   template<Tracing T>
   Score Evaluation<T>::initiative(Value eg) const {
 
-    Bitboard Center2Files = FileDBB | FileEBB;
-
     int outflanking =  distance<File>(pos.square<KING>(WHITE), pos.square<KING>(BLACK))
                      - distance<Rank>(pos.square<KING>(WHITE), pos.square<KING>(BLACK));
 
@@ -746,11 +744,12 @@ namespace {
 
     // Compute the initiative bonus for the attacking side
     int complexity =   9 * pe->passed_count()
-                    + 67 * popcount(pos.pieces(PAWN) & Center2Files)
+                    + 11 * pos.count<PAWN>()
+                    + 10 * pe->center_pawns()
                     +  9 * outflanking
                     + 18 * pawnsOnBothFlanks
                     + 49 * !pos.non_pawn_material()
-                    -103 ;
+                    -118 ;
 //dbg_mean_of(pos.count<PAWN>()); // Total 1943258 Mean 9.3232
 //dbg_mean_of(popcount(pos.pieces(PAWN) & CenterFiles)); // Total 1943258 Mean 3.92204
 //dbg_mean_of(popcount(pos.pieces(PAWN) & Center2Files)); // Total 1943258 Mean 1.46564

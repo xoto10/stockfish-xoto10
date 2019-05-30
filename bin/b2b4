@@ -1,0 +1,33 @@
+#!/bin/bash
+
+# bench new against master
+
+
+./stockfish_${1:-new} bench 16 4 20 >bench_${1:-new}.out 2>&1 | \
+./stockfish_${2:-master} bench 16 4 20 >bench_${2:-main}.out 2>&1
+
+
+echo ""
+echo "tail -5 bench_${1:-new}.out"
+tail -5 "bench_${1:-new}.out"
+
+echo ""
+echo "tail -5 bench_${2:-main}.out"
+tail -5 "bench_${2:-main}.out"
+
+
+
+./stockfish_${2:-master} bench 16 4 20 >bench_${2:-main}.out 2>&1 | \
+./stockfish_${1:-new} bench 16 4 20 >bench_${1:-new}.out 2>&1
+
+
+echo ""
+echo ""
+echo "tail -5 bench_${1:-new}.out"
+tail -5 "bench_${1:-new}.out"
+
+echo ""
+echo "tail -5 bench_${2:-main}.out"
+tail -5 "bench_${2:-main}.out"
+
+

@@ -2,5 +2,9 @@
 
 
 read -p "Enter commit msg: " msg
+
+msg=$(echo "$msg" | sed 's/ \([bB]ench\)/\
+\1/')
+
 git commit -am "$msg"
 

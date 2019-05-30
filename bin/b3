@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# MAY BE BIASED TO $1 ??
 
 #(b ${1:-master}; b ${2:-new}) \
 

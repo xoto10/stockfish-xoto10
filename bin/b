@@ -14,6 +14,8 @@ fi
 \cp -f bench.out "$dest"
 
 echo ""
+grep 'Total .* Mean ' $dest
+grep 'Total .* Hits ' $dest
 echo "tail -5 $dest:"
 tail -5 "$dest"
 

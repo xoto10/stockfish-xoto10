@@ -2,9 +2,12 @@
 
 # ftst - log the time to fetch fishtest main page
 
+cd $HOME/log/
+
 LOG=$HOME/log/ftst_real_$(date +%d).log
 PAGE=$HOME/log/tests
 PAGE2=$HOME/tests.$$
+
 
 echo -n "$(date +%Y-%m-%d_%H:%M)  " >>$LOG
 (time wget -nd -q http://tests.stockfishchess.org/tests) 2>&1 |

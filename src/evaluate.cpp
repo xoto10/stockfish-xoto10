@@ -742,8 +742,10 @@ namespace {
     bool pawnsOnBothFlanks =   (pos.pieces(PAWN) & QueenSide)
                             && (pos.pieces(PAWN) & KingSide);
 
-    int attacks =  (eg > 0) * popcount((pos.pieces(BLACK) & ~attackedBy[BLACK][PAWN]) & attackedBy[WHITE][ALL_PIECES])
-                 + (eg < 0) * popcount((pos.pieces(WHITE) & ~attackedBy[WHITE][PAWN]) & attackedBy[BLACK][ALL_PIECES]);
+    int attacks =  (eg > 0) * popcount(  attackedBy[WHITE][ALL_PIECES] & pos.pieces(BLACK)
+                                       & KingFlank[file_of(pos.square<KING>(BLACK))])
+                 + (eg < 0) * popcount(  attackedBy[BLACK][ALL_PIECES] & pos.pieces(WHITE)
+                                       & KingFlank[file_of(pos.square<KING>(WHITE))]);
 
     // Compute the initiative bonus for the attacking side
     int complexity =   9 * pe->passed_count()
@@ -751,7 +753,7 @@ namespace {
                     +  9 * outflanking
                     + 18 * pawnsOnBothFlanks
                     + 49 * !pos.non_pawn_material()
-                    +  5 * attacks
+                    +  8 * attacks
                     -110 ;
 
     // Now apply the bonus: note that we find the attacking side by extracting

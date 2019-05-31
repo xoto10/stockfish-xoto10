@@ -720,7 +720,7 @@ namespace {
 
     int bonus = popcount(safe) + popcount(behind & safe);
     int weight = pos.count<ALL_PIECES>(Us) - 1;
-    int v = bonus * weight * 96 / 128;
+    int v = bonus * weight * 3 / 4;
     Score score = make_score(v, v);
 
     if (T)

@@ -744,9 +744,9 @@ namespace {
 
     // Compute the initiative bonus for the attacking side
     int complexity =   9 * pe->passed_count()
-                    + 10 * pos.count<PAWN>()
+                    +  9 * pos.count<PAWN>()
                     +  9 * outflanking
-                    +  9 * pawnsOnBothFlanks
+                    +  8 * pawnsOnBothFlanks
                     + 49 * !pos.non_pawn_material()
                     -103 ;
 

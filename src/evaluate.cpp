@@ -747,9 +747,12 @@ namespace {
                     + 11 * pos.count<PAWN>()
                     +  9 * outflanking
                     + 18 * pawnsOnBothFlanks
-                    + 49 * !pos.non_pawn_material()
-                    -103 ;
-
+//                  + 49 * !pos.non_pawn_material()
+                    +      3 * (18710 - pos.non_pawn_material()) / 1024
+                    -129 ;
+//dbg_mean_of(complexity); // orig:  Total 1995987 Mean -9.0237
+//dbg_mean_of(complexity); // /256:   Total 1757840 Mean 26.6898
+//dbg_mean_of(complexity); // *3/1024: Total 1886313 Mean 16.7663
     // Now apply the bonus: note that we find the attacking side by extracting
     // the sign of the endgame value, and that we carefully cap the bonus so
     // that the endgame score will never change sign after the bonus.

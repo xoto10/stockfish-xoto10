@@ -749,6 +749,8 @@ namespace {
                     + 18 * pawnsOnBothFlanks
                     + 49 * !pos.non_pawn_material()
                     -103 ;
+    if (complexity < 0)
+        complexity /= 4;
 //dbg_mean_of(complexity); // Total 1995987 Mean -9.0237
 //if (complexity < -9) dbg_mean_of(complexity); // Total 880758 Mean -39.2626
 //if (complexity > -9) dbg_mean_of(complexity); // Total 1060531 Mean 16.0881
@@ -756,7 +758,7 @@ namespace {
     // Now apply the bonus: note that we find the attacking side by extracting
     // the sign of the endgame value, and that we carefully cap the bonus so
     // that the endgame score will never change sign after the bonus.
-    int v = ((eg > 0) - (eg < 0)) * std::max(complexity, -40);
+    int v = ((eg > 0) - (eg < 0)) * std::max(complexity, -abs(eg));
 
     if (T)
         Trace::add(INITIATIVE, make_score(0, v));

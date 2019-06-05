@@ -140,7 +140,7 @@ namespace {
             score -= Backward, e->weakUnopposed[Us] += !opposed;
 
         if (!opposed & !more_than_one(neighbours2))
-            score -= Unopposed * (1 + !neighbours2);
+            score += Unopposed * (1 + !neighbours2);
 
         if (doubled && !support)
             score -= Doubled;

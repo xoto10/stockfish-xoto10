@@ -57,7 +57,6 @@ public:
   void start_searching();
   void wait_for_search_finished();
 
-  Pawns::Table pawnsTable;
   Material::Table materialTable;
   size_t pvIdx, pvLast;
   int selDepth, nmpMinPly;
@@ -106,6 +105,7 @@ struct ThreadPool : public std::vector<Thread*> {
   uint64_t nodes_searched() const { return accumulate(&Thread::nodes); }
   uint64_t tb_hits()        const { return accumulate(&Thread::tbHits); }
 
+  Pawns::Table pawnsTable;
   std::atomic_bool stop;
 
 private:

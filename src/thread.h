@@ -57,7 +57,7 @@ public:
   void start_searching();
   void wait_for_search_finished();
 
-  Pawns::Table pawnsTable;
+  Pawns::PawnHashTable pawnsTable;
   Material::Table materialTable;
   size_t pvIdx, pvLast;
   int selDepth, nmpMinPly;

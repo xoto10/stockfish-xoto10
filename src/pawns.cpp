@@ -20,11 +20,13 @@
 
 #include <algorithm>
 #include <cassert>
+#include <iostream>
 
 #include "bitboard.h"
 #include "pawns.h"
 #include "position.h"
 #include "thread.h"
+#include "tt.h"
 
 namespace {
 
@@ -240,6 +242,24 @@ Score Entry::do_king_safety(const Position& pos) {
 
   return shelter - make_score(VALUE_ZERO, 16 * minPawnDist);
 }
+
+
+PawnHashTable::PawnHashTable()
+{
+  entryCount = TT.get_mbSize() * 16384;
+//sync_cout << "info string phsize " << entryCount * sizeof(Entry) << sync_endl;
+  mem = malloc(entryCount * sizeof(Entry));
+
+  if (!mem)
+  {
+      std::cerr << "Failed to allocate " << entryCount
+                << "entries for pawn hash table." << std::endl;
+      exit(EXIT_FAILURE);
+  }
+
+  table = (Entry*)mem;
+}
+
 
 // Explicit template instantiation
 template Score Entry::do_king_safety<WHITE>(const Position& pos);

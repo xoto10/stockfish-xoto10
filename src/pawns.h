@@ -61,7 +61,21 @@ struct Entry {
   int castlingRights[COLOR_NB];
 };
 
-typedef HashTable<Entry, 16384> Table;
+
+/// Pawns::PawnHashTable contains a vector of Entry, the memory pointer to the start
+/// of it and its size.
+
+class PawnHashTable {
+  void* mem;
+  size_t entryCount;
+  Entry* table;
+
+public:
+  PawnHashTable();
+ ~PawnHashTable() { free(mem); }
+
+  Entry* operator[](Key key) { return &table[(uint32_t)key & (entryCount - 1)]; }
+};
 
 Entry* probe(const Position& pos);
 

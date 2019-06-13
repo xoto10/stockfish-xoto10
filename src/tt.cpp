@@ -65,7 +65,6 @@ void TranspositionTable::resize(size_t mbSize) {
 
   Threads.main()->wait_for_search_finished();
 
-  mb = mbSize;
   clusterCount = mbSize * 1024 * 1024 / sizeof(Cluster);
 
   free(mem);

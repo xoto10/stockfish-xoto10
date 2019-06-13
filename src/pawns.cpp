@@ -246,7 +246,7 @@ Score Entry::do_king_safety(const Position& pos) {
 
 PawnHashTable::PawnHashTable()
 {
-  entryCount = TT.get_mbSize() * 16384;
+  entryCount = TT.get_cluster_count() / 8; // consider using std::min() here
 //sync_cout << "info string phsize " << entryCount * sizeof(Entry) << sync_endl;
   mem = malloc(entryCount * sizeof(Entry));
 

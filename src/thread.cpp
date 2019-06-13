@@ -121,7 +121,7 @@ void Thread::idle_loop() {
 /// Created and launched threads will immediately go to sleep in idle_loop.
 /// Upon resizing, threads are recreated to allow for binding if necessary.
 
-void ThreadPool::set(size_t requested) {
+void ThreadPool::set(size_t requested, bool resizeTT) {
 
   if (size() > 0) { // destroy any existing thread(s)
       main()->wait_for_search_finished();
@@ -136,6 +136,10 @@ void ThreadPool::set(size_t requested) {
       while (size() < requested)
           push_back(new Thread(size()));
       clear();
+
+      // Reallocate the hash with the new threadpool size
+      if (resizeTT)
+          TT.resize(Options["Hash"]);
   }
 }
 

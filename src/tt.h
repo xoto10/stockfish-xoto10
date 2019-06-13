@@ -83,7 +83,7 @@ public:
   int hashfull() const;
   void resize(size_t mbSize);
   void clear();
-  size_t get_mbSize() { return mb; }
+  size_t get_cluster_count() { return clusterCount; }
 
   // The 32 lowest order bits of the key are used to get the index of the cluster
   TTEntry* first_entry(const Key key) const {
@@ -93,7 +93,6 @@ public:
 private:
   friend struct TTEntry;
 
-  size_t mb;
   size_t clusterCount;
   Cluster* table;
   void* mem;

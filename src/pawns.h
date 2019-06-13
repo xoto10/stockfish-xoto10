@@ -74,7 +74,7 @@ public:
   PawnHashTable();
  ~PawnHashTable() { free(mem); }
 
-  Entry* operator[](Key key) { return &table[(uint32_t)key & (entryCount - 1)]; }
+  Entry* operator[](Key key) { return &table[(uint32_t(key) * uint64_t(entryCount)) >> 32]; }
 };
 
 Entry* probe(const Position& pos);

@@ -106,6 +106,7 @@ namespace {
   struct Breadcrumb {
     std::atomic<Thread*> thread;
     std::atomic<Key> key;
+    std::atomic<unsigned> count;
   };
   std::array<Breadcrumb, 1024> breadcrumbs;
   struct ThreadHolding {
@@ -113,6 +114,7 @@ namespace {
        location = ply < 8 ? &breadcrumbs[posKey & (breadcrumbs.size() - 1)] : nullptr;
        otherThread = false;
        owned = false;
+       count = 0;
        if (location)
        {
           Thread* tmp = (*location).thread.load(std::memory_order_relaxed);
@@ -120,11 +122,15 @@ namespace {
           {
               (*location).thread.store(thisThread, std::memory_order_relaxed);
               (*location).key.store(posKey, std::memory_order_relaxed);
+              (*location).count.store(1, std::memory_order_relaxed);
               owned = true;
           }
           else if (   tmp != thisThread
                    && (*location).key.load(std::memory_order_relaxed) == posKey)
+          {
               otherThread = true;
+              count = (*location).count.fetch_add(1, std::memory_order_relaxed) + 1;
+          }
        }
     }
     ~ThreadHolding() {
@@ -134,6 +140,7 @@ namespace {
     bool marked() { return otherThread; }
     Breadcrumb* location;
     bool otherThread, owned;
+    unsigned count;
   };
 
   template <NodeType NT>
@@ -640,7 +647,7 @@ namespace {
     ttPv = PvNode || (ttHit && tte->is_pv());
 
     // At non-PV nodes we check for an early TT cutoff
-    if (  (!PvNode || (th.marked() && (thisThread->nodes & 1)))
+    if (  (!PvNode || (th.marked() && th.count > 2 && (thisThread->nodes & 1)))
         && ttHit
         && tte->depth() >= depth
         && ttValue != VALUE_NONE // Possible in case of TT access race

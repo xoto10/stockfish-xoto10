@@ -129,7 +129,7 @@ namespace {
                    && (*location).key.load(std::memory_order_relaxed) == posKey)
           {
               otherThread = true;
-              count = (*location).count.fetch_add(1, std::memory_order_relaxed) + 1;
+              count = (*location).count.fetch_add(1, std::memory_order_relaxed);
           }
        }
     }
@@ -638,7 +638,6 @@ namespace {
     posKey = pos.key() ^ Key(excludedMove << 16); // Isn't a very good hash
 
     ThreadHolding th(thisThread, posKey, ss->ply);
-//  if (th.marked() && (thisThread->nodes & 1))
 
     tte = TT.probe(posKey, ttHit);
     ttValue = ttHit ? value_from_tt(tte->value(), ss->ply) : VALUE_NONE;

@@ -543,6 +543,7 @@ namespace {
     moveCount = captureCount = quietCount = singularLMR = ss->moveCount = 0;
     bestValue = -VALUE_INFINITE;
     maxValue = VALUE_INFINITE;
+    ss->pvNode = PvNode;
 
     // Check for the available remaining time
     if (thisThread == Threads.main())
@@ -601,8 +602,10 @@ namespace {
             : ttHit    ? tte->move() : MOVE_NONE;
     ttPv = PvNode || (ttHit && tte->is_pv());
 
-    // At non-PV nodes we check for an early TT cutoff
+    // If not PV node or just after, we check for an early TT cutoff
     if (  !PvNode
+        && ss->ply > 1
+        && !(ss-2)->pvNode
         && ttHit
         && tte->depth() >= depth
         && ttValue != VALUE_NONE // Possible in case of TT access race

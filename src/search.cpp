@@ -118,6 +118,23 @@ namespace {
        if (location)
        {
           Thread* tmp = (*location).thread.load(std::memory_order_relaxed);
+          if (   tmp != nullptr
+              && tmp != thisThread
+              && (*location).key.load(std::memory_order_relaxed) == posKey)
+          {
+              otherThread = true;
+              count = (*location).count.load(std::memory_order_relaxed);
+          }
+       }
+    }
+    ~ThreadHolding() {
+       if (owned)
+           (*location).thread.store(nullptr, std::memory_order_relaxed);
+    }
+    void add(Thread* thisThread, Key posKey) {
+       if (location)
+       {
+          Thread* tmp = (*location).thread.load(std::memory_order_relaxed);
           if (tmp == nullptr)
           {
               (*location).thread.store(thisThread, std::memory_order_relaxed);
@@ -127,15 +144,8 @@ namespace {
           }
           else if (   tmp != thisThread
                    && (*location).key.load(std::memory_order_relaxed) == posKey)
-          {
-              otherThread = true;
-              count = (*location).count.fetch_add(1, std::memory_order_relaxed);
-          }
+              (*location).count.fetch_add(1, std::memory_order_relaxed);
        }
-    }
-    ~ThreadHolding() {
-       if (owned)
-           (*location).thread.store(nullptr, std::memory_order_relaxed);
     }
     bool marked() { return otherThread; }
     Breadcrumb* location;
@@ -890,6 +900,7 @@ moves_loop: // When in check, search starts from here
     value = bestValue; // Workaround a bogus 'uninitialized' warning under gcc
     moveCountPruning = false;
     ttCapture = ttMove && pos.capture_or_promotion(ttMove);
+    th.add(thisThread, posKey);
 
     // Step 12. Loop through all pseudo-legal moves until no moves remain
     // or a beta cutoff occurs.

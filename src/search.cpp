@@ -602,9 +602,9 @@ namespace {
     ttPv = PvNode || (ttHit && tte->is_pv());
 
     // At non-PV nodes we check for an early TT cutoff
-    if (  (!PvNode || ss->ply > 32)
+    if (  !PvNode
         && ttHit
-//      && ss->ply > 1
+        && ss->ply > 3
         && tte->depth() >= depth
         && ttValue != VALUE_NONE // Possible in case of TT access race
         && (ttValue >= beta ? (tte->bound() & BOUND_LOWER)

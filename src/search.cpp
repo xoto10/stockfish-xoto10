@@ -102,55 +102,57 @@ namespace {
     Move best = MOVE_NONE;
   };
 
-  // ThreadHolding keeps track of which thread left breadcrumbs at the given node for potential reductions.
+  // Breadcrumbs are used to mark nodes as being searched by a given thread.
   struct Breadcrumb {
     std::atomic<Thread*> thread;
     std::atomic<Key> key;
     std::atomic<unsigned> count;
   };
   std::array<Breadcrumb, 1024> breadcrumbs;
+  // ThreadHolding keeps track of which thread left breadcrumbs at the given node for potential reductions.
+  // A free node will be marked upon entering the moves loop, and unmarked upon leaving that loop, by the ctor/dtor of this struct.
   struct ThreadHolding {
     explicit ThreadHolding(Thread* thisThread, Key posKey, int ply) {
        location = ply < 8 ? &breadcrumbs[posKey & (breadcrumbs.size() - 1)] : nullptr;
-       otherThread = false;
-       owned = false;
-       count = 0;
+       otherThreadCount = 0;
+       owning = false;
        if (location)
        {
           Thread* tmp = (*location).thread.load(std::memory_order_relaxed);
           if (   tmp != nullptr
               && tmp != thisThread
               && (*location).key.load(std::memory_order_relaxed) == posKey)
-          {
-              otherThread = true;
-              count = (*location).count.load(std::memory_order_relaxed);
-          }
+              otherThreadCount = (*location).count.load(std::memory_order_relaxed);
        }
     }
     ~ThreadHolding() {
-       if (owned)
+       if (owning) // free the marked location.
            (*location).thread.store(nullptr, std::memory_order_relaxed);
     }
     void add(Thread* thisThread, Key posKey) {
        if (location)
        {
+          // see if another already marked this location, if not, mark it ourselves.
           Thread* tmp = (*location).thread.load(std::memory_order_relaxed);
           if (tmp == nullptr)
           {
               (*location).thread.store(thisThread, std::memory_order_relaxed);
               (*location).key.store(posKey, std::memory_order_relaxed);
               (*location).count.store(1, std::memory_order_relaxed);
-              owned = true;
+              owning = true;
           }
           else if (   tmp != thisThread
                    && (*location).key.load(std::memory_order_relaxed) == posKey)
               (*location).count.fetch_add(1, std::memory_order_relaxed);
        }
     }
-    bool marked() { return otherThread; }
+    bool marked() { return otherThreadCount > 0; }
+    unsigned other_thread_count() { return otherThreadCount; }
+
+    private:
     Breadcrumb* location;
-    bool otherThread, owned;
-    unsigned count;
+    unsigned otherThreadCount;
+    bool owning;
   };
 
   template <NodeType NT>
@@ -656,7 +658,7 @@ namespace {
     ttPv = PvNode || (ttHit && tte->is_pv());
 
     // At non-PV nodes we check for an early TT cutoff
-    if (  (!PvNode || (th.marked() && th.count > 2 && (thisThread->nodes & 1)))
+    if (  (!PvNode || (th.marked() && th.other_thread_count() > 2 && (thisThread->nodes & 1)))
         && ttHit
         && tte->depth() >= depth
         && ttValue != VALUE_NONE // Possible in case of TT access race
@@ -900,6 +902,7 @@ moves_loop: // When in check, search starts from here
     value = bestValue; // Workaround a bogus 'uninitialized' warning under gcc
     moveCountPruning = false;
     ttCapture = ttMove && pos.capture_or_promotion(ttMove);
+    // Mark this node as being searched.
     th.add(thisThread, posKey);
 
     // Step 12. Loop through all pseudo-legal moves until no moves remain
@@ -1067,6 +1070,10 @@ moves_loop: // When in check, search starts from here
               || ss->staticEval + PieceValue[EG][pos.captured_piece()] <= alpha))
       {
           Depth r = reduction(improving, depth, moveCount);
+
+          // Reduction if other threads are searching this position.
+          if (th.marked())
+              r += ONE_PLY;
 
           // Decrease reduction if position is or has been on the PV
           if (ttPv)

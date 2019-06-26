@@ -75,8 +75,8 @@ namespace {
     return ((r + 512) / 1024 + (!i && r > 1024)) * ONE_PLY;
   }
 
-  constexpr int futility_move_count(bool improving, int depth) {
-    return (5 + depth * depth) * (1 + improving) / 2;
+  constexpr int futility_move_count(size_t idx, bool improving, int depth) {
+    return (5 + idx + depth * depth) * (1 + improving) / 2;
   }
 
   // History and stats update bonus, based on depth
@@ -951,7 +951,7 @@ moves_loop: // When in check, search starts from here
           && bestValue > VALUE_MATED_IN_MAX_PLY)
       {
           // Skip quiet moves if movecount exceeds our FutilityMoveCount threshold
-          moveCountPruning = moveCount >= futility_move_count(improving, depth / ONE_PLY);
+          moveCountPruning = moveCount >= futility_move_count(thisThread->get_idx(), improving, depth / ONE_PLY);
 
           if (   !captureOrPromotion
               && !givesCheck

@@ -725,6 +725,9 @@ namespace {
         }
     }
 
+    // Mark this node as being searched.
+    ThreadHolding th(thisThread, posKey, ss->ply);
+
     // Step 6. Static evaluation of the position
     if (inCheck)
     {
@@ -761,7 +764,7 @@ namespace {
     // Step 7. Razoring (~2 Elo)
     if (   !rootNode // The required rootNode PV handling is not available in qsearch
         &&  depth < 2 * ONE_PLY
-        &&  eval <= alpha - RazorMargin)
+        &&  eval <= alpha + th.marked() * 100 - RazorMargin)
         return qsearch<NT>(pos, ss, alpha, beta);
 
     improving =   ss->staticEval >= (ss-2)->staticEval
@@ -888,9 +891,6 @@ moves_loop: // When in check, search starts from here
     value = bestValue; // Workaround a bogus 'uninitialized' warning under gcc
     moveCountPruning = false;
     ttCapture = ttMove && pos.capture_or_promotion(ttMove);
-
-    // Mark this node as being searched.
-    ThreadHolding th(thisThread, posKey, ss->ply);
 
     // Step 12. Loop through all pseudo-legal moves until no moves remain
     // or a beta cutoff occurs.
@@ -1060,7 +1060,7 @@ moves_loop: // When in check, search starts from here
 
           // Reduction if other threads are searching this position.
 	  if (th.marked())
-              r += (2 - ss->ply / 4) * ONE_PLY;
+              r += ONE_PLY;
 
           // Decrease reduction if position is or has been on the PV
           if (ttPv)

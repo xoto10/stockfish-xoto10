@@ -725,6 +725,9 @@ namespace {
         }
     }
 
+    // Mark this node as being searched.
+    ThreadHolding th(thisThread, posKey, ss->ply);
+
     // Step 6. Static evaluation of the position
     if (inCheck)
     {
@@ -862,7 +865,7 @@ namespace {
     }
 
     // Step 11. Internal iterative deepening (~2 Elo)
-    if (depth >= 8 * ONE_PLY && !ttMove)
+    if (depth >= 8 * ONE_PLY && !ttMove && !th.marked())
     {
         search<NT>(pos, ss, alpha, beta, depth - 7 * ONE_PLY, cutNode);
 
@@ -888,9 +891,6 @@ moves_loop: // When in check, search starts from here
     value = bestValue; // Workaround a bogus 'uninitialized' warning under gcc
     moveCountPruning = false;
     ttCapture = ttMove && pos.capture_or_promotion(ttMove);
-
-    // Mark this node as being searched.
-    ThreadHolding th(thisThread, posKey, ss->ply);
 
     // Step 12. Loop through all pseudo-legal moves until no moves remain
     // or a beta cutoff occurs.

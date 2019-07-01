@@ -998,9 +998,18 @@ moves_loop: // When in check, search starts from here
                && pos.pawn_passed(us, to_sq(move)))
           extension = ONE_PLY;
 
-      // Negative extension if other threads are searching this position.
-      else if (th.marked() && thisThread->get_idx() >= 3 * (Threads.size() / 4))
+      // Negative extension if other threads are searching this position and thread# is odd.
+      else if (th.marked() && (thisThread->get_idx() & 1))
           extension = -ONE_PLY;
+//    dbg_mean_of(extension); //                    Total 26091371 Mean 0.03309   (bench 32 3 15)
+//    dbg_mean_of(extension); // -1 if mkd:         Total 11893891 Mean 0.0107792 (bench 32 3 15)
+//    dbg_mean_of(extension); // -1 if mkd && th 1: Total 26325048 Mean 0.0301517 (bench 32 3 15)
+
+//    dbg_mean_of(extension); // -1 if mkd && th 1: Total 29118056 Mean 0.0271623 (bench 32 4 15)
+
+//    dbg_mean_of(extension); //                    Total 52951446 Mean 0.0371067 (bench 32 8 15)
+//    dbg_mean_of(extension); // -1 if mkd:         Total 22223487 Mean -0.00360798 (bench 32 8 15)
+//    dbg_mean_of(extension); // -1 if mkd && th 1: Total 47694885 Mean 0.0210966 (bench 32 8 15)
 
       // Calculate new depth for this move
       newDepth = depth - ONE_PLY + extension;

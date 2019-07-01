@@ -998,6 +998,10 @@ moves_loop: // When in check, search starts from here
                && pos.pawn_passed(us, to_sq(move)))
           extension = ONE_PLY;
 
+      // Negative extension if other threads are searching this position.
+      else if (th.marked())
+          extension = -ONE_PLY;
+
       // Calculate new depth for this move
       newDepth = depth - ONE_PLY + extension;
 

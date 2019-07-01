@@ -999,7 +999,7 @@ moves_loop: // When in check, search starts from here
           extension = ONE_PLY;
 
       // Negative extension if other threads are searching this position.
-      else if (th.marked())
+      else if (th.marked() && thisThread->get_idx() >= 3 * (Threads.size() / 4))
           extension = -ONE_PLY;
 
       // Calculate new depth for this move

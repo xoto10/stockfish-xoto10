@@ -725,7 +725,7 @@ namespace {
         }
     }
 
-    // Mark this node as being searched.
+    // Mark this node as being searched
     ThreadHolding th(thisThread, posKey, ss->ply);
 
     // Step 6. Static evaluation of the position
@@ -833,7 +833,7 @@ namespace {
         &&  depth >= 5 * ONE_PLY
         &&  abs(beta) < VALUE_MATE_IN_MAX_PLY)
     {
-        Value raisedBeta = std::min(beta + 216 - 48 * improving - 100 * th.marked(), VALUE_INFINITE);
+        Value raisedBeta = std::min(beta + 216 - 48 * improving - 200 * th.marked(), VALUE_INFINITE);
         MovePicker mp(pos, ttMove, raisedBeta - ss->staticEval, &thisThread->captureHistory);
         int probCutCount = 0;
 

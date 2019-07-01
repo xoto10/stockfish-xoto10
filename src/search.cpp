@@ -1057,7 +1057,7 @@ moves_loop: // When in check, search starts from here
       // Step 16. Reduced depth search (LMR). If the move fails high it will be
       // re-searched at full depth.
       if (    depth >= 3 * ONE_PLY
-          &&  moveCount > 1 + 3 * rootNode
+          &&  moveCount > 1 + (3 - th.marked()) * rootNode
           && (  !captureOrPromotion
               || moveCountPruning
               || ss->staticEval + PieceValue[EG][pos.captured_piece()] <= alpha))
@@ -1065,7 +1065,7 @@ moves_loop: // When in check, search starts from here
           Depth r = reduction(improving, depth, moveCount);
 
           // Reduction if other threads are searching this position.
-	  if (th.marked())
+          if (th.marked())
               r += ONE_PLY;
 
           // Decrease reduction if position is or has been on the PV

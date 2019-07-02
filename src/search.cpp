@@ -998,6 +998,12 @@ moves_loop: // When in check, search starts from here
                && pos.pawn_passed(us, to_sq(move)))
           extension = ONE_PLY;
 
+      // Less extension if ply == 2 and marked, only for every 4th thread
+      if (   ss->ply == 2
+          && th.marked()
+          && (thisThread->get_idx() & 3) == 3)
+          extension -= ONE_PLY;
+
       // Calculate new depth for this move
       newDepth = depth - ONE_PLY + extension;
 

@@ -1069,12 +1069,8 @@ moves_loop: // When in check, search starts from here
       {
           Depth r = reduction(improving, depth, moveCount);
 
-          // Reduction if other threads are searching this position.
-	  if (th.marked())
-              r += ONE_PLY;
-
-          // Decrease reduction if position is or has been on the PV
-          if (ttPv)
+          // Decrease reduction if position is or has been on the PV and is not marked by another thread.
+          if (ttPv && !th.marked())
               r -= 2 * ONE_PLY;
 
           // Decrease reduction if opponent's move count is high (~10 Elo)
@@ -1096,9 +1092,10 @@ moves_loop: // When in check, search starts from here
 
               // Decrease reduction for moves that escape a capture. Filter out
               // castling moves, because they are coded as "king captures rook" and
-              // hence break make_move(). (~5 Elo)
+              // hence break make_move(). Also filter out if marked by another thread. (~5 Elo)
               else if (    type_of(move) == NORMAL
-                       && !pos.see_ge(make_move(to_sq(move), from_sq(move))))
+                       && !pos.see_ge(make_move(to_sq(move), from_sq(move)))
+                       && !th.marked())
                   r -= 2 * ONE_PLY;
 
               ss->statScore =  thisThread->mainHistory[us][from_to(move)]

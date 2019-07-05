@@ -579,7 +579,7 @@ namespace {
     Depth extension, newDepth;
     Value bestValue, value, ttValue, eval, maxValue;
     bool ttHit, ttPv, inCheck, givesCheck, improving;
-    bool captureOrPromotion, doFullDepthSearch, moveCountPruning, ttCapture;
+    bool captureOrPromotion, doFullDepthSearch, moveCountPruning, ttPromotion;
     Piece movedPiece;
     int moveCount, captureCount, quietCount, singularLMR;
 
@@ -892,7 +892,7 @@ moves_loop: // When in check, search starts from here
 
     value = bestValue; // Workaround a bogus 'uninitialized' warning under gcc
     moveCountPruning = false;
-    ttCapture = ttMove && pos.capture_or_promotion(ttMove);
+    ttPromotion = ttMove && type_of(ttMove) == PROMOTION;
 
     // Mark this node as being searched.
     ThreadHolding th(thisThread, posKey, ss->ply);
@@ -1084,10 +1084,10 @@ moves_loop: // When in check, search starts from here
           // Decrease reduction if move has been singularly extended
           r -= singularLMR * ONE_PLY;
 
-          if (type_of(move) != PROMOTION)
+          if (!captureOrPromotion)
           {
               // Increase reduction if ttMove is a capture (~0 Elo)
-              if (ttCapture)
+              if (ttPromotion)
                   r += ONE_PLY;
 
               // Increase reduction for cut nodes (~5 Elo)

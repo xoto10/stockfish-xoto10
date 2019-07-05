@@ -35,6 +35,7 @@ namespace {
   constexpr Score Backward = S( 9, 24);
   constexpr Score Doubled  = S(11, 56);
   constexpr Score Isolated = S( 5, 15);
+  constexpr Score Rammed   = S(10, 10);
   constexpr Score WeakUnopposed = S( 13, 27);
   constexpr Score Attacked2Unsupported = S( 0, 20);
 
@@ -73,7 +74,8 @@ namespace {
     Bitboard b, neighbours, stoppers, doubled, support, phalanx;
     Bitboard lever, leverPush;
     Square s;
-    bool opposed, backward;
+    bool opposed, backward, rammed;
+    int rammers = 0;
     Score score = SCORE_ZERO;
     const Square* pl = pos.squares<PAWN>(Us);
 
@@ -100,6 +102,7 @@ namespace {
 
         // Flag the pawn
         opposed    = theirPawns & forward_file_bb(Us, s);
+        rammed     = theirPawns & (s + Up);
         stoppers   = theirPawns & passed_pawn_span(Us, s);
         lever      = theirPawns & PawnAttacks[Us][s];
         leverPush  = theirPawns & PawnAttacks[Us][s + Up];
@@ -145,7 +148,12 @@ namespace {
 
         if (doubled && !support)
             score -= Doubled;
+
+        if (rammed)
+            rammers += r - RANK_4;
     }
+
+    score += Rammed * rammers;
 
     return score;
   }

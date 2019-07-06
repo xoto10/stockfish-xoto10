@@ -150,7 +150,7 @@ namespace {
             score -= Doubled;
 
         if (rammed)
-            rammers += r - RANK_4;
+            rammers += int(r - RANK_4);
     }
 
     score += Rammed * rammers;

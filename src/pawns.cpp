@@ -20,6 +20,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <iostream>
 
 #include "bitboard.h"
 #include "pawns.h"
@@ -182,6 +183,9 @@ template<Color Us>
 void Entry::evaluate_shelter(const Position& pos, Square ksq, Score& shelter) {
 
   constexpr Color     Them = (Us == WHITE ? BLACK : WHITE);
+  constexpr Direction Down = (Us == WHITE ? SOUTH : NORTH);
+  constexpr Bitboard  NearRanks = (Us == WHITE ? Rank2BB | Rank3BB
+                                               : Rank7BB | Rank6BB);
 
   Bitboard b = pos.pieces(PAWN) & ~forward_ranks_bb(Them, ksq);
   Bitboard ourPawns = b & pos.pieces(Us);
@@ -202,9 +206,23 @@ void Entry::evaluate_shelter(const Position& pos, Square ksq, Score& shelter) {
       bonus[MG] += ShelterStrength[d][ourRank];
 
       if (ourRank && (ourRank == theirRank - 1))
-          bonus[MG] -= 82 * (theirRank == RANK_3), bonus[EG] -= 82 * (theirRank == RANK_3);
+          bonus[MG] -= 62 * (theirRank == RANK_3), bonus[EG] -= 62 * (theirRank == RANK_3);
       else
           bonus[MG] -= UnblockedStorm[d][theirRank];
+  }
+
+  b =  pos.pieces(Us, PAWN)
+     & shift<Down>(pos.pieces(Them, PAWN))
+     & NearRanks
+     & (KingFlank[file_of(ksq)] | FileDBB | FileEBB);
+  while (b)
+  {
+      Square s = pop_lsb(&b);
+      int v =  5 * (RANK_4 - relative_rank(Us, rank_of(s)))
+             * (1 + ((file_of(ksq)>FILE_D) == (file_of(s)>FILE_D)));
+      bonus[MG] -= v;
+      bonus[EG] -= v;
+//    sync_cout << "info string us " << Us << " rk " << relative_rank(Us, rank_of(s)) << " pos\n" << pos << sync_endl;
   }
 
   if (bonus[MG] > mg_value(shelter))

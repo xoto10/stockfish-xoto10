@@ -20,7 +20,6 @@
 
 #include <algorithm>
 #include <cassert>
-#include <iostream>
 
 #include "bitboard.h"
 #include "pawns.h"
@@ -41,6 +40,11 @@ namespace {
 
   // Connected pawn bonus
   constexpr int Connected[RANK_NB] = { 0, 7, 8, 12, 29, 48, 86 };
+
+  // Penalty for rams (pawns directly blocked by opponent pawn) according to rank.
+  // RANK_1 = 0 is not used.
+  constexpr int RamMg[4] = { 0, 6, 3, 0 };
+  constexpr int RamEg[4] = { 0, 6, 3, 0 };
 
   // Strength of pawn shelter for our king by [distance from edge][rank].
   // RANK_1 = 0 is used for files where we have no pawn, or pawn is behind our king.
@@ -184,8 +188,8 @@ void Entry::evaluate_shelter(const Position& pos, Square ksq, Score& shelter) {
 
   constexpr Color     Them = (Us == WHITE ? BLACK : WHITE);
   constexpr Direction Down = (Us == WHITE ? SOUTH : NORTH);
-  constexpr Bitboard  NearRanks = (Us == WHITE ? Rank2BB | Rank3BB
-                                               : Rank7BB | Rank6BB);
+  constexpr Bitboard  NearRanks = (Us == WHITE ? Rank2BB | Rank3BB | Rank4BB
+                                               : Rank7BB | Rank6BB | Rank5BB);
 
   Bitboard b = pos.pieces(PAWN) & ~forward_ranks_bb(Them, ksq);
   Bitboard ourPawns = b & pos.pieces(Us);
@@ -218,10 +222,9 @@ void Entry::evaluate_shelter(const Position& pos, Square ksq, Score& shelter) {
   while (b)
   {
       Square s = pop_lsb(&b);
-      int v =  3 * (RANK_4 - relative_rank(Us, rank_of(s)))
-             * (1 + ((file_of(ksq)>FILE_D) == (file_of(s)>FILE_D)));
-      bonus[MG] -= v;
-      bonus[EG] -= v;
+
+      bonus[MG] -= RamMg[relative_rank(Us, rank_of(s))] * (1 + ((file_of(ksq)>FILE_D) == (file_of(s)>FILE_D)));
+      bonus[EG] -= RamEg[relative_rank(Us, rank_of(s))] * (1 + ((file_of(ksq)>FILE_D) == (file_of(s)>FILE_D)));
 //    sync_cout << "info string us " << Us << " rk " << relative_rank(Us, rank_of(s)) << " pos\n" << pos << sync_endl;
   }
 

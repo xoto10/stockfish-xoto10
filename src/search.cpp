@@ -1088,7 +1088,7 @@ moves_loop: // When in check, search starts from here
           {
               // Increase reduction if ttMove is a capture (~0 Elo)
               if (ttCapture)
-                  r += 2 * ONE_PLY;
+                  r += 3 * ONE_PLY;
 
               // Increase reduction for cut nodes (~5 Elo)
               if (cutNode)

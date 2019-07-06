@@ -221,7 +221,7 @@ void Entry::evaluate_shelter(const Position& pos, Square ksq, Score& shelter) {
       int v =  5 * (RANK_4 - relative_rank(Us, rank_of(s)))
              * (1 + ((file_of(ksq)>FILE_D) == (file_of(s)>FILE_D)));
       bonus[MG] -= v;
-      bonus[EG] -= v;
+//    bonus[EG] -= v;
 //    sync_cout << "info string us " << Us << " rk " << relative_rank(Us, rank_of(s)) << " pos\n" << pos << sync_endl;
   }
 

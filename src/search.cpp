@@ -1034,10 +1034,7 @@ moves_loop: // When in check, search starts from here
                   continue;
 
               // Prune moves with negative SEE (~10 Elo)
-              if (!pos.see_ge(move, Value(100 * th.marked() - 29 * lmrDepth * lmrDepth)))
-//            dbg_mean_of(negsee); bench 16 3 16 Total 13194735 Mean 0.264276
-//            dbg_mean_of(negsee); //+100*mk Total 14485748 Mean 0.264998
-//            dbg_mean_of(negsee); //+200*mk Total 14118680 Mean 0.273694
+              if (!pos.see_ge(move, Value(300 * th.marked() - 29 * lmrDepth * lmrDepth)))
                   continue;
           }
           else if ((!givesCheck || !extension)

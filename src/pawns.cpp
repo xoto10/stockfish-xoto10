@@ -43,8 +43,8 @@ namespace {
 
   // Penalty for rams (pawns directly blocked by opponent pawn) according to rank.
   // RANK_1 = 0 is not used.
-  constexpr int RamMg[4] = { 0, 6, 3, 0 };
-  constexpr int RamEg[4] = { 0, 6, 3, 0 };
+  constexpr int RamMg[4] = { 0, 101, 42, -7 };
+  constexpr int RamEg[4] = { 0,  92, 48, 20 };
 
   // Strength of pawn shelter for our king by [distance from edge][rank].
   // RANK_1 = 0 is used for files where we have no pawn, or pawn is behind our king.
@@ -210,7 +210,7 @@ void Entry::evaluate_shelter(const Position& pos, Square ksq, Score& shelter) {
       bonus[MG] += ShelterStrength[d][ourRank];
 
       if (ourRank && (ourRank == theirRank - 1))
-          bonus[MG] -= 70 * (theirRank == RANK_3), bonus[EG] -= 70 * (theirRank == RANK_3);
+          bonus[MG] -= 63 * (theirRank == RANK_3), bonus[EG] -= 66 * (theirRank == RANK_3);
       else
           bonus[MG] -= UnblockedStorm[d][theirRank];
   }
@@ -223,9 +223,10 @@ void Entry::evaluate_shelter(const Position& pos, Square ksq, Score& shelter) {
   {
       Square s = pop_lsb(&b);
 
-      bonus[MG] -= RamMg[relative_rank(Us, rank_of(s))] * (1 + ((file_of(ksq)>FILE_D) == (file_of(s)>FILE_D)));
-      bonus[EG] -= RamEg[relative_rank(Us, rank_of(s))] * (1 + ((file_of(ksq)>FILE_D) == (file_of(s)>FILE_D)));
-//    sync_cout << "info string us " << Us << " rk " << relative_rank(Us, rank_of(s)) << " pos\n" << pos << sync_endl;
+      bonus[MG] -=  RamMg[relative_rank(Us, rank_of(s))]
+                  * (17 + 11 * ((file_of(ksq)>FILE_D) == (file_of(s)>FILE_D))) / 256;
+      bonus[EG] -=  RamEg[relative_rank(Us, rank_of(s))]
+                  * (17 + 18 * ((file_of(ksq)>FILE_D) == (file_of(s)>FILE_D))) / 256;
   }
 
   if (bonus[MG] > mg_value(shelter))

@@ -330,7 +330,7 @@ void Thread::search() {
   for (int i = 7; i > 0; i--)
      (ss-i)->continuationHistory = &this->continuationHistory[NO_PIECE][0]; // Use as sentinel
   ss->pv = pv;
-
+  ss->badMoves[0] = ss->badMoves[1] = MOVE_NONE;
   bestValue = delta = alpha = -VALUE_INFINITE;
   beta = VALUE_INFINITE;
 
@@ -625,6 +625,7 @@ namespace {
     (ss+1)->ply = ss->ply + 1;
     (ss+1)->excludedMove = bestMove = MOVE_NONE;
     (ss+2)->killers[0] = (ss+2)->killers[1] = MOVE_NONE;
+    (ss+1)->badMoves[0] = (ss+1)->badMoves[1] = MOVE_NONE;
     Square prevSq = to_sq((ss-1)->currentMove);
 
     // Initialize statScore to zero for the grandchildren of the current position.
@@ -1077,6 +1078,15 @@ moves_loop: // When in check, search starts from here
           if (ttPv)
               r -= 2 * ONE_PLY;
 
+          // Increase reduction if move is stored as bad move
+          if (move == ss->badMoves[0] || move == ss->badMoves[1])
+          {
+			  pos.undo_move(move);
+			  sync_cout << "Position = " << pos.fen()
+			            << " - move = " << UCI::move(move, pos.is_chess960()) << sync_endl;
+			  pos.do_move(move, st, givesCheck);
+		  }
+
           // Decrease reduction if opponent's move count is high (~10 Elo)
           if ((ss-1)->moveCount > 15)
               r -= ONE_PLY;
@@ -1121,6 +1131,14 @@ moves_loop: // When in check, search starts from here
           Depth d = clamp(newDepth - r, ONE_PLY, newDepth);
 
           value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, d, true);
+
+          if (value < alpha - Value(1000)
+              && newDepth > 6 * ONE_PLY
+              && move != ss->badMoves[0])
+          {
+            ss->badMoves[1] = ss->badMoves[0];
+            ss->badMoves[0] = move;
+		  }
 
           doFullDepthSearch = (value > alpha && d != newDepth);
       }

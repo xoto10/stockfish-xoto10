@@ -43,8 +43,8 @@ namespace {
 
   // Penalty for rams (pawns directly blocked by opponent pawn) according to rank.
   // RANK_1 = 0 is not used.
-  constexpr int RamMg[4] = { 0, 101, 42, -7 };
-  constexpr int RamEg[4] = { 0,  92, 48, 20 };
+  constexpr int RamMg[3] = { 0, 11, 4 };
+  constexpr int RamEg[3] = { 0, 12, 6 };
 
   // Strength of pawn shelter for our king by [distance from edge][rank].
   // RANK_1 = 0 is used for files where we have no pawn, or pawn is behind our king.
@@ -188,8 +188,8 @@ void Entry::evaluate_shelter(const Position& pos, Square ksq, Score& shelter) {
 
   constexpr Color     Them = (Us == WHITE ? BLACK : WHITE);
   constexpr Direction Down = (Us == WHITE ? SOUTH : NORTH);
-  constexpr Bitboard  NearRanks = (Us == WHITE ? Rank2BB | Rank3BB | Rank4BB
-                                               : Rank7BB | Rank6BB | Rank5BB);
+  constexpr Bitboard  NearRanks = (Us == WHITE ? Rank2BB | Rank3BB
+                                               : Rank7BB | Rank6BB);
 
   Bitboard b = pos.pieces(PAWN) & ~forward_ranks_bb(Them, ksq);
   Bitboard ourPawns = b & pos.pieces(Us);
@@ -223,10 +223,8 @@ void Entry::evaluate_shelter(const Position& pos, Square ksq, Score& shelter) {
   {
       Square s = pop_lsb(&b);
 
-      bonus[MG] -=  RamMg[relative_rank(Us, rank_of(s))]
-                  * (17 + 11 * ((file_of(ksq)>FILE_D) == (file_of(s)>FILE_D))) / 256;
-      bonus[EG] -=  RamEg[relative_rank(Us, rank_of(s))]
-                  * (17 + 18 * ((file_of(ksq)>FILE_D) == (file_of(s)>FILE_D))) / 256;
+      bonus[MG] -= RamMg[relative_rank(Us, rank_of(s))];
+      bonus[EG] -= RamEg[relative_rank(Us, rank_of(s))];
   }
 
   if (bonus[MG] > mg_value(shelter))

@@ -76,6 +76,7 @@ namespace {
   // Threshold for lazy and space evaluation
   constexpr Value LazyThreshold  = Value(1400);
   constexpr Value SpaceThreshold = Value(12222);
+  constexpr Value SpaceThreshold2 = Value(6111);
 
   // KingAttackWeights[PieceType] contains king attack weights by piece type
   constexpr int KingAttackWeights[PIECE_TYPE_NB] = { 0, 0, 77, 55, 44, 10 };
@@ -802,9 +803,9 @@ namespace {
     // Probe the pawn hash table
     pe = Pawns::probe(pos);
     Score pawnScore = (pe->pawn_score(WHITE) - pe->pawn_score(BLACK));
-    int material = pos.non_pawn_material();
-    if (material > SpaceThreshold)
-        pawnScore = make_score(mg_value(pawnScore) * material / SpaceThreshold, mg_value(pawnScore) * material / SpaceThreshold);
+    int material = pos.non_pawn_material(WHITE);
+    if (material > SpaceThreshold2)
+        pawnScore = make_score(mg_value(pawnScore) * material / SpaceThreshold2, eg_value(pawnScore) * material / SpaceThreshold2);
     score += pawnScore;
 
     // Early exit if score is high

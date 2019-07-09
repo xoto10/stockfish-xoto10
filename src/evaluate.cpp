@@ -804,7 +804,7 @@ namespace {
     Score pawnScore = (pe->pawn_score(WHITE) - pe->pawn_score(BLACK));
     int material = pos.non_pawn_material();
     if (material > SpaceThreshold)
-        pawnScore = make_score(mg_value(pawnScore) * material / SpaceThreshold, eg_value(pawnScore) * material / SpaceThreshold);
+        pawnScore = make_score(mg_value(pawnScore) * material / SpaceThreshold, eg_value(pawnScore));
     score += pawnScore;
 
     // Early exit if score is high

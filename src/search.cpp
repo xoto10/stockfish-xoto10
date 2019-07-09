@@ -1081,10 +1081,11 @@ moves_loop: // When in check, search starts from here
           // Increase reduction if move is stored as bad move
           if (move == ss->badMoves[0] || move == ss->badMoves[1])
           {
-			  pos.undo_move(move);
+			  /*pos.undo_move(move);
 			  sync_cout << "Position = " << pos.fen()
 			            << " - move = " << UCI::move(move, pos.is_chess960()) << sync_endl;
-			  pos.do_move(move, st, givesCheck);
+			  pos.do_move(move, st, givesCheck);*/
+			  r += ONE_PLY;
 		  }
 
           // Decrease reduction if opponent's move count is high (~10 Elo)
@@ -1132,7 +1133,7 @@ moves_loop: // When in check, search starts from here
 
           value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, d, true);
 
-          if (value < alpha - Value(1000)
+          if (value < bestValue - Value(1000)
               && newDepth > 6 * ONE_PLY
               && move != ss->badMoves[0])
           {

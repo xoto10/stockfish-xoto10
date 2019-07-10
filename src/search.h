@@ -46,7 +46,7 @@ struct Stack {
   Move currentMove;
   Move excludedMove;
   Move killers[2];
-  std::array<Move, 10> badMoves;
+  std::array<Move, 2> badMoves;
   Value staticEval;
   int statScore;
   int moveCount;

@@ -1079,7 +1079,7 @@ moves_loop: // When in check, search starts from here
               r -= 2 * ONE_PLY;
 
           // Increase reduction if move is stored as bad move
-          for (int iter=0; iter < 10; iter++)
+          for (int iter=0; iter < 2; iter++)
           {
               if (ss->badMoves[iter] == move)
               {
@@ -1152,13 +1152,16 @@ moves_loop: // When in check, search starts from here
                                        << " - move = " << UCI::move(move, pos.is_chess960()) << sync_endl;
                              pos.do_move(move, st, givesCheck);*/
 
-            if (ss->badMoves[9] == MOVE_NONE)
-                for (int iter=0; iter < 10; iter++)
-                    if (ss->badMoves[iter] == MOVE_NONE)
-                    {
-                        ss->badMoves[iter] = move;
-                        break;
-                    }
+              for (int iter=0; iter < 2; iter++)
+              {
+                  if (ss->badMoves[iter] == MOVE_NONE)
+                  {
+                      ss->badMoves[iter] = move;
+                      break;
+                  }
+                  if (ss->badMoves[iter] == move)
+                      break;
+              }
           }
 
           doFullDepthSearch = (value > alpha && d != newDepth);
@@ -1254,6 +1257,11 @@ moves_loop: // When in check, search starts from here
               quietsSearched[quietCount++] = move;
       }
     }
+//if (depth > 15 && ss->badMoves[0] != MOVE_NONE)
+//    sync_cout << "info string d " << depth << " bm0 " << UCI::move(ss->badMoves[0], false)
+//              << " bm1 " << UCI::move(ss->badMoves[1], false)
+//              << " bm2 " << UCI::move(ss->badMoves[2], false) << " bm3 " << UCI::move(ss->badMoves[3], false)
+//              << " bm4 " << UCI::move(ss->badMoves[4], false) << " bm5 " << UCI::move(ss->badMoves[5], false) << sync_endl;
 
     // The following condition would detect a stop only after move loop has been
     // completed. But in this case bestValue is valid because we have fully

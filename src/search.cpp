@@ -1071,7 +1071,7 @@ moves_loop: // When in check, search starts from here
           Depth r = reduction(improving, depth, moveCount);
 
           // Reduction if other threads are searching this position.
-	  if (th.marked())
+          if (th.marked())
               r += ONE_PLY;
 
           // Decrease reduction if position is or has been on the PV
@@ -1079,21 +1079,21 @@ moves_loop: // When in check, search starts from here
               r -= 2 * ONE_PLY;
 
           // Increase reduction if move is stored as bad move
-          for(int iter=0; iter < 10; iter++)
+          for (int iter=0; iter < 10; iter++)
           {
-			  if (ss->badMoves[iter] == move)
-			  {
-			     /*pos.undo_move(move);
-			     sync_cout << "Position = " << pos.fen()
-			               << " - last move = " << UCI::move((ss-1)->currentMove, pos.is_chess960())
-			               << " - move = " << UCI::move(move, pos.is_chess960()) << sync_endl;
-			     pos.do_move(move, st, givesCheck);*/
-			     r += ONE_PLY;
-			     break;
-			 }
-			 else if (ss->badMoves[iter] == MOVE_NONE)
-			    break;
-		  }
+              if (ss->badMoves[iter] == move)
+              {
+                             /*pos.undo_move(move);
+                             sync_cout << "Position = " << pos.fen()
+                                       << " - last move = " << UCI::move((ss-1)->currentMove, pos.is_chess960())
+                                       << " - move = " << UCI::move(move, pos.is_chess960()) << sync_endl;
+                             pos.do_move(move, st, givesCheck);*/
+                  r += ONE_PLY;
+                  break;
+              }
+              else if (ss->badMoves[iter] == MOVE_NONE)
+                  break;
+          }
 
           // Decrease reduction if opponent's move count is high (~10 Elo)
           if ((ss-1)->moveCount > 15)
@@ -1140,28 +1140,27 @@ moves_loop: // When in check, search starts from here
 
           value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, d, true);
 
-          if (value < bestValue - Value(300)
+          // Store bad moves
+          if (   value < bestValue - Value(300)
               //&& depth > 5 * ONE_PLY
               && (ss-1)->currentMove == MOVE_NULL
               && !ttCapture)
           {
-			     /*pos.undo_move(move);
-			     sync_cout << "Position = " << pos.fen()
-			               << " - last move = " << UCI::move((ss-1)->currentMove, pos.is_chess960())
-			               << " - move = " << UCI::move(move, pos.is_chess960()) << sync_endl;
-			     pos.do_move(move, st, givesCheck);*/
+                             /*pos.undo_move(move);
+                             sync_cout << "Position = " << pos.fen()
+                                       << " - last move = " << UCI::move((ss-1)->currentMove, pos.is_chess960())
+                                       << " - move = " << UCI::move(move, pos.is_chess960()) << sync_endl;
+                             pos.do_move(move, st, givesCheck);*/
 
-            for(int iter=0; iter < 10; iter++)
+            for (int iter=0; iter < 10; iter++)
             {
                if (ss->badMoves[iter] == MOVE_NONE)
                {
                   ss->badMoves[iter] = move;
                   break;
-			   }
-			   if (ss->badMoves[iter] == move)
-			      break;
-		    }
-		  }
+               }
+            }
+          }
 
           doFullDepthSearch = (value > alpha && d != newDepth);
       }

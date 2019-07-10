@@ -78,8 +78,7 @@ void Thread::updatePieceStats(Piece p, int bonus) {
    const int N = 128;
    const int Scale = 1;
 
-   pieceStats[0] = ((N - 1) * pieceStats[0] + bonus * Scale + N / 2) / N;
-   pieceStats[p] = ((N - 1) * pieceStats[p] + bonus * Scale + N / 2) / N;
+   pieceStats[p] = ((N - 1) * pieceStats[p] + bonus * Scale) / N;
 }
 
 /// Thread::start_searching() wakes up the thread that will start the search

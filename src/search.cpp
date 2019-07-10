@@ -1141,15 +1141,15 @@ moves_loop: // When in check, search starts from here
           value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, d, true);
 
           if (value < bestValue - Value(400)
-              && depth > 8 * ONE_PLY
+              //&& depth > 5 * ONE_PLY
               && (ss-1)->currentMove == MOVE_NULL
-              && !pos.capture_or_promotion(bestMove))
+              && !ttCapture)
           {
-			     pos.undo_move(move);
+			     /*pos.undo_move(move);
 			     sync_cout << "Position = " << pos.fen()
 			               << " - last move = " << UCI::move((ss-1)->currentMove, pos.is_chess960())
 			               << " - move = " << UCI::move(move, pos.is_chess960()) << sync_endl;
-			     pos.do_move(move, st, givesCheck);
+			     pos.do_move(move, st, givesCheck);*/
 
             for(int iter=0; iter < 10; iter++)
             {

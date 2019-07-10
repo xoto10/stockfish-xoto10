@@ -1107,9 +1107,11 @@ moves_loop: // When in check, search starts from here
                              + (*contHist[3])[movedPiece][to_sq(move)]
                              - 4000;
 
-              thisThread->updatePieceStats(movedPiece, ss->statScore);
+              // Increase reduction if stat score is far below average piece stat score
+              if (ss->statScore < thisThread->pieceStats[movedPiece] - 40000)
+                  r += ONE_PLY;
 
-              ss->statScore += (ss->statScore - thisThread->pieceStats[movedPiece]) / 8;
+              thisThread->updatePieceStats(movedPiece, ss->statScore);
 
               // Decrease/increase reduction by comparing opponent's stat score (~10 Elo)
               if (ss->statScore >= 0 && (ss-1)->statScore < 0)

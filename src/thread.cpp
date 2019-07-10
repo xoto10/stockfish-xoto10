@@ -75,7 +75,7 @@ void Thread::clear() {
 
 void Thread::updatePieceStats(Piece p, int bonus) {
 
-   const int N = 128;
+   const int N = 96;
    const int Scale = 1;
 
    pieceStats[p] = ((N - 1) * pieceStats[p] + bonus * Scale) / N;

@@ -1152,14 +1152,13 @@ moves_loop: // When in check, search starts from here
                                        << " - move = " << UCI::move(move, pos.is_chess960()) << sync_endl;
                              pos.do_move(move, st, givesCheck);*/
 
-            for (int iter=0; iter < 10 && ss->badMoves[9] == MOVE_NONE; iter++)
-            {
-               if (ss->badMoves[iter] == MOVE_NONE)
-               {
-                  ss->badMoves[iter] = move;
-                  break;
-               }
-            }
+            if (ss->badMoves[9] == MOVE_NONE)
+                for (int iter=0; iter < 10; iter++)
+                    if (ss->badMoves[iter] == MOVE_NONE)
+                    {
+                        ss->badMoves[iter] = move;
+                        break;
+                    }
           }
 
           doFullDepthSearch = (value > alpha && d != newDepth);

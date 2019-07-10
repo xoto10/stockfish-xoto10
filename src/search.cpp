@@ -1079,7 +1079,7 @@ moves_loop: // When in check, search starts from here
               r -= 2 * ONE_PLY;
 
           // Increase reduction if move is stored as bad move
-          for (int iter=0; iter < 6; iter++)
+          for (int iter=0; iter < 14; iter++)
           {
               if (ss->badMoves[iter] == move)
               {
@@ -1152,7 +1152,7 @@ moves_loop: // When in check, search starts from here
                                        << " - move = " << UCI::move(move, pos.is_chess960()) << sync_endl;
                              pos.do_move(move, st, givesCheck);*/
 
-              for (int iter=0; iter < 6; iter++)
+              for (int iter=0; iter < 14; iter++)
               {
                   if (ss->badMoves[iter] == MOVE_NONE)
                   {

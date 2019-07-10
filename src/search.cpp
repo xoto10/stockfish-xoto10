@@ -1107,9 +1107,7 @@ moves_loop: // When in check, search starts from here
                              + (*contHist[3])[movedPiece][to_sq(move)]
                              - 4000;
 
-              // Decrease reduction if a negative stat score is far over average piece stat score
-              if (ss->statScore < 0 && ss->statScore > thisThread->pieceStats[movedPiece] + 10000)
-                  r -= ONE_PLY;
+              ss->statScore += (ss->statScore - thisThread->pieceStats[movedPiece]) / 16;
 
               thisThread->updatePieceStats(movedPiece, ss->statScore);
 

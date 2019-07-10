@@ -68,7 +68,8 @@ void Thread::clear() {
 
   continuationHistory[NO_PIECE][0]->fill(Search::CounterMovePruneThreshold - 1);
 
-  std::memset(pieceStats, 0, sizeof(pieceStats));
+  for (int i=0; i < PIECE_NB; ++i)
+    pieceStats[i] = VALUE_NONE;
 }
 
 /// Thread::updatePieceStats() update stat score stats
@@ -78,7 +79,10 @@ void Thread::updatePieceStats(Piece p, int bonus) {
    const int N = 96;
    const int Scale = 1;
 
-   pieceStats[p] = ((N - 1) * pieceStats[p] + bonus * Scale) / N;
+   if (pieceStats[p] == VALUE_NONE)
+      pieceStats[p] = bonus;
+   else
+      pieceStats[p] = ((N - 1) * pieceStats[p] + bonus * Scale) / N;
 }
 
 /// Thread::start_searching() wakes up the thread that will start the search

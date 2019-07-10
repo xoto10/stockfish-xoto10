@@ -19,6 +19,7 @@
 */
 
 #include <cassert>
+#include <cstring> // For std::memset
 
 #include <algorithm> // For std::count
 #include "movegen.h"
@@ -66,6 +67,19 @@ void Thread::clear() {
           h->fill(0);
 
   continuationHistory[NO_PIECE][0]->fill(Search::CounterMovePruneThreshold - 1);
+
+  std::memset(pieceStats, 0, sizeof(pieceStats));
+}
+
+/// Thread::updatePieceStats() update stat score stats
+
+void Thread::updatePieceStats(Piece p, int bonus) {
+
+   const int N = 128;
+   const int Scale = 128;
+
+   pieceStats[0] = ((N - 1) * pieceStats[0] + bonus * Scale) / N;
+   pieceStats[p] = ((N - 1) * pieceStats[p] + bonus * Scale) / N;
 }
 
 /// Thread::start_searching() wakes up the thread that will start the search

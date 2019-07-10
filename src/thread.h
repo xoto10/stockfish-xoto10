@@ -56,6 +56,7 @@ public:
   void idle_loop();
   void start_searching();
   void wait_for_search_finished();
+  void updatePieceStats(Piece p, int bonus);
 
   Pawns::Table pawnsTable;
   Material::Table materialTable;
@@ -72,6 +73,7 @@ public:
   CapturePieceToHistory captureHistory;
   ContinuationHistory continuationHistory;
   Score contempt;
+  int pieceStats[PIECE_NB];
 };
 
 

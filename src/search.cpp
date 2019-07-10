@@ -1105,6 +1105,8 @@ moves_loop: // When in check, search starts from here
                              + (*contHist[0])[movedPiece][to_sq(move)]
                              + (*contHist[1])[movedPiece][to_sq(move)]
                              + (*contHist[3])[movedPiece][to_sq(move)]
+                             + thisThread->pieceStats[movedPiece]
+                             - thisThread->pieceStats[0]
                              - 4000;
 
               // Decrease/increase reduction by comparing opponent's stat score (~10 Elo)
@@ -1182,6 +1184,15 @@ moves_loop: // When in check, search starts from here
               // is not a problem when sorting because the sort is stable and the
               // move position in the list is preserved - just the PV is pushed up.
               rm.score = -VALUE_INFINITE;
+      }
+
+      if (!captureOrPromotion)
+      {
+          int bonus = stat_bonus(depth);
+          if (value > alpha)
+              thisThread->updatePieceStats(movedPiece, bonus);
+          else
+              thisThread->updatePieceStats(movedPiece, -bonus);
       }
 
       if (value > bestValue)

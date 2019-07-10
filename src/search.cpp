@@ -1109,7 +1109,7 @@ moves_loop: // When in check, search starts from here
 
               thisThread->updatePieceStats(movedPiece, ss->statScore);
 
-              ss->statScore += (ss->statScore - thisThread->pieceStats[movedPiece]) / 16;
+              ss->statScore += (ss->statScore - thisThread->pieceStats[movedPiece]) / 8;
 
               // Decrease/increase reduction by comparing opponent's stat score (~10 Elo)
               if (ss->statScore >= 0 && (ss-1)->statScore < 0)

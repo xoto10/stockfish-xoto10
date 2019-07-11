@@ -1101,6 +1101,12 @@ moves_loop: // When in check, search starts from here
                        && !pos.see_ge(make_move(to_sq(move), from_sq(move))))
                   r -= 2 * ONE_PLY;
 
+              // Decrease reduction if pawn move towards opponent's king
+              if (   type_of(movedPiece) == PAWN
+                  && rank_of(to_sq(move)) > relative_rank(us, RANK_3)
+                  && abs(file_of(to_sq(move)) - file_of(pos.square<KING>(~us))) < 2)
+                  r -= ONE_PLY;
+
               ss->statScore =  thisThread->mainHistory[us][from_to(move)]
                              + (*contHist[0])[movedPiece][to_sq(move)]
                              + (*contHist[1])[movedPiece][to_sq(move)]

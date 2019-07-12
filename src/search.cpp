@@ -671,7 +671,8 @@ namespace {
             // Penalty for a quiet ttMove that fails low
             else if (!pos.capture_or_promotion(ttMove))
             {
-                int penalty = -stat_bonus(depth);
+                //dbg_hit_on(true); Total 4412
+                int penalty = -stat_bonus(depth + ONE_PLY);
                 thisThread->mainHistory[us][from_to(ttMove)] << penalty;
                 update_continuation_histories(ss, pos.moved_piece(ttMove), to_sq(ttMove), penalty);
             }
@@ -1134,10 +1135,13 @@ moves_loop: // When in check, search starts from here
 
           if (doLMR && !captureOrPromotion)
           {
-              int bonus = stat_bonus(newDepth) / 2;
-              if (value <= alpha)
-                  bonus = -bonus;
+              int bonus;
+              if (value > alpha)
+                  bonus = stat_bonus(newDepth) / 2;
+              else
+                  bonus = -stat_bonus(newDepth + ONE_PLY) / 2;
 
+              //dbg_hit_on(true); Total 32220
               update_continuation_histories(ss, movedPiece, to_sq(move), bonus);
           }
       }
@@ -1257,7 +1261,7 @@ moves_loop: // When in check, search starts from here
         // Extra penalty for a quiet TT or main killer move in previous ply when it gets refuted
         if (   ((ss-1)->moveCount == 1 || ((ss-1)->currentMove == (ss-1)->killers[0]))
             && !pos.captured_piece())
-                update_continuation_histories(ss-1, pos.piece_on(prevSq), prevSq, -stat_bonus(depth));
+                update_continuation_histories(ss-1, pos.piece_on(prevSq), prevSq, -stat_bonus(depth + ONE_PLY));
 
     }
     // Bonus for prior countermove that caused the fail low

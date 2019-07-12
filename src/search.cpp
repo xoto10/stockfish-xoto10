@@ -671,8 +671,7 @@ namespace {
             // Penalty for a quiet ttMove that fails low
             else if (!pos.capture_or_promotion(ttMove))
             {
-                //dbg_hit_on(true); Total 4412
-                int penalty = -stat_bonus(depth + ONE_PLY);
+                int penalty = -stat_bonus(depth);
                 thisThread->mainHistory[us][from_to(ttMove)] << penalty;
                 update_continuation_histories(ss, pos.moved_piece(ttMove), to_sq(ttMove), penalty);
             }
@@ -1141,7 +1140,6 @@ moves_loop: // When in check, search starts from here
               else
                   bonus = -stat_bonus(newDepth + ONE_PLY) / 2;
 
-              //dbg_hit_on(true); Total 32220
               update_continuation_histories(ss, movedPiece, to_sq(move), bonus);
           }
       }

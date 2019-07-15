@@ -69,6 +69,8 @@ namespace {
 
     constexpr Color     Them = (Us == WHITE ? BLACK : WHITE);
     constexpr Direction Up   = (Us == WHITE ? NORTH : SOUTH);
+    constexpr Bitboard  Adv  = (Us == WHITE ? Rank4BB | Rank5BB | Rank6BB
+                                            : Rank5BB | Rank4BB | Rank3BB );
 
     Bitboard b, neighbours, stoppers, doubled, support, phalanx;
     Bitboard lever, leverPush;
@@ -138,7 +140,7 @@ namespace {
             score -= Isolated + WeakUnopposed * int(!opposed);
 
         else if (backward)
-            score -= Backward + WeakUnopposed * int(!opposed);
+            score -= Backward + Backward * bool(SquareBB[s] & Adv) + WeakUnopposed * int(!opposed);
 
         if (doubled && !support)
             score -= Doubled;

@@ -69,8 +69,7 @@ namespace {
 
     constexpr Color     Them = (Us == WHITE ? BLACK : WHITE);
     constexpr Direction Up   = (Us == WHITE ? NORTH : SOUTH);
-    constexpr Bitboard  Adv  = (Us == WHITE ? Rank4BB | Rank5BB
-                                            : Rank5BB | Rank4BB);
+    constexpr Bitboard  Adv  = Rank4BB | Rank5BB;
 
     Bitboard b, neighbours, stoppers, doubled, support, phalanx;
     Bitboard lever, leverPush;

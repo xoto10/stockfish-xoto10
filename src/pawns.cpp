@@ -140,7 +140,7 @@ namespace {
             score -= Isolated + WeakUnopposed * int(!opposed);
 
         else if (backward)
-            score -= Backward + Backward * bool(Adv & s) + WeakUnopposed * int(!opposed);
+            score -= Backward + WeakUnopposed * (int(!opposed) + bool(Adv & s));
 
         if (doubled && !support)
             score -= Doubled;

@@ -735,9 +735,9 @@ namespace {
     int complexity =  10 * pe->passed_count()
                     + 12 * pos.count<PAWN>()
                     + 10 * outflanking
-                    + 20 * pawnsOnBothFlanks
-                    + 55 * !pos.non_pawn_material()
-                    -116 ;
+                    + 19 * pawnsOnBothFlanks
+                    + 52 * !pos.non_pawn_material()
+                    -109 ;
 
     // Now apply the bonus: note that we find the attacking side by extracting
     // the sign of the endgame value, and that we carefully cap the bonus so
@@ -745,9 +745,9 @@ namespace {
     int v = ((eg > 0) - (eg < 0)) * std::max(complexity, -abs(eg));
 
     if (T)
-        Trace::add(INITIATIVE, make_score(-v/8, v));
+        Trace::add(INITIATIVE, make_score(-v/16, v));
 
-    return make_score(-v/8, v);
+    return make_score(-v/16, v);
   }
 
 

@@ -39,7 +39,7 @@ namespace {
   constexpr Score Attacked2Unsupported = S(0, 56);
 
   // Penalise different pawn structures according to which files are semiopen
-  constexpr Score Semiopen[256] = {
+            Score A[256] = {
     S( 0, 0), S( 0, 0), S( 0, 0), S( 0, 0), S( 3, 0), S( 9, 5), S( 0, 0), S( 0, 0),
     S( 3, 0), S( 9, 5), S( 9, 5), S( 0, 0), S( 0, 0), S( 0, 0), S( 0, 0), S( 0, 0),
     S( 3, 0), S( 9, 5), S( 9, 5), S( 0, 0), S( 9, 5), S(14, 9), S( 0, 0), S( 9, 5),
@@ -72,6 +72,8 @@ namespace {
     S( 9, 5), S( 9, 5), S( 9, 5), S( 9, 5), S( 0, 0), S( 9, 5), S( 0, 0), S( 0, 0),
     S( 0, 0), S( 9, 5), S( 9, 5), S( 0, 0), S( 9, 5), S( 9, 5), S( 0, 0), S( 0, 0),
     S( 0, 0), S( 9, 5), S( 9, 5), S( 0, 0), S( 0, 0), S( 9, 5), S( 0, 0), S( 0, 0) };
+
+TUNE(SetRange(-20,60), A);
 
   // Connected pawn bonus
   constexpr int Connected[RANK_NB] = { 0, 7, 8, 12, 29, 48, 86 };
@@ -180,7 +182,7 @@ namespace {
         if (doubled && !support)
             score -= Doubled;
     }
-    score -= Semiopen[files];
+    score -= A[files];
 
     // Unsupported friendly pawns attacked twice by the enemy
     score -= Attacked2Unsupported * popcount(  ourPawns

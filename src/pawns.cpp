@@ -111,6 +111,7 @@ namespace {
     bool opposed, backward;
     Score score = SCORE_ZERO;
     const Square* pl = pos.squares<PAWN>(Us);
+    int semiopenFiles = 0;
 
     Bitboard ourPawns   = pos.pieces(  Us, PAWN);
     Bitboard theirPawns = pos.pieces(Them, PAWN);
@@ -127,6 +128,7 @@ namespace {
         Rank r = relative_rank(Us, s);
 
         e->pawnAttacksSpan[Us] |= pawn_attack_span(Us, s);
+        semiopenFiles |= 1 << file_of(s);
 
         // Flag the pawn
         opposed    = theirPawns & forward_file_bb(Us, s);
@@ -178,7 +180,7 @@ namespace {
         if (doubled && !support)
             score -= Doubled;
     }
-    score -= Semiopen[e->semiopenFiles[Us]];
+    score -= Semiopen[semiopenFiles];
 
     // Unsupported friendly pawns attacked twice by the enemy
     score -= Attacked2Unsupported * popcount(  ourPawns

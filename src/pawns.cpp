@@ -38,6 +38,41 @@ namespace {
   constexpr Score WeakUnopposed = S(13, 27);
   constexpr Score Attacked2Unsupported = S(0, 56);
 
+  // Penalise different pawn structures according to which files are semiopen
+  constexpr Score Semiopen[256] = {
+    S( 0, 0), S( 0, 0), S( 0, 0), S( 0, 0), S( 3, 0), S( 9, 5), S( 0, 0), S( 0, 0),
+    S( 3, 0), S( 9, 5), S( 9, 5), S( 0, 0), S( 0, 0), S( 0, 0), S( 0, 0), S( 0, 0),
+    S( 3, 0), S( 9, 5), S( 9, 5), S( 0, 0), S( 9, 5), S(14, 9), S( 0, 0), S( 9, 5),
+    S( 0, 0), S( 0, 0), S( 0, 0), S( 0, 0), S( 0, 0), S( 9, 5), S( 0, 0), S( 0, 0),
+    S( 3, 0), S( 9, 5), S( 9, 5), S( 9, 5), S( 9, 5), S(14, 9), S( 0, 0), S( 9, 5),
+    S( 9, 5), S(14, 9), S(14, 9), S( 9, 5), S( 0, 0), S( 9, 5), S( 9, 5), S( 9, 5),
+    S( 0, 0), S( 0, 0), S( 9, 5), S( 0, 0), S( 9, 5), S( 9, 5), S( 0, 0), S( 0, 0),
+    S( 0, 0), S( 9, 5), S( 9, 5), S( 0, 0), S( 0, 0), S( 9, 5), S( 0, 0), S( 0, 0),
+    S( 0, 0), S( 9, 5), S( 9, 5), S( 0, 0), S( 9, 5), S(14, 9), S( 0, 0), S( 9, 5),
+    S( 9, 5), S(14, 9), S(14, 9), S( 9, 5), S( 0, 0), S( 9, 5), S( 9, 5), S( 9, 5),
+    S( 9, 5), S(14, 9), S(14, 9), S( 9, 5), S(14, 9), S(19,12), S( 9, 5), S( 9, 5),
+    S( 0, 0), S( 9, 5), S( 9, 5), S( 9, 5), S( 9, 5), S( 9, 5), S( 9, 5), S( 9, 5),
+    S( 0, 0), S( 0, 0), S( 0, 0), S( 0, 0), S( 0, 0), S( 9, 5), S( 0, 0), S( 0, 0),
+    S( 0, 0), S( 9, 5), S( 9, 5), S( 9, 5), S( 0, 0), S( 9, 5), S( 0, 0), S( 0, 0),
+    S( 0, 0), S( 9, 5), S( 9, 5), S( 0, 0), S( 9, 5), S( 9, 5), S( 0, 0), S( 0, 0),
+    S( 0, 0), S( 9, 5), S( 9, 5), S( 0, 0), S( 0, 0), S( 9, 5), S( 0, 0), S( 0, 0),
+    S( 0, 0), S( 9, 5), S( 9, 5), S( 0, 0), S( 9, 5), S(14, 9), S( 0, 0), S( 9, 5),
+    S( 9, 5), S(14, 9), S(14, 9), S( 9, 5), S( 0, 0), S( 9, 5), S( 9, 5), S( 9, 5),
+    S( 9, 5), S(14, 9), S(14, 9), S( 9, 5), S(14, 9), S(19,12), S( 9, 5), S( 9, 5),
+    S( 0, 0), S( 9, 5), S( 9, 5), S( 9, 5), S( 0, 0), S( 9, 5), S( 0, 0), S( 9, 5),
+    S( 9, 5), S(14, 9), S(14, 9), S( 9, 5), S(14, 9), S(19,12), S( 9, 5), S( 9, 5),
+    S(14, 9), S(19,12), S(19,12), S(14, 9), S( 9, 5), S(14, 9), S( 9, 5), S( 9, 5),
+    S( 0, 0), S( 9, 5), S( 9, 5), S( 9, 5), S( 9, 5), S(14, 9), S( 9, 5), S( 9, 5),
+    S( 9, 5), S( 9, 5), S( 9, 5), S( 9, 5), S( 9, 5), S( 9, 5), S( 9, 5), S( 9, 5),
+    S( 0, 0), S( 0, 0), S( 9, 5), S( 0, 0), S( 0, 0), S( 9, 5), S( 0, 0), S( 0, 0),
+    S( 0, 0), S( 9, 5), S( 9, 5), S( 9, 5), S( 0, 0), S( 9, 5), S( 0, 0), S( 0, 0),
+    S( 0, 0), S( 9, 5), S( 9, 5), S( 9, 5), S( 9, 5), S(14, 9), S( 9, 5), S( 9, 5),
+    S( 0, 0), S( 9, 5), S( 9, 5), S( 0, 0), S( 0, 0), S( 9, 5), S( 0, 0), S( 0, 0),
+    S( 0, 0), S( 9, 5), S( 9, 5), S( 0, 0), S( 9, 5), S( 9, 5), S( 0, 0), S( 0, 0),
+    S( 9, 5), S( 9, 5), S( 9, 5), S( 9, 5), S( 0, 0), S( 9, 5), S( 0, 0), S( 0, 0),
+    S( 0, 0), S( 9, 5), S( 9, 5), S( 0, 0), S( 9, 5), S( 9, 5), S( 0, 0), S( 0, 0),
+    S( 0, 0), S( 9, 5), S( 9, 5), S( 0, 0), S( 0, 0), S( 9, 5), S( 0, 0), S( 0, 0) };
+
   // Connected pawn bonus
   constexpr int Connected[RANK_NB] = { 0, 7, 8, 12, 29, 48, 86 };
 
@@ -76,6 +111,7 @@ namespace {
     bool opposed, backward;
     Score score = SCORE_ZERO;
     const Square* pl = pos.squares<PAWN>(Us);
+    int files = 0;
 
     Bitboard ourPawns   = pos.pieces(  Us, PAWN);
     Bitboard theirPawns = pos.pieces(Them, PAWN);
@@ -91,6 +127,7 @@ namespace {
 
         Rank r = relative_rank(Us, s);
 
+        files |= 1 << file_of(s);
         e->pawnAttacksSpan[Us] |= pawn_attack_span(Us, s);
 
         // Flag the pawn
@@ -143,6 +180,7 @@ namespace {
         if (doubled && !support)
             score -= Doubled;
     }
+    score -= Semiopen[files];
 
     // Unsupported friendly pawns attacked twice by the enemy
     score -= Attacked2Unsupported * popcount(  ourPawns

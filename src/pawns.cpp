@@ -127,7 +127,7 @@ namespace {
 
         Rank r = relative_rank(Us, s);
 
-        files |= 1 << f;
+        files |= 1 << file_of(s);
         e->pawnAttacksSpan[Us] |= pawn_attack_span(Us, s);
 
         // Flag the pawn

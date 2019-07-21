@@ -65,7 +65,7 @@ namespace {
   int RM = 600;
   int FM1 = 175;
   int FM2 = 50;
-//TUNE(RM, FM1, FM2);
+TUNE(RM, FM1, FM2);
   Value futility_margin(Depth d, bool improving) {
     return Value((FM1 - FM2 * improving) * d / ONE_PLY);
   }
@@ -76,7 +76,7 @@ namespace {
   int RE1 = 512;
   int RE2 = 1024;
   int RE3 = 1024;
-//TUNE(RE1, RE2, RE3);
+TUNE(RE1, RE2, RE3);
   Depth reduction(bool i, Depth d, int mn) {
     int r = Reductions[d / ONE_PLY] * Reductions[mn];
     return ((r + RE1) / RE2 + (!i && r > RE3)) * ONE_PLY;
@@ -85,7 +85,7 @@ namespace {
   int FC1 = 5;
   int FC2 = 1;
   int FC3 = 2;
-//TUNE(FC1, FC2, FC3);
+TUNE(FC1, FC2, FC3);
   int futility_move_count(bool improving, int depth) {
     return (FC1 + depth * depth) * (FC2 + improving) / FC3;
   }
@@ -96,7 +96,7 @@ namespace {
   int SB3 = 29;
   int SB4 = 138;
   int SB5 = 134;
-//TUNE(SB1, SetRange(-100,100), SB2, SetDefaultRange, SB3, SB4, SB5);
+TUNE(SB1, SetRange(-100,100), SB2, SetDefaultRange, SB3, SB4, SB5);
   int stat_bonus(Depth depth) {
     int d = depth / ONE_PLY;
     return d > SB1 ? SB2 : SB3 * d * d + SB4 * d - SB5;
@@ -107,7 +107,7 @@ namespace {
   int VD2 = 2;
   int VD3 = 1;
   int VD4 = 1;
-//TUNE(VD1, VD2, VD3, VD4);
+TUNE(VD1, VD2, VD3, VD4);
   Value value_draw(Depth depth, Thread* thisThread) {
     return depth < VD1 * ONE_PLY ? VALUE_DRAW
                                : VALUE_DRAW + Value(VD2 * (thisThread->nodes & VD3) - VD4);
@@ -134,7 +134,7 @@ namespace {
   // ThreadHolding keeps track of which thread left breadcrumbs at the given node for potential reductions.
   // A free node will be marked upon entering the moves loop, and unmarked upon leaving that loop, by the ctor/dtor of this struct.
   int TH1 = 8;
-//TUNE(TH1);
+TUNE(TH1);
   struct ThreadHolding {
     explicit ThreadHolding(Thread* thisThread, Key posKey, int ply) {
        location = ply < TH1 ? &breadcrumbs[posKey & (breadcrumbs.size() - 1)] : nullptr;
@@ -212,7 +212,7 @@ namespace {
 
 /// Search::init() is called at startup to initialize various lookup tables
 int IN = 229;
-//TUNE(IN);
+TUNE(IN);
 
 void Search::init() {
 
@@ -285,17 +285,17 @@ int UC1 = 3;
 int FB = 128;
 int EP = 2;
 
-//TUNE(IN, TR);
-//TUNE(CT1, CT2, BM1, AS1, DE, DC1, DC2, DC3, DC4, AB1, DE2, DE3, FE1, FE2, FE3, TR1, TR2, TR3, TR4);
-//TUNE(TR5, MC1, RZ, FP, NM1, NM2, NM3, NM4, NM5, NM6, NM7, NM8, NM9, PB1, PB2, PB3, PB4, PB5, PB6);
-//TUNE(II1, II2, EX1, EX2, EX3, EX4, EX5, EX6, LM1, LM2, LM3, LM4, NS1, NS2, LM5, LM6, LM7, LM8, LM9);
-//TUNE(LM10, LM11, LM12, UC1, FB, EP);
+TUNE(IN, TR);
+TUNE(CT1, CT2, BM1, AS1, DE, DC1, DC2, DC3, DC4, AB1, DE2, DE3, FE1, FE2, FE3, TR1, TR2, TR3, TR4);
+TUNE(TR5, MC1, RZ, FP, NM1, NM2, NM3, NM4, NM5, NM6, NM7, NM8, NM9, PB1, PB2, PB3, PB4, PB5, PB6);
+TUNE(II1, II2, EX1, EX2, EX3, EX4, EX5, EX6, LM1, LM2, LM3, LM4, NS1, NS2, LM5, LM6, LM7, LM8, LM9);
+TUNE(LM10, LM11, LM12, UC1, FB, EP);
 
 int LM13 = 0;
 int LM14 = 0;
 int LM15 = 0;
 int LM16 = 0;
-//TUNE(SetRange(-1000,1000),LM13,LM14,LM15,LM16,SetDefaultRange);
+TUNE(SetRange(-1000,1000),LM13,LM14,LM15,LM16,SetDefaultRange);
 
 /// Search::clear() resets search state to its initial value
 

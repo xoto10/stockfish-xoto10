@@ -296,6 +296,35 @@ namespace {
             kingAttacksCount[Us] += popcount(b & attackedBy[Them][KING]);
         }
 
+        if (Pt == KNIGHT)
+            // Penalty if the piece is far from the king
+            score -= KingProtector * distance(s, pos.square<KING>(Us));
+
+        else if (Pt == BISHOP)
+        {
+            // Penalty if the piece is far from the king
+            score -= KingProtector * distance(s, pos.square<KING>(Us));
+
+            // Penalty according to number of pawns on the same color square as the
+            // bishop, bigger when the center files are blocked with pawns.
+            Bitboard blocked = pos.pieces(Us, PAWN) & shift<Down>(pos.pieces());
+
+            score -= BishopPawns * pos.pawns_on_same_color_squares(Us, s)
+                                 * (1 + popcount(blocked & CenterFiles));
+        }
+
+        else if (Pt == QUEEN)
+        {
+            // Penalty if any relative pin or discovered attack against the queen
+            Bitboard queenPinners;
+            if (pos.slider_blockers(pos.pieces(Them, ROOK, BISHOP), s, queenPinners))
+                score -= WeakQueen;
+        }
+
+        // Skip the rest of the loop if the square is attacked by an enemy pawn.
+        if (attackedBy[Them][PAWN] & s)
+            continue;
+
         int mob = popcount(b & mobilityArea[Us]);
 
         mobility[Us] += MobilityBonus[Pt - 2][mob];
@@ -314,18 +343,8 @@ namespace {
             if (shift<Down>(pos.pieces(PAWN)) & s)
                 score += MinorBehindPawn;
 
-            // Penalty if the piece is far from the king
-            score -= KingProtector * distance(s, pos.square<KING>(Us));
-
             if (Pt == BISHOP)
             {
-                // Penalty according to number of pawns on the same color square as the
-                // bishop, bigger when the center files are blocked with pawns.
-                Bitboard blocked = pos.pieces(Us, PAWN) & shift<Down>(pos.pieces());
-
-                score -= BishopPawns * pos.pawns_on_same_color_squares(Us, s)
-                                     * (1 + popcount(blocked & CenterFiles));
-
                 // Bonus for bishop on a long diagonal which can "see" both center squares
                 if (more_than_one(attacks_bb<BISHOP>(s, pos.pieces(PAWN)) & Center))
                     score += LongDiagonalBishop;
@@ -363,14 +382,6 @@ namespace {
                 if ((kf < FILE_E) == (file_of(s) < kf))
                     score -= TrappedRook * (1 + !pos.castling_rights(Us));
             }
-        }
-
-        if (Pt == QUEEN)
-        {
-            // Penalty if any relative pin or discovered attack against the queen
-            Bitboard queenPinners;
-            if (pos.slider_blockers(pos.pieces(Them, ROOK, BISHOP), s, queenPinners))
-                score -= WeakQueen;
         }
     }
     if (T)

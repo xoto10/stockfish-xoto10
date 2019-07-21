@@ -75,19 +75,17 @@ TUNE(RM, FM1, FM2);
 
   int RE1 = 512;
   int RE2 = 1024;
-  int RE3 = 1024;
-TUNE(RE1, RE2, RE3);
+TUNE(RE1, RE2);
   Depth reduction(bool i, Depth d, int mn) {
     int r = Reductions[d / ONE_PLY] * Reductions[mn];
-    return ((r + RE1) / RE2 + (!i && r > RE3)) * ONE_PLY;
+    return ((r + RE1) / 1024 + (!i && r > RE2)) * ONE_PLY;
   }
 
   int FC1 = 5;
   int FC2 = 1;
-  int FC3 = 2;
-TUNE(FC1, FC2, FC3);
+TUNE(FC1, FC2);
   int futility_move_count(bool improving, int depth) {
-    return (FC1 + depth * depth) * (FC2 + improving) / FC3;
+    return (FC1 + depth * depth) * (FC2 + improving) / 2;
   }
 
   // History and stats update bonus, based on depth

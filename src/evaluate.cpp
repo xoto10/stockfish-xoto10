@@ -321,13 +321,12 @@ namespace {
                 score -= WeakQueen;
         }
 
+        int mob = popcount(b & mobilityArea[Us]);
+        mobility[Us] += MobilityBonus[Pt - 2][mob];
+
         // Skip the rest of the loop if the square is attacked by an enemy pawn.
         if (attackedBy[Them][PAWN] & s)
             continue;
-
-        int mob = popcount(b & mobilityArea[Us]);
-
-        mobility[Us] += MobilityBonus[Pt - 2][mob];
 
         if (Pt == BISHOP || Pt == KNIGHT)
         {

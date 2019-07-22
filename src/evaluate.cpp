@@ -306,7 +306,7 @@ namespace {
             score -= KingProtector * distance(s, pos.square<KING>(Us));
 
             // Penalty according to number of pawns on the same color square as the
-            // bishop, bigger when the center files are blocked with pawns.
+            // bishop, bigger when the center files are blocked with pawns
             Bitboard blocked = pos.pieces(Us, PAWN) & shift<Down>(pos.pieces());
 
             score -= BishopPawns * pos.pawns_on_same_color_squares(Us, s)
@@ -324,7 +324,7 @@ namespace {
         int mob = popcount(b & mobilityArea[Us]);
         mobility[Us] += MobilityBonus[Pt - 2][mob];
 
-        // Skip the rest of the loop if the square is attacked by an enemy pawn.
+        // Skip the rest of the loop if the square is attacked by an enemy pawn
         if (attackedBy[Them][PAWN] & s)
             continue;
 

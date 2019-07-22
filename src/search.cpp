@@ -89,15 +89,14 @@ TUNE(FC1, FC2);
   }
 
   // History and stats update bonus, based on depth
-  int SB1 = 17;
   int SB2 = 0;
   int SB3 = 29;
   int SB4 = 138;
   int SB5 = 134;
-TUNE(SB1, SetRange(-100,100), SB2, SetDefaultRange, SB3, SB4, SB5);
+TUNE(SetRange(-100,100), SB2, SetDefaultRange, SB3, SB4, SB5);
   int stat_bonus(Depth depth) {
     int d = depth / ONE_PLY;
-    return d > SB1 ? SB2 : SB3 * d * d + SB4 * d - SB5;
+    return d > 16 ? SB2 : std::min(10692, SB3 * d * d + SB4 * d - SB5);
   }
 
   // Add a small random component to draw evaluations to avoid 3fold-blindness
@@ -283,10 +282,11 @@ int UC1 = 3;
 int FB = 128;
 int EP = 2;
 
-TUNE(IN, TR);
-TUNE(CT1, CT2, BM1, AS1, DE, DC1, DC2, DC3, DC4, AB1, DE2, DE3, FE1, FE2, FE3, TR1, TR2, TR3, TR4);
+TUNE(SetRange(1,4), CT1, CT2, BM1, DC3, DC4, EX4, SetDefaultRange);
+TUNE(SetRange(1,8), DE2, SetDefaultRange);
+TUNE(IN, TR, AS1, DE, DC1, DC2, AB1, DE3, FE1, FE2, FE3, TR1, TR2, TR3, TR4);
 TUNE(TR5, MC1, RZ, FP, NM1, NM2, NM3, NM4, NM5, NM6, NM7, NM8, NM9, PB1, PB2, PB3, PB4, PB5, PB6);
-TUNE(II1, II2, EX1, EX2, EX3, EX4, EX5, EX6, LM1, LM2, LM3, LM4, NS1, NS2, LM5, LM6, LM7, LM8, LM9);
+TUNE(II1, II2, EX1, EX2, EX3, EX5, EX6, LM1, LM2, LM3, LM4, NS1, NS2, LM5, LM6, LM7, LM8, LM9);
 TUNE(LM10, LM11, LM12, UC1, FB, EP);
 
 int LM13 = 0;

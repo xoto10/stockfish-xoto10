@@ -81,7 +81,7 @@ namespace {
 
   // History and stats update bonus, based on depth
   int stat_bonus(Depth depth) {
-    int d = std::max(0, 18 - depth / ONE_PLY);
+    int d = std::max(1, 18 - depth / ONE_PLY);
     return 10760 - 138 * d - 29 * d * d;
   }
 

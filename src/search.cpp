@@ -1048,7 +1048,7 @@ moves_loop: // When in check, search starts from here
                    && !pos.see_ge(move, -PawnValueEg * (depth / ONE_PLY))) // (~20 Elo)
               continue;
           else if (   moveCountPruning
-                   && !pos.see_ge(move, Value(-175) * (depth / ONE_PLY)))
+                   && !pos.see_ge(move, Value(-155) * (depth / ONE_PLY)))
               continue;
       }
 

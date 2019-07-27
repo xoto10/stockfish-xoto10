@@ -627,7 +627,7 @@ namespace {
 
             // Adjust bonus if their king can't stop it
             if (distance(pos.square<KING>(Them), queenSq) > 8 - r)
-                bonus += make_score(0, w);
+                bonus += make_score(0, w / 2);
 
             // If blockSq is not the queening square then consider also a second push
             if (r != RANK_7)

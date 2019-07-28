@@ -619,19 +619,18 @@ namespace {
         {
             int w = 5 * r - 13;
             Square blockSq = s + Up;
-            Square queenSq = make_square(f, RANK_8);
+            Square queenSq = make_square(f, relative_rank(Us, RANK_8));
 
             // Adjust bonus based on the king's proximity
-            bonus += make_score(0, (  king_proximity(Them, blockSq) * 5
-                                    - king_proximity(Us,   blockSq) * 2) * w);
-
-            // Adjust bonus if their king can't stop it
-            if (distance(pos.square<KING>(Them), queenSq) > 8 - r)
-                bonus += make_score(0, 10);
+            int kp =  king_proximity(Them, blockSq) * 5
+                    - king_proximity(Us,   blockSq) * 2
+                    + (distance(pos.square<KING>(Them), queenSq) > 8 - r);
 
             // If blockSq is not the queening square then consider also a second push
             if (r != RANK_7)
-                bonus -= make_score(0, king_proximity(Us, blockSq + Up) * w);
+                kp -= king_proximity(Us, blockSq + Up);
+
+            bonus += make_score(0, kp * w);
 
             // If the pawn is free to advance, then increase the bonus
             if (pos.empty(blockSq))

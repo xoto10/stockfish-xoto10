@@ -130,11 +130,9 @@ TUNE(VD1, VD2, VD3, VD4);
 
   // ThreadHolding keeps track of which thread left breadcrumbs at the given node for potential reductions.
   // A free node will be marked upon entering the moves loop, and unmarked upon leaving that loop, by the ctor/dtor of this struct.
-  int TH1 = 8;
-TUNE(TH1);
   struct ThreadHolding {
     explicit ThreadHolding(Thread* thisThread, Key posKey, int ply) {
-       location = ply < TH1 ? &breadcrumbs[posKey & (breadcrumbs.size() - 1)] : nullptr;
+       location = ply < 8 ? &breadcrumbs[posKey & (breadcrumbs.size() - 1)] : nullptr;
        otherThread = false;
        owning = false;
        if (location)
@@ -227,7 +225,6 @@ int DC1 = 88;
 int DC2 = 200;
 int DC3 = 2;
 int DC4 = 2;
-int AB1 = 512;
 int DE2 = 4;
 int DE3 = 5;
 int FE1 = 314;
@@ -284,7 +281,7 @@ int EP = 2;
 
 TUNE(SetRange(1,4), CT1, CT2, BM1, DC3, DC4, EX4, SetDefaultRange);
 TUNE(SetRange(1,8), DE2, SetDefaultRange);
-TUNE(IN, TR, AS1, DE, DC1, DC2, AB1, DE3, FE1, FE2, FE3, TR1, TR2, TR3, TR4);
+TUNE(TR, AS1, DE, DC1, DC2, DE3, FE1, FE2, FE3, TR1, TR2, TR3, TR4);
 TUNE(TR5, MC1, RZ, FP, NM1, NM2, NM3, NM4, NM5, NM6, NM7, NM8, NM9, PB1, PB2, PB3, PB4, PB5, PB6);
 TUNE(II1, II2, EX1, EX2, EX3, EX5, EX6, LM1, LM2, LM3, LM4, NS1, NS2, LM5, LM6, LM7, LM8, LM9);
 TUNE(LM10, LM11, LM12, UC1, FB, EP);
@@ -551,7 +548,7 @@ void Thread::search() {
               // re-search, otherwise exit the loop.
               if (bestValue <= alpha)
               {
-                  beta = (alpha + beta) * AB1 / 1024;
+                  beta = (alpha + beta) / 2;
                   alpha = std::max(bestValue - delta, -VALUE_INFINITE);
 
                   failedHighCnt = 0;

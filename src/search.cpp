@@ -300,6 +300,7 @@ void MainThread::search() {
   }
 
   previousScore = bestThread->rootMoves[0].score;
+  avgDepth = (3 * avgDepth + rootDepth) / 4;
 
   // Send again PV info if we have a new best thread
   if (bestThread != this)

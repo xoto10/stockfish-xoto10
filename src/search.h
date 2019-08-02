@@ -100,6 +100,34 @@ struct LimitsType {
 
 extern LimitsType Limits;
 
+
+enum Param    { RM, PARAM_NB };
+enum ParamDbl { TR5, PARAM_DBL_NB };
+enum ParamTyp { ParMin, ParMax, ParM, ParC, ParD, PAR_NB };
+
+const int Params[][PAR_NB] = { { 500, 700, 15, 316, 1 } // RM 661 556 +105 in 7 = 15
+                             };
+
+const double ParamsDbl[][PAR_NB-1] = { { 2.0, 2.75, -0.02428, 2.84844 } //2.46 2.29
+                                  };
+
+template <Param p>
+int vary(int rd)
+{
+  return clamp((Params[ParM][p] * rd + Params[ParC][p]) / Params[ParD][p],
+  Params[ParMin][p], Params[ParMax][p]);
+}
+
+template <ParamDbl p>
+double vary(double rd)
+{
+  return clamp((ParamsDbl[ParM][p] * rd + ParamsDbl[ParC][p]),
+  ParamsDbl[ParMin][p], ParamsDbl[ParMax][p]);
+}
+
+//vary(int(rootDepth))
+
+
 void init();
 void clear();
 

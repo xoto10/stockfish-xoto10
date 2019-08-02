@@ -107,7 +107,7 @@ enum ParamTyp { ParMin, ParMax, ParM, ParC, ParD, PAR_TYP_NB };
 
                                                                //     d16 d23
 const int Params[][PAR_TYP_NB] = { { 500, 700,  15,  316, 1 }, // RM  556 661 +105 in 7 = 15
-                                   { 324, 810, -27, 1080, 1 }  // SB1 704 512
+                                   { 324, 810, -27, 1053, 1 }  // SB1 704 512
                                  };
 
 const double ParamsDbl[][PAR_TYP_NB-1] = { { 2.0, 2.75, -0.02428, 2.84844 } //2.46 2.29

@@ -101,16 +101,22 @@ struct LimitsType {
 extern LimitsType Limits;
 
 
-enum Param    { RM, EX3, PARAM_NB };
-enum ParamDbl { TR5, PARAM_DBL_NB };
+enum Param    { SB2, SB3, NM3, NM6, PB2, LM13, LM14, LM16, PARAM_NB };
+enum ParamDbl { FE3, PARAM_DBL_NB };
 enum ParamTyp { ParMin, ParMax, ParM, ParC, ParD, PAR_TYP_NB };
 
                                                                //     d16 d23
-const int Params[][PAR_TYP_NB] = { { 500, 700,  15,  316, 1 }, // RM  556 661 +105 in 7 = 15
-                                   { 324, 810, -27, 1053, 1 }  // EX3 704 512
+const int Params[][PAR_TYP_NB] = { {  -32,  22,  -3,   58 },
+                                   {   14,  32,  -1,   44 },
+                                   {  209, 371,   9,  101 },
+                                   {  113, 275,  -9,  383 },
+                                   {  127, 271,  -8,  367 },
+                                   { -199, -19,  10, -319 },
+                                   { -256,  -4,  14, -424 },
+                                   { -464, 256, -40,  736 }
                                  };
 
-const double ParamsDbl[][PAR_TYP_NB-1] = { { 2.0, 2.75, -0.02428, 2.84844 } //2.46 2.29
+const double ParamsDbl[][PAR_TYP_NB-1] = { { 500.26, 845.32, 19.17, 270.22 }
                                          };
 
 template <Param p>

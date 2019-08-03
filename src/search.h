@@ -101,30 +101,18 @@ struct LimitsType {
 extern LimitsType Limits;
 
 
-enum Param    { RM, SB1, PARAM_NB };
-enum ParamDbl { TR5, PARAM_DBL_NB };
-enum ParamTyp { ParMin, ParMax, ParM, ParC, ParD, PAR_TYP_NB };
+/// Param and vary() implement a simple linear slope with limits enforced via clamp(). This allows
+/// parameters that would otherwise be constant to vary according to another variable, eg. depth.
 
-                                                               //     d16 d23
-const int Params[][PAR_TYP_NB] = { { 500, 700,  15,  316, 1 }, // RM  556 661 +105 in 7 = 15
-                                   { 324, 810, -27, 1026, 1 }  // SB1 704 512
-                                 };
+enum Param    { SB1, PARAM_NB };
+enum ParamTyp { ParMin, ParMax, ParM, ParC, PAR_TYP_NB };
 
-const double ParamsDbl[][PAR_TYP_NB-1] = { { 2.0, 2.75, -0.02428, 2.84844 } //2.46 2.29
-                                         };
+const int Params[][PAR_TYP_NB] = { { 324, 810, -27, 1053 } };
 
 template <Param p>
-int vary(int rd)
+int vary(int x)
 {
-  return clamp((Params[p][ParM] * rd + Params[p][ParC]), // / Params[p][ParD],
-               Params[p][ParMin], Params[p][ParMax]);
-}
-
-template <ParamDbl p>
-double vary(double rd)
-{
-  return clamp(ParamsDbl[p][ParM] * rd + ParamsDbl[p][ParC],
-               ParamsDbl[p][ParMin], ParamsDbl[p][ParMax]);
+  return clamp((Params[p][ParM] * x + Params[p][ParC]), Params[p][ParMin], Params[p][ParMax]);
 }
 
 

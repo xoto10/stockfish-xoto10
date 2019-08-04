@@ -58,6 +58,32 @@ using namespace Search;
 
 namespace {
 
+      int P     [][PAR_TYP_NB] = { {  -24,  12,  -2,   36 },
+                                   {   14,  32,  -1,   44 },
+                                   {  219, 363,   8,  123 },
+                                   {  113, 275,  -9,  383 },
+                                   {  135, 261,  -7,  345 },
+                                   { -229,   5,  13, -385 },
+                                   { -266,   4,  15, -446 },
+                                   { -432, 216, -36,  648 }
+                                 };
+
+      int PD       [][PAR_TYP_NB] = { { 4795, 8618, 212, 2246 }
+                                       };
+TUNE(P, PD);
+
+template <Param p>
+int vary(int x)
+{
+  return clamp((P[p][ParM] * x + P[p][ParC]), P[p][ParMin], P[p][ParMax]);
+}
+
+template <ParamDbl p>
+double vary(double x)
+{
+  return clamp(PD[p][ParM] * x + PD[p][ParC], double(PD[p][ParMin]), double(PD[p][ParMax])) / 10.0;
+}
+
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV };
 

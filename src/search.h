@@ -105,17 +105,17 @@ enum Param    { SB2, SB3, NM3, NM6, PB2, LM13, LM14, LM16, PARAM_NB };
 enum ParamDbl { FE3, PARAM_DBL_NB };
 enum ParamTyp { ParMin, ParMax, ParM, ParC, ParD, PAR_TYP_NB };
 
-const int Params[][PAR_TYP_NB] = { {  -32,  22,  -3,   58 },
+const int Params[][PAR_TYP_NB] = { {  -24,  12,  -2,   36 },
                                    {   14,  32,  -1,   44 },
-                                   {  209, 371,   9,  101 },
+                                   {  219, 363,   8,  123 },
                                    {  113, 275,  -9,  383 },
-                                   {  127, 271,  -8,  367 },
-                                   { -199, -19,  10, -319 },
-                                   { -256,  -4,  14, -424 },
-                                   { -464, 256, -40,  736 }
+                                   {  135, 261,  -7,  345 },
+                                   { -229,   5,  13, -385 },
+                                   { -266,   4,  15, -446 },
+                                   { -432, 216, -36,  648 }
                                  };
 
-const double ParamsDbl[][PAR_TYP_NB-1] = { { 500.26, 845.32, 19.17, 270.22 }
+const double ParamsDbl[][PAR_TYP_NB-1] = { { 479.56, 861.88, 21.24, 224.68 }
                                          };
 
 template <Param p>

@@ -105,7 +105,6 @@ enum Param    { SB2, SB3, NM3, NM6, PB2, LM13, LM14, LM16, PARAM_NB };
 enum ParamDbl { FE3, PARAM_DBL_NB };
 enum ParamTyp { ParMin, ParMax, ParM, ParC, ParD, PAR_TYP_NB };
 
-                                                               //     d16 d23
 const int Params[][PAR_TYP_NB] = { {  -32,  22,  -3,   58 },
                                    {   14,  32,  -1,   44 },
                                    {  209, 371,   9,  101 },
@@ -120,16 +119,16 @@ const double ParamsDbl[][PAR_TYP_NB-1] = { { 500.26, 845.32, 19.17, 270.22 }
                                          };
 
 template <Param p>
-int vary(int rd)
+int vary(int x)
 {
-  return clamp((Params[p][ParM] * rd + Params[p][ParC]), // / Params[p][ParD],
+  return clamp((Params[p][ParM] * x + Params[p][ParC]),
                Params[p][ParMin], Params[p][ParMax]);
 }
 
 template <ParamDbl p>
-double vary(double rd)
+double vary(double x)
 {
-  return clamp(ParamsDbl[p][ParM] * rd + ParamsDbl[p][ParC],
+  return clamp(ParamsDbl[p][ParM] * x + ParamsDbl[p][ParC],
                ParamsDbl[p][ParMin], ParamsDbl[p][ParMax]);
 }
 

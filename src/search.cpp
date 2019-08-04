@@ -680,7 +680,8 @@ namespace {
 
                 // Extra penalty for early quiet moves of the previous ply
                 if ((ss-1)->moveCount <= 2 && !pos.captured_piece())
-                        update_continuation_histories(ss-1, pos.piece_on(prevSq), prevSq, -stat_bonus(depth + ONE_PLY, thisThread->rootDepth));
+                        update_continuation_histories(ss-1, pos.piece_on(prevSq), prevSq,
+                                                      -stat_bonus(depth + ONE_PLY, thisThread->rootDepth));
             }
             // Penalty for a quiet ttMove that fails low
             else if (!pos.capture_or_promotion(ttMove))
@@ -960,8 +961,6 @@ moves_loop: // When in check, search starts from here
           &&  pos.legal(move))
       {
           Value singularBeta = ttValue - 2 * depth / ONE_PLY;
-//        Value singularBeta = ttValue - vary<EX3>(thisThread->rootDepth) * depth / ONE_PLY / 256;
-//sync_cout << "info string rdep " << thisThread->rootDepth << " vex3 " << vary<EX3>(thisThread->rootDepth) << sync_endl;
           Depth halfDepth = depth / (2 * ONE_PLY) * ONE_PLY; // ONE_PLY invariant
           ss->excludedMove = move;
           value = search<NonPV>(pos, ss, singularBeta - 1, singularBeta, halfDepth, cutNode);
@@ -1276,7 +1275,8 @@ moves_loop: // When in check, search starts from here
         // Extra penalty for a quiet TT or main killer move in previous ply when it gets refuted
         if (   ((ss-1)->moveCount == 1 || ((ss-1)->currentMove == (ss-1)->killers[0]))
             && !pos.captured_piece())
-                update_continuation_histories(ss-1, pos.piece_on(prevSq), prevSq, -stat_bonus(depth + ONE_PLY, thisThread->rootDepth));
+                update_continuation_histories(ss-1, pos.piece_on(prevSq), prevSq,
+                                              -stat_bonus(depth + ONE_PLY, thisThread->rootDepth));
 
     }
     // Bonus for prior countermove that caused the fail low

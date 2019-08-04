@@ -104,10 +104,10 @@ extern LimitsType Limits;
 /// Param and vary() implement a simple linear slope with limits enforced via clamp(). This allows
 /// parameters that would otherwise be constant to vary according to another variable, eg. depth.
 
-enum Param    { SB1, PARAM_NB };
+enum Param    { EX1, PARAM_NB };
 enum ParamTyp { ParMin, ParMax, ParM, ParC, PAR_TYP_NB };
 
-const int Params[][PAR_TYP_NB] = { { 324, 810, -27, 1053 } };
+const int Params[][PAR_TYP_NB] = { { 1302, 2310, -56, 2982 } }; // EX1 7.5 6.3 (1917 1615)
 
 template <Param p>
 int vary(int x)

@@ -104,44 +104,10 @@ extern LimitsType Limits;
 /// Param and vary() implement a simple linear slope with limits enforced via clamp(). This allows
 /// parameters that would otherwise be constant to vary according to another variable, eg. depth.
 
-enum Param    { RM, SB2, SB3, SB5, DC1, DC2, FE1, NM1, NM3, NM6, PB2, EX6, LM3, FB, LM13, LM14, LM15, LM16, PARAM_NB };
+enum Param    { RM, SB2, SB3, SB5, DC1, DC2, FE1, NM1, NM2, NM3, NM4, NM5, NM6, NM8, PB2,
+                EX6, LM3, FB, LM13, LM14, LM15, LM16, PARAM_NB };
 enum ParamDbl { FE3, PARAM_DBL_NB };
 enum ParamTyp { ParMin, ParMax, ParM, ParC, PAR_TYP_NB };
-
-const int Params[][PAR_TYP_NB] = { {   541,  757,   12,   397 },  // RM
-                                   {   -24,   12,   -2,    36 },  // SB2
-                                   {    14,   32,   -1,    44 },  // SB3
-                                   {   110,  164,    3,    74 },  // SB5
-                                   {    70,  106,   -2,   130 },  // DC1
-                                   {   160,  196,   -2,   220 },  // DC2
-                                   {   294,  402,    6,   222 },  // FE1
-                                   { 19733,26321, -366, 30713 },  // NM1
-                                   {   219,  363,    8,   123 },  // NM3
-                                   {   113,  275,   -9,   383 },  // NM6
-                                   {   135,  261,   -7,   345 },  // PB2
-                                   {    28,   46,   -1,    58 },  // EX6
-                                   {   202,  310,   -6,   382 },  // LM3
-                                   {   123,  177,    3,    87 },  // FB
-                                   {  -229,    5,   13,  -385 },  // LM13
-                                   {  -266,    4,   15,  -446 },  // LM14
-                                   {  -147,  -93,    3,  -183 },  // LM15
-                                   {  -432,  216,  -36,   648 }   // LM16
-                                 };
-
-const double ParamsDbl[][PAR_TYP_NB] = { { 479.56, 861.88, 21.24, 224.68 }
-                                       };
-
-template <Param p>
-int vary(int x)
-{
-  return clamp((Params[p][ParM] * x + Params[p][ParC]), Params[p][ParMin], Params[p][ParMax]);
-}
-
-template <ParamDbl p>
-double vary(double x)
-{
-  return clamp(ParamsDbl[p][ParM] * x + ParamsDbl[p][ParC], ParamsDbl[p][ParMin], ParamsDbl[p][ParMax]);
-}
 
 
 void init();

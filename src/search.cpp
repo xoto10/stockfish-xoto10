@@ -58,6 +58,45 @@ using namespace Search;
 
 namespace {
 
+      int Params[][PAR_TYP_NB] = { {   541,  757,   12,   397 },  // RM
+                                   {   -24,   12,   -2,    37 },  // SB2
+                                   {    14,   31,   -2,    43 },  // SB3
+                                   {   110,  164,    3,    74 },  // SB5
+                                   {    70,  106,   -2,   130 },  // DC1
+                                   {   160,  196,   -2,   220 },  // DC2
+                                   {   294,  402,    6,   222 },  // FE1
+                                   { 19733,26321, -366, 30713 },  // NM1
+                                   {  7609, 9308,   94,  6477 },  // NM2
+                                   {   209,  366,    8,   116 },  // NM3
+                                   {   763,  925,   -9,  1033 },  // NM4
+                                   { 16960,19389, -135, 21009 },  // NM5
+                                   {   110,  277,   -8,   390 },  // NM6
+                                   {  2671, 4066,   78,  1740 },  // NM8
+                                   {   132,  254,   -7,   347 },  // PB2
+                                   {    28,   46,   -1,    58 },  // EX6
+                                   {   202,  310,   -6,   382 },  // LM3
+                                   {   123,  177,    3,    87 },  // FB
+                                   {  -258,    5,   13,  -378 },  // LM13
+                                   {  -261,    3,   14,  -454 },  // LM14
+                                   {  -147,  -93,    3,  -183 },  // LM15
+                                   {  -415,  208,  -36,   647 }   // LM16
+                                 };
+
+      double ParamsDbl[][PAR_TYP_NB] = { { 470.03, 822.11, 20.86, 221.90 }
+                                       };
+
+template <Param p>
+int vary(int x)
+{
+  return clamp((Params[p][ParM] * x + Params[p][ParC]), Params[p][ParMin], Params[p][ParMax]);
+}
+
+template <ParamDbl p>
+double vary(double x)
+{
+  return clamp(ParamsDbl[p][ParM] * x + ParamsDbl[p][ParC], ParamsDbl[p][ParMin], ParamsDbl[p][ParMax]);
+}
+
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV };
 
@@ -799,7 +838,7 @@ namespace {
         && (ss-1)->currentMove != MOVE_NULL
         && (ss-1)->statScore < vary<NM1>(thisThread->rootDepth)
         &&  eval >= beta
-        &&  ss->staticEval >= beta - 33 * depth / ONE_PLY + vary<NM3>(thisThread->rootDepth)
+        &&  ss->staticEval >= beta - vary<NM2>(thisThread->rootDepth) * depth / 256 / ONE_PLY + vary<NM3>(thisThread->rootDepth)
         && !excludedMove
         &&  pos.non_pawn_material(us)
         && (ss->ply >= thisThread->nmpMinPly || us != thisThread->nmpColor))
@@ -807,7 +846,8 @@ namespace {
         assert(eval - beta >= 0);
 
         // Null move dynamic reduction based on depth and value
-        Depth R = ((835 + 70 * depth / ONE_PLY) / 256 + std::min(int(eval - beta) / vary<NM6>(thisThread->rootDepth), 3)) * ONE_PLY;
+        Depth R =  ((vary<NM4>(thisThread->rootDepth) + vary<NM5>(thisThread->rootDepth) * depth / 256 / ONE_PLY) / 256
+                 + std::min(int(eval - beta) / vary<NM6>(thisThread->rootDepth), 3)) * ONE_PLY;
 
         ss->currentMove = MOVE_NULL;
         ss->continuationHistory = &thisThread->continuationHistory[NO_PIECE][0];
@@ -824,7 +864,7 @@ namespace {
             if (nullValue >= VALUE_MATE_IN_MAX_PLY)
                 nullValue = beta;
 
-            if (thisThread->nmpMinPly || (abs(beta) < VALUE_KNOWN_WIN && depth < 13 * ONE_PLY))
+            if (thisThread->nmpMinPly || (abs(beta) < VALUE_KNOWN_WIN && depth < vary<NM8>(thisThread->rootDepth) * ONE_PLY))
                 return nullValue;
 
             assert(!thisThread->nmpMinPly); // Recursive verification is not allowed

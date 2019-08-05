@@ -58,14 +58,14 @@ using namespace Search;
 
 namespace {
 
-      int Params[][PAR_TYP_NB] = { {   530,  766,   13,   373 },  // RM
+      int P     [][PAR_TYP_NB] = { {   530,  766,   13,   373 },  // RM
                                    {   -26,   13, -567,    40 },  // SB2
                                    {    18,   29, -166,    37 },  // SB3
                                    {   111,  164,  748,    76 },  // SB5
                                    {    73,  100, -372,   117 },  // DC1
                                    {   151,  208, -822,   247 },  // DC2
 
-                                   {   290,  404,    6,   214 },  // FE1
+                                   {   290,  404, 1620,   214 },  // FE1
                                    { 19787,26253, -359, 30563 },  // NM1
                                    {    29,   36,   94,    25 },  // NM2
                                    {   214,  367,    8,   112 },  // NM3
@@ -86,23 +86,24 @@ namespace {
                                    {  -424,  206,  -35,   627 }   // LM16
                                  };
       int PDivs[] = {   1, 256, 256, 256, 256, 256,
-                        1,   1, 256,   1,   1, 256,
+                      256,   1, 256,   1,   1, 256,
                         1, 256, 256,   1, 256,   1,
                       256,   1,   1, 256,   1 };
 
-      double ParamsDbl[][PAR_TYP_NB] = { { 470.03, 822.11, 20.86, 221.90 }
+      int    PD       [][PAR_TYP_NB] = { { 4700, 8221, 208, 2219 }
                                        };
+TUNE(P,PD);
 
 template <Param p>
 int vary(int x)
 {
-  return clamp((Params[p][ParM] * x / PDivs[p] + Params[p][ParC]), Params[p][ParMin], Params[p][ParMax]);
+  return clamp((P[p][ParM] * x / PDivs[p] + P[p][ParC]), P[p][ParMin], P[p][ParMax]);
 }
 
 template <ParamDbl p>
 double vary(double x)
 {
-  return clamp(ParamsDbl[p][ParM] * x + ParamsDbl[p][ParC], ParamsDbl[p][ParMin], ParamsDbl[p][ParMax]);
+  return clamp(PD[p][ParM] * x + PD[p][ParC], double(PD[p][ParMin]), double(PD[p][ParMax]));
 }
 
   // Different node types, used as a template parameter

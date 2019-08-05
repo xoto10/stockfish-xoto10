@@ -58,29 +58,37 @@ using namespace Search;
 
 namespace {
 
-      int Params[][PAR_TYP_NB] = { {   541,  757,   12,   397 },  // RM
-                                   {   -24,   12,   -2,    37 },  // SB2
-                                   {    14,   31,   -2,    43 },  // SB3
-                                   {   110,  164,    3,    74 },  // SB5
-                                   {    70,  106,   -2,   130 },  // DC1
-                                   {   160,  196,   -2,   220 },  // DC2
-                                   {   294,  402,    6,   222 },  // FE1
-                                   { 19733,26321, -366, 30713 },  // NM1
-                                   {  7609, 9308,   94,  6477 },  // NM2
-                                   {   209,  366,    8,   116 },  // NM3
-                                   {   763,  925,   -9,  1033 },  // NM4
-                                   { 16960,19389, -135, 21009 },  // NM5
-                                   {   110,  277,   -8,   390 },  // NM6
-                                   {  2671, 4066,   78,  1740 },  // NM8
-                                   {   132,  254,   -7,   347 },  // PB2
-                                   {    28,   46,   -1,    58 },  // EX6
-                                   {   202,  310,   -6,   382 },  // LM3
-                                   {   123,  177,    3,    87 },  // FB
-                                   {  -258,    5,   13,  -378 },  // LM13
-                                   {  -261,    3,   14,  -454 },  // LM14
-                                   {  -147,  -93,    3,  -183 },  // LM15
-                                   {  -415,  208,  -36,   647 }   // LM16
+      int Params[][PAR_TYP_NB] = { {   530,  766,   13,   373 },  // RM
+                                   {   -26,   13, -567,    40 },  // SB2
+                                   {    18,   29, -166,    37 },  // SB3
+                                   {   111,  164,  748,    76 },  // SB5
+                                   {    73,  100, -372,   117 },  // DC1
+                                   {   151,  208, -822,   247 },  // DC2
+
+                                   {   290,  404,    6,   214 },  // FE1
+                                   { 19787,26253, -359, 30563 },  // NM1
+                                   {    29,   36,   94,    25 },  // NM2
+                                   {   214,  367,    8,   112 },  // NM3
+                                   {   766,  922,   -9,  1027 },  // NM4
+                                   {    66,   76, -135,    82 },  // NM5
+
+                                   {   108,  281,  -10,   396 },  // NM6
+                                   {     2,    3,  -16,     4 },  // NM7
+                                   {    11,   16,   78,     7 },  // NM8
+                                   {   126,  271,   -8,   368 },  // PB2
+                                   {    32,   41, -124,    47 },  // EX6
+                                   {   206,  304,   -5,   370 },  // LM3
+
+                                   {   126,  175,  700,    93 },  // FB
+                                   {  -231,    6,   13,  -390 },  // LM13
+                                   {  -288,   22,   17,  -494 },  // LM14
+                                   {  -144,  -95,  696,  -177 },  // LM15
+                                   {  -424,  206,  -35,   627 }   // LM16
                                  };
+      int PDivs[] = {   1, 256, 256, 256, 256, 256,
+                        1,   1, 256,   1,   1, 256,
+                        1, 256, 256,   1, 256,   1,
+                      256,   1,   1, 256,   1 };
 
       double ParamsDbl[][PAR_TYP_NB] = { { 470.03, 822.11, 20.86, 221.90 }
                                        };
@@ -88,7 +96,7 @@ namespace {
 template <Param p>
 int vary(int x)
 {
-  return clamp((Params[p][ParM] * x + Params[p][ParC]), Params[p][ParMin], Params[p][ParMax]);
+  return clamp((Params[p][ParM] * x / PDivs[p] + Params[p][ParC]), Params[p][ParMin], Params[p][ParMax]);
 }
 
 template <ParamDbl p>
@@ -838,7 +846,7 @@ namespace {
         && (ss-1)->currentMove != MOVE_NULL
         && (ss-1)->statScore < vary<NM1>(thisThread->rootDepth)
         &&  eval >= beta
-        &&  ss->staticEval >= beta - vary<NM2>(thisThread->rootDepth) * depth / 256 / ONE_PLY + vary<NM3>(thisThread->rootDepth)
+        &&  ss->staticEval >= beta - vary<NM2>(thisThread->rootDepth) * depth / ONE_PLY + vary<NM3>(thisThread->rootDepth)
         && !excludedMove
         &&  pos.non_pawn_material(us)
         && (ss->ply >= thisThread->nmpMinPly || us != thisThread->nmpColor))
@@ -846,8 +854,8 @@ namespace {
         assert(eval - beta >= 0);
 
         // Null move dynamic reduction based on depth and value
-        Depth R =  ((vary<NM4>(thisThread->rootDepth) + vary<NM5>(thisThread->rootDepth) * depth / 256 / ONE_PLY) / 256
-                 + std::min(int(eval - beta) / vary<NM6>(thisThread->rootDepth), 3)) * ONE_PLY;
+        Depth R =  ((vary<NM4>(thisThread->rootDepth) + vary<NM5>(thisThread->rootDepth) * depth / ONE_PLY) / 256
+                 + std::min(int(eval - beta) / vary<NM6>(thisThread->rootDepth), vary<NM7>(thisThread->rootDepth))) * ONE_PLY;
 
         ss->currentMove = MOVE_NULL;
         ss->continuationHistory = &thisThread->continuationHistory[NO_PIECE][0];

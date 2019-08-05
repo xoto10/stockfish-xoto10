@@ -104,7 +104,7 @@ extern LimitsType Limits;
 /// Param and vary() implement a simple linear slope with limits enforced via clamp(). This allows
 /// parameters that would otherwise be constant to vary according to another variable, eg. depth.
 
-enum Param    { RM, SB2, SB3, SB5, DC1, DC2, FE1, NM1, NM2, NM3, NM4, NM5, NM6, NM8, PB2,
+enum Param    { RM, SB2, SB3, SB5, DC1, DC2, FE1, NM1, NM2, NM3, NM4, NM5, NM6, NM7, NM8, PB2,
                 EX6, LM3, FB, LM13, LM14, LM15, LM16, PARAM_NB };
 enum ParamDbl { FE3, PARAM_DBL_NB };
 enum ParamTyp { ParMin, ParMax, ParM, ParC, PAR_TYP_NB };

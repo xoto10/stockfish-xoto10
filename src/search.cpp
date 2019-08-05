@@ -62,6 +62,7 @@ namespace {
   enum NodeType { NonPV, PV };
 
   // Razor and futility margins
+  constexpr int RazorMargin = 661;
   Value futility_margin(Depth d, bool improving) {
     return Value((168 - 51 * improving) * d / ONE_PLY);
   }
@@ -81,7 +82,7 @@ namespace {
   // History and stats update bonus, based on depth
   int stat_bonus(Depth depth, Depth rootDepth) {
     int d = depth / ONE_PLY;
-    return d > 17 ? vary<SB2>(rootDepth) : vary<SB3>(rootDepth) * d * d + 151 * d - vary<SB5>(rootDepth);
+    return d > 17 ? vary<SB2>(rootDepth) : vary<SB3>(rootDepth) * d * d + 151 * d - 140;
   }
 
   // Add a small random component to draw evaluations to avoid 3fold-blindness
@@ -416,7 +417,7 @@ void Thread::search() {
               beta  = std::min(previousScore + delta, VALUE_INFINITE);
 
               // Adjust contempt based on root move's previousScore (dynamic contempt)
-              int dct =  ct + vary<DC1>(rootDepth) * previousScore / (abs(previousScore) + vary<DC2>(rootDepth));
+              int dct = ct + 86 * previousScore / (abs(previousScore) + 176);
 
               contempt = (us == WHITE ?  make_score(dct, dct / 2)
                                       : -make_score(dct, dct / 2));
@@ -511,8 +512,7 @@ void Thread::search() {
           && !Threads.stop
           && !mainThread->stopOnPonderhit)
       {
-          double fallingEval =  (vary<FE1>(rootDepth)
-                              + 10 * (mainThread->previousScore - bestValue)) / vary<FE3>(double(rootDepth));
+          double fallingEval = (354 + 10 * (mainThread->previousScore - bestValue)) / 692.0;
           fallingEval = clamp(fallingEval, 0.5, 1.5);
 
           // If the bestMove is stable over several iterations, reduce time accordingly
@@ -781,7 +781,7 @@ namespace {
     // Step 7. Razoring (~2 Elo)
     if (   !rootNode // The required rootNode PV handling is not available in qsearch
         &&  depth < 2 * ONE_PLY
-        &&  eval <= alpha - vary<RM>(thisThread->rootDepth))
+        &&  eval <= alpha - RazorMargin)
         return qsearch<NT>(pos, ss, alpha, beta);
 
     improving =   ss->staticEval >= (ss-2)->staticEval
@@ -797,7 +797,7 @@ namespace {
     // Step 9. Null move search with verification search (~40 Elo)
     if (   !PvNode
         && (ss-1)->currentMove != MOVE_NULL
-        && (ss-1)->statScore < vary<NM1>(thisThread->rootDepth)
+        && (ss-1)->statScore < 22661
         &&  eval >= beta
         &&  ss->staticEval >= beta - 33 * depth / ONE_PLY + vary<NM3>(thisThread->rootDepth)
         && !excludedMove
@@ -971,7 +971,7 @@ moves_loop: // When in check, search starts from here
               extension = ONE_PLY;
               singularLMR++;
 
-              if (value < singularBeta - std::min(4 * depth / ONE_PLY, vary<EX6>(thisThread->rootDepth)))
+              if (value < singularBeta - std::min(4 * depth / ONE_PLY, 36))
                   singularLMR++;
           }
 
@@ -1039,7 +1039,7 @@ moves_loop: // When in check, search starts from here
               // Futility pruning: parent node (~2 Elo)
               if (   lmrDepth < 6
                   && !inCheck
-                  && ss->staticEval + vary<LM3>(thisThread->rootDepth) + 211 * lmrDepth <= alpha)
+                  && ss->staticEval + 250 + 211 * lmrDepth <= alpha)
                   continue;
 
               // Prune moves with negative SEE (~10 Elo)
@@ -1127,7 +1127,7 @@ moves_loop: // When in check, search starts from here
               if (ss->statScore >= vary<LM13>(thisThread->rootDepth) && (ss-1)->statScore < vary<LM14>(thisThread->rootDepth))
                   r -= ONE_PLY;
 
-              else if ((ss-1)->statScore >= vary<LM15>(thisThread->rootDepth) && ss->statScore < vary<LM16>(thisThread->rootDepth))
+              else if ((ss-1)->statScore >= -117 && ss->statScore < vary<LM16>(thisThread->rootDepth) )
                   r += ONE_PLY;
 
               // Decrease/increase reduction for moves with a good/bad history (~30 Elo)
@@ -1398,7 +1398,7 @@ moves_loop: // When in check, search starts from here
         if (PvNode && bestValue > alpha)
             alpha = bestValue;
 
-        futilityBase = bestValue + vary<FB>(thisThread->rootDepth);
+        futilityBase = bestValue + 153;
     }
 
     const PieceToHistory* contHist[] = { (ss-1)->continuationHistory, (ss-2)->continuationHistory,

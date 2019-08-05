@@ -79,6 +79,8 @@ namespace {
     return (5 + depth * depth) * (1 + improving) / 2;
   }
 
+  int NmpTest[MAX_MOVES]; // [depth or moveNumber]
+
   // History and stats update bonus, based on depth
   int stat_bonus(Depth depth) {
     int d = depth / ONE_PLY;
@@ -192,6 +194,9 @@ void Search::init() {
 
   for (int i = 1; i < MAX_MOVES; ++i)
       Reductions[i] = int(23.4 * std::log(i));
+
+  for (int i = 1; i < MAX_MOVES; ++i)
+      NmpTest[i] = int(140.0 * std::pow(i, 0.494)) / ONE_PLY + 198;
 }
 
 
@@ -798,7 +803,7 @@ namespace {
         && (ss-1)->currentMove != MOVE_NULL
         && (ss-1)->statScore < 22661
         &&  eval >= beta
-        &&  ss->staticEval >= beta - int(140.0 * std::pow(depth, 0.494)) / ONE_PLY + 198
+        &&  ss->staticEval >= beta - NmpTest[depth]
         && !excludedMove
         &&  pos.non_pawn_material(us)
         && (ss->ply >= thisThread->nmpMinPly || us != thisThread->nmpColor))

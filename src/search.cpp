@@ -196,7 +196,7 @@ void Search::init() {
       Reductions[i] = int(23.4 * std::log(i));
 
   for (int i = 1; i < MAX_MOVES; ++i)
-      NmpTest[i] = std::min(299 - 33 * i, 219 - 29 * i);
+      NmpTest[i] = std::min(std::max(225 - 36 * i, 1/7 - 102 - i * 109/7), 299 - 33 * i);
 }
 
 

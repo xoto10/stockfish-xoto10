@@ -300,6 +300,10 @@ void MainThread::search() {
   }
 
   previousScore = bestThread->rootMoves[0].score;
+  if (avgDepthSet)
+      avgDepth = (3 * avgDepth + rootDepth) / 4;
+  else
+      avgDepth = rootDepth, avgDepthSet = true;
 
   // Send again PV info if we have a new best thread
   if (bestThread != this)
@@ -798,7 +802,7 @@ namespace {
         && (ss-1)->currentMove != MOVE_NULL
         && (ss-1)->statScore < 22661
         &&  eval >= beta
-        &&  ss->staticEval >= beta - 33 * depth / ONE_PLY + 299
+        &&  ss->staticEval >= beta - (50 * depth - 3 * Threads.main()->avgDepth) / ONE_PLY + 299
         && !excludedMove
         &&  pos.non_pawn_material(us)
         && (ss->ply >= thisThread->nmpMinPly || us != thisThread->nmpColor))

@@ -104,33 +104,56 @@ extern LimitsType Limits;
 /// Param and vary() implement a simple linear slope with limits enforced via clamp(). This allows
 /// parameters that would otherwise be constant to vary according to another variable, eg. depth.
 
-enum Param    { SB2, SB3, NM3, NM6, PB2, LM13, LM14, LM16, PARAM_NB };
+enum Param    { RM, SB2, SB3, SB5, DC1, DC2, FE1, NM1, NM2, NM3, NM4, NM5, NM6, NM7, NM8, PB2,
+                EX6, LM3, FB, LM13, LM14, LM15, LM16, PARAM_NB };
 enum ParamDbl { FE3, PARAM_DBL_NB };
 enum ParamTyp { ParMin, ParMax, ParM, ParC, PAR_TYP_NB };
 
-const int Params[][PAR_TYP_NB] = { {  -24,  12,  -2,   37 },
-                                   {   14,  31,  -2,   43 },
-                                   {  209, 366,   8,  116 },
-                                   {  110, 277,  -8,  390 },
-                                   {  132, 254,  -7,  347 },
-                                   { -258,   5,  13, -378 },
-                                   { -261,   3,  14, -454 },
-                                   { -415, 208, -36,  647 }
-                                 };
+const int Params[][PAR_TYP_NB] = { {   531,  785,   12,   371 },  // RM
+                                   {   -26,   13, -582,    40 },  // SB2
+                                   {    18,   31, -167,    34 },  // SB3
+                                   {   117,  165,  738,    66 },  // SB5
+                                   {    74,  103, -357,   115 },  // DC1
+                                   {   149,  218, -841,   251 },  // DC2
 
-const double ParamsDbl[][PAR_TYP_NB] = { { 470.03, 822.11, 20.86, 221.90 }
-                                       };
+                                   {   282,  391, 1557,   222 },  // FE1
+                                   { 19628,26938, -383, 29454 },  // NM1
+                                   {    29,   34,   94,    25 },  // NM2
+                                   {   210,  362,    9,   114 },  // NM3
+                                   {   792,  890,   -9,  1001 },  // NM4
+                                   {    63,   76, -132,    83 },  // NM5
+
+                                   {   111,  272,   -9,   387 },  // NM6
+                                   {     2,    3,  -16,     4 },  // NM7
+                                   {    12,   15,   83,     7 },  // NM8
+                                   {   127,  250,   -8,   371 },  // PB2
+                                   {    30,   44, -119,    47 },  // EX6
+                                   {   208,  288,-1357,   370 },  // LM3
+
+                                   {   127,  179,  701,    91 },  // FB
+                                   {  -242,    6,   13,  -404 },  // LM13
+                                   {  -307,   22,   18,  -460 },  // LM14
+                                   {  -155, -100,  684,  -181 },  // LM15
+                                   {  -414,  211,  -36,   640 }   // LM16
+                                 };
+const int PDivs[] = {   1, 256, 256, 256, 256, 256,
+                      256,   1, 256,   1,   1, 256,
+                        1, 256, 256,   1, 256, 256,
+                      256,   1,   1, 256,   1 };
+
+const double ParamDbls[][PAR_TYP_NB] = { { 460.7, 804.7, 19.7, 221.3 }
+                                    };
 
 template <Param p>
 int vary(int x)
 {
-  return clamp((Params[p][ParM] * x + Params[p][ParC]), Params[p][ParMin], Params[p][ParMax]);
+  return clamp((Params[p][ParM] * x / PDivs[p] + Params[p][ParC]), Params[p][ParMin], Params[p][ParMax]);
 }
 
 template <ParamDbl p>
 double vary(double x)
 {
-  return clamp(ParamsDbl[p][ParM] * x + ParamsDbl[p][ParC], ParamsDbl[p][ParMin], ParamsDbl[p][ParMax]);
+  return clamp(ParamDbls[p][ParM] * x + ParamDbls[p][ParC], ParamDbls[p][ParMin], ParamDbls[p][ParMax]);
 }
 
 

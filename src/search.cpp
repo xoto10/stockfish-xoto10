@@ -62,9 +62,9 @@ namespace {
   enum NodeType { NonPV, PV };
 
   // Razor and futility margins
-  int RM = 600;
-  int FM1 = 175;
-  int FM2 = 50;
+  int RM = 661;
+  int FM1 = 168;
+  int FM2 = 51;
 TUNE(RM, FM1, FM2);
   Value futility_margin(Depth d, bool improving) {
     return Value((FM1 - FM2 * improving) * d / ONE_PLY);
@@ -73,26 +73,28 @@ TUNE(RM, FM1, FM2);
   // Reductions lookup table, initialized at startup
   int Reductions[MAX_MOVES]; // [depth or moveNumber]
 
-  int RE1 = 512;
-  int RE2 = 1024;
-TUNE(RE1, RE2);
+  int RE1 = 520;
+  int RE2 = 64;
+  int RE3 = 999;
+TUNE(RE1, RE2, RE3);
   Depth reduction(bool i, Depth d, int mn) {
     int r = Reductions[d / ONE_PLY] * Reductions[mn];
-    return ((r + RE1) / 1024 + (!i && r > RE2)) * ONE_PLY;
+    return ((r + RE1) * RE2 / 65536 + (!i && r > RE3)) * ONE_PLY;
   }
 
-  int FC1 = 5;
+  int FC1 = 640;
   int FC2 = 1;
-TUNE(FC1, FC2);
+  int FC3 = 128;
+TUNE(FC1, FC2, FC3);
   int futility_move_count(bool improving, int depth) {
-    return (FC1 + depth * depth) * (FC2 + improving) / 2;
+    return (FC1 + FC3 * depth * depth) * (FC2 + improving) / 256;
   }
 
   // History and stats update bonus, based on depth
-  int SB2 = 0;
-  int SB3 = 29;
-  int SB4 = 138;
-  int SB5 = 134;
+  int SB2 = -8;
+  int SB3 = 22;
+  int SB4 = 151;
+  int SB5 = 140;
 TUNE(SetRange(-100,100), SB2, SetDefaultRange, SB3, SB4, SB5);
   int stat_bonus(Depth depth) {
     int d = depth / ONE_PLY;
@@ -206,7 +208,7 @@ TUNE(VD1, VD2, VD3, VD4);
 
 
 /// Search::init() is called at startup to initialize various lookup tables
-int IN = 229;
+int IN = 234;
 TUNE(IN);
 
 void Search::init() {
@@ -219,54 +221,58 @@ int TR = 1;
 int CT1 = 2;
 int CT2 = 2;
 int BM1 = 2;
-int AS1 = 5;
-int DE = 20;
-int DC1 = 88;
-int DC2 = 200;
+int AS1 = 4;
+int DE = 23;
+int DC1 = 86;
+int DC2 = 176;
 int DC3 = 2;
 int DC4 = 2;
+int AB1 = 128;
+int AB2 = 128;
 int DE2 = 4;
 int DE3 = 5;
-int FE1 = 314;
-int FE2 = 9;
-int FE3 = 581;
-int TR1 = 10;
-int TR2 = 195;
-int TR3 = 100;
-int TR4 = 125;
-int TR5 = 225;
+int FE1 = 354;
+int FE2 = 10;
+int FE3 = 692;
+int TR1 = 9;
+int TR2 = 197;
+int TR3 = 98;
+int TR4 = 136;
+int TR5 = 229;
 int MC1 = 2;
+int SS6 = 128;
 int RZ = 2;
 int FP = 7;
-int NM1 = 23200;
-int NM2 = 36;
-int NM3 = 225;
-int NM4 = 823;
-int NM5 = 67;
-int NM6 = 200;
+int NM1 = 22661;
+int NM2 = 33;
+int NM3 = 299;
+int NM4 = 835;
+int NM5 = 70;
+int NM6 = 185;
 int NM7 = 3;
-int NM8 = 12;
+int NM8 = 13;
 int NM9 = 3;
 int PB1 = 5;
-int PB2 = 216;
-int PB3 = 48;
+int PB2 = 191;
+int PB3 = 46;
 int PB4 = 2;
 int PB5 = 2;
 int PB6 = 4;
-int II1 = 8;
+int II1 = 7;
 int II2 = 7;
-int EX1 = 8;
+int EX1 = 6;
 int EX2 = 3;
 int EX3 = 2;
 int EX4 = 2;
-int EX5 = 3;
-int EX6 = 39;
-int LM1 = 3;
-int LM2 = 7;
-int LM3 = 256;
-int LM4 = 200;
-int NS1 = -29;
-int NS2 = -213;
+int EX5 = 4;
+int EX6 = 36;
+int LM1 = 4;
+int LM2 = 6;
+int LM3 = 250;
+int LM4 = 211;
+int NS1 = 31;
+int NS2 = 18;
+int NS3 = -199;
 int LM5 = 3;
 int LM6 = 1;
 int LM7 = 3;
@@ -274,23 +280,31 @@ int LM8 = 2;
 int LM9 = 15;
 int LM10 = 2;
 int LM11 = 2;
-int LM12 = 4000;
+int LM12 = 4729;
 int UC1 = 3;
-int FB = 128;
+int FB = 153;
 int EP = 2;
+int B1 = 64;
 
 TUNE(SetRange(1,4), CT1, CT2, BM1, DC3, DC4, EX4, SetDefaultRange);
 TUNE(SetRange(1,8), DE2, SetDefaultRange);
-TUNE(TR, AS1, DE, DC1, DC2, DE3, FE1, FE2, FE3, TR1, TR2, TR3, TR4);
-TUNE(TR5, MC1, RZ, FP, NM1, NM2, NM3, NM4, NM5, NM6, NM7, NM8, NM9, PB1, PB2, PB3, PB4, PB5, PB6);
-TUNE(II1, II2, EX1, EX2, EX3, EX5, EX6, LM1, LM2, LM3, LM4, NS1, NS2, LM5, LM6, LM7, LM8, LM9);
-TUNE(LM10, LM11, LM12, UC1, FB, EP);
+TUNE(TR, AS1, DE, DC1, DC2, AB1, AB2, DE3, FE1, FE2, FE3, TR1, TR2, TR3, TR4);
+TUNE(TR5, MC1, SS6, RZ, FP, NM1, NM2, NM3, NM4, NM5, NM6, NM7, NM8, NM9, PB1, PB2, PB3, PB4, PB5, PB6);
+TUNE(II1, II2, EX1, EX2, EX3, EX5, EX6, LM1, LM2, LM3, LM4, NS1, NS2, NS3, LM5, LM6, LM7, LM8, LM9);
+TUNE(LM10, LM11, LM12, UC1, FB, EP, B1);
 
-int LM13 = 0;
-int LM14 = 0;
-int LM15 = 0;
-int LM16 = 0;
-TUNE(SetRange(-1000,1000),LM13,LM14,LM15,LM16,SetDefaultRange);
+int LM13 = -99;
+int LM14 = -116;
+int LM15 = -117;
+int LM16 = -144;
+
+int SS1 = 0;
+int SS2 = 0;
+int SS3 = 0;
+int SS4 = 0;
+int SS5 = 0;
+int SS7 = 128;
+TUNE(SetRange(-1000,1000),LM13,LM14,LM15,LM16,SS1,SS2,SS3,SS4,SS5,SS7,SetDefaultRange);
 
 /// Search::clear() resets search state to its initial value
 
@@ -374,7 +388,7 @@ void MainThread::search() {
       std::map<Move, int64_t> votes;
       Value minScore = this->rootMoves[0].score;
 
-      // Find out minimum score and reset votes for moves which can be voted
+      // Find out minimum score
       for (Thread* th: Threads)
           minScore = std::min(minScore, th->rootMoves[0].score);
 
@@ -384,7 +398,14 @@ void MainThread::search() {
           votes[th->rootMoves[0].pv[0]] +=
               (th->rootMoves[0].score - minScore + 14) * int(th->completedDepth);
 
-          if (votes[th->rootMoves[0].pv[0]] > votes[bestThread->rootMoves[0].pv[0]])
+          if (bestThread->rootMoves[0].score >= VALUE_MATE_IN_MAX_PLY)
+          {
+              // Make sure we pick the shortest mate
+              if (th->rootMoves[0].score > bestThread->rootMoves[0].score)
+                  bestThread = th;
+          }
+          else if (   th->rootMoves[0].score >= VALUE_MATE_IN_MAX_PLY
+                   || votes[th->rootMoves[0].pv[0]] > votes[bestThread->rootMoves[0].pv[0]])
               bestThread = th;
       }
   }
@@ -431,7 +452,7 @@ void Thread::search() {
   bestValue = delta = alpha = -VALUE_INFINITE;
   beta = VALUE_INFINITE;
 
-  multiPV = Options["MultiPV"];
+  size_t multiPV = Options["MultiPV"];
 
   // Pick integer skill levels, but non-deterministically round up or down
   // such that the average integer skill corresponds to the input floating point one.
@@ -548,7 +569,7 @@ void Thread::search() {
               // re-search, otherwise exit the loop.
               if (bestValue <= alpha)
               {
-                  beta = (alpha + beta) / 2;
+                  beta = (alpha * AB1 + beta * AB2) / 256;
                   alpha = std::max(bestValue - delta, -VALUE_INFINITE);
 
                   failedHighCnt = 0;
@@ -857,7 +878,7 @@ namespace {
     {
         if ((ss-1)->currentMove != MOVE_NULL)
         {
-            int bonus = -(ss-1)->statScore / 512;
+            int bonus = -(ss-1)->statScore * SS6 / 65536;
 
             ss->staticEval = eval = evaluate(pos) + bonus;
         }
@@ -1024,12 +1045,6 @@ moves_loop: // When in check, search starts from here
           sync_cout << "info depth " << depth / ONE_PLY
                     << " currmove " << UCI::move(move, pos.is_chess960())
                     << " currmovenumber " << moveCount + thisThread->pvIdx << sync_endl;
-
-      // In MultiPV mode also skip moves which will be searched later as PV moves
-      if (rootNode && std::count(thisThread->rootMoves.begin() + thisThread->pvIdx + 1,
-                                 thisThread->rootMoves.begin() + thisThread->multiPV, move))
-          continue;
-
       if (PvNode)
           (ss+1)->pv = nullptr;
 
@@ -1138,11 +1153,11 @@ moves_loop: // When in check, search starts from here
                   continue;
 
               // Prune moves with negative SEE (~10 Elo)
-              if (!pos.see_ge(move, Value(NS1 * lmrDepth * lmrDepth)))
+              if (!pos.see_ge(move, Value(-(NS1 - std::min(lmrDepth, NS2)) * lmrDepth * lmrDepth)))
                   continue;
           }
           else if (  (!givesCheck || !extension)
-                   && !pos.see_ge(move, Value(NS2) * (depth / ONE_PLY))) // (~20 Elo)
+                   && !pos.see_ge(move, Value(NS3) * (depth / ONE_PLY))) // (~20 Elo)
                   continue;
       }
 
@@ -1211,6 +1226,13 @@ moves_loop: // When in check, search starts from here
                              + (*contHist[3])[movedPiece][to_sq(move)]
                              - LM12;
 
+              // Reset statScore to zero if negative and most stats shows >= 0
+              if (    ss->statScore < SS1
+                  && (*contHist[0])[movedPiece][to_sq(move)] >= SS2
+                  && (*contHist[1])[movedPiece][to_sq(move)] >= SS3
+                  && thisThread->mainHistory[us][from_to(move)] >= SS4)
+                  ss->statScore = SS5;
+
               // Decrease/increase reduction by comparing opponent's stat score (~10 Elo)
               if (ss->statScore >= LM13 && (ss-1)->statScore < LM14)
                   r -= ONE_PLY;
@@ -1219,7 +1241,7 @@ moves_loop: // When in check, search starts from here
                   r += ONE_PLY;
 
               // Decrease/increase reduction for moves with a good/bad history (~30 Elo)
-              r -= ss->statScore / 16384 * ONE_PLY;
+              r -= ss->statScore * SS7 / (128 * 16384) * ONE_PLY;
           }
 
           Depth d = clamp(newDepth - r, ONE_PLY, newDepth);
@@ -1240,6 +1262,9 @@ moves_loop: // When in check, search starts from here
           {
               int bonus = value > alpha ?  stat_bonus(newDepth)
                                         : -stat_bonus(newDepth);
+
+              if (move == ss->killers[0])
+                  bonus += bonus * B1 / 256;
 
               update_continuation_histories(ss, movedPiece, to_sq(move), bonus);
           }

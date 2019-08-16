@@ -64,7 +64,7 @@ namespace {
   // Razor and futility margins
   int RM = 661;
 TUNE(RM);
-  Value futility_margin[8][2] = {
+  Value fm             [8][2] = {
     { Value(   0), Value(   0) }, // depth 0
     { Value( 381), Value(   0) }, // depth 1
     { Value( 420), Value( 225) }, // depth 2
@@ -312,7 +312,7 @@ int SS3 = 0;
 int SS4 = 0;
 int SS5 = 0;
 int SS7 = 128;
-TUNE(SetRange(centered200),futility_margin,LM13,LM14,LM15,LM16,SS1,SS2,SS3,SS4,SS5,SS7,SetDefaultRange);
+TUNE(SetRange(centered200),fm,LM13,LM14,LM15,LM16,SS1,SS2,SS3,SS4,SS5,SS7,SetDefaultRange);
 
 /// Search::clear() resets search state to its initial value
 
@@ -908,7 +908,7 @@ namespace {
     // Step 8. Futility pruning: child node (~30 Elo)
     if (   !PvNode
         &&  depth < FP * ONE_PLY
-        &&  eval - futility_margin[depth / ONE_PLY][improving] >= beta
+        &&  eval - fm[depth / ONE_PLY][improving] >= beta
         &&  eval < VALUE_KNOWN_WIN) // Do not return unproven wins
         return eval;
 

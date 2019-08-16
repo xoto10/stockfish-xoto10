@@ -291,8 +291,10 @@ TUNE(TR5, MC1, SS6, RZ, FP, NM1, NM2, NM3, NM4, NM5, NM6, NM7, NM8, NM9, PB1, PB
 TUNE(II1, II2, EX1, EX2, EX3, EX4, EX5, EX6, LM1, LM2, LM3, LM4, NS1, NS2, NS3, LM5, LM6, LM7, LM8, LM9);
 TUNE(LM10, LM11, LM12, UC1, FB, EP, B1);
 
-int EX7 = 0;
-int EX8 = 0;
+inline Range centered200(int v)
+{
+   return Range(v - 200, v + 200);
+}
 
 int LM13 = -99;
 int LM14 = -116;
@@ -305,7 +307,7 @@ int SS3 = 0;
 int SS4 = 0;
 int SS5 = 0;
 int SS7 = 128;
-TUNE(SetRange(-1000,1000),EX7,EX8,LM13,LM14,LM15,LM16,SS1,SS2,SS3,SS4,SS5,SS7,SetDefaultRange);
+TUNE(SetRange(centered200),LM13,LM14,LM15,LM16,SS1,SS2,SS3,SS4,SS5,SS7,SetDefaultRange);
 
 /// Search::clear() resets search state to its initial value
 
@@ -1074,10 +1076,10 @@ moves_loop: // When in check, search starts from here
           Value singularBeta = ttValue - EX3 * depth / ONE_PLY;
           Depth halfDepth = depth * EX4 / (256 * ONE_PLY) * ONE_PLY; // ONE_PLY invariant
           ss->excludedMove = move;
-          value = search<NonPV>(pos, ss, singularBeta - 1, singularBeta + EX7, halfDepth, cutNode);
+          value = search<NonPV>(pos, ss, singularBeta - 1, singularBeta, halfDepth, cutNode);
           ss->excludedMove = MOVE_NONE;
 
-          if (value < singularBeta + EX8)
+          if (value < singularBeta)
           {
               extension = ONE_PLY;
               singularLMR++;

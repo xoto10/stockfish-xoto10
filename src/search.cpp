@@ -63,12 +63,17 @@ namespace {
 
   // Razor and futility margins
   int RM = 661;
-  int FM1 = 168;
-  int FM2 = 51;
-TUNE(RM, FM1, FM2);
-  Value futility_margin(Depth d, bool improving) {
-    return Value((FM1 - FM2 * improving) * d / ONE_PLY);
-  }
+TUNE(RM);
+  Value futility_margin[8][2] = {
+    { Value(   0), Value(   0) }, // depth 0
+    { Value( 381), Value(   0) }, // depth 1
+    { Value( 420), Value( 225) }, // depth 2
+    { Value( 524), Value( 406) }, // depth 3
+    { Value( 777), Value( 564) }, // depth 4
+    { Value( 864), Value( 653) }, // depth 5
+    { Value(1081), Value( 787) }, // depth 6
+    { Value(1201), Value( 872) }, // depth 7
+  };
 
   // Reductions lookup table, initialized at startup
   int Reductions[MAX_MOVES]; // [depth or moveNumber]
@@ -242,7 +247,7 @@ int TR5 = 229;
 int MC1 = 2;
 int SS6 = 128;
 int RZ = 2;
-int FP = 7;
+int FP = 8;
 int NM1 = 22661;
 int NM2 = 33;
 int NM3 = 299;
@@ -307,7 +312,7 @@ int SS3 = 0;
 int SS4 = 0;
 int SS5 = 0;
 int SS7 = 128;
-TUNE(SetRange(centered200),LM13,LM14,LM15,LM16,SS1,SS2,SS3,SS4,SS5,SS7,SetDefaultRange);
+TUNE(SetRange(centered200),futility_margin,LM13,LM14,LM15,LM16,SS1,SS2,SS3,SS4,SS5,SS7,SetDefaultRange);
 
 /// Search::clear() resets search state to its initial value
 
@@ -903,7 +908,7 @@ namespace {
     // Step 8. Futility pruning: child node (~30 Elo)
     if (   !PvNode
         &&  depth < FP * ONE_PLY
-        &&  eval - futility_margin(depth, improving) >= beta
+        &&  eval - futility_margin[depth / ONE_PLY][improving] >= beta
         &&  eval < VALUE_KNOWN_WIN) // Do not return unproven wins
         return eval;
 

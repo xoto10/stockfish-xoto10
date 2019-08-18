@@ -375,8 +375,8 @@ void Thread::search() {
           : ct;
 
   // Evaluation score is from the white point of view
-  if (Threads.main()->previousScore < 0)
-      ct = ct * (8331 - rootPos.non_pawn_material(~us)) / 8331;
+//if (Threads.main()->previousScore < 0)
+  ct = ct * (16662 - rootPos.non_pawn_material(~us)) / 16662;
   contempt = (us == WHITE ?  make_score(ct, ct / 2)
                           : -make_score(ct, ct / 2));
 

@@ -64,7 +64,7 @@ namespace {
   // Razor and futility margins
   constexpr int RazorMargin = 685;
   Value FutilityMargin[8][2] = {
-    { Value(   2), Value(   7) }, // depth 0
+    { Value(   2), Value(   7) }, //  depth 0
     { Value( 388), Value(  23) }, // depth 1
     { Value( 407), Value( 229) }, // depth 2
     { Value( 513), Value( 422) }, // depth 3

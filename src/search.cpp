@@ -62,16 +62,16 @@ namespace {
   enum NodeType { NonPV, PV };
 
   // Razor and futility margins
-  constexpr int RazorMargin = 691;
+  constexpr int RazorMargin = 690;
   Value FutilityMargin[8][2] = {
     { Value(   4), Value(   7) }, //  depth 0
-    { Value( 394), Value(  19) }, // depth 1
-    { Value( 395), Value( 227) }, // depth 2
+    { Value( 395), Value(  18) }, // depth 1
+    { Value( 394), Value( 228) }, // depth 2
     { Value( 510), Value( 427) }, // depth 3
     { Value( 786), Value( 566) }, // depth 4
-    { Value( 860), Value( 656) }, // depth 5
-    { Value(1090), Value( 789) }, // depth 6
-    { Value(1197), Value( 891) }, // depth 7
+    { Value( 860), Value( 657) }, // depth 5
+    { Value(1089), Value( 789) }, // depth 6
+    { Value(1196), Value( 892) }, // depth 7
   };
 
   // Reductions lookup table, initialized at startup
@@ -79,17 +79,17 @@ namespace {
 
   Depth reduction(bool i, Depth d, int mn) {
     int r = Reductions[d / ONE_PLY] * Reductions[mn];
-    return ((r + 533) / 1024 + (!i && r > 1132)) * ONE_PLY;
+    return ((r + 532) / 1024 + (!i && r > 1134)) * ONE_PLY;
   }
 
   constexpr int futility_move_count(bool improving, int depth) {
-    return (660 + 102 * depth * depth) * (1 + improving) / 256;
+    return (658 + 102 * depth * depth) * (1 + improving) / 256;
   }
 
   // History and stats update bonus, based on depth
   int stat_bonus(Depth depth) {
     int d = depth / ONE_PLY;
-    return d > 17 ? -4 : 19 * d * d + 131 * d - 148;
+    return d > 17 ? -3 : 19 * d * d + 131 * d - 149;
   }
 
   // Add a small random component to draw evaluations to avoid 3fold-blindness
@@ -199,7 +199,7 @@ namespace {
 void Search::init() {
 
   for (int i = 1; i < MAX_MOVES; ++i)
-      Reductions[i] = int(26.6 * std::log(i));
+      Reductions[i] = int(26.7 * std::log(i));
 }
 
 
@@ -382,7 +382,7 @@ void Thread::search() {
           : ct;
 
   // Evaluation score is from the white point of view
-  contempt = (us == WHITE ?  make_score(ct, ct * 136 / 256)
+  contempt = (us == WHITE ?  make_score(ct, ct * 135 / 256)
                           : -make_score(ct, ct * 113 / 256));
 
   // Iterative deepening loop until requested to stop or the target depth is reached
@@ -392,7 +392,7 @@ void Thread::search() {
   {
       // Age out PV variability metric
       if (mainThread)
-          totBestMoveChanges = totBestMoveChanges * 118 / 256;
+          totBestMoveChanges = totBestMoveChanges * 117 / 256;
 
       // Save the last iteration's scores before first PV line is searched and
       // all the move scores except the (new) PV are set to -VALUE_INFINITE.
@@ -425,7 +425,7 @@ void Thread::search() {
               beta  = std::min(previousScore + delta, VALUE_INFINITE);
 
               // Adjust contempt based on root move's previousScore (dynamic contempt)
-              int dct = ct + 92 * previousScore / (abs(previousScore) + 183);
+              int dct = ct + 92 * previousScore / (abs(previousScore) + 182);
 
               contempt = (us == WHITE ?  make_score(dct, dct * 136 / 256)
                                       : -make_score(dct, dct * 157 / 256));
@@ -466,7 +466,7 @@ void Thread::search() {
               // re-search, otherwise exit the loop.
               if (bestValue <= alpha)
               {
-                  beta = (alpha * 130 + beta * 121) / 256;
+                  beta = (alpha * 130 + beta * 120) / 256;
                   alpha = std::max(bestValue - delta, -VALUE_INFINITE);
 
                   failedHighCnt = 0;
@@ -481,7 +481,7 @@ void Thread::search() {
               else
                   break;
 
-              delta += (delta * 62 + 1246) / 256;
+              delta += (delta * 62 + 1242) / 256;
 
               assert(alpha >= -VALUE_INFINITE && beta <= VALUE_INFINITE);
           }
@@ -520,11 +520,11 @@ void Thread::search() {
           && !Threads.stop
           && !mainThread->stopOnPonderhit)
       {
-          double fallingEval = (296 + 10 * (mainThread->previousScore - bestValue)) / 757.0;
+          double fallingEval = (294 + 10 * (mainThread->previousScore - bestValue)) / 754.0;
           fallingEval = clamp(fallingEval, 0.5, 1.5);
 
           // If the bestMove is stable over several iterations, reduce time accordingly
-          timeReduction = lastBestMoveDepth + 9 * ONE_PLY < completedDepth ? 1.86 : 0.95;
+          timeReduction = lastBestMoveDepth + 9 * ONE_PLY < completedDepth ? 1.85 : 0.95;
           double reduction = (1.35 + mainThread->previousTimeReduction) / (2.13 * timeReduction);
 
           // Use part of the gained time from a previous stable move for the current move
@@ -775,7 +775,7 @@ namespace {
     {
         if ((ss-1)->currentMove != MOVE_NULL)
         {
-            int bonus = -(ss-1)->statScore * 143 / 65536;
+            int bonus = -(ss-1)->statScore * 144 / 65536;
 
             ss->staticEval = eval = evaluate(pos) + bonus;
         }
@@ -804,7 +804,7 @@ namespace {
     // Step 9. Null move search with verification search (~40 Elo)
     if (   !PvNode
         && (ss-1)->currentMove != MOVE_NULL
-        && (ss-1)->statScore < 23786
+        && (ss-1)->statScore < 23726
         &&  eval >= beta
         &&  ss->staticEval >= beta - 35 * depth / ONE_PLY + 308
         && !excludedMove
@@ -814,7 +814,7 @@ namespace {
         assert(eval - beta >= 0);
 
         // Null move dynamic reduction based on depth and value
-        Depth R = ((748 + 78 * depth / ONE_PLY) / 256 + std::min(int(eval - beta) / 159, 3)) * ONE_PLY;
+        Depth R = ((756 + 78 * depth / ONE_PLY) / 256 + std::min(int(eval - beta) / 159, 3)) * ONE_PLY;
 
         ss->currentMove = MOVE_NULL;
         ss->continuationHistory = &thisThread->continuationHistory[NO_PIECE][0];
@@ -891,7 +891,7 @@ namespace {
     // Step 11. Internal iterative deepening (~2 Elo)
     if (depth >= 8 * ONE_PLY && !ttMove)
     {
-        search<NT>(pos, ss, alpha, beta, depth - 7 * ONE_PLY, cutNode);
+        search<NT>(pos, ss, alpha, beta, depth - 8 * ONE_PLY, cutNode);
 
         tte = TT.probe(posKey, ttHit);
         ttValue = ttHit ? value_from_tt(tte->value(), ss->ply) : VALUE_NONE;
@@ -1094,7 +1094,7 @@ moves_loop: // When in check, search starts from here
               r -= 2 * ONE_PLY;
 
           // Decrease reduction if opponent's move count is high (~10 Elo)
-          if ((ss-1)->moveCount > 14)
+          if ((ss-1)->moveCount > 15)
               r -= ONE_PLY;
 
           // Decrease reduction if move has been singularly extended
@@ -1121,24 +1121,24 @@ moves_loop: // When in check, search starts from here
                              + (*contHist[0])[movedPiece][to_sq(move)]
                              + (*contHist[1])[movedPiece][to_sq(move)]
                              + (*contHist[3])[movedPiece][to_sq(move)]
-                             - 4683;
+                             - 4709;
 
               // Reset statScore to zero if negative and most stats shows >= 0
               if (    ss->statScore < 12
                   && (*contHist[0])[movedPiece][to_sq(move)] >= -17
-                  && (*contHist[1])[movedPiece][to_sq(move)] >= 19
+                  && (*contHist[1])[movedPiece][to_sq(move)] >= 18
                   && thisThread->mainHistory[us][from_to(move)] >= -12)
                   ss->statScore = 4;
 
               // Decrease/increase reduction by comparing opponent's stat score (~10 Elo)
-              if (ss->statScore >= -91 && (ss-1)->statScore < -134)
+              if (ss->statScore >= -92 && (ss-1)->statScore < -136)
                   r -= ONE_PLY;
 
               else if ((ss-1)->statScore >= -96 && ss->statScore < -159)
                   r += ONE_PLY;
 
               // Decrease/increase reduction for moves with a good/bad history (~30 Elo)
-              r -= ss->statScore * 151 / (128 * 16384) * ONE_PLY;
+              r -= ss->statScore * 152 / (128 * 16384) * ONE_PLY;
           }
 
           Depth d = clamp(newDepth - r, ONE_PLY, newDepth);

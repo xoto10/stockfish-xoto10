@@ -61,6 +61,9 @@ namespace {
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV };
 
+  constexpr int DynContemptLosing = 75;
+  constexpr int DynContemptWinning = 66;
+
   // Razor and futility margins
   constexpr int RazorMargin = 661;
   Value futility_margin(Depth d, bool improving) {
@@ -420,8 +423,8 @@ void Thread::search() {
               // Adjust contempt based on root move's previousScore (dynamic contempt)
               int dct = ct + 86 * previousScore / (abs(previousScore) + 176);
 
-              contempt = previousScore < 0 ? make_score(dct, dct * 75 / 128)
-                                           : make_score(dct, dct * 66 / 128);
+              contempt = previousScore < 0 ? make_score(dct, dct * DynContemptLosing / 128)
+                                           : make_score(dct, dct * DynContemptWinning / 128);
               if (us == BLACK)
                   contempt = -contempt;
           }

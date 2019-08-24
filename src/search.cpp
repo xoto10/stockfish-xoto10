@@ -375,8 +375,10 @@ void Thread::search() {
           : ct;
 
   // Evaluation score is from the white point of view
-  contempt = (us == WHITE ?  make_score(ct, ct / 2)
-                          : -make_score(ct, ct / 2));
+  contempt = Threads.main()->previousScore < 0 ? make_score(ct, ct * 114 / 256)
+                                               : make_score(ct, ct * 131 / 256);
+  if (us == BLACK)
+      contempt = -contempt;
 
   // Iterative deepening loop until requested to stop or the target depth is reached
   while (   (rootDepth += ONE_PLY) < DEPTH_MAX

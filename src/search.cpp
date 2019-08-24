@@ -375,8 +375,8 @@ void Thread::search() {
           : ct;
 
   // Evaluation score is from the white point of view
-  contempt = (us == WHITE ?  make_score(ct, ct / 2)
-                          : -make_score(ct, ct / 2));
+  contempt = (us == WHITE ?  make_score(ct, ct * 131 / 256)
+                          : -make_score(ct, ct * 114 / 256));
 
   // Iterative deepening loop until requested to stop or the target depth is reached
   while (   (rootDepth += ONE_PLY) < DEPTH_MAX
@@ -385,7 +385,7 @@ void Thread::search() {
   {
       // Age out PV variability metric
       if (mainThread)
-          totBestMoveChanges /= 2;
+          totBestMoveChanges = totBestMoveChanges * 120 / 256;
 
       // Save the last iteration's scores before first PV line is searched and
       // all the move scores except the (new) PV are set to -VALUE_INFINITE.
@@ -420,8 +420,8 @@ void Thread::search() {
               // Adjust contempt based on root move's previousScore (dynamic contempt)
               int dct = ct + 86 * previousScore / (abs(previousScore) + 176);
 
-              contempt = (us == WHITE ?  make_score(dct, dct / 2)
-                                      : -make_score(dct, dct / 2));
+              contempt = (us == WHITE ?  make_score(dct, dct * 132 / 256)
+                                      : -make_score(dct, dct * 150 / 256));
           }
 
           // Start with a small aspiration window and, in the case of a fail
@@ -459,7 +459,7 @@ void Thread::search() {
               // re-search, otherwise exit the loop.
               if (bestValue <= alpha)
               {
-                  beta = (alpha + beta) / 2;
+                  beta = (alpha * 130 + beta * 119) / 256;
                   alpha = std::max(bestValue - delta, -VALUE_INFINITE);
 
                   failedHighCnt = 0;
@@ -474,7 +474,7 @@ void Thread::search() {
               else
                   break;
 
-              delta += delta / 4 + 5;
+              delta += (delta * 61 + 1256) / 256;
 
               assert(alpha >= -VALUE_INFINITE && beta <= VALUE_INFINITE);
           }
@@ -768,7 +768,7 @@ namespace {
     {
         if ((ss-1)->currentMove != MOVE_NULL)
         {
-            int bonus = -(ss-1)->statScore / 512;
+            int bonus = -(ss-1)->statScore * 144 / 65536;
 
             ss->staticEval = eval = evaluate(pos) + bonus;
         }
@@ -961,7 +961,7 @@ moves_loop: // When in check, search starts from here
           &&  pos.legal(move))
       {
           Value singularBeta = ttValue - 2 * depth / ONE_PLY;
-          Depth halfDepth = depth / (2 * ONE_PLY) * ONE_PLY; // ONE_PLY invariant
+          Depth halfDepth = depth * 143 / (256 * ONE_PLY) * ONE_PLY; // ONE_PLY invariant
           ss->excludedMove = move;
           value = search<NonPV>(pos, ss, singularBeta - 1, singularBeta, halfDepth, cutNode);
           ss->excludedMove = MOVE_NONE;
@@ -1132,7 +1132,7 @@ moves_loop: // When in check, search starts from here
                   r += ONE_PLY;
 
               // Decrease/increase reduction for moves with a good/bad history (~30 Elo)
-              r -= ss->statScore / 16384 * ONE_PLY;
+              r -= ss->statScore * 146 / (128 * 16384) * ONE_PLY;
           }
 
           Depth d = clamp(newDepth - r, ONE_PLY, newDepth);
@@ -1155,7 +1155,7 @@ moves_loop: // When in check, search starts from here
                                         : -stat_bonus(newDepth);
 
               if (move == ss->killers[0])
-                  bonus += bonus / 4;
+                  bonus += bonus * 60 / 256;
 
               update_continuation_histories(ss, movedPiece, to_sq(move), bonus);
           }

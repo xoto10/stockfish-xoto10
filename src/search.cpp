@@ -385,7 +385,7 @@ void Thread::search() {
   {
       // Age out PV variability metric
       if (mainThread)
-          totBestMoveChanges = totBestMoveChanges * 120 / 256;
+          totBestMoveChanges = totBestMoveChanges * 15 / 32;
 
       // Save the last iteration's scores before first PV line is searched and
       // all the move scores except the (new) PV are set to -VALUE_INFINITE.
@@ -420,8 +420,8 @@ void Thread::search() {
               // Adjust contempt based on root move's previousScore (dynamic contempt)
               int dct = ct + 86 * previousScore / (abs(previousScore) + 176);
 
-              contempt = (us == WHITE ?  make_score(dct, dct * 132 / 256)
-                                      : -make_score(dct, dct * 150 / 256));
+              contempt = (us == WHITE ?  make_score(dct, dct * 66 / 128)
+                                      : -make_score(dct, dct * 75 / 128));
           }
 
           // Start with a small aspiration window and, in the case of a fail
@@ -768,7 +768,7 @@ namespace {
     {
         if ((ss-1)->currentMove != MOVE_NULL)
         {
-            int bonus = -(ss-1)->statScore * 144 / 65536;
+            int bonus = -(ss-1)->statScore * 9 / 4096;
 
             ss->staticEval = eval = evaluate(pos) + bonus;
         }
@@ -1132,7 +1132,7 @@ moves_loop: // When in check, search starts from here
                   r += ONE_PLY;
 
               // Decrease/increase reduction for moves with a good/bad history (~30 Elo)
-              r -= ss->statScore * 146 / (128 * 16384) * ONE_PLY;
+              r -= ss->statScore * 73 / (64 * 16384) * ONE_PLY;
           }
 
           Depth d = clamp(newDepth - r, ONE_PLY, newDepth);
@@ -1155,7 +1155,7 @@ moves_loop: // When in check, search starts from here
                                         : -stat_bonus(newDepth);
 
               if (move == ss->killers[0])
-                  bonus += bonus * 60 / 256;
+                  bonus += bonus * 15 / 64;
 
               update_continuation_histories(ss, movedPiece, to_sq(move), bonus);
           }

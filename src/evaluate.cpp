@@ -127,7 +127,6 @@ namespace {
   };
 
   // Assorted bonuses and penalties
-  constexpr Score AttackWidth        = S( 10, 10);
   constexpr Score BishopPawns        = S(  3,  7);
   constexpr Score CorneredBishop     = S( 50, 50);
   constexpr Score FlankAttacks       = S(  8,  0);
@@ -165,7 +164,7 @@ namespace {
     template<Color Us> void initialize();
     template<Color Us, PieceType Pt> Score pieces();
     template<Color Us> Score king() const;
-    template<Color Us> Score threats() const;
+    template<Color Us> Score threats();
     template<Color Us> Score passed() const;
     template<Color Us> Score space() const;
     ScaleFactor scale_factor(Value eg) const;
@@ -208,7 +207,7 @@ namespace {
     int kingAttacksCount[COLOR_NB];
 
     // attackWidth holds width between files where a side has attacks
-//  int attackWidth[COLOR_NB] = { 0, 0 };
+    int attackWidth[COLOR_NB] = { 0, 0 };
   };
 
 
@@ -486,7 +485,7 @@ namespace {
   // Evaluation::threats() assigns bonuses according to the types of the
   // attacking and the attacked pieces.
   template<Tracing T> template<Color Us>
-  Score Evaluation<T>::threats() const {
+  Score Evaluation<T>::threats() {
 
     constexpr Color     Them     = (Us == WHITE ? BLACK   : WHITE);
     constexpr Direction Up       = (Us == WHITE ? NORTH   : SOUTH);
@@ -592,7 +591,7 @@ namespace {
         left = std::min(left, f);
         right = std::max(right, f);
     }
-    score += AttackWidth * std::max(0, right - left);
+    attackWidth[Us] = std::max(0, right - left);
 
     if (T)
         Trace::add(THREAT, Us, score);
@@ -744,6 +743,7 @@ namespace {
                     +  9 * outflanking
                     + 18 * pawnsOnBothFlanks
                     + 49 * !pos.non_pawn_material()
+                    + 10 * ((eg > 0) * attackWidth[WHITE] + (eg < 0) * attackWidth[BLACK])
                     -103 ;
 
     // Now apply the bonus: note that we find the attacking side by extracting

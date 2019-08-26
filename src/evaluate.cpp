@@ -127,6 +127,7 @@ namespace {
   };
 
   // Assorted bonuses and penalties
+  constexpr Score AttackWidth        = S( 10, 10);
   constexpr Score BishopPawns        = S(  3,  7);
   constexpr Score CorneredBishop     = S( 50, 50);
   constexpr Score FlankAttacks       = S(  8,  0);
@@ -205,6 +206,9 @@ namespace {
     // a white knight on g5 and black's king is on g8, this white knight adds 2
     // to kingAttacksCount[WHITE].
     int kingAttacksCount[COLOR_NB];
+
+    // attackWidth holds width between files where a side has attacks
+//  int attackWidth[COLOR_NB] = { 0, 0 };
   };
 
 
@@ -575,6 +579,20 @@ namespace {
 
         score += SliderOnQueen * popcount(b & safe & attackedBy2[Us]);
     }
+
+    // Bonus for width of important attacks
+    b =  pe->passed_pawns(Us)
+       | (  ((attackedBy[Us][ALL_PIECES] & kingRing[Them]) | attackedBy2[Us])
+          & pos.pieces(Them, ALL_PIECES));
+    File left = FILE_H, right = FILE_A;
+
+    while (b)
+    {
+        File f = file_of(pop_lsb(&b));
+        left = std::min(left, f);
+        right = std::max(right, f);
+    }
+    score += AttackWidth * std::max(0, right - left);
 
     if (T)
         Trace::add(THREAT, Us, score);

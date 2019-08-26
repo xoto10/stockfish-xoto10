@@ -583,15 +583,15 @@ namespace {
     b =  pe->passed_pawns(Us)
        | (  ((attackedBy[Us][ALL_PIECES] & kingRing[Them]) | attackedBy2[Us])
           & pos.pieces(Them, ALL_PIECES));
-    File left = FILE_H, right = FILE_A;
+    File qs = FILE_H, ks = FILE_A;
 
     while (b)
     {
         File f = file_of(pop_lsb(&b));
-        left = std::min(left, f);
-        right = std::max(right, f);
+        qs = std::min(qs, f);
+        ks = std::max(ks, f);
     }
-    attackWidth[Us] = std::max(0, right - left);
+    attackWidth[Us] = std::max(3, ks - qs) - 3;
 
     if (T)
         Trace::add(THREAT, Us, score);
@@ -743,7 +743,7 @@ namespace {
                     +  9 * outflanking
                     + 18 * pawnsOnBothFlanks
                     + 49 * !pos.non_pawn_material()
-                    +  6 * ((eg > 0) * attackWidth[WHITE] + (eg < 0) * attackWidth[BLACK])
+                    + 15 * ((eg > 0) * attackWidth[WHITE] + (eg < 0) * attackWidth[BLACK])
                     -103 ;
 
     // Now apply the bonus: note that we find the attacking side by extracting

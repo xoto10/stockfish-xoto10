@@ -20,11 +20,13 @@
 
 #include <algorithm>
 #include <cassert>
+#include <iostream>
 
 #include "bitboard.h"
 #include "pawns.h"
 #include "position.h"
 #include "thread.h"
+#include "uci.h"
 
 namespace {
 
@@ -83,7 +85,7 @@ namespace {
 
     Bitboard doubleAttackThem = pawn_double_attacks_bb<Them>(theirPawns);
 
-    e->passedPawns[Us] = e->pawnAttacksSpan[Us] = 0;
+    e->passedPawns[Us] = e->pawnAttacksSpan[Us] = e->backwardPawns[Us] = 0;
     e->kingSquares[Us] = SQ_NONE;
     e->pawnAttacks[Us] = pawn_attacks_bb<Us>(ourPawns);
 
@@ -140,7 +142,7 @@ namespace {
             score -= Isolated + WeakUnopposed * int(!opposed);
 
         else if (backward)
-            score -= Backward + WeakUnopposed * int(!opposed);
+            score -= Backward + WeakUnopposed * int(!opposed), ++e->backwardPawns[Us];
 
         if (doubled && !support)
             score -= Doubled;

@@ -169,6 +169,7 @@ namespace {
     template<Color Us> Score space() const;
     ScaleFactor scale_factor(Value eg) const;
     Score initiative(Value eg) const;
+    Score is_better(Score sc);
 
     const Position& pos;
     Material::Entry* me;
@@ -205,7 +206,20 @@ namespace {
     // a white knight on g5 and black's king is on g8, this white knight adds 2
     // to kingAttacksCount[WHITE].
     int kingAttacksCount[COLOR_NB];
+
+    // better[COLOR_NB] count evaluation factors where each side is better
+    int better[COLOR_NB] = { 0, 0 };
   };
+
+
+  template<Tracing T>
+  Score Evaluation<T>::is_better(Score sc) {
+    if (eg_value(sc) > 0)
+      ++better[WHITE];
+    else if (eg_value(sc) < 0)
+      ++better[BLACK];
+    return sc;
+  }
 
 
   // Evaluation::initialize() computes king and pawn attacks, and the king ring
@@ -367,6 +381,7 @@ namespace {
                 score -= WeakQueen;
         }
     }
+    if (T)
         Trace::add(Pt, Us, score);
 
     return score;
@@ -471,6 +486,7 @@ namespace {
     // Penalty if king flank is under attack, potentially moving toward the king
     score -= FlankAttacks * kingFlankAttacks;
 
+    if (T)
         Trace::add(KING, Us, score);
 
     return score;
@@ -574,6 +590,7 @@ namespace {
         score += SliderOnQueen * popcount(b & safe & attackedBy2[Us]);
     }
 
+    if (T)
         Trace::add(THREAT, Us, score);
 
     return score;
@@ -657,6 +674,7 @@ namespace {
         score += bonus - PassedFile * std::min(f, ~f);
     }
 
+    if (T)
         Trace::add(PASSED, Us, score);
 
     return score;
@@ -696,6 +714,7 @@ namespace {
     int weight = pos.count<ALL_PIECES>(Us) - 1;
     Score score = make_score(bonus * weight * weight / 16, 0);
 
+    if (T)
         Trace::add(SPACE, Us, score);
 
     return score;
@@ -728,6 +747,7 @@ namespace {
     // that the endgame score will never change sign after the bonus.
     int v = ((eg > 0) - (eg < 0)) * std::max(complexity, -abs(eg));
 
+    if (T)
         Trace::add(INITIATIVE, make_score(0, v));
 
     return make_score(0, v);
@@ -782,6 +802,7 @@ namespace {
     // Probe the pawn hash table
     pe = Pawns::probe(pos);
     score += pe->pawn_score(WHITE) - pe->pawn_score(BLACK);
+    is_better(pe->pawn_score(WHITE) - pe->pawn_score(BLACK));
 
     // Early exit if score is high
     Value v = (mg_value(score) + eg_value(score)) / 2;
@@ -801,12 +822,12 @@ namespace {
 
     score += mobility[WHITE] - mobility[BLACK];
 
-    score +=  king<   WHITE>() - king<   BLACK>()
-            + threats<WHITE>() - threats<BLACK>()
-            + passed< WHITE>() - passed< BLACK>()
-            + space<  WHITE>() - space<  BLACK>();
+    score +=  is_better(king<   WHITE>() - king<   BLACK>())
+            + is_better(threats<WHITE>() - threats<BLACK>())
+            + is_better(passed< WHITE>() - passed< BLACK>())
+            + is_better(space<  WHITE>() - space<  BLACK>());
 
-    score += initiative(eg_value(score));
+    score += is_better( initiative(eg_value(score)) );
 
     // Interpolate between a middlegame and a (scaled by 'sf') endgame score
     ScaleFactor sf = scale_factor(eg_value(score));
@@ -816,32 +837,21 @@ namespace {
     v /= PHASE_MIDGAME;
 
     // In case of tracing add all remaining individual evaluation terms
+    if (T)
+    {
         Trace::add(MATERIAL, pos.psq_score());
         Trace::add(IMBALANCE, me->imbalance());
         Trace::add(PAWN, pe->pawn_score(WHITE), pe->pawn_score(BLACK));
         Trace::add(MOBILITY, mobility[WHITE], mobility[BLACK]);
         Trace::add(TOTAL, score);
-
-    // Bonus for being ahead in multiple ways
-    int w = 0, b = 0;
-    for (int idx=1; idx < TERM_NB; ++idx)
-    {
-        if (idx == 7) continue;
-
-        if (mg_value(scores[idx][WHITE]) > mg_value(scores[idx][BLACK]))
-            ++w;
-        else if (mg_value(scores[idx][WHITE]) < mg_value(scores[idx][BLACK]))
-            ++b;
-
-        if (eg_value(scores[idx][WHITE]) > eg_value(scores[idx][BLACK]))
-            ++w;
-        else if (eg_value(scores[idx][WHITE]) < eg_value(scores[idx][BLACK]))
-            ++b;
     }
-    if (w - b > 17)
-        v += w - b - 17;
-    else if (w - b < -17)
-        v += w - b + 17;
+
+    // Bonus for being ahead in more ways
+    is_better(pos.psq_score());
+    is_better(me->imbalance());
+    is_better(mobility[WHITE] - mobility[BLACK]);
+
+    v += better[WHITE] - better[BLACK];
 
     return  (pos.side_to_move() == WHITE ? v : -v) // Side to move point of view
            + Eval::Tempo;

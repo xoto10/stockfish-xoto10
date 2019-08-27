@@ -726,7 +726,7 @@ namespace {
                     +  9 * outflanking
                     + 18 * pawnsOnBothFlanks
                     + 49 * !pos.non_pawn_material()
-                    +  4 * std::min(4, (  (eg > 0) * (pos.count<PAWN>(WHITE) - pe->backwardPawns[WHITE])
+                    + 10 * std::min(4, (  (eg > 0) * (pos.count<PAWN>(WHITE) - pe->backwardPawns[WHITE])
                                         + (eg < 0) * (pos.count<PAWN>(BLACK) - pe->backwardPawns[BLACK]) ))
                     -103 ;
 

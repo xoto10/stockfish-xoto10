@@ -726,8 +726,8 @@ namespace {
                     +  9 * outflanking
                     + 18 * pawnsOnBothFlanks
                     + 49 * !pos.non_pawn_material()
-                    + 10 * (eg > 0) * (pos.count<PAWN>(WHITE) - pe->backwardPawns[WHITE])
-                    + 10 * (eg < 0) * (pos.count<PAWN>(BLACK) - pe->backwardPawns[BLACK])
+                    + 10 * (  (eg > 0) * (pos.count<PAWN>(WHITE) - pe->backwardPawns[WHITE])
+                            + (eg < 0) * (pos.count<PAWN>(BLACK) - pe->backwardPawns[BLACK]) )
                     -103 ;
 
     // Now apply the bonus: note that we find the attacking side by extracting

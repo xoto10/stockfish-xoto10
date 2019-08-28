@@ -310,7 +310,7 @@ void MainThread::search() {
 
   if (bestThread->rootMoves[0].pv.size() > 1 || bestThread->rootMoves[0].extract_ponder_from_tt(rootPos))
       std::cout << " ponder " << UCI::move(bestThread->rootMoves[0].pv[1], rootPos.is_chess960());
-
+//dbg_print();
   std::cout << sync_endl;
 }
 

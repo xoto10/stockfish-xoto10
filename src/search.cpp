@@ -378,6 +378,27 @@ void Thread::search() {
   contempt = (us == WHITE ?  make_score(ct, ct / 2)
                           : -make_score(ct, ct / 2));
 
+  if (mainThread)
+  {
+      bool moveCountPruning = false;
+      Move move, ttMove = MOVE_NONE, countermove = MOVE_NONE;
+      Depth depth = Depth(1);
+      const PieceToHistory* contHist[] = { (ss-1)->continuationHistory, (ss-2)->continuationHistory,
+                                            nullptr, (ss-4)->continuationHistory,
+                                            nullptr, (ss-6)->continuationHistory };
+
+      MovePicker mp(rootPos, ttMove, depth, &mainHistory,
+                                      &captureHistory,
+                                      contHist,
+                                      countermove,
+                                      ss->killers);
+
+      mainThread->rootMoveCount = 0;
+      while ((move = mp.next_move(moveCountPruning)) != MOVE_NONE)
+          ++mainThread->rootMoveCount;
+  }
+
+
   // Iterative deepening loop until requested to stop or the target depth is reached
   while (   (rootDepth += ONE_PLY) < DEPTH_MAX
          && !Threads.stop
@@ -530,10 +551,11 @@ void Thread::search() {
               th->bestMoveChanges = 0;
           }
           double bestMoveInstability = 1 + totBestMoveChanges / Threads.size();
+          double manyMoves = mainThread->rootMoveCount / 62.0 + 0.5;
 
           // Stop the search if we have only one legal move, or if available time elapsed
           if (   rootMoves.size() == 1
-              || Time.elapsed() > Time.optimum() * fallingEval * reduction * bestMoveInstability)
+              || Time.elapsed() > Time.optimum() * fallingEval * reduction * bestMoveInstability * manyMoves)
           {
               // If we are allowed to ponder do not stop the search now but
               // keep pondering until the GUI sends "ponderhit" or "stop".

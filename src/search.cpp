@@ -378,8 +378,8 @@ void Thread::search() {
   contempt = (us == WHITE ?  make_score(ct, ct / 2)
                           : -make_score(ct, ct / 2));
 
-  // Count blocked pawns (used to increase time use in complex positions)
-  double rams = (std::min(4, popcount(shift<NORTH>(rootPos.pieces(WHITE, PAWN)) & rootPos.pieces(BLACK, PAWN))) - 1)
+  // Increase time use according to number of blocked pawns
+  double rams = (std::min(5, popcount(shift<NORTH>(rootPos.pieces(WHITE, PAWN)) & rootPos.pieces(BLACK, PAWN))) - 1)
                 / 30.0 + 1.0;
 
   // Iterative deepening loop until requested to stop or the target depth is reached
@@ -535,12 +535,9 @@ void Thread::search() {
           }
           double bestMoveInstability = 1 + totBestMoveChanges / Threads.size();
 
-          // Increase time use in complex positions
-          double positional = rams * clamp(rootMoves.size() / 124.0 + 0.75, 0.9, 1.1);
-
           // Stop the search if we have only one legal move, or if available time elapsed
           if (   rootMoves.size() == 1
-              || Time.elapsed() > Time.optimum() * fallingEval * reduction * bestMoveInstability * positional)
+              || Time.elapsed() > Time.optimum() * fallingEval * reduction * bestMoveInstability * rams)
           {
               // If we are allowed to ponder do not stop the search now but
               // keep pondering until the GUI sends "ponderhit" or "stop".

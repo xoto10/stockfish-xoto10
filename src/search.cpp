@@ -380,7 +380,7 @@ void Thread::search() {
 
   // Increase time use according to number of blocked pawns
   double rams = (popcount(shift<NORTH>(rootPos.pieces(WHITE, PAWN)) & rootPos.pieces(BLACK, PAWN)) - 1)
-                / 30.0 + 1.0;
+                / 30.0 + 1.007;
 
   // Iterative deepening loop until requested to stop or the target depth is reached
   while (   (rootDepth += ONE_PLY) < DEPTH_MAX

@@ -379,8 +379,8 @@ void Thread::search() {
                           : -make_score(ct, ct / 2));
 
   // Increase time use according to number of blocked pawns
-  double rams = (std::min(5, popcount(shift<NORTH>(rootPos.pieces(WHITE, PAWN)) & rootPos.pieces(BLACK, PAWN))) - 1)
-                / 30.0 + 1.0;
+  double rams = (std::min(4, popcount(shift<NORTH>(rootPos.pieces(WHITE, PAWN)) & rootPos.pieces(BLACK, PAWN))) - 1)
+                / 20.0 + 1.0;
 
   // Iterative deepening loop until requested to stop or the target depth is reached
   while (   (rootDepth += ONE_PLY) < DEPTH_MAX

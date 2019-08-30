@@ -846,7 +846,7 @@ namespace {
     }
 
     // Bonus if both king and mobility are both ahead
-    v += factors;
+    v += 10 * factors;
 
     return  (pos.side_to_move() == WHITE ? v : -v) // Side to move point of view
            + Eval::Tempo;

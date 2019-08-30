@@ -59,7 +59,7 @@ using namespace Search;
 namespace {
 
   int A = 840, B = 186, C = 3, D = 450, E = 90, F = 110;
-//TUNE(A,B,C,D,E,F);
+TUNE(A,B,C,D,E,F);
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV };

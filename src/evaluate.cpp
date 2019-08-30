@@ -816,7 +816,7 @@ namespace {
 
     // Interpolate between a middlegame and a (scaled by 'sf') endgame score
     ScaleFactor sf = scale_factor(eg_value(score));
-    int p = int(me->game_phase()) * 3 / 4;
+    int p = std::min(int(PHASE_MIDGAME), int(me->game_phase()) * 9 / 8);
     v =  mg_value(score) * p
        + eg_value(score) * int(PHASE_MIDGAME - p) * sf / SCALE_FACTOR_NORMAL;
 

@@ -809,10 +809,10 @@ namespace {
     score += mobility[WHITE] - mobility[BLACK];
 
     score += sc2 = king<WHITE>() - king<BLACK>();
-    factors += sgn(eg_value(sc2));
+    factors += sgn(mg_value(sc2) + eg_value(sc2));
 
     score +=  threats<WHITE>() - threats<BLACK>();
-    factors += sgn(eg_value(sc2));
+    factors += sgn(mg_value(sc2) + eg_value(sc2));
 
     score +=  passed< WHITE>() - passed< BLACK>()
             + space<  WHITE>() - space<  BLACK>();
@@ -837,7 +837,7 @@ namespace {
     }
 
     // Bonus if king and threats are both ahead
-    v += 4 * factors;
+    v += factors;
 
     return  (pos.side_to_move() == WHITE ? v : -v) // Side to move point of view
            + Eval::Tempo;

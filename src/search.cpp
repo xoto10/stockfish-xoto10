@@ -62,7 +62,7 @@ namespace {
   enum NodeType { NonPV, PV };
 
   // Razor and futility margins
-  constexpr int RazorMargin = 685;
+  constexpr int RazorMargin = 661;
   Value futility_margin(Depth d, bool improving) {
     return Value(198 * (d / ONE_PLY - improving));
   }
@@ -82,7 +82,7 @@ namespace {
   // History and stats update bonus, based on depth
   int stat_bonus(Depth depth) {
     int d = depth / ONE_PLY;
-    return d > 17 ? -8 : 22 * d * d + 151 * d - 140;
+    return d > 17 ? -5 : 20 * d * d + 132 * d - 143;
   }
 
   // Add a small random component to draw evaluations to avoid 3fold-blindness

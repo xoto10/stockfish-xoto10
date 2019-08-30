@@ -808,11 +808,11 @@ namespace {
 
     sc2 = mobility[WHITE] - mobility[BLACK];
     score += sc2;
-    factors += (eg_value(sc2) > 0 ? 1 : eg_value(sc2) < 0 ? -1 : 0);
+    factors += (eg_value(sc2) > 0 ? 1 : -1);
 
     sc2 = king<WHITE>() - king<BLACK>();
     score += sc2;
-    factors += (eg_value(sc2) > 0 ? 1 : eg_value(sc2) < 0 ? -1 : 0);
+    factors += (eg_value(sc2) > 0 ? 1 : -1);
 
     score +=  threats<WHITE>() - threats<BLACK>()
             + passed< WHITE>() - passed< BLACK>()

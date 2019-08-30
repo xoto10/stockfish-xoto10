@@ -451,4 +451,9 @@ constexpr bool is_ok(Move m) {
   return from_sq(m) != to_sq(m); // Catch MOVE_NULL and MOVE_NONE
 }
 
+template <class T>
+inline int sgn(T v) {
+  return (v > T(0)) - (v < T(0));
+}
+
 #endif // #ifndef TYPES_H_INCLUDED

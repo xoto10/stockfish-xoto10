@@ -731,7 +731,7 @@ namespace {
     // Now apply the bonus: note that we find the attacking side by extracting
     // the sign of the endgame value, and that we carefully cap the bonus so
     // that the endgame score will never change sign after the bonus.
-    int v = ((eg > 0) - (eg < 0)) * std::max(complexity, -abs(eg));
+    int v = sgn(eg) * std::max(complexity, -abs(eg));
 
     if (T)
         Trace::add(INITIATIVE, make_score(0, v));
@@ -806,16 +806,15 @@ namespace {
             + pieces<WHITE, ROOK  >() - pieces<BLACK, ROOK  >()
             + pieces<WHITE, QUEEN >() - pieces<BLACK, QUEEN >();
 
-    sc2 = mobility[WHITE] - mobility[BLACK];
-    score += sc2;
-    factors += (eg_value(sc2) > 0 ? 1 : -1);
+    score += mobility[WHITE] - mobility[BLACK];
 
-    sc2 = king<WHITE>() - king<BLACK>();
-    score += sc2;
-    factors += (eg_value(sc2) > 0 ? 1 : -1);
+    score += sc2 = king<WHITE>() - king<BLACK>();
+    factors += sgn(eg_value(sc2));
 
-    score +=  threats<WHITE>() - threats<BLACK>()
-            + passed< WHITE>() - passed< BLACK>()
+    score +=  threats<WHITE>() - threats<BLACK>();
+    factors += sgn(eg_value(sc2));
+
+    score +=  passed< WHITE>() - passed< BLACK>()
             + space<  WHITE>() - space<  BLACK>();
 
     score += initiative(eg_value(score));
@@ -837,7 +836,7 @@ namespace {
         Trace::add(TOTAL, score);
     }
 
-    // Bonus if king and mobility are both ahead
+    // Bonus if king and threats are both ahead
     v += factors;
 
     return  (pos.side_to_move() == WHITE ? v : -v) // Side to move point of view

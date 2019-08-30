@@ -876,7 +876,7 @@ namespace {
 
                 // If the qsearch held, perform the regular search
                 if (value >= raisedBeta)
-                    value = -search<NonPV>(pos, ss+1, -raisedBeta, -raisedBeta+1, depth - 4 * ONE_PLY, !cutNode);
+                    value = -search<NonPV>(pos, ss+1, -raisedBeta, -raisedBeta+1, depth - 5 * ONE_PLY, !cutNode);
 
                 pos.undo_move(move);
 
@@ -1403,7 +1403,7 @@ moves_loop: // When in check, search starts from here
         if (PvNode && bestValue > alpha)
             alpha = bestValue;
 
-        futilityBase = bestValue + 140;
+        futilityBase = bestValue + 153;
     }
 
     const PieceToHistory* contHist[] = { (ss-1)->continuationHistory, (ss-2)->continuationHistory,

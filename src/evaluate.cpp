@@ -731,7 +731,19 @@ namespace {
     // Now apply the bonus: note that we find the attacking side by extracting
     // the sign of the endgame value, and that we carefully cap the bonus so
     // that the endgame score will never change sign after the bonus.
-    int v = ((eg > 0) - (eg < 0)) * std::max(complexity, -abs(eg));
+    int v = 0;
+    if (eg > 0)
+    {
+        int noQueen = (pos.non_pawn_material(WHITE) > 4900 && pos.count<QUEEN>(WHITE) == 0);
+        int lateQueen = (pos.non_pawn_material(BLACK) < 4400 && pos.count<QUEEN>(BLACK) > 0);
+        v = std::max(complexity - 8 * (noQueen + lateQueen), int(-eg));
+    }
+    else if (eg < 0)
+    {
+        int noQueen = (pos.non_pawn_material(BLACK) > 4900 && pos.count<QUEEN>(BLACK) == 0);
+        int lateQueen = (pos.non_pawn_material(WHITE) < 4400 && pos.count<QUEEN>(WHITE) > 0);
+        v = -std::max(complexity - 8 * (noQueen + lateQueen), int(eg));
+    }
 
     if (T)
         Trace::add(INITIATIVE, make_score(0, v));

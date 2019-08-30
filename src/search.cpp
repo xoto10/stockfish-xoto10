@@ -62,7 +62,7 @@ namespace {
   enum NodeType { NonPV, PV };
 
   // Razor and futility margins
-  constexpr int RazorMargin = 661;
+  constexpr int RazorMargin = 685;
   Value futility_margin(Depth d, bool improving) {
     return Value(198 * (d / ONE_PLY - improving));
   }

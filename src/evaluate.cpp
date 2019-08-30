@@ -806,15 +806,14 @@ namespace {
             + pieces<WHITE, ROOK  >() - pieces<BLACK, ROOK  >()
             + pieces<WHITE, QUEEN >() - pieces<BLACK, QUEEN >();
 
-    score += mobility[WHITE] - mobility[BLACK];
+    score += sc2 = mobility[WHITE] - mobility[BLACK];
+    factors += sgn(eg_value(sc2));
 
     score += sc2 = king<WHITE>() - king<BLACK>();
     factors += sgn(eg_value(sc2));
 
-    score +=  threats<WHITE>() - threats<BLACK>();
-    factors += sgn(eg_value(sc2));
-
-    score +=  passed< WHITE>() - passed< BLACK>()
+    score +=  threats<WHITE>() - threats<BLACK>()
+            + passed< WHITE>() - passed< BLACK>()
             + space<  WHITE>() - space<  BLACK>();
 
     score += initiative(eg_value(score));
@@ -836,8 +835,8 @@ namespace {
         Trace::add(TOTAL, score);
     }
 
-    // Bonus if king and threats are both ahead
-    v += 2 * factors;
+    // Bonus if king and mobility are both ahead
+    v += factors / 2;
 
     return  (pos.side_to_move() == WHITE ? v : -v) // Side to move point of view
            + Eval::Tempo;

@@ -380,7 +380,7 @@ void Thread::search() {
 
   // Increase time use in complex positions
   int    rams = popcount(shift<NORTH>(rootPos.pieces(WHITE, PAWN)) & rootPos.pieces(BLACK, PAWN));
-  double positional = clamp(0.78 + rootMoves.size() / 186.0 + std::min(3, rams - 1) / 45.0, 0.9, 1.1);
+  double positional = clamp(0.84 + rootMoves.size() / 186.0 + std::min(3, rams - 1) / 45.0, 0.9, 1.1);
 
   // Iterative deepening loop until requested to stop or the target depth is reached
   while (   (rootDepth += ONE_PLY) < DEPTH_MAX

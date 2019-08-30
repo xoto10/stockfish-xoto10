@@ -58,6 +58,9 @@ using namespace Search;
 
 namespace {
 
+  int A = 840, B = 186, C = 3, D = 450, E = 90, F = 110;
+//TUNE(A,B,C,D,E,F);
+
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV };
 
@@ -380,7 +383,8 @@ void Thread::search() {
 
   // Increase time use in complex positions
   int    rams = popcount(shift<NORTH>(rootPos.pieces(WHITE, PAWN)) & rootPos.pieces(BLACK, PAWN));
-  double positional = clamp(0.84 + rootMoves.size() / 186.0 + std::min(3, rams - 1) / 45.0, 0.9, 1.1);
+  double positional = clamp(A/1000.0 + rootMoves.size() / double(B) + std::min(C, rams - 1) / (D/10.0),
+                            E/100.0, F/100.0);
 
   // Iterative deepening loop until requested to stop or the target depth is reached
   while (   (rootDepth += ONE_PLY) < DEPTH_MAX

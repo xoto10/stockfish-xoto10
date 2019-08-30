@@ -169,7 +169,7 @@ namespace {
     template<Color Us> Score space() const;
     ScaleFactor scale_factor(Value eg) const;
     Score initiative(Value eg) const;
-    Score is_better(Score sc);
+    Score ahead(Score sc);
 
     const Position& pos;
     Material::Entry* me;
@@ -207,17 +207,17 @@ namespace {
     // to kingAttacksCount[WHITE].
     int kingAttacksCount[COLOR_NB];
 
-    // better[COLOR_NB] count evaluation factors where each side is better
-    int better[COLOR_NB] = { 0, 0 };
+    // factors counts evaluation factors where each side is ahead
+    int factors = 0;
   };
 
 
   template<Tracing T>
-  Score Evaluation<T>::is_better(Score sc) {
+  Score Evaluation<T>::ahead(Score sc) {
     if (eg_value(sc) > 0)
-      ++better[WHITE];
+      ++factors;
     else if (eg_value(sc) < 0)
-      ++better[BLACK];
+      --factors;
     return sc;
   }
 
@@ -802,7 +802,6 @@ namespace {
     // Probe the pawn hash table
     pe = Pawns::probe(pos);
     score += pe->pawn_score(WHITE) - pe->pawn_score(BLACK);
-    is_better(pe->pawn_score(WHITE) - pe->pawn_score(BLACK));
 
     // Early exit if score is high
     Value v = (mg_value(score) + eg_value(score)) / 2;
@@ -820,14 +819,14 @@ namespace {
             + pieces<WHITE, ROOK  >() - pieces<BLACK, ROOK  >()
             + pieces<WHITE, QUEEN >() - pieces<BLACK, QUEEN >();
 
-    score += mobility[WHITE] - mobility[BLACK];
+    score += ahead(mobility[WHITE] - mobility[BLACK]);
 
-    score +=  is_better(king<   WHITE>() - king<   BLACK>())
-            + is_better(threats<WHITE>() - threats<BLACK>())
-            + is_better(passed< WHITE>() - passed< BLACK>())
-            + is_better(space<  WHITE>() - space<  BLACK>());
+    score +=  ahead(king<WHITE>() - king<BLACK>())
+            + threats<WHITE>() - threats<BLACK>()
+            + passed< WHITE>() - passed< BLACK>()
+            + space<  WHITE>() - space<  BLACK>();
 
-    score += is_better( initiative(eg_value(score)) );
+    score += initiative(eg_value(score));
 
     // Interpolate between a middlegame and a (scaled by 'sf') endgame score
     ScaleFactor sf = scale_factor(eg_value(score));
@@ -846,12 +845,8 @@ namespace {
         Trace::add(TOTAL, score);
     }
 
-    // Bonus for being ahead in more ways
-    is_better(pos.psq_score());
-    is_better(me->imbalance());
-    is_better(mobility[WHITE] - mobility[BLACK]);
-
-    v += better[WHITE] - better[BLACK];
+    // Bonus if both king and mobility are both ahead
+    v += factors;
 
     return  (pos.side_to_move() == WHITE ? v : -v) // Side to move point of view
            + Eval::Tempo;

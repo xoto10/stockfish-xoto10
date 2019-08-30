@@ -169,7 +169,6 @@ namespace {
     template<Color Us> Score space() const;
     ScaleFactor scale_factor(Value eg) const;
     Score initiative(Value eg) const;
-    Score ahead(Score sc);
 
     const Position& pos;
     Material::Entry* me;
@@ -206,20 +205,7 @@ namespace {
     // a white knight on g5 and black's king is on g8, this white knight adds 2
     // to kingAttacksCount[WHITE].
     int kingAttacksCount[COLOR_NB];
-
-    // factors counts evaluation factors where each side is ahead
-    int factors = 0;
   };
-
-
-  template<Tracing T>
-  Score Evaluation<T>::ahead(Score sc) {
-    if (eg_value(sc) > 0)
-      ++factors;
-    else if (eg_value(sc) < 0)
-      --factors;
-    return sc;
-  }
 
 
   // Evaluation::initialize() computes king and pawn attacks, and the king ring
@@ -797,7 +783,8 @@ namespace {
     // Initialize score by reading the incrementally updated scores included in
     // the position object (material + piece square tables) and the material
     // imbalance. Score is computed internally from the white point of view.
-    Score score = pos.psq_score() + me->imbalance() + pos.this_thread()->contempt;
+    Score sc2, score = pos.psq_score() + me->imbalance() + pos.this_thread()->contempt;
+    int factors = 0;
 
     // Probe the pawn hash table
     pe = Pawns::probe(pos);
@@ -819,10 +806,15 @@ namespace {
             + pieces<WHITE, ROOK  >() - pieces<BLACK, ROOK  >()
             + pieces<WHITE, QUEEN >() - pieces<BLACK, QUEEN >();
 
-    score += ahead(mobility[WHITE] - mobility[BLACK]);
+    sc2 = mobility[WHITE] - mobility[BLACK];
+    score += sc2;
+    factors += (eg_value(sc2) > 0 ? 1 : eg_value(sc2) < 0 ? -1 : 0);
 
-    score +=  ahead(king<WHITE>() - king<BLACK>())
-            + threats<WHITE>() - threats<BLACK>()
+    sc2 = king<WHITE>() - king<BLACK>();
+    score += sc2;
+    factors += (eg_value(sc2) > 0 ? 1 : eg_value(sc2) < 0 ? -1 : 0);
+
+    score +=  threats<WHITE>() - threats<BLACK>()
             + passed< WHITE>() - passed< BLACK>()
             + space<  WHITE>() - space<  BLACK>();
 
@@ -845,8 +837,8 @@ namespace {
         Trace::add(TOTAL, score);
     }
 
-    // Bonus if both king and mobility are both ahead
-    v += 10 * factors;
+    // Bonus if king and mobility are both ahead
+    v += factors;
 
     return  (pos.side_to_move() == WHITE ? v : -v) // Side to move point of view
            + Eval::Tempo;

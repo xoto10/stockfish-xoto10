@@ -728,7 +728,7 @@ namespace {
                     +  9 * outflanking
                     + 18 * pawnsOnBothFlanks
                     + 49 * !pos.non_pawn_material()
-                    - 20 * (2 - std::min(2, livePawns))
+                    - 10 * (2 - std::min(2, livePawns))
                     -103 ;
 
     // Now apply the bonus: note that we find the attacking side by extracting

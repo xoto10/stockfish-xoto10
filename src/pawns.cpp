@@ -142,7 +142,9 @@ namespace {
         else if (backward)
             score -= Backward + WeakUnopposed * int(!opposed);
 
-        e->livePawns[Us] += !((theirPawns | doubleAttackThem) & (s + Up));
+        e->livePawns[Us] += !(   (theirPawns & (s + Up))
+                              || (   (doubleAttackThem & (s + Up))
+                                  && !(neighbours & (phalanx | forward_ranks_bb(Them, s))) ) );
 
         if (doubled && !support)
             score -= Doubled;

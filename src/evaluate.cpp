@@ -809,10 +809,10 @@ namespace {
     score += mobility[WHITE] - mobility[BLACK];
 
     score += sc2 = king<WHITE>() - king<BLACK>();
-    factors += sgn(mg_value(sc2) + eg_value(sc2));
+    factors += sgn(eg_value(sc2));
 
-    score +=  threats<WHITE>() - threats<BLACK>();
-    factors += sgn(mg_value(sc2) + eg_value(sc2));
+    score += sc2 = threats<WHITE>() - threats<BLACK>();
+    factors += sgn(eg_value(sc2));
 
     score +=  passed< WHITE>() - passed< BLACK>()
             + space<  WHITE>() - space<  BLACK>();

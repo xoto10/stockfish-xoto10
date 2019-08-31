@@ -794,7 +794,7 @@ namespace {
     if (   !PvNode
         &&  depth < 7 * ONE_PLY
         &&  eval >= beta + futility_margin(depth, improving)
-                         + 16 * int(thisThread->nodes.load(std::memory_order_relaxed) & 1) - 8
+                         + 4 * int(thisThread->nodes.load(std::memory_order_relaxed) & 7) - 14
         &&  eval < VALUE_KNOWN_WIN) // Do not return unproven wins
         return eval;
 

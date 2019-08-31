@@ -835,7 +835,7 @@ namespace {
 
             // Do verification search at high depths, with null move pruning disabled
             // for us, until ply exceeds nmpMinPly.
-            thisThread->nmpMinPly = ss->ply + 3 * (depth-R) / (4 * ONE_PLY);
+            thisThread->nmpMinPly = ss->ply + 5 * (depth-R) / (8 * ONE_PLY);
             thisThread->nmpColor = us;
 
             Value v = search<NonPV>(pos, ss, beta-1, beta, depth-R, false);

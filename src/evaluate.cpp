@@ -826,6 +826,9 @@ namespace {
 
     v /= PHASE_MIDGAME;
 
+    // Bonus if king and threats are both ahead
+    v += 4 * factors;
+
     // In case of tracing add all remaining individual evaluation terms
     if (T)
     {
@@ -835,9 +838,6 @@ namespace {
         Trace::add(MOBILITY, mobility[WHITE], mobility[BLACK]);
         Trace::add(TOTAL, score);
     }
-
-    // Bonus if king and threats are both ahead
-    v += factors;
 
     return  (pos.side_to_move() == WHITE ? v : -v) // Side to move point of view
            + Eval::Tempo;

@@ -792,9 +792,8 @@ namespace {
 
     // Step 8. Futility pruning: child node (~30 Elo)
     if (   !PvNode
-        &&  depth < 7 * ONE_PLY
+        &&  depth < 7 * ONE_PLY + int(thisThread->nodes.load(std::memory_order_relaxed) & 1)
         &&  eval >= beta + futility_margin(depth, improving)
-                         + 4 * int(thisThread->nodes.load(std::memory_order_relaxed) & 7) - 14
         &&  eval < VALUE_KNOWN_WIN) // Do not return unproven wins
         return eval;
 

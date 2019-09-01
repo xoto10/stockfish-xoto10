@@ -1140,7 +1140,8 @@ moves_loop: // When in check, search starts from here
               r -= ss->statScore / 16384 * ONE_PLY;
           }
 
-          Depth d = clamp(newDepth - r, ONE_PLY, newDepth);
+          Depth d = newDepth - r < ONE_PLY ? ONE_PLY : r <= 1 ? newDepth
+                                                              : newDepth - r;
 
           value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, d, true);
 

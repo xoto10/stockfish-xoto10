@@ -34,6 +34,7 @@ namespace {
   // Pawn penalties
   constexpr Score Backward      = S( 9, 24);
   constexpr Score BlockedStorm  = S(82, 82);
+  constexpr Score DblLeverPush  = S(10, 10);
   constexpr Score Doubled       = S(11, 56);
   constexpr Score Isolated      = S( 5, 15);
   constexpr Score WeakLever     = S( 0, 56);
@@ -70,7 +71,6 @@ namespace {
 
     constexpr Color     Them = (Us == WHITE ? BLACK : WHITE);
     constexpr Direction Up   = (Us == WHITE ? NORTH : SOUTH);
-    constexpr Direction Down = (Us == WHITE ? SOUTH : NORTH);
 
     Bitboard neighbours, stoppers, doubled, support, phalanx;
     Bitboard lever, leverPush;
@@ -145,11 +145,14 @@ namespace {
 
         if (doubled && !support)
             score -= Doubled;
+
+        score -= DblLeverPush * more_than_one(leverPush);
     }
 
     // Penalize our unsupported pawns attacked twice by enemy pawns
-    score -= WeakLever * popcount(ourPawns & (  (doubleAttackThem & ~e->pawnAttacks[Us])
-                                              | shift<Down>(doubleAttackThem) ) );
+    score -= WeakLever * popcount(  ourPawns
+                                  & doubleAttackThem
+                                  & ~e->pawnAttacks[Us]);
 
     return score;
   }

@@ -127,7 +127,7 @@ namespace {
   };
 
   // Assorted bonuses and penalties
-  constexpr Value LongDiagonalBishop = Value(45);
+  constexpr Value LongDiagonalBishop = Value(68);
 
   constexpr Score BishopPawns        = S(  3,  7);
   constexpr Score CorneredBishop     = S( 50, 50);

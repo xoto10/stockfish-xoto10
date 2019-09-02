@@ -994,6 +994,18 @@ moves_loop: // When in check, search starts from here
                && (pos.is_discovery_check_on_king(~us, move) || pos.see_ge(move)))
           extension = ONE_PLY;
 
+      // Capture near king extension
+      else if (   depth >= 3 * ONE_PLY
+               && pos.capture(move)
+               && distance(pos.square<KING>(~us), to_sq(move)) < 3
+               && type_of(movedPiece) != QUEEN
+               && (   distance<File>(pos.square<KING>(~us), to_sq(move)) != 2
+                   || distance<Rank>(pos.square<KING>(~us), to_sq(move)) != 2)
+               && (   type_of(pos.piece_on(from_sq(move))) <= BISHOP
+                   || type_of(pos.piece_on(to_sq(move))) >= KNIGHT)
+              )
+          extension = ONE_PLY;
+
       // Castling extension
       else if (type_of(move) == CASTLING)
           extension = ONE_PLY;

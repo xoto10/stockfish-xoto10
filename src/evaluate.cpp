@@ -720,6 +720,19 @@ namespace {
     bool pawnsOnBothFlanks =   (pos.pieces(PAWN) & QueenSide)
                             && (pos.pieces(PAWN) & KingSide);
 
+    int moreTime = 0;
+    if (Search::Limits.use_time_management())
+    {
+        if (  Search::Limits.time[WHITE] + Search::Limits.inc[WHITE]
+            > 2 * (Search::Limits.time[BLACK] + Search::Limits.inc[BLACK]))
+            moreTime = clamp(int(  100 * (Search::Limits.time[WHITE] + Search::Limits.inc[WHITE])
+                                 / (Search::Limits.time[BLACK] + Search::Limits.inc[BLACK]) - 150) / 18, 0, 20);
+        else if (  Search::Limits.time[BLACK] + Search::Limits.inc[BLACK]
+                 > 2 * (Search::Limits.time[WHITE] + Search::Limits.inc[WHITE]))
+            moreTime = -clamp(int(  100 * (Search::Limits.time[BLACK] + Search::Limits.inc[BLACK])
+                                  / (Search::Limits.time[WHITE] + Search::Limits.inc[WHITE]) - 150) / 18, 0, 20);
+    }
+
     // Compute the initiative bonus for the attacking side
     int complexity =   9 * pe->passed_count()
                     + 11 * pos.count<PAWN>()
@@ -731,7 +744,7 @@ namespace {
     // Now apply the bonus: note that we find the attacking side by extracting
     // the sign of the endgame value, and that we carefully cap the bonus so
     // that the endgame score will never change sign after the bonus.
-    int v = ((eg > 0) - (eg < 0)) * std::max(complexity, -abs(eg));
+    int v = ((eg > 0) - (eg < 0)) * std::max(complexity, -abs(eg)) + moreTime;
 
     if (T)
         Trace::add(INITIATIVE, make_score(0, v));

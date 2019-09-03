@@ -724,13 +724,13 @@ namespace {
     if (Search::Limits.use_time_management())
     {
         if (  Search::Limits.time[WHITE] + Search::Limits.inc[WHITE]
-            > 2 * (Search::Limits.time[BLACK] + Search::Limits.inc[BLACK]))
+            > 3 * (Search::Limits.time[BLACK] + Search::Limits.inc[BLACK]) / 2)
             moreTime = clamp(int(  100 * (Search::Limits.time[WHITE] + Search::Limits.inc[WHITE])
-                                 / (Search::Limits.time[BLACK] + Search::Limits.inc[BLACK]) - 150) / 18, 0, 20);
+                                 / (Search::Limits.time[BLACK] + Search::Limits.inc[BLACK]) - 150) / 12, 0, 20);
         else if (  Search::Limits.time[BLACK] + Search::Limits.inc[BLACK]
-                 > 2 * (Search::Limits.time[WHITE] + Search::Limits.inc[WHITE]))
+                 > 3 * (Search::Limits.time[WHITE] + Search::Limits.inc[WHITE]) / 2)
             moreTime = -clamp(int(  100 * (Search::Limits.time[BLACK] + Search::Limits.inc[BLACK])
-                                  / (Search::Limits.time[WHITE] + Search::Limits.inc[WHITE]) - 150) / 18, 0, 20);
+                                  / (Search::Limits.time[WHITE] + Search::Limits.inc[WHITE]) - 150) / 12, 0, 20);
     }
 
     // Compute the initiative bonus for the attacking side

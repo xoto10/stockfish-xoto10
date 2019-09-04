@@ -1101,6 +1101,10 @@ moves_loop: // When in check, search starts from here
 
           if (!captureOrPromotion)
           {
+              // Extra reduction if other threads are searching this position.
+              if (th.marked())
+                  r += ONE_PLY;
+
               // Increase reduction if ttMove is a capture (~0 Elo)
               if (ttCapture)
                   r += ONE_PLY;

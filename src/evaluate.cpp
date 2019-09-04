@@ -168,7 +168,7 @@ namespace {
     template<Color Us> Score passed() const;
     template<Color Us> Score space() const;
     ScaleFactor scale_factor(Value eg) const;
-    Score initiative(Value eg) const;
+    Score initiative(Score sc) const;
 
     const Position& pos;
     Material::Entry* me;
@@ -712,21 +712,20 @@ namespace {
   // known attacking/defending status of the players.
 
   template<Tracing T>
-  Score Evaluation<T>::initiative(Value eg) const {
+  Score Evaluation<T>::initiative(Score s) const {
 
     constexpr Bitboard Ranks2_5 = (Rank2BB | Rank3BB | Rank4BB | Rank5BB);
     constexpr Bitboard Ranks4_7 = (Rank4BB | Rank5BB | Rank6BB | Rank7BB);
-
+    Value mg = mg_value(s), eg = eg_value(s);
     Score sc;
 
     if (me->game_phase() > 120)
     {
-        int complexity =   9 * distance<File>(pos.square<KING>(WHITE), pos.square<KING>(BLACK))
-                        +  9 * (  (eg>0) * popcount(pos.pieces(WHITE, PAWN) & Ranks4_7)
-                                + (eg<0) * popcount(pos.pieces(BLACK, PAWN) & Ranks2_5))
+        int complexity =   9 * (  (mg>0) * popcount(pos.pieces(WHITE, PAWN) & Ranks4_7)
+                                + (mg<0) * popcount(pos.pieces(BLACK, PAWN) & Ranks2_5))
                         - 18;
 
-        sc = make_score(((eg > 0) - (eg < 0)) * std::max(complexity, -abs(eg)), 0);
+        sc = make_score(((mg > 0) - (mg < 0)) * std::max(complexity, -abs(mg)), 0);
     }
     else
     {
@@ -829,7 +828,7 @@ namespace {
             + passed< WHITE>() - passed< BLACK>()
             + space<  WHITE>() - space<  BLACK>();
 
-    score += initiative(eg_value(score));
+    score += initiative(score);
 
     // Interpolate between a middlegame and a (scaled by 'sf') endgame score
     ScaleFactor sf = scale_factor(eg_value(score));

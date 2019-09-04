@@ -1017,6 +1017,7 @@ moves_loop: // When in check, search starts from here
       // Step 14. Pruning at shallow depth (~170 Elo)
       if (  !rootNode
           && pos.non_pawn_material(us)
+          && !(pos.opposite_bishops() && !pos.count<KNIGHT>() && type_of(movedPiece) == PAWN)
           && bestValue > VALUE_MATED_IN_MAX_PLY)
       {
           // Skip quiet moves if movecount exceeds our FutilityMoveCount threshold
@@ -1024,7 +1025,7 @@ moves_loop: // When in check, search starts from here
 
           if (   !captureOrPromotion
               && !givesCheck
-              && (!pos.advanced_pawn_push(move) || (pos.non_pawn_material(~us) > BishopValueMg && !(pos.opposite_bishops() && !pos.count<KNIGHT>()))))
+              && (!pos.advanced_pawn_push(move) || pos.non_pawn_material(~us) > BishopValueMg))
           {
               // Move count based pruning
               if (moveCountPruning)
@@ -1139,8 +1140,6 @@ moves_loop: // When in check, search starts from here
               // Decrease/increase reduction for moves with a good/bad history (~30 Elo)
               r -= ss->statScore / 16384 * ONE_PLY;
           }
-          else if (cutNode && ss->staticEval  + PieceValue[MG][pos.captured_piece()] > beta)
-              r -= ONE_PLY;
 
           Depth d = clamp(newDepth - r, ONE_PLY, newDepth);
 

@@ -175,6 +175,10 @@ Entry* probe(const Position& pos) {
   e->scores[WHITE] = evaluate<WHITE>(pos, e);
   e->scores[BLACK] = evaluate<BLACK>(pos, e);
 
+  Bitboard rams =  pos.pieces(WHITE, PAWN) & ~e->pawnAttacks[BLACK]
+                 & shift<SOUTH>(pos.pieces(BLACK, PAWN) & ~e->pawnAttacks[WHITE]);
+  e->ramCount = popcount(rams);
+
   return e;
 }
 

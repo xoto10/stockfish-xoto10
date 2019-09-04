@@ -73,6 +73,9 @@ using namespace Trace;
 
 namespace {
 
+int R = 8, C = 90;
+TUNE(R, C);
+
   // Threshold for lazy and space evaluation
   constexpr Value LazyThreshold  = Value(1400);
   constexpr Value SpaceThreshold = Value(12222);
@@ -726,7 +729,8 @@ namespace {
                     +  9 * outflanking
                     + 18 * pawnsOnBothFlanks
                     + 49 * !pos.non_pawn_material()
-                    -103 ;
+                    -  R * abs(pe->ram_count() - 2)
+                    -  C ;
 
     // Now apply the bonus: note that we find the attacking side by extracting
     // the sign of the endgame value, and that we carefully cap the bonus so

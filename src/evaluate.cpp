@@ -714,29 +714,46 @@ namespace {
   template<Tracing T>
   Score Evaluation<T>::initiative(Value eg) const {
 
-    int outflanking =  distance<File>(pos.square<KING>(WHITE), pos.square<KING>(BLACK))
-                     - distance<Rank>(pos.square<KING>(WHITE), pos.square<KING>(BLACK));
+    constexpr Bitboard Ranks2_5 = (Rank2BB | Rank3BB | Rank4BB | Rank5BB);
+    constexpr Bitboard Ranks4_7 = (Rank4BB | Rank5BB | Rank6BB | Rank7BB);
 
-    bool pawnsOnBothFlanks =   (pos.pieces(PAWN) & QueenSide)
-                            && (pos.pieces(PAWN) & KingSide);
+    Score sc;
 
-    // Compute the initiative bonus for the attacking side
-    int complexity =   9 * pe->passed_count()
-                    + 11 * pos.count<PAWN>()
-                    +  9 * outflanking
-                    + 18 * pawnsOnBothFlanks
-                    + 49 * !pos.non_pawn_material()
-                    -103 ;
+    if (me->game_phase() > 120)
+    {
+        int complexity =   9 * distance<File>(pos.square<KING>(WHITE), pos.square<KING>(BLACK))
+                        +  9 * (  (eg>0) * popcount(pos.pieces(WHITE, PAWN) & Ranks4_7)
+                                + (eg<0) * popcount(pos.pieces(BLACK, PAWN) & Ranks2_5))
+                        - 18;
 
-    // Now apply the bonus: note that we find the attacking side by extracting
-    // the sign of the endgame value, and that we carefully cap the bonus so
-    // that the endgame score will never change sign after the bonus.
-    int v = ((eg > 0) - (eg < 0)) * std::max(complexity, -abs(eg));
+        sc = make_score(((eg > 0) - (eg < 0)) * std::max(complexity, -abs(eg)), 0);
+    }
+    else
+    {
+        int outflanking =  distance<File>(pos.square<KING>(WHITE), pos.square<KING>(BLACK))
+                         - distance<Rank>(pos.square<KING>(WHITE), pos.square<KING>(BLACK));
+
+        bool pawnsOnBothFlanks =   (pos.pieces(PAWN) & QueenSide)
+                                && (pos.pieces(PAWN) & KingSide);
+
+        // Compute the initiative bonus for the attacking side
+        int complexity =   9 * pe->passed_count()
+                        + 11 * pos.count<PAWN>()
+                        +  9 * outflanking
+                        + 18 * pawnsOnBothFlanks
+                        + 49 * !pos.non_pawn_material()
+                        -103 ;
+
+        // Now apply the bonus: note that we find the attacking side by extracting
+        // the sign of the endgame value, and that we carefully cap the bonus so
+        // that the endgame score will never change sign after the bonus.
+        sc = make_score(0, ((eg > 0) - (eg < 0)) * std::max(complexity, -abs(eg)));
+    }
 
     if (T)
-        Trace::add(INITIATIVE, make_score(0, v));
+        Trace::add(INITIATIVE, sc);
 
-    return make_score(0, v);
+    return sc;
   }
 
 

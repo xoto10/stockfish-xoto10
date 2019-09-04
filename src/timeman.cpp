@@ -133,11 +133,11 @@ void TimeManagement::init(Search::LimitsType& limits, Color us, int ply) {
 
   if (limits.use_time_management())
   {
-      if (limits.time[us] + limits.inc[us] > (limits.time[~us] + limits.inc[~us]))
+      if (limits.time[us] + limits.inc[us] > 3 * (limits.time[~us] + limits.inc[~us]))
           limits.moreTime = clamp(int(  100 * (limits.time[us] + limits.inc[us])
-                                      / (limits.time[~us] + limits.inc[~us]) - 100) / 10, 0, 50);
-      else if (limits.time[~us] + limits.inc[~us] > (limits.time[us] + limits.inc[us]))
+                                      / (limits.time[~us] + limits.inc[~us]) - 300) / 8, 0, 40);
+      else if (limits.time[~us] + limits.inc[~us] > 3 * (limits.time[us] + limits.inc[us]))
           limits.moreTime = -clamp(int(  100 * (limits.time[~us] + limits.inc[~us])
-                                       / (limits.time[us] + limits.inc[us]) - 100) / 10, 0, 50);
+                                       / (limits.time[us] + limits.inc[us]) - 300) / 8, 0, 40);
   }
 }

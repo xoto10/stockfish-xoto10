@@ -1015,14 +1015,15 @@ moves_loop: // When in check, search starts from here
       newDepth = depth - ONE_PLY + extension;
 
       // Step 14. Pruning at shallow depth (~170 Elo)
-      if (  !rootNode
+      if (  (!rootNode || depth > 10 * ONE_PLY)
           && pos.non_pawn_material(us)
           && bestValue > VALUE_MATED_IN_MAX_PLY)
       {
           // Skip quiet moves if movecount exceeds our FutilityMoveCount threshold
           moveCountPruning = moveCount >= futility_move_count(improving, depth / ONE_PLY);
 
-          if (   !captureOrPromotion
+          if (   !rootNode
+              && !captureOrPromotion
               && !givesCheck
               && (!pos.advanced_pawn_push(move) || pos.non_pawn_material(~us) > BishopValueMg))
           {
@@ -1036,11 +1037,8 @@ moves_loop: // When in check, search starts from here
 
               // Countermoves based pruning (~20 Elo)
               if (   lmrDepth < 4 + ((ss-1)->statScore > 0 || (ss-1)->moveCount == 1)
-                  && (((*contHist[0])[movedPiece][to_sq(move)] < CounterMovePruneThreshold
+                  && (*contHist[0])[movedPiece][to_sq(move)] < CounterMovePruneThreshold
                   && (*contHist[1])[movedPiece][to_sq(move)] < CounterMovePruneThreshold)
-                  || ((*contHist[0])[movedPiece][to_sq(move)] < -10000
-                  && (*contHist[1])[movedPiece][to_sq(move)] == 0
-                  && (*contHist[3])[movedPiece][to_sq(move)] < 0)))
                   continue;
 
               // Futility pruning: parent node (~2 Elo)

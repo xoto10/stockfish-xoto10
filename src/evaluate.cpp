@@ -757,7 +757,7 @@ namespace {
             && pos.non_pawn_material() == 2 * BishopValueMg)
             sf = std::min(16 + 4 * pe->passed_count(), normalSf - 20);
         else
-            sf = normalSf;
+            sf = std::max(normalSf, 36 + 4 * pe->passed_count());
 
     }
 

@@ -1011,9 +1011,6 @@ moves_loop: // When in check, search starts from here
                && pos.pawn_passed(us, to_sq(move)))
           extension = ONE_PLY;
 
-      if (cutNode && !singularLMR)
-      	  extension = DEPTH_ZERO;
-
       // Calculate new depth for this move
       newDepth = depth - ONE_PLY + extension;
 
@@ -1082,7 +1079,7 @@ moves_loop: // When in check, search starts from here
           && (!rootNode || thisThread->best_move_count(move) == 0)
           && (  !captureOrPromotion
               || moveCountPruning
-              || ss->staticEval + PieceValue[EG][pos.captured_piece()] <= alpha
+              || ss->staticEval + PieceValue[EG][pos.captured_piece()] + pos.non_pawn_material() / 64 <= alpha
               || cutNode))
       {
           Depth r = reduction(improving, depth, moveCount);

@@ -714,20 +714,20 @@ namespace {
   template<Tracing T>
   Score Evaluation<T>::initiative(Score s) const {
 
-    constexpr Bitboard Ranks2_5 = (Rank2BB | Rank3BB | Rank4BB | Rank5BB);
-    constexpr Bitboard Ranks4_7 = (Rank4BB | Rank5BB | Rank6BB | Rank7BB);
     Value mg = mg_value(s), eg = eg_value(s);
-    Score sc;
+    Phase gp = me->game_phase();
+    int u = 0, v = 0;
 
-    if (me->game_phase() > 120)
+    if (gp > 112)
     {
-        int complexity =   9 * (  (mg>0) * popcount(pos.pieces(WHITE, PAWN) & Ranks4_7)
-                                + (mg<0) * popcount(pos.pieces(BLACK, PAWN) & Ranks2_5))
-                        - 18;
+        int complexity =   6 * (  (mg>0) * popcount(Rank1BB & ~(pos.pieces(WHITE, ALL_PIECES) ^ pos.pieces(WHITE, KING, ROOK)))
+                                + (mg<0) * popcount(Rank8BB & ~(pos.pieces(BLACK, ALL_PIECES) ^ pos.pieces(BLACK, KING, ROOK))))
+                        - 24;
 
-        sc = make_score(((mg > 0) - (mg < 0)) * std::max(complexity, -abs(mg)), 0);
+        u = ((mg > 0) - (mg < 0)) * std::max(complexity, -abs(mg));
     }
-    else
+
+    if (gp < 120)
     {
         int outflanking =  distance<File>(pos.square<KING>(WHITE), pos.square<KING>(BLACK))
                          - distance<Rank>(pos.square<KING>(WHITE), pos.square<KING>(BLACK));
@@ -746,13 +746,13 @@ namespace {
         // Now apply the bonus: note that we find the attacking side by extracting
         // the sign of the endgame value, and that we carefully cap the bonus so
         // that the endgame score will never change sign after the bonus.
-        sc = make_score(0, ((eg > 0) - (eg < 0)) * std::max(complexity, -abs(eg)));
+        v = ((eg > 0) - (eg < 0)) * std::max(complexity, -abs(eg));
     }
 
     if (T)
-        Trace::add(INITIATIVE, sc);
+        Trace::add(INITIATIVE, make_score(u, v));
 
-    return sc;
+    return make_score(u, v);
   }
 
 

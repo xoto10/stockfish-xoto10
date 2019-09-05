@@ -61,28 +61,43 @@ namespace {
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV };
 
++int RM = 661;
++int FM = 198;
   // Razor and futility margins
-  constexpr int RazorMargin = 661;
+  constexpr int RazorMargin = RM;
   Value futility_margin(Depth d, bool improving) {
-    return Value(198 * (d / ONE_PLY - improving));
++    return Value(FM * (d / ONE_PLY - improving));
   }
 
++int RE1 = 520;
++int RE3 = 999;
++TUNE(RE1, RE3);
   // Reductions lookup table, initialized at startup
   int Reductions[MAX_MOVES]; // [depth or moveNumber]
 
   Depth reduction(bool i, Depth d, int mn) {
     int r = Reductions[d / ONE_PLY] * Reductions[mn];
-    return ((r + 520) / 1024 + (!i && r > 999)) * ONE_PLY;
++    return ((r + RE1) / 1024 + (!i && r > RE3)) * ONE_PLY;
   }
 
   constexpr int futility_move_count(bool improving, int depth) {
     return (5 + depth * depth) * (1 + improving) / 2;
   }
++int FC1 = 5;
++int FC2 = 1;
++TUNE(FC1, FC2);
+  int futility_move_count(bool improving, int depth) {
+    return (FC1 + depth * depth) * (FC2 + improving) / 2;
 
   // History and stats update bonus, based on depth
++int SB2 = -8;
++int SB3 = 22;
++int SB4 = 151;
++int SB5 = 140;
++TUNE(SetRange(-100,100), SB2, SetDefaultRange, SB3, SB4, SB5);
   int stat_bonus(Depth depth) {
     int d = depth / ONE_PLY;
-    return d > 17 ? -8 : 22 * d * d + 151 * d - 140;
+    return d > 16 ? SB2 : std::min(10692, SB3 * d * d + SB4 * d - SB5);
   }
 
   // Add a small random component to draw evaluations to avoid 3fold-blindness
@@ -189,12 +204,104 @@ namespace {
 
 /// Search::init() is called at startup to initialize various lookup tables
 
+int IN = 234;
+TUNE(IN);
 void Search::init() {
 
   for (int i = 1; i < MAX_MOVES; ++i)
-      Reductions[i] = int(23.4 * std::log(i));
+      Reductions[i] = int(IN/10.0 * std::log(i));
 }
 
++int TR = 1;
++int CT1 = 2;
++int CT2 = 2;
++int BM1 = 2;
++int AS1 = 4;
++int DE = 23;
++int DC1 = 86;
++int DC2 = 176;
++int DC3 = 2;
++int DC4 = 2;
++int AB1 = 2;
++int DE2 = 4;
++int DE3 = 5;
++int FE1 = 354;
++int FE2 = 10;
++int FE3 = 692;
++int TR1 = 9;
++int TR2 = 197;
++int TR3 = 98;
++int TR4 = 136;
++int TR5 = 229;
++int MC1 = 2;
++int SS6 = 512;
++int RZ = 2;
++int FP = 8;
++int NM1 = 22661;
++int NM2 = 33;
++int NM3 = 299;
++int NM4 = 835;
++int NM5 = 70;
++int NM6 = 185;
++int NM7 = 3;
++int NM8 = 13;
++int NM9 = 3;
++int PB1 = 5;
++int PB2 = 191;
++int PB3 = 46;
++int PB4 = 2;
++int PB5 = 2;
++int PB6 = 4;
++int II1 = 7;
++int II2 = 7;
++int EX1 = 6;
++int EX2 = 3;
++int EX3 = 2;
++int EX4 = 128;
++int EX5 = 4;
++int EX6 = 36;
++int LM1 = 4;
++int LM2 = 6;
++int LM3 = 250;
++int LM4 = 211;
++int NS1 = 31;
++int NS2 = 18;
++int NS3 = -199;
++int LM5 = 3;
++int LM6 = 1;
++int LM7 = 3;
++int LM8 = 2;
++int LM9 = 15;
++int LM10 = 2;
++int LM11 = 2;
++int LM12 = 4729;
++int UC1 = 3;
++int FB = 153;
++int EP = 2;
++int B1 = 64;
++
++TUNE(TR, CT1, CT2, BM1, AS1, DE, DC1, DC2, DC3, DC4, AB1, AB2, DE2, DE3, FE1, FE2, FE3, TR1, TR2, TR3, TR4);
++TUNE(TR5, MC1, SS6, RZ, FP, NM1, NM2, NM3, NM4, NM5, NM6, NM7, NM8, NM9, PB1, PB2, PB3, PB4, PB5, PB6);
++TUNE(II1, II2, EX1, EX2, EX3, EX4, EX5, EX6, LM1, LM2, LM3, LM4, NS1, NS2, NS3, LM5, LM6, LM7, LM8, LM9);
++TUNE(LM10, LM11, LM12, UC1, FB, EP, B1);
++
++inline Range centered200(int v)
++{
++   return Range(v - 200, v + 200);
++}
++
++int LM13 = -99;
++int LM14 = -116;
++int LM15 = -117;
++int LM16 = -144;
++
++int SS1 = 0;
++int SS2 = 0;
++int SS3 = 0;
++int SS4 = 0;
++int SS5 = 0;
++int SS7 = 128;
++TUNE(SetRange(centered200),fm,LM13,LM14,LM15,LM16,SS1,SS2,SS3,SS4,SS5,SS7,SetDefaultRange);
 
 /// Search::clear() resets search state to its initial value
 
@@ -331,7 +438,7 @@ void Thread::search() {
   Move  lastBestMove = MOVE_NONE;
   Depth lastBestMoveDepth = DEPTH_ZERO;
   MainThread* mainThread = (this == Threads.main() ? Threads.main() : nullptr);
-  double timeReduction = 1, totBestMoveChanges = 0;
++  double timeReduction = TR, totBestMoveChanges = 0;
   Color us = rootPos.side_to_move();
 
   std::memset(ss-7, 0, 10 * sizeof(Stack));
@@ -375,8 +482,8 @@ void Thread::search() {
           : ct;
 
   // Evaluation score is from the white point of view
-  contempt = (us == WHITE ?  make_score(ct, ct / 2)
-                          : -make_score(ct, ct / 2));
++  contempt = (us == WHITE ?  make_score(ct, ct / CT1)
++                          : -make_score(ct, ct / CT2));
 
   // Iterative deepening loop until requested to stop or the target depth is reached
   while (   (rootDepth += ONE_PLY) < DEPTH_MAX
@@ -385,7 +492,7 @@ void Thread::search() {
   {
       // Age out PV variability metric
       if (mainThread)
-          totBestMoveChanges /= 2;
++          totBestMoveChanges /= BM1;
 
       // Save the last iteration's scores before first PV line is searched and
       // all the move scores except the (new) PV are set to -VALUE_INFINITE.
@@ -410,18 +517,18 @@ void Thread::search() {
           selDepth = 0;
 
           // Reset aspiration window starting size
-          if (rootDepth >= 4 * ONE_PLY)
++          if (rootDepth >= AS1 * ONE_PLY)
           {
               Value previousScore = rootMoves[pvIdx].previousScore;
-              delta = Value(23);
++              delta = Value(DE);
               alpha = std::max(previousScore - delta,-VALUE_INFINITE);
               beta  = std::min(previousScore + delta, VALUE_INFINITE);
 
               // Adjust contempt based on root move's previousScore (dynamic contempt)
-              int dct = ct + 86 * previousScore / (abs(previousScore) + 176);
++              int dct = ct + DC1 * previousScore / (abs(previousScore) + DC2);
 
-              contempt = (us == WHITE ?  make_score(dct, dct / 2)
-                                      : -make_score(dct, dct / 2));
++              contempt = (us == WHITE ?  make_score(dct, dct / DC3)
++                                      : -make_score(dct, dct / DC4));
           }
 
           // Start with a small aspiration window and, in the case of a fail
@@ -459,7 +566,7 @@ void Thread::search() {
               // re-search, otherwise exit the loop.
               if (bestValue <= alpha)
               {
-                  beta = (alpha + beta) / 2;
++                  beta = (alpha + beta) / AB1;
                   alpha = std::max(bestValue - delta, -VALUE_INFINITE);
 
                   failedHighCnt = 0;
@@ -477,7 +584,7 @@ void Thread::search() {
                   break;
               }
 
-              delta += delta / 4 + 5;
++              delta += delta / DE2 + DE3;
 
               assert(alpha >= -VALUE_INFINITE && beta <= VALUE_INFINITE);
           }
@@ -516,12 +623,12 @@ void Thread::search() {
           && !Threads.stop
           && !mainThread->stopOnPonderhit)
       {
-          double fallingEval = (354 + 10 * (mainThread->previousScore - bestValue)) / 692.0;
++          double fallingEval = (FE1 + FE2 * (mainThread->previousScore - bestValue)) / float(FE3);
           fallingEval = clamp(fallingEval, 0.5, 1.5);
 
           // If the bestMove is stable over several iterations, reduce time accordingly
-          timeReduction = lastBestMoveDepth + 9 * ONE_PLY < completedDepth ? 1.97 : 0.98;
-          double reduction = (1.36 + mainThread->previousTimeReduction) / (2.29 * timeReduction);
++          timeReduction = lastBestMoveDepth + TR1 * ONE_PLY < completedDepth ? TR2/100.0 : TR3/100.0;
++          double reduction = (TR4/100.0 + mainThread->previousTimeReduction) / (TR5/100.0 * timeReduction);
 
           // Use part of the gained time from a previous stable move for the current move
           for (Thread* th : Threads)
@@ -683,7 +790,7 @@ namespace {
                     update_quiet_stats(pos, ss, ttMove, nullptr, 0, stat_bonus(depth));
 
                 // Extra penalty for early quiet moves of the previous ply
-                if ((ss-1)->moveCount <= 2 && !pos.captured_piece())
++                if ((ss-1)->moveCount <= MC1 && !pos.captured_piece())
                     update_continuation_histories(ss-1, pos.piece_on(prevSq), prevSq, -stat_bonus(depth + ONE_PLY));
             }
             // Penalty for a quiet ttMove that fails low
@@ -772,6 +879,7 @@ namespace {
         if ((ss-1)->currentMove != MOVE_NULL)
         {
             int bonus = -(ss-1)->statScore / 512;
++            int bonus = -(ss-1)->statScore / SS6;
 
             ss->staticEval = eval = evaluate(pos) + bonus;
         }

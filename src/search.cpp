@@ -62,7 +62,7 @@ namespace {
   enum NodeType { NonPV, PV };
 
 int RM = 661;
-//TUNE(RM);
+TUNE(RM);
 int FM = 198;
   // Razor and futility margins
             int RazorMargin = RM;
@@ -72,7 +72,7 @@ int FM = 198;
 
 int RE1 = 520;
 int RE3 = 999;
-//TUNE(RE1, RE3);
+TUNE(RE1, RE3);
   // Reductions lookup table, initialized at startup
   int Reductions[MAX_MOVES]; // [depth or moveNumber]
 
@@ -83,7 +83,7 @@ int RE3 = 999;
 
 int FC1 = 5;
 int FC2 = 1;
-//TUNE(FC1, FC2);
+TUNE(FC1, FC2);
   int futility_move_count(bool improving, int depth) {
     return (FC1 + depth * depth) * (FC2 + improving) / 2;
   }
@@ -93,7 +93,7 @@ int SB2 = -8;
 int SB3 = 22;
 int SB4 = 151;
 int SB5 = 140;
-//TUNE(SetRange(-100,100), SB2, SetDefaultRange, SB3, SB4, SB5);
+TUNE(SetRange(-100,100), SB2, SetDefaultRange, SB3, SB4, SB5);
   int stat_bonus(Depth depth) {
     int d = depth / ONE_PLY;
     return d > 16 ? SB2 : std::min(10692, SB3 * d * d + SB4 * d - SB5);
@@ -204,7 +204,7 @@ int SB5 = 140;
 /// Search::init() is called at startup to initialize various lookup tables
 
 int IN = 234;
-//TUNE(IN);
+TUNE(IN);
 void Search::init() {
 
   for (int i = 1; i < MAX_MOVES; ++i)
@@ -281,15 +281,15 @@ int UC1 = 3;
 int FB = 153;
 int EP = 2;
 
-//TUNE(TR, CT1, CT2, BM1, AS1, DE, DC1, DC2, DC3, DC4, AB1, AB2, DE2, DE3, FE1, FE2, FE3, TR1, TR2, TR3, TR4);
-//TUNE(TR5, MC1, SS6, RZ, FP, NM1, NM2, NM3, NM4, NM5, NM6, NM7, NM8, NM9, PB1, PB2, PB3, PB4, PB5, PB6);
-//TUNE(II1, II2, EX1, EX2, EX3, EX4, EX5, EX6, LM1, LM2, LM3, LM4, NS1, NS2, NS3, LM5, LM6, LM7, LM8, LM9);
-//TUNE(LM10, LM11, LM12, UC1, FB, EP, B1);
+TUNE(TR, CT1, CT2, BM1, AS1, DE, DC1, DC2, DC3, DC4, AB1, DE2, DE3, FE1, FE2, FE3, TR1, TR2, TR3, TR4);
+TUNE(TR5, MC1, SS6, RZ, FP, NM1, NM2, NM3, NM4, NM5, NM6, NM7, NM8, NM9, PB1, PB2, PB3, PB4, PB5, PB6);
+TUNE(II1, II2, EX1, EX2, EX3, EX4, EX5, EX6, LM1, LM2, LM3, LM4, NS1, NS2, NS3, LM5, LM6, LM7, LM8, LM9);
+TUNE(LM10, LM11, LM12, UC1, FB, EP, B1);
 
-//inline Range centered200(int v)
-//{
-//   return Range(v - 200, v + 200);
-//}
+inline Range centered200(int v)
+{
+   return Range(v - 200, v + 200);
+}
 
 int LM13 = -99;
 int LM14 = -116;

@@ -1283,6 +1283,9 @@ moves_loop: // When in check, search starts from here
             && !pos.captured_piece())
                 update_continuation_histories(ss-1, pos.piece_on(prevSq), prevSq, -stat_bonus(depth + ONE_PLY));
 
+        if (bestValue > beta)
+            (ss-1)->statScore -= 1000;
+
     }
     // Bonus for prior countermove that caused the fail low
     else if (   (depth >= 3 * ONE_PLY || PvNode)

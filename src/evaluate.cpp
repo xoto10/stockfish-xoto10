@@ -73,8 +73,8 @@ using namespace Trace;
 
 namespace {
 
-int R = 8, C = 90;
-TUNE(R, C);
+int R = 8, C = 90, A = 9, P = 11, F = 9, B = 18, N = 49;
+TUNE(R, C, A, P, F, B, N);
 
   // Threshold for lazy and space evaluation
   constexpr Value LazyThreshold  = Value(1400);
@@ -724,11 +724,11 @@ TUNE(R, C);
                             && (pos.pieces(PAWN) & KingSide);
 
     // Compute the initiative bonus for the attacking side
-    int complexity =   9 * pe->passed_count()
-                    + 11 * pos.count<PAWN>()
-                    +  9 * outflanking
-                    + 18 * pawnsOnBothFlanks
-                    + 49 * !pos.non_pawn_material()
+    int complexity =   A * pe->passed_count()
+                    +  P * pos.count<PAWN>()
+                    +  F * outflanking
+                    +  B * pawnsOnBothFlanks
+                    +  N * !pos.non_pawn_material()
                     -  R * abs(pe->ram_count() - 2)
                     -  C ;
 

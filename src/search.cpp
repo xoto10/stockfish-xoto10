@@ -418,10 +418,11 @@ void Thread::search() {
               beta  = std::min(previousScore + delta, VALUE_INFINITE);
 
               // Adjust contempt based on root move's previousScore (dynamic contempt)
-              int dct = ct + 86 * previousScore / (abs(previousScore) + 176);
+              int dctMg = ct + 86 * previousScore / (abs(previousScore) + 176);
+              int dctEg = dctMg * std::max(4166, int(rootPos.non_pawn_material(~us))) / 8331;
 
-              contempt = (us == WHITE ?  make_score(dct, dct / 2)
-                                      : -make_score(dct, dct / 2));
+              contempt = (us == WHITE ?  make_score(dctMg, dctEg)
+                                      : -make_score(dctMg, dctEg));
           }
 
           // Start with a small aspiration window and, in the case of a fail

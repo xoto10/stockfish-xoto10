@@ -784,7 +784,7 @@ namespace {
     // the position object (material + piece square tables) and the material
     // imbalance. Score is computed internally from the white point of view.
     Score score2, score = pos.psq_score() + me->imbalance() + pos.this_thread()->contempt;
-    int sign = pos.this_thread()->rootPos.side_to_move() == WHITE ? 1 : -1;
+    int sign = pos.side_to_move() == WHITE ? -1 : 1;
 
     // Probe the pawn hash table
     pe = Pawns::probe(pos);
@@ -815,11 +815,9 @@ namespace {
     score += eg_value(score2) * sign < 0 ? score2 * 9 / 8 : score2;
 
     score += passed< WHITE>() - passed< BLACK>();
-
     score += space<  WHITE>() - space<  BLACK>();
 
     score += initiative(eg_value(score));
-
 
     // Interpolate between a middlegame and a (scaled by 'sf') endgame score
     ScaleFactor sf = scale_factor(eg_value(score));

@@ -809,10 +809,10 @@ namespace {
     score += mobility[WHITE] - mobility[BLACK];
 
     score2 = king<   WHITE>() - king<   BLACK>();
-    score += eg_value(score2) * sign < 0 ? score2 * 2 : score2;
+    score += eg_value(score2) * sign < 0 ? score2 * 9 / 8 : score2;
 
     score2 = threats<WHITE>() - threats<BLACK>();
-    score += eg_value(score2) * sign < 0 ? score2 * 2 : score2;
+    score += eg_value(score2) * sign < 0 ? score2 * 9 / 8 : score2;
 
     score += passed< WHITE>() - passed< BLACK>();
 

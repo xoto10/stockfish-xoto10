@@ -811,9 +811,7 @@ namespace {
     score2 = king<   WHITE>() - king<   BLACK>();
     score += eg_value(score2) * sign < 0 ? score2 * 9 / 8 : score2;
 
-    score2 = threats<WHITE>() - threats<BLACK>();
-    score += eg_value(score2) * sign < 0 ? score2 * 9 / 8 : score2;
-
+    score += threats<WHITE>() - threats<BLACK>();
     score += passed< WHITE>() - passed< BLACK>();
     score += space<  WHITE>() - space<  BLACK>();
 

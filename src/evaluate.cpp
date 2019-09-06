@@ -128,6 +128,7 @@ namespace {
 
   // Assorted bonuses and penalties
   constexpr Score BishopPawns        = S(  3,  7);
+  constexpr Score BishopBlockers     = S(  6,  6);
   constexpr Score CorneredBishop     = S( 50, 50);
   constexpr Score FlankAttacks       = S(  8,  0);
   constexpr Score Hanging            = S( 69, 36);
@@ -319,6 +320,11 @@ namespace {
 
                 score -= BishopPawns * pos.pawns_on_same_color_squares(Us, s)
                                      * (1 + popcount(blocked & CenterFiles));
+
+                // Penalty according to number of their pawns attacked that are defended by pawns.
+                blocked = pos.attacks_from<BISHOP>(s) & pos.pieces(Them, PAWN) & attackedBy[Them][PAWN];
+
+                score -= BishopBlockers * popcount(blocked);
 
                 // Bonus for bishop on a long diagonal which can "see" both center squares
                 if (more_than_one(attacks_bb<BISHOP>(s, pos.pieces(PAWN)) & Center))

@@ -788,8 +788,7 @@ namespace {
 
     // Probe the pawn hash table
     pe = Pawns::probe(pos);
-    score2 = pe->pawn_score(WHITE) - pe->pawn_score(BLACK);
-    score += eg_value(score2) * sign < 0 ? score2 * 2 : score2;
+    score += pe->pawn_score(WHITE) - pe->pawn_score(BLACK);
 
     // Early exit if score is high
     Value v = (mg_value(score) + eg_value(score)) / 2;
@@ -802,14 +801,12 @@ namespace {
     initialize<BLACK>();
 
     // Pieces should be evaluated first (populate attack tables)
-    score2 =  pieces<WHITE, KNIGHT>() - pieces<BLACK, KNIGHT>()
+    score +=  pieces<WHITE, KNIGHT>() - pieces<BLACK, KNIGHT>()
             + pieces<WHITE, BISHOP>() - pieces<BLACK, BISHOP>()
             + pieces<WHITE, ROOK  >() - pieces<BLACK, ROOK  >()
             + pieces<WHITE, QUEEN >() - pieces<BLACK, QUEEN >();
-    score += eg_value(score2) * sign < 0 ? score2 * 2 : score2;
 
-    score2 = mobility[WHITE] - mobility[BLACK];
-    score += eg_value(score2) * sign < 0 ? score2 * 2 : score2;
+    score += mobility[WHITE] - mobility[BLACK];
 
     score2 = king<   WHITE>() - king<   BLACK>();
     score += eg_value(score2) * sign < 0 ? score2 * 2 : score2;
@@ -817,15 +814,11 @@ namespace {
     score2 = threats<WHITE>() - threats<BLACK>();
     score += eg_value(score2) * sign < 0 ? score2 * 2 : score2;
 
-    score2 = passed< WHITE>() - passed< BLACK>();
-    score += eg_value(score2) * sign < 0 ? score2 * 2 : score2;
+    score += passed< WHITE>() - passed< BLACK>();
 
-    score2 = space<  WHITE>() - space<  BLACK>();
-    score += eg_value(score2) * sign < 0 ? score2 * 2 : score2;
+    score += space<  WHITE>() - space<  BLACK>();
 
-
-    score2 = initiative(eg_value(score));
-    score += eg_value(score2) * sign < 0 ? score2 * 2 : score2;
+    score += initiative(eg_value(score));
 
 
     // Interpolate between a middlegame and a (scaled by 'sf') endgame score

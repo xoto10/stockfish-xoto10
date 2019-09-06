@@ -321,8 +321,8 @@ namespace {
                 score -= BishopPawns * pos.pawns_on_same_color_squares(Us, s)
                                      * (1 + popcount(blocked & CenterFiles));
 
-                // Penalty according to number of their pawns attacked that are defended by pawns.
-                blocked = pos.attacks_from<BISHOP>(s) & pos.pieces(Them, PAWN) & attackedBy[Them][PAWN];
+                // Penalty according to number of our pawns attacked that are defended by pawns.
+                blocked = pos.attacks_from<BISHOP>(s) & pos.pieces(Us, PAWN) & attackedBy[Us][PAWN];
 
                 score -= BishopBlockers * popcount(blocked);
 

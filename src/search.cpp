@@ -419,7 +419,7 @@ void Thread::search() {
 
               // Adjust contempt based on root move's previousScore (dynamic contempt)
               int dctMg = ct + 86 * previousScore / (abs(previousScore) + 176);
-              int dctEg = dctMg * std::max(4166, int(rootPos.non_pawn_material(~us))) / 8331;
+              int dctEg = dctMg * (8331 + int(rootPos.non_pawn_material(~us))) / 16662;
 
               contempt = (us == WHITE ?  make_score(dctMg, dctEg)
                                       : -make_score(dctMg, dctEg));

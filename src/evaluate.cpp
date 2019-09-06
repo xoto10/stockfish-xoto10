@@ -783,11 +783,13 @@ namespace {
     // Initialize score by reading the incrementally updated scores included in
     // the position object (material + piece square tables) and the material
     // imbalance. Score is computed internally from the white point of view.
-    Score score = pos.psq_score() + me->imbalance() + pos.this_thread()->contempt;
+    Score score2, score = pos.psq_score() + me->imbalance() + pos.this_thread()->contempt;
+    int sign = pos.this_thread()->rootPos.side_to_move() == WHITE ? 1 : -1;
 
     // Probe the pawn hash table
     pe = Pawns::probe(pos);
-    score += pe->pawn_score(WHITE) - pe->pawn_score(BLACK);
+    score2 = pe->pawn_score(WHITE) - pe->pawn_score(BLACK);
+    score += eg_value(score2) * sign < 0 ? score2 * 2 : score2;
 
     // Early exit if score is high
     Value v = (mg_value(score) + eg_value(score)) / 2;
@@ -800,19 +802,31 @@ namespace {
     initialize<BLACK>();
 
     // Pieces should be evaluated first (populate attack tables)
-    score +=  pieces<WHITE, KNIGHT>() - pieces<BLACK, KNIGHT>()
+    score2 =  pieces<WHITE, KNIGHT>() - pieces<BLACK, KNIGHT>()
             + pieces<WHITE, BISHOP>() - pieces<BLACK, BISHOP>()
             + pieces<WHITE, ROOK  >() - pieces<BLACK, ROOK  >()
             + pieces<WHITE, QUEEN >() - pieces<BLACK, QUEEN >();
+    score += eg_value(score2) * sign < 0 ? score2 * 2 : score2;
 
-    score += mobility[WHITE] - mobility[BLACK];
+    score2 = mobility[WHITE] - mobility[BLACK];
+    score += eg_value(score2) * sign < 0 ? score2 * 2 : score2;
 
-    score +=  king<   WHITE>() - king<   BLACK>()
-            + threats<WHITE>() - threats<BLACK>()
-            + passed< WHITE>() - passed< BLACK>()
-            + space<  WHITE>() - space<  BLACK>();
+    score2 = king<   WHITE>() - king<   BLACK>();
+    score += eg_value(score2) * sign < 0 ? score2 * 2 : score2;
 
-    score += initiative(eg_value(score));
+    score2 = threats<WHITE>() - threats<BLACK>();
+    score += eg_value(score2) * sign < 0 ? score2 * 2 : score2;
+
+    score2 = passed< WHITE>() - passed< BLACK>();
+    score += eg_value(score2) * sign < 0 ? score2 * 2 : score2;
+
+    score2 = space<  WHITE>() - space<  BLACK>();
+    score += eg_value(score2) * sign < 0 ? score2 * 2 : score2;
+
+
+    score2 = initiative(eg_value(score));
+    score += eg_value(score2) * sign < 0 ? score2 * 2 : score2;
+
 
     // Interpolate between a middlegame and a (scaled by 'sf') endgame score
     ScaleFactor sf = scale_factor(eg_value(score));

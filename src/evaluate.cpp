@@ -545,6 +545,7 @@ namespace {
 
     // Bonus for restricting their pawn moves
     b =   shift<Down>(pos.pieces(Them, PAWN))
+       & ~attackedBy[Them][PAWN]
        &  attackedBy[Us][PAWN];
 
     score += RestrictedPawn * popcount(b);

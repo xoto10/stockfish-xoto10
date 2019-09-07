@@ -212,17 +212,10 @@ void Search::init() {
 }
 
 int TR = 1;
-int CT1 = 2;
-int CT2 = 2;
-int BM1 = 2;
 int AS1 = 4;
 int DE = 23;
 int DC1 = 86;
 int DC2 = 176;
-int DC3 = 2;
-int DC4 = 2;
-int AB1 = 2;
-int DE2 = 4;
 int DE3 = 5;
 int FE1 = 354;
 int FE2 = 10;
@@ -233,9 +226,8 @@ int TR3 = 98;
 int TR4 = 136;
 int TR5 = 229;
 int MC1 = 2;
-int SS6 = 512;
 int RZ = 2;
-int FP = 8;
+int FP = 7;
 int NM1 = 22661;
 int NM2 = 33;
 int NM3 = 299;
@@ -258,7 +250,6 @@ int II2 = 7;
 int EX1 = 6;
 int EX2 = 3;
 int EX3 = 2;
-int EX4 = 2;
 int EX5 = 4;
 int EX6 = 36;
 int LM1 = 4;
@@ -276,15 +267,14 @@ int LM9 = 15;
 int LM10 = 2;
 int LM11 = 2;
 int LM12 = 4729;
-int B1 = 4;
 int UC1 = 3;
 int FB = 153;
 int EP = 2;
 
-TUNE(TR, CT1, CT2, BM1, AS1, DE, DC1, DC2, DC3, DC4, AB1, DE2, DE3, FE1, FE2, FE3, TR1, TR2, TR3, TR4);
-TUNE(TR5, MC1, SS6, RZ, FP, NM1, NM2, NM3, NM4, NM5, NM6, NM7, NM8, NM9, PB1, PB2, PB3, PB4, PB5, PB6);
-TUNE(II1, II2, EX1, EX2, EX3, EX4, EX5, EX6, LM1, LM2, LM3, LM4, NS1, NS2, NS3, LM5, LM6, LM7, LM8, LM9);
-TUNE(LM10, LM11, LM12, UC1, FB, EP, B1);
+TUNE(TR, AS1, DE, DC1, DC2, DE3, FE1, FE2, FE3, TR1, TR2, TR3, TR4);
+TUNE(TR5, MC1, RZ, FP, NM1, NM2, NM3, NM4, NM5, NM6, NM7, NM8, NM9, PB1, PB2, PB3, PB4, PB5, PB6);
+TUNE(II1, II2, EX1, EX2, EX3, EX5, EX6, LM1, LM2, LM3, LM4, NS1, NS2, NS3, LM5, LM6, LM7, LM8, LM9);
+TUNE(LM10, LM11, LM12, UC1, FB, EP);
 
 inline Range centered200(int v)
 {
@@ -301,8 +291,7 @@ int SS2 = 0;
 int SS3 = 0;
 int SS4 = 0;
 int SS5 = 0;
-int SS7 = 16384;
-//TUNE(SetRange(centered200),FM,LM13,LM14,LM15,LM16,SS1,SS2,SS3,SS4,SS5,SS7,SetDefaultRange);
+TUNE(SetRange(centered200),FM,LM13,LM14,LM15,LM16,SS1,SS2,SS3,SS4,SS5,SetDefaultRange);
 
 /// Search::clear() resets search state to its initial value
 
@@ -483,8 +472,8 @@ void Thread::search() {
           : ct;
 
   // Evaluation score is from the white point of view
-  contempt = (us == WHITE ?  make_score(ct, ct / CT1)
-                          : -make_score(ct, ct / CT2));
+  contempt = (us == WHITE ?  make_score(ct, ct / 2)
+                          : -make_score(ct, ct / 2));
 
   // Iterative deepening loop until requested to stop or the target depth is reached
   while (   (rootDepth += ONE_PLY) < DEPTH_MAX
@@ -493,7 +482,7 @@ void Thread::search() {
   {
       // Age out PV variability metric
       if (mainThread)
-          totBestMoveChanges /= BM1;
+          totBestMoveChanges /= 2;
 
       // Save the last iteration's scores before first PV line is searched and
       // all the move scores except the (new) PV are set to -VALUE_INFINITE.
@@ -528,8 +517,8 @@ void Thread::search() {
               // Adjust contempt based on root move's previousScore (dynamic contempt)
               int dct = ct + DC1 * previousScore / (abs(previousScore) + DC2);
 
-              contempt = (us == WHITE ?  make_score(dct, dct / DC3)
-                                      : -make_score(dct, dct / DC4));
+              contempt = (us == WHITE ?  make_score(dct, dct / 2)
+                                      : -make_score(dct, dct / 2));
           }
 
           // Start with a small aspiration window and, in the case of a fail
@@ -567,7 +556,7 @@ void Thread::search() {
               // re-search, otherwise exit the loop.
               if (bestValue <= alpha)
               {
-                  beta = (alpha + beta) / AB1;
+                  beta = (alpha + beta) / 2;
                   alpha = std::max(bestValue - delta, -VALUE_INFINITE);
 
                   failedHighCnt = 0;
@@ -585,7 +574,7 @@ void Thread::search() {
                   break;
               }
 
-              delta += delta / DE2 + DE3;
+              delta += delta / 4 + DE3;
 
               assert(alpha >= -VALUE_INFINITE && beta <= VALUE_INFINITE);
           }
@@ -879,7 +868,7 @@ namespace {
     {
         if ((ss-1)->currentMove != MOVE_NULL)
         {
-            int bonus = -(ss-1)->statScore / SS6;
+            int bonus = -(ss-1)->statScore / 512;
 
             ss->staticEval = eval = evaluate(pos) + bonus;
         }
@@ -900,7 +889,7 @@ namespace {
 
     // Step 8. Futility pruning: child node (~30 Elo)
     if (   !PvNode
-        &&  depth < 7 * ONE_PLY
+        &&  depth < FP * ONE_PLY
         &&  eval - futility_margin(depth, improving) >= beta
         &&  eval < VALUE_KNOWN_WIN) // Do not return unproven wins
         return eval;
@@ -1073,7 +1062,7 @@ moves_loop: // When in check, search starts from here
           &&  pos.legal(move))
       {
           Value singularBeta = ttValue - EX3 * depth / ONE_PLY;
-          Depth halfDepth = depth / (EX4 * ONE_PLY) * ONE_PLY; // ONE_PLY invariant
+          Depth halfDepth = depth / (2 * ONE_PLY) * ONE_PLY; // ONE_PLY invariant
           ss->excludedMove = move;
           value = search<NonPV>(pos, ss, singularBeta - 1, singularBeta, halfDepth, cutNode);
           ss->excludedMove = MOVE_NONE;
@@ -1245,7 +1234,7 @@ moves_loop: // When in check, search starts from here
                   r += ONE_PLY;
 
               // Decrease/increase reduction for moves with a good/bad history (~30 Elo)
-              r -= ss->statScore / SS7 * ONE_PLY;
+              r -= ss->statScore / 16384 * ONE_PLY;
           }
 
           Depth d = clamp(newDepth - r, ONE_PLY, newDepth);
@@ -1268,7 +1257,7 @@ moves_loop: // When in check, search starts from here
                                         : -stat_bonus(newDepth);
 
               if (move == ss->killers[0])
-                  bonus += bonus / B1;
+                  bonus += bonus / 4;
 
               update_continuation_histories(ss, movedPiece, to_sq(move), bonus);
           }

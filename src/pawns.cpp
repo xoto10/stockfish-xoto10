@@ -83,7 +83,7 @@ namespace {
 
     Bitboard doubleAttackThem = pawn_double_attacks_bb<Them>(theirPawns);
 
-    e->passedPawns[Us] = e->pawnAttacksSpan[Us] = 0;
+    e->passedPawns[Us] = e->pawnAttacksSpan[Us] = e->pawnChains[Us] = 0;
     e->kingSquares[Us] = SQ_NONE;
     e->pawnAttacks[Us] = pawn_attacks_bb<Us>(ourPawns);
 
@@ -134,6 +134,8 @@ namespace {
                    + 17 * popcount(support);
 
             score += make_score(v, v * (r - 2) / 4);
+
+            e->pawnChains[Us] += popcount(support);
         }
 
         else if (!neighbours)

@@ -719,6 +719,7 @@ namespace {
 
     bool pawnsOnBothFlanks =   (pos.pieces(PAWN) & QueenSide)
                             && (pos.pieces(PAWN) & KingSide);
+    int pawnChains = std::max(0, pe->pawn_chains(WHITE) + pe->pawn_chains(BLACK) - 4);
 
     // Compute the initiative bonus for the attacking side
     int complexity =   9 * pe->passed_count()
@@ -726,6 +727,7 @@ namespace {
                     +  9 * outflanking
                     + 18 * pawnsOnBothFlanks
                     + 49 * !pos.non_pawn_material()
+                    -  6 * pawnChains
                     -103 ;
 
     // Now apply the bonus: note that we find the attacking side by extracting

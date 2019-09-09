@@ -138,7 +138,7 @@ namespace {
   constexpr Score Outpost            = S( 18,  6);
   constexpr Score PassedFile         = S( 11,  8);
   constexpr Score PawnlessFlank      = S( 17, 95);
-  constexpr Score RestrictedPawn     = S(  4,  4);
+  constexpr Score RestrictedPawn     = S(  4,  0);
   constexpr Score RestrictedPiece    = S(  7,  7);
   constexpr Score RookOnPawn         = S( 10, 32);
   constexpr Score SliderOnQueen      = S( 59, 18);
@@ -546,7 +546,7 @@ namespace {
     // Bonus for restricting their pawn moves
     b =   shift<Down>(pos.pieces(Them, PAWN))
        & ~attackedBy[Them][PAWN]
-       &  attackedBy[Us][ALL_PIECES];
+       &  attackedBy[Us][PAWN];
 
     score += RestrictedPawn * popcount(b);
 

@@ -726,7 +726,7 @@ namespace {
                     +  9 * outflanking
                     + 18 * pawnsOnBothFlanks
                     + 49 * !pos.non_pawn_material()
-                    +  6 * (pos.non_pawn_material(WHITE) != pos.non_pawn_material(BLACK))
+                    +  4 * (pos.non_pawn_material(WHITE) != pos.non_pawn_material(BLACK))
                     -106 ;
 
     // Now apply the bonus: note that we find the attacking side by extracting

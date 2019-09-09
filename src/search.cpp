@@ -256,11 +256,14 @@ void MainThread::search() {
   // Stop the threads if not already stopped (also raise the stop if
   // "ponderhit" just reset Threads.ponder).
   Threads.stop = true;
+  TimePoint requestStop = now();
 
   // Wait until all threads have finished
   for (Thread* th : Threads)
       if (th != this)
           th->wait_for_search_finished();
+
+  sync_cout << "info string threadstop wait: " << now() - requestStop << sync_endl;
 
   // When playing in 'nodes as time' mode, subtract the searched nodes from
   // the available ones before exiting.
@@ -312,6 +315,8 @@ void MainThread::search() {
       std::cout << " ponder " << UCI::move(bestThread->rootMoves[0].pv[1], rootPos.is_chess960());
 
   std::cout << sync_endl;
+
+  sync_cout << "info string time used: " << Time.elapsed() << " maximum: " << Time.maximum() << sync_endl;
 }
 
 

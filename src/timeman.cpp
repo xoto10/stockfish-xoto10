@@ -21,6 +21,7 @@
 #include <algorithm>
 #include <cfloat>
 #include <cmath>
+#include <iostream>
 
 #include "search.h"
 #include "timeman.h"
@@ -130,4 +131,6 @@ void TimeManagement::init(Search::LimitsType& limits, Color us, int ply) {
 
   if (Options["Ponder"])
       optimumTime += optimumTime / 4;
+
+  sync_cout << "info string time to use: optimum " << optimumTime << " maximum " << maximumTime << sync_endl;
 }

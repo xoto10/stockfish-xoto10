@@ -112,7 +112,7 @@ namespace {
 
   // RookOnQueenFile contains bonuses for each rook when
   // on the same file as their queen.
-  constexpr Score RookOnQueenFile = S(14, 7);
+  constexpr Score RookOnQueenFile = S(10, 10);
 
   // ThreatByMinor/ByRook[attacked PieceType] contains bonuses according to
   // which piece type attacks which one. Attacks on lesser pieces which are

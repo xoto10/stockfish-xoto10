@@ -227,8 +227,6 @@ Score Entry::do_king_safety(const Position& pos) {
   constexpr Piece OurPawn   = make_piece(Us, PAWN);
   constexpr Square KB1 = (Us == WHITE ? SQ_F1 : SQ_F8);
   constexpr Square KN2 = (Us == WHITE ? SQ_G2 : SQ_G7);
-  constexpr Square QB1 = (Us == WHITE ? SQ_C1 : SQ_C8);
-  constexpr Square QN2 = (Us == WHITE ? SQ_B2 : SQ_B7);
 
   Square ksq = pos.square<KING>(Us);
   kingSquares[Us] = ksq;
@@ -247,12 +245,7 @@ Score Entry::do_king_safety(const Position& pos) {
      )
       shelters[1] = evaluate_shelter<Us>(pos, relative_square(Us, SQ_G1));
 
-  if (    pos.can_castle(Us & QUEEN_SIDE)
-      && !(   (pos.piece_on(QB1) == OurQueen || pos.piece_on(QB1) == OurBishop)
-           && pos.piece_on(QN2) == OurPawn
-           && (pos.attackers_to(QN2) & pos.pieces(Them, ALL_PIECES))
-          )
-     )
+  if (pos.can_castle(Us & QUEEN_SIDE))
       shelters[2] = evaluate_shelter<Us>(pos, relative_square(Us, SQ_C1));
 
   for (int i : {1, 2})

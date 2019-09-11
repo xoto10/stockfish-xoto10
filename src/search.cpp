@@ -383,8 +383,8 @@ void Thread::search() {
          && !Threads.stop
          && !(Limits.depth && mainThread && rootDepth / ONE_PLY > Limits.depth))
   {
-      if (   // idx == 7 &&
-             ((rootDepth & 3) == 0 || (rootDepth & 3) == 3))
+      if (   (idx & 15) == 7
+          && ((rootDepth & 3) == 0 || (rootDepth & 3) == 3))
           continue;
 
       // Age out PV variability metric

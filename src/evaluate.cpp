@@ -112,7 +112,7 @@ namespace {
 
   // RookOnQueenFile contains bonuses for each rook when
   // on the same file as their queen.
-  constexpr Score RookOnQueenFile = S(10, 5);
+  constexpr Score RookOnQueenFile[] = { S(6, 3), S(14, 7) };
 
   // ThreatByMinor/ByRook[attacked PieceType] contains bonuses according to
   // which piece type attacks which one. Attacks on lesser pieces which are
@@ -352,7 +352,7 @@ namespace {
 
             // Bonus for rook on same file as their queen
             if (file_bb(s) & pos.pieces(Them, QUEEN))
-                score += RookOnQueenFile;
+                score += RookOnQueenFile[bool(pos.is_on_semiopen_file(Us, s))];
 
             // Bonus for rook on an open or semi-open file
             if (pos.is_on_semiopen_file(Us, s))

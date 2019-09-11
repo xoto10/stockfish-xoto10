@@ -82,7 +82,7 @@ namespace {
   // History and stats update bonus, based on depth
   int stat_bonus(Depth depth) {
     int d = depth / ONE_PLY;
-    return d > 17 ? -7 : 19 * d * d + 111 * d - 151;
+    return d > 17 ? -8 : 22 * d * d + 151 * d - 140;
   }
 
   // Add a small random component to draw evaluations to avoid 3fold-blindness
@@ -418,7 +418,7 @@ void Thread::search() {
               beta  = std::min(previousScore + delta, VALUE_INFINITE);
 
               // Adjust contempt based on root move's previousScore (dynamic contempt)
-              int dct = ct + 86 * previousScore / (abs(previousScore) + 176);
+              int dct = ct + 103 * previousScore / (abs(previousScore) + 156);
 
               contempt = (us == WHITE ?  make_score(dct, dct / 2)
                                       : -make_score(dct, dct / 2));

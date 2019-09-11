@@ -82,7 +82,7 @@ namespace {
   // History and stats update bonus, based on depth
   int stat_bonus(Depth depth) {
     int d = depth / ONE_PLY;
-    return d > 17 ? -7 : 19 * d * d + 111 * d - 129;
+    return d > 17 ? -8 : 22 * d * d + 151 * d - 140;
   }
 
   // Add a small random component to draw evaluations to avoid 3fold-blindness
@@ -516,12 +516,12 @@ void Thread::search() {
           && !Threads.stop
           && !mainThread->stopOnPonderhit)
       {
-          double fallingEval = (354 + 10 * (mainThread->previousScore - bestValue)) / 692.0;
+          double fallingEval = (375 + 9 * (mainThread->previousScore - bestValue)) / 751.0;
           fallingEval = clamp(fallingEval, 0.5, 1.5);
 
           // If the bestMove is stable over several iterations, reduce time accordingly
-          timeReduction = lastBestMoveDepth + 9 * ONE_PLY < completedDepth ? 1.97 : 0.98;
-          double reduction = (1.36 + mainThread->previousTimeReduction) / (2.29 * timeReduction);
+          timeReduction = lastBestMoveDepth + 11 * ONE_PLY < completedDepth ? 2.18 : 1.07;
+          double reduction = (1.30 + mainThread->previousTimeReduction) / (2.08 * timeReduction);
 
           // Use part of the gained time from a previous stable move for the current move
           for (Thread* th : Threads)

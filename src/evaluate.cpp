@@ -720,26 +720,27 @@ namespace {
     bool pawnsOnBothFlanks =   (pos.pieces(PAWN) & QueenSide)
                             && (pos.pieces(PAWN) & KingSide);
 
+    int lowRankPawns =  (eg > 0) * popcount(pos.pieces(WHITE, PAWN) & (Rank2BB | Rank3BB))
+                      + (eg < 0) * popcount(pos.pieces(BLACK, PAWN) & (Rank7BB | Rank6BB));
+
     // Compute the initiative bonus for the attacking side
     int complexity =   9 * pe->passed_count()
                     + 11 * pos.count<PAWN>()
                     +  9 * outflanking
                     + 18 * pawnsOnBothFlanks
                     + 49 * !pos.non_pawn_material()
+                    -  4 * lowRankPawns
                     -103 ;
 
     // Now apply the bonus: note that we find the attacking side by extracting
     // the sign of the endgame value, and that we carefully cap the bonus so
     // that the endgame score will never change sign after the bonus.
     int v = ((eg > 0) - (eg < 0)) * std::max(complexity, -abs(eg));
-    // Midgame penalty for having pawns on 2nd or 3rd rank
-    int u =  (eg > 0) * -4 * popcount(pos.pieces(WHITE, PAWN) & (Rank2BB | Rank3BB))
-           + (eg < 0) *  4 * popcount(pos.pieces(BLACK, PAWN) & (Rank7BB | Rank6BB));
 
     if (T)
-        Trace::add(INITIATIVE, make_score(u, v));
+        Trace::add(INITIATIVE, make_score(0, v));
 
-    return make_score(u, v);
+    return make_score(0, v);
   }
 
 

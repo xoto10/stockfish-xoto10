@@ -230,7 +230,9 @@ Score Entry::do_king_safety(const Position& pos) {
                         make_score(-VALUE_INFINITE, 0) };
 
   // If we can castle use the bonus after castling if it is bigger
-  if (pos.can_castle(Us & KING_SIDE))
+  if (   pos.can_castle(Us & KING_SIDE)
+      && (pos.castlingPath(Us & KING_SIDE) & pos.pieces(Us, ALL_PIECES)
+     )
       shelters[1] = evaluate_shelter<Us>(pos, relative_square(Us, SQ_G1));
 
   if (pos.can_castle(Us & QUEEN_SIDE))

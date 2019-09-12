@@ -36,6 +36,7 @@ namespace {
   constexpr Score BlockedStorm  = S(82, 82);
   constexpr Score Doubled       = S(11, 56);
   constexpr Score Isolated      = S( 5, 15);
+  constexpr Score KingLever     = S(20, 20);
   constexpr Score WeakLever     = S( 0, 56);
   constexpr Score WeakUnopposed = S(13, 27);
 
@@ -181,7 +182,8 @@ Entry* probe(const Position& pos) {
 template<Color Us>
 Score Entry::evaluate_shelter(const Position& pos, Square ksq) {
 
-  constexpr Color Them = (Us == WHITE ? BLACK : WHITE);
+  constexpr Color     Them = (Us == WHITE ? BLACK : WHITE);
+  constexpr Direction Up   = (Us == WHITE ? NORTH : SOUTH);
 
   Bitboard b = pos.pieces(PAWN) & ~forward_ranks_bb(Them, ksq);
   Bitboard ourPawns = b & pos.pieces(Us);
@@ -206,6 +208,11 @@ Score Entry::evaluate_shelter(const Position& pos, Square ksq) {
       else
           bonus -= make_score(UnblockedStorm[d][theirRank], 0);
   }
+
+  bonus -= KingLever * popcount(   KingFlank[file_of(ksq)]
+                                &  shift<Up>(pos.pieces(Us, PAWN))
+                                & ~pos.pieces(ALL_PIECES)
+                                &  pawn_attacks(Them));
 
   return bonus;
 }

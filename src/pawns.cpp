@@ -36,7 +36,7 @@ namespace {
   constexpr Score BlockedStorm  = S(82, 82);
   constexpr Score Doubled       = S(11, 56);
   constexpr Score Isolated      = S( 5, 15);
-  constexpr Score KingLever     = S( 4,  4);
+  constexpr Score KingLever     = S( 6,  4);
   constexpr Score WeakLever     = S( 0, 56);
   constexpr Score WeakUnopposed = S(13, 27);
 
@@ -184,7 +184,7 @@ Score Entry::evaluate_shelter(const Position& pos, Square ksq) {
 
   constexpr Color     Them     = (Us == WHITE ? BLACK : WHITE);
   constexpr Direction Up       = (Us == WHITE ? NORTH : SOUTH);
-  constexpr Bitboard  Ranks3_4 = (Us == WHITE ? RANK_3 | RANK_4 : RANK_6 | RANK_5);
+  constexpr Bitboard  Ranks3_4 = (Us == WHITE ? Rank3BB | Rank4BB : Rank6BB | Rank5BB);
 
   Bitboard b = pos.pieces(PAWN) & ~forward_ranks_bb(Them, ksq);
   Bitboard ourPawns = b & pos.pieces(Us);

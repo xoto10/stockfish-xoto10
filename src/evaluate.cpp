@@ -466,10 +466,11 @@ namespace {
                  +   5 * kingFlankAttacks * kingFlankAttacks / 16
                  -   7;
 
+    // Reduce kingDanger if more than 1 good factor
     if (   (   bool(attackedBy[Us][KNIGHT] & attackedBy[Us][KING])
             || bool(attackedBy[Us][BISHOP] & attackedBy[Us][KING]))
         && !pos.count<QUEEN>(Them))
-        kingDanger -= 100;
+        kingDanger -= 80;
 
     // Transform the kingDanger units into a Score, and subtract it from the evaluation
     if (kingDanger > 100)

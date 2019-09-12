@@ -383,9 +383,12 @@ namespace {
   template<Tracing T> template<Color Us>
   Score Evaluation<T>::king() const {
 
+    constexpr Direction Up   = (Us == WHITE ? NORTH : SOUTH);
     constexpr Color    Them = (Us == WHITE ? BLACK : WHITE);
     constexpr Bitboard Camp = (Us == WHITE ? AllSquares ^ Rank6BB ^ Rank7BB ^ Rank8BB
                                            : AllSquares ^ Rank1BB ^ Rank2BB ^ Rank3BB);
+    constexpr Bitboard TheirHalf = (Us == WHITE ? Rank5BB | Rank6BB | Rank7BB | Rank8BB
+                                                : Rank1BB | Rank2BB | Rank3BB | Rank4BB);
 
     Bitboard weak, b1, b2, safe, unsafeChecks = 0;
     Bitboard rookChecks, queenChecks, bishopChecks, knightChecks;
@@ -446,6 +449,13 @@ namespace {
     else
         unsafeChecks |= knightChecks;
 
+    // Count pawns in KingFlank free to move, or already past 3rd rank
+    b1 =   KingFlank[file_of(ksq)]
+        &  shift<Up>(pos.pieces(Us, PAWN))
+        &  (   TheirHalf
+            | (~pe->pawn_attacks(Them) & ~(pos.pieces(PAWN) | pos.pieces(Them))));
+    int freePawns = std::min(2, popcount(b1));
+
     // Find the squares that opponent attacks in our king flank, and the squares
     // which are attacked twice in that flank.
     b1 = attackedBy[Them][ALL_PIECES] & KingFlank[file_of(ksq)] & Camp;
@@ -464,6 +474,7 @@ namespace {
                  -   6 * mg_value(score) / 8
                  +       mg_value(mobility[Them] - mobility[Us])
                  +   5 * kingFlankAttacks * kingFlankAttacks / 16
+                 + 100 * (2 - freePawns)
                  -   7;
 
     // Transform the kingDanger units into a Score, and subtract it from the evaluation

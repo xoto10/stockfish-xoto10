@@ -470,7 +470,7 @@ namespace {
     if (   (   bool(attackedBy[Us][KNIGHT] & attackedBy[Us][KING])
             || bool(attackedBy[Us][BISHOP] & attackedBy[Us][KING]))
         && !pos.count<QUEEN>(Them))
-        kingDanger -= 80;
+        kingDanger -= 110;
 
     // Transform the kingDanger units into a Score, and subtract it from the evaluation
     if (kingDanger > 100)

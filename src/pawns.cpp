@@ -183,8 +183,9 @@ Entry* probe(const Position& pos) {
 template<Color Us>
 Score Entry::evaluate_shelter(const Position& pos, Square ksq) {
 
-  constexpr Color Them = (Us == WHITE ? BLACK : WHITE);
-  constexpr Direction Up   = (Us == WHITE ? NORTH : SOUTH);
+  constexpr Color     Them     = (Us == WHITE ? BLACK : WHITE);
+  constexpr Direction Up       = (Us == WHITE ? NORTH : SOUTH);
+  constexpr Bitboard  Ranks3_4 = (Us == WHITE ? RANK_3 | RANK_4 : RANK_6 | RANK_5);
 
   Bitboard b = pos.pieces(PAWN) & ~forward_ranks_bb(Them, ksq);
   Bitboard ourPawns = b & pos.pieces(Us);
@@ -211,6 +212,7 @@ Score Entry::evaluate_shelter(const Position& pos, Square ksq) {
   }
 
   bonus -= KingLever * popcount(   KingFlank[file_of(ksq)]
+                                &  Ranks3_4
                                 &  shift<Up>(pos.pieces(Us, PAWN))
                                 & ~pos.pieces(PAWN)
                                 &  pawn_attacks(Them));

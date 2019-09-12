@@ -20,6 +20,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <iostream>
 
 #include "bitboard.h"
 #include "pawns.h"
@@ -211,7 +212,7 @@ Score Entry::evaluate_shelter(const Position& pos, Square ksq) {
 
   bonus -= KingLever * popcount(   KingFlank[file_of(ksq)]
                                 &  shift<Up>(pos.pieces(Us, PAWN))
-                                & ~pos.pieces(ALL_PIECES)
+                                & ~pos.pieces(PAWN)
                                 &  pawn_attacks(Them));
 
   return bonus;

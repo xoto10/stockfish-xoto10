@@ -454,7 +454,7 @@ namespace {
         &  shift<Up>(pos.pieces(Us, PAWN))
         &  (   TheirHalf
             | (~pe->pawn_attacks(Them) & ~(pos.pieces(PAWN) | pos.pieces(Them))));
-    int freePawns = std::min(2, popcount(b1));
+    int freePawns = popcount(b1);
 
     // Find the squares that opponent attacks in our king flank, and the squares
     // which are attacked twice in that flank.
@@ -474,7 +474,7 @@ namespace {
                  -   6 * mg_value(score) / 8
                  +       mg_value(mobility[Them] - mobility[Us])
                  +   5 * kingFlankAttacks * kingFlankAttacks / 16
-                 +  50 * (2 - freePawns) * (2 - freePawns)
+                 + 100 * !freePawns
                  -   7;
 
     // Transform the kingDanger units into a Score, and subtract it from the evaluation

@@ -112,7 +112,7 @@ namespace {
 
   // RookOnQueenFile contains bonuses for each rook when
   // on the same file as their queen.
-  constexpr Score RookOnQueenFile = S(11, 4);
+  constexpr Score RookOnQueenFile = S(10, 5);
 
   // ThreatByMinor/ByRook[attacked PieceType] contains bonuses according to
   // which piece type attacks which one. Attacks on lesser pieces which are
@@ -350,13 +350,15 @@ namespace {
             if (relative_rank(Us, s) >= RANK_5)
                 score += RookOnPawn * popcount(pos.pieces(Them, PAWN) & PseudoAttacks[ROOK][s]);
 
-            // Bonus for rook on same file as their queen
-            if (file_bb(s) & pos.pieces(Them, QUEEN))
-                score += RookOnQueenFile;
-
             // Bonus for rook on an open or semi-open file
             if (pos.is_on_semiopen_file(Us, s))
+            {
                 score += RookOnFile[bool(pos.is_on_semiopen_file(Them, s))];
+
+                // Bonus for rook on same file as their queen
+                if (file_bb(s) & pos.pieces(Them, QUEEN))
+                    score += RookOnQueenFile;
+            }
 
             // Penalty when trapped by the king, even more if the king cannot castle
             else if (mob <= 3)

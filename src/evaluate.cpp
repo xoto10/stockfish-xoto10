@@ -466,6 +466,15 @@ namespace {
                  +   5 * kingFlankAttacks * kingFlankAttacks / 16
                  -   7;
 
+    // Increase kingDanger if several factors combine
+    int n =  bool(kingAttacksCount[Them])
+           + bool(kingRing[Us] & weak)
+           + bool(unsafeChecks)
+           + bool(pos.blockers_for_king(Us))
+           + bool(kingFlankAttacks);
+    if (n > 2)
+        kingDanger += 200 * n - 500;
+
     // Transform the kingDanger units into a Score, and subtract it from the evaluation
     if (kingDanger > 100)
         score -= make_score(kingDanger * kingDanger / 4096, kingDanger / 16);

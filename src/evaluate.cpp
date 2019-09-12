@@ -466,6 +466,11 @@ namespace {
                  +   5 * kingFlankAttacks * kingFlankAttacks / 16
                  -   7;
 
+    if (    bool(attackedBy[Us][KNIGHT] & attackedBy[Us][KING])
+        &&  bool(attackedBy[Us][BISHOP] & attackedBy[Us][KING])
+        && !pos.count<QUEEN>(Them))
+        kingDanger -= 200;
+
     // Transform the kingDanger units into a Score, and subtract it from the evaluation
     if (kingDanger > 100)
         score -= make_score(kingDanger * kingDanger / 4096, kingDanger / 16);

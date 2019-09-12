@@ -473,7 +473,7 @@ namespace {
            + bool(pos.blockers_for_king(Us))
            + bool(kingFlankAttacks);
     if (n > 2)
-        kingDanger += 50 * n - 100;
+        kingDanger += 30 * n - 50;
 
     // Transform the kingDanger units into a Score, and subtract it from the evaluation
     if (kingDanger > 100)

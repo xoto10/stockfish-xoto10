@@ -765,17 +765,14 @@ namespace {
             && pos.non_pawn_material() == 2 * BishopValueMg)
             sf = 16 + 4 * pe->passed_count();
         else
-        {
-            bool pawnsOnBothFlanks =   (pos.pieces(PAWN) & QueenSide)
-                                    && (pos.pieces(PAWN) & KingSide);
-
-            sf = std::min(  40
-                          + (pos.opposite_bishops() ? 2 : 7) * pos.count<PAWN>(strongSide)
-                          + 4 * pawnsOnBothFlanks
-                         , sf);
-        }
+            sf = std::min(40 + (pos.opposite_bishops() ? 2 : 7) * pos.count<PAWN>(strongSide), sf);
 
     }
+
+    bool pawnsOnBothFlanks =   (pos.pieces(PAWN) & QueenSide)
+                            && (pos.pieces(PAWN) & KingSide);
+    if (pawnsOnBothFlanks)
+        sf += 8;
 
     return ScaleFactor(sf);
   }

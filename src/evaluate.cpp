@@ -769,6 +769,11 @@ namespace {
 
     }
 
+    bool pawnsOnBothFlanks =   (pos.pieces(PAWN) & QueenSide)
+                            && (pos.pieces(PAWN) & KingSide);
+    if (pawnsOnBothFlanks)
+        sf += 4;
+
     return ScaleFactor(sf);
   }
 

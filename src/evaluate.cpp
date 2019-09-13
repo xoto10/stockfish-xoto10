@@ -90,7 +90,11 @@ namespace {
 
   // FreePawns[] contains kingdanger penalties for low numbers of pawns free to move 
   // in front of king.
-  int FreePawns[3] = { 100, 50, 20 };
+  int A = 100, B = 50, C = 0;
+  int FreePawns[3] = { 100, 50, 0 };
+TUNE(SetRange(   0,200), A);
+TUNE(SetRange(- 50,150), B);
+TUNE(SetRange(-100,100), C);
 
   // MobilityBonus[PieceType-2][attacked] contains bonuses for middle and end game,
   // indexed by piece type and number of attacked squares in the mobility area.
@@ -256,6 +260,10 @@ namespace {
 
     // Remove from kingRing[] the squares defended by two pawns
     kingRing[Us] &= ~dblAttackByPawn;
+
+    FreePawns[0] = A;
+    FreePawns[1] = B;
+    FreePawns[2] = C;
   }
 
 

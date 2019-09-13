@@ -750,7 +750,6 @@ namespace {
 
     v += eg;
 
-
     Color strongSide = v > VALUE_DRAW ? WHITE : BLACK;
     int sf = me->scale_factor(pos, strongSide);
 
@@ -762,7 +761,6 @@ namespace {
             sf = 16 + 4 * pe->passed_count();
         else
             sf = std::min(40 + (pos.opposite_bishops() ? 2 : 7) * pos.count<PAWN>(strongSide), sf);
-
     }
 
     return Value(v * int(PHASE_MIDGAME - gp) * sf / SCALE_FACTOR_NORMAL);

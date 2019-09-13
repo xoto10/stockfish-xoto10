@@ -737,7 +737,7 @@ namespace {
                     +  9 * outflanking
                     + 18 * pawnsOnBothFlanks
                     + 49 * !pos.non_pawn_material()
-                    -      (mg * eg < 0 && abs(mg) > 100) * abs(mg) / 8
+                    -      (mg * eg < 0 && abs(mg) > 100) * (abs(mg) - abs(eg)) / 8
                     - 36 * almostUnwinnable
                     -103 ;
 

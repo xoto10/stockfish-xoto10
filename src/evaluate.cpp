@@ -168,8 +168,7 @@ namespace {
     template<Color Us> Score threats() const;
     template<Color Us> Score passed() const;
     template<Color Us> Score space() const;
-    ScaleFactor scale_factor(Value eg) const;
-    Score initiative(Value eg) const;
+    Value endgame_scaling(Value eg, Phase gp) const;
 
     const Position& pos;
     Material::Entry* me;
@@ -712,12 +711,15 @@ namespace {
   }
 
 
-  // Evaluation::initiative() computes the initiative correction value
-  // for the position. It is a second order bonus/malus based on the
-  // known attacking/defending status of the players.
+  // Evaluation::endgame_scaling() adjusts the endgame value in two ways:
+  // - Computes the initiative correction value for the position. It is a
+  // second order bonus/malus based on the known attacking/defending status
+  // of the players.
+  // - Scales the resulting value up or down depending on the specific
+  // endgame detected or general heuristics.
 
   template<Tracing T>
-  Score Evaluation<T>::initiative(Value eg) const {
+  Value Evaluation<T>::endgame_scaling(Value eg, Phase gp) const {
 
     int outflanking =  distance<File>(pos.square<KING>(WHITE), pos.square<KING>(BLACK))
                      - distance<Rank>(pos.square<KING>(WHITE), pos.square<KING>(BLACK));
@@ -746,16 +748,10 @@ namespace {
     if (T)
         Trace::add(INITIATIVE, make_score(0, v));
 
-    return make_score(0, v);
-  }
+    v += eg;
 
 
-  // Evaluation::scale_factor() computes the scale factor for the winning side
-
-  template<Tracing T>
-  ScaleFactor Evaluation<T>::scale_factor(Value eg) const {
-
-    Color strongSide = eg > VALUE_DRAW ? WHITE : BLACK;
+    Color strongSide = v > VALUE_DRAW ? WHITE : BLACK;
     int sf = me->scale_factor(pos, strongSide);
 
     // If scale is not already specific, scale down the endgame via general heuristics
@@ -769,7 +765,7 @@ namespace {
 
     }
 
-    return ScaleFactor(sf);
+    return Value(v * int(PHASE_MIDGAME - gp) * sf / SCALE_FACTOR_NORMAL);
   }
 
 
@@ -822,12 +818,9 @@ namespace {
             + passed< WHITE>() - passed< BLACK>()
             + space<  WHITE>() - space<  BLACK>();
 
-    score += initiative(eg_value(score));
-
-    // Interpolate between a middlegame and a (scaled by 'sf') endgame score
-    ScaleFactor sf = scale_factor(eg_value(score));
+    // Interpolate between a middlegame and adjusted endgame score
     v =  mg_value(score) * int(me->game_phase())
-       + eg_value(score) * int(PHASE_MIDGAME - me->game_phase()) * sf / SCALE_FACTOR_NORMAL;
+       + endgame_scaling(eg_value(score), me->game_phase());
 
     v /= PHASE_MIDGAME;
 

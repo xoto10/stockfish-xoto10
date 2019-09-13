@@ -822,8 +822,10 @@ namespace {
             + passed< WHITE>() - passed< BLACK>()
             + space<  WHITE>() - space<  BLACK>();
 
-    Value mg = mg_value(score) + 50 * (mg_value(score) > 0);
-    Value eg = eg_value(score) + 50 * (eg_value(score) > 0);
+    Value mg = mg_value(score);
+    Value eg = eg_value(score);
+    if (0 < eg && eg < 200)
+        eg = Value(100) + eg / 2;
 
     eg += initiative(eg);
 

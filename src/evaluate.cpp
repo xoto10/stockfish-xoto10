@@ -88,6 +88,10 @@ namespace {
 
 #define S(mg, eg) make_score(mg, eg)
 
+  // FreePawns[] contains kingdanger penalties for low numbers of pawns free to move 
+  // in front of king.
+  int FreePawns[3] = { 100, 50, 20 };
+
   // MobilityBonus[PieceType-2][attacked] contains bonuses for middle and end game,
   // indexed by piece type and number of attacked squares in the mobility area.
   constexpr Score MobilityBonus[][32] = {
@@ -454,7 +458,7 @@ namespace {
         &  shift<Up>(pos.pieces(Us, PAWN))
         &  (   TheirHalf
             | (~pe->pawn_attacks(Them) & ~(pos.pieces(PAWN) | pos.pieces(Them))));
-    int freePawns = popcount(b1);
+    int freePawns = FreePawns[ std::min(2, popcount(b1)) ];
 
     // Find the squares that opponent attacks in our king flank, and the squares
     // which are attacked twice in that flank.
@@ -474,7 +478,7 @@ namespace {
                  -   6 * mg_value(score) / 8
                  +       mg_value(mobility[Them] - mobility[Us])
                  +   5 * kingFlankAttacks * kingFlankAttacks / 16
-                 + 100 * !freePawns
+                 +       freePawns
                  -   7;
 
     // Transform the kingDanger units into a Score, and subtract it from the evaluation

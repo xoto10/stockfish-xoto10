@@ -770,7 +770,7 @@ namespace {
             sf = 16 + 4 * pe->passed_count();
         else
             sf = std::min(44 + (pos.opposite_bishops() ? 2 : 7) * pos.count<PAWN>(strongSide)
-                             - 4 * (pos.count<ROOK>(strongSide) + pos.count<QUEEN>(strongSide)), sf);
+                             - 4 * pos.count<ROOK>(strongSide), sf);
 
     }
 

@@ -744,7 +744,7 @@ TUNE(SetRange(centred50), N);
                     + 11 * pos.count<PAWN>()
                     +  9 * outflanking
                     + 18 * pawnsOnBothFlanks
-                    +      N[ (pos.non_pawn_material() + 1023) / 1024 ]
+                    +      N[ std::min(16, int(pos.non_pawn_material() + 1023) / 1024) ]
                     - 36 * almostUnwinnable
                     -103 ;
 

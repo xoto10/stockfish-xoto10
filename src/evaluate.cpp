@@ -73,6 +73,13 @@ using namespace Trace;
 
 namespace {
 
+inline Range centred50(int v) {
+  return Range(v - 50, v + 50);
+}
+
+int N[] = { 49, 46, 43, 40, 37, 34, 31, 28, 25, 22, 19, 16, 13, 10, 7, 4, 1 };
+TUNE(SetRange(centred50), N);
+
   // Threshold for lazy and space evaluation
   constexpr Value LazyThreshold  = Value(1400);
   constexpr Value SpaceThreshold = Value(12222);
@@ -737,7 +744,7 @@ namespace {
                     + 11 * pos.count<PAWN>()
                     +  9 * outflanking
                     + 18 * pawnsOnBothFlanks
-                    + 49 * !pos.non_pawn_material()
+                    +      N[ (pos.non_pawn_material() + 1023) / 1024 ]
                     - 36 * almostUnwinnable
                     -103 ;
 

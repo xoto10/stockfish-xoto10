@@ -732,12 +732,15 @@ namespace {
                            &&  outflanking < 0
                            && !pawnsOnBothFlanks;
 
+    int npm = pos.non_pawn_material();
+    npm = npm * npm / 2000000 - npm / 125 + 48;
+
     // Compute the initiative bonus for the attacking side
     int complexity =   9 * pe->passed_count()
                     + 11 * pos.count<PAWN>()
                     +  9 * outflanking
                     + 18 * pawnsOnBothFlanks
-                    + 49 * !pos.non_pawn_material()
+                    +      npm
                     - 36 * almostUnwinnable
                     -103 ;
 

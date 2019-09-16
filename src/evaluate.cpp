@@ -729,7 +729,7 @@ namespace {
                             && (pos.pieces(PAWN) & KingSide);
 
     bool almostUnwinnable =   !pe->passed_count()
-                           &&  outflanking < -2
+                           &&  outflanking < -1
                            && !pawnsOnBothFlanks;
 
     // Compute the initiative bonus for the attacking side

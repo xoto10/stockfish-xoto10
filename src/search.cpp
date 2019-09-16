@@ -574,7 +574,7 @@ namespace {
         && !rootNode
         && pos.has_game_cycle(ss->ply))
     {
-        alpha = value_draw(depth, pos.this_thread());
+        alpha = (pos.rule50_count() < 15) ? VALUE_DRAW - 1 : value_draw(depth, pos.this_thread());
         if (alpha >= beta)
             return alpha;
     }

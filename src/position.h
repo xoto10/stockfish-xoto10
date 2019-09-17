@@ -154,6 +154,7 @@ public:
   int game_ply() const;
   bool is_chess960() const;
   Thread* this_thread() const;
+  void set_thread(Thread* th);
   bool is_draw(int ply) const;
   bool has_game_cycle(int ply) const;
   bool has_repeated() const;
@@ -393,6 +394,10 @@ inline Piece Position::captured_piece() const {
 
 inline Thread* Position::this_thread() const {
   return thisThread;
+}
+
+inline void Position::set_thread(Thread* th) {
+  thisThread = th;
 }
 
 inline void Position::put_piece(Piece pc, Square s) {

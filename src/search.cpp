@@ -574,7 +574,7 @@ namespace {
         && !rootNode
         && pos.has_game_cycle(ss->ply))
     {
-        alpha = (ss-1)->staticEval < -180 ? VALUE_DRAW - 4 : value_draw(depth, pos.this_thread());
+        alpha = (ss-1)->staticEval < -180 ? (ss-1)->staticEval / 45 : value_draw(depth, pos.this_thread());
         if (alpha >= beta)
             return alpha;
     }

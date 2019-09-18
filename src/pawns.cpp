@@ -83,7 +83,7 @@ namespace {
 
     Bitboard doubleAttackThem = pawn_double_attacks_bb<Them>(theirPawns);
 
-    e->passedPawns[Us] = e->pawnAttacksSpan[Us] = 0;
+    e->passedPawns[Us] = e->pawnAttacksSpan[Us] = e->unopposedPawns[Us] = 0;
     e->kingSquares[Us] = SQ_NONE;
     e->pawnAttacks[Us] = pawn_attacks_bb<Us>(ourPawns);
 
@@ -122,10 +122,13 @@ namespace {
                 || (   stoppers == square_bb(s + Up) && r >= RANK_5
                     && (shift<Up>(support) & ~(theirPawns | doubleAttackThem)));
 
-        // Passed pawns will be properly scored later in evaluation when we have
+        // Passed and unopposed pawns will be properly scored later in evaluation when we have
         // full attack info.
         if (passed)
             e->passedPawns[Us] |= s;
+
+        if (!opposed)
+            e->unopposedPawns[Us] |= s;
 
         // Score this pawn
         if (support | phalanx)

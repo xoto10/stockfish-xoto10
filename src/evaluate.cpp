@@ -147,6 +147,7 @@ namespace {
   constexpr Score ThreatByRank       = S( 13,  0);
   constexpr Score ThreatBySafePawn   = S(173, 94);
   constexpr Score TrappedRook        = S( 47,  4);
+  constexpr Score UnopposedDist      = S(  2,  4);
   constexpr Score WeakQueen          = S( 49, 15);
 
 #undef S
@@ -663,6 +664,15 @@ namespace {
             bonus = bonus / 2;
 
         score += bonus - PassedFile * std::min(f, ~f);
+    }
+
+    b = pe->unopposed_pawns(Us);
+
+    while (b)
+    {
+        Square s = pop_lsb(&b);
+
+        score += UnopposedDist * std::max(0, abs(file_of(s) - file_of(pos.square<KING>(Them))) - 3);
     }
 
     if (T)

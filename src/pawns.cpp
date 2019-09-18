@@ -36,6 +36,7 @@ namespace {
   constexpr Score BlockedStorm  = S(82, 82);
   constexpr Score Doubled       = S(11, 56);
   constexpr Score Isolated      = S( 5, 15);
+  constexpr Score UnopposedAdj  = S( 5,  5);
   constexpr Score WeakLever     = S( 0, 56);
   constexpr Score WeakUnopposed = S(13, 27);
 
@@ -145,6 +146,10 @@ namespace {
         if (!support)
             score -=   Doubled * doubled
                      + WeakLever * more_than_one(lever);
+
+        if (!opposed)
+            score += UnopposedAdj * (  !(shift<EAST>(file_bb(s)) & pos.pieces(PAWN))
+                                     + !(shift<WEST>(file_bb(s)) & pos.pieces(PAWN)) );
     }
 
     return score;

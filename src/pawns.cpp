@@ -228,11 +228,11 @@ Score Entry::do_king_safety(const Position& pos) {
   // If we can castle use the bonus after castling if it is bigger
   if (pos.can_castle(Us & KING_SIDE))
       shelters[1] =  evaluate_shelter<Us>(pos, relative_square(Us, SQ_G1))
-                   * std::min(6, popcount(pos.pieces(Us, PAWN) & relative_rank(Us, RANK_2))) / 6;
+                   * (32 - clamp(pos.game_ply(), 16, 32)) / 16;
 
   if (pos.can_castle(Us & QUEEN_SIDE))
       shelters[2] =  evaluate_shelter<Us>(pos, relative_square(Us, SQ_C1))
-                   * std::min(6, popcount(pos.pieces(Us, PAWN) & relative_rank(Us, RANK_2))) / 6;
+                   * (32 - clamp(pos.game_ply(), 16, 32)) / 16;
 
   for (int i : {1, 2})
      if (mg_value(shelters[i]) > mg_value(shelters[0]))

@@ -461,6 +461,7 @@ void Thread::search() {
               {
                   beta = (alpha + beta) / 2;
                   alpha = std::max(bestValue - delta, -VALUE_INFINITE);
+                  delta += (delta * 9 + 170) / 32;
 
                   failedHighCnt = 0;
                   if (mainThread)
@@ -469,6 +470,7 @@ void Thread::search() {
               else if (bestValue >= beta)
               {
                   beta = std::min(bestValue + delta, VALUE_INFINITE);
+                  delta += (delta * 7 + 150) / 32;
                   ++failedHighCnt;
               }
               else
@@ -476,8 +478,6 @@ void Thread::search() {
                   ++rootMoves[pvIdx].bestMoveCount;
                   break;
               }
-
-              delta += delta / 4 + 5;
 
               assert(alpha >= -VALUE_INFINITE && beta <= VALUE_INFINITE);
           }

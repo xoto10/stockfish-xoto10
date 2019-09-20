@@ -799,6 +799,8 @@ namespace {
     // the position object (material + piece square tables) and the material
     // imbalance. Score is computed internally from the white point of view.
     Score score = pos.psq_score() + me->imbalance() + pos.this_thread()->contempt;
+    Score sc2;
+    Value mob, sp;
 
     // Probe the pawn hash table
     pe = Pawns::probe(pos);
@@ -820,12 +822,23 @@ namespace {
             + pieces<WHITE, ROOK  >() - pieces<BLACK, ROOK  >()
             + pieces<WHITE, QUEEN >() - pieces<BLACK, QUEEN >();
 
-    score += mobility[WHITE] - mobility[BLACK];
+    score += sc2 = mobility[WHITE] - mobility[BLACK];
+    mob = mg_value(sc2);
+//dbg_mean_of( abs(mg_value(mobility[WHITE]) - mg_value(mobility[BLACK])) ); // 43.5
+//if (pos.non_pawn_material() > 14000)
+//  dbg_mean_of( abs(mg_value(mobility[WHITE]) - mg_value(mobility[BLACK])) ); // 65.2
 
     score +=  king<   WHITE>() - king<   BLACK>()
             + threats<WHITE>() - threats<BLACK>()
-            + passed< WHITE>() - passed< BLACK>()
-            + space<  WHITE>() - space<  BLACK>();
+            + passed< WHITE>() - passed< BLACK>();
+    score += sc2 = space<  WHITE>() - space<  BLACK>();
+    sp = mg_value(sc2);
+//dbg_mean_of( abs(mg_value(space<WHITE>()) - mg_value(space<BLACK>())) ); // 11.4
+//if (pos.non_pawn_material() > 14000)
+//  dbg_mean_of( abs(mg_value(space<WHITE>()) - mg_value(space<BLACK>())) ); // 36.4
+
+    if (abs(mob + sp) > 120)
+        score += make_score(mob + sp - 120, 0);
 
     score += initiative(score);
 

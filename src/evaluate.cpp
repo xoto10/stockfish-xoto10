@@ -837,9 +837,9 @@ namespace {
 //if (pos.non_pawn_material() > 14000)
 //  dbg_mean_of( abs(mg_value(space<WHITE>()) - mg_value(space<BLACK>())) ); // 36.4
 
-    if (mob + sp > 120)
+    if (score > 0 && mob + sp > 120)
         score += make_score(mob + sp - 120, 0);
-    else if (mob + sp < -120)
+    else if (score < 0 && mob + sp < -120)
         score += make_score(mob + sp + 120, 0);
 
     score += initiative(score);

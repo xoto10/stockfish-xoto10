@@ -680,7 +680,7 @@ namespace {
             if (ttValue >= beta)
             {
                 if (!pos.capture_or_promotion(ttMove))
-                    update_quiet_stats(pos, ss, ttMove, nullptr, 0, stat_bonus(depth));
+                    update_quiet_stats(pos, ss, ttMove, nullptr, 0, stat_bonus(std::max(depth, tte->depth())));
 
                 // Extra penalty for early quiet moves of the previous ply
                 if ((ss-1)->moveCount <= 2 && !pos.captured_piece())

@@ -350,10 +350,10 @@ namespace {
                 while (b)
                 {
                     Square s2 = pop_lsb(&b);
-                    if (attacks_bb<ROOK>(s2, pos.pieces()) & kingRing[Them])
+                    if (attacks_bb<ROOK>(s2, pos.pieces()) & kingRing[Them] & ~attackedBy[Them][ALL_PIECES])
                     {
                         kingAttackersCount[Us]++;
-                        kingAttackersWeight[Us] += 4;
+                        kingAttackersWeight[Us] += KingAttackWeights[Pt] / 4;
                         break;
                     }
                 }

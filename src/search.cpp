@@ -1282,7 +1282,8 @@ moves_loop: // When in check, search starts from here
                                stat_bonus(depth + (bestValue > beta + PawnValueMg ? ONE_PLY : DEPTH_ZERO)));
 
         else
-            inc = (   type_of(pos.moved_piece(bestMove)) == PAWN
+            inc = (   value > 0
+                   && type_of(pos.moved_piece(bestMove)) == PAWN
                    && !(forward_file_bb(us, to_sq(bestMove)) & pos.pieces(~us, PAWN)) )
                   ? 2 * ONE_PLY : ONE_PLY;
 

@@ -457,7 +457,7 @@ namespace {
     kingDanger +=        kingAttackersCount[Them] * kingAttackersWeight[Them]
                  +  69 * kingAttacksCount[Them]
                  + 185 * popcount(kingRing[Us] & weak)
-                 +  28 * popcount(  pos.pieces(Them, ROOK) & TRank6BB
+                 +  24 * popcount(  pos.pieces(Them, ROOK) & TRank6BB
                                   & (file_of(ksq) < FILE_E ? QueenSide : KingSide))
                  - 100 * bool(attackedBy[Us][KNIGHT] & attackedBy[Us][KING])
                  -  35 * bool(attackedBy[Us][BISHOP] & attackedBy[Us][KING])

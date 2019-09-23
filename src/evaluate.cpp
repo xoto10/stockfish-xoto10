@@ -353,7 +353,8 @@ namespace {
                     if (attacks_bb<ROOK>(s2, pos.pieces()) & kingRing[Them])
                     {
                         kingAttackersCount[Us]++;
-                        kingAttackersWeight[Us] += KingAttackWeights[ROOK] / 4;
+                        kingAttackersWeight[Us] += 4;
+                        break;
                     }
                 }
             }

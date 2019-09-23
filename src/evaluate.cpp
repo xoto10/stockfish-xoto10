@@ -344,9 +344,9 @@ namespace {
         if (Pt == ROOK)
         {
             // Bonus for rook that can attack their kingring
-            b &= ~pos.pieces(Us);
             if ( !(b & kingRing[Them]) )
             {
+                b &= ~pos.pieces(Us);
                 while (b)
                 {
                     Square s2 = pop_lsb(&b);
@@ -833,8 +833,9 @@ namespace {
     // Pieces should be evaluated first (populate attack tables)
     score +=  pieces<WHITE, KNIGHT>() - pieces<BLACK, KNIGHT>()
             + pieces<WHITE, BISHOP>() - pieces<BLACK, BISHOP>()
-            + pieces<WHITE, ROOK  >() - pieces<BLACK, ROOK  >()
             + pieces<WHITE, QUEEN >() - pieces<BLACK, QUEEN >();
+    score +=  pieces<WHITE, ROOK  >();
+    score -=  pieces<BLACK, ROOK  >();
 
     score += mobility[WHITE] - mobility[BLACK];
 

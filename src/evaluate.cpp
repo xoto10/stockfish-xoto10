@@ -728,6 +728,9 @@ namespace {
     bool pawnsOnBothFlanks =   (pos.pieces(PAWN) & QueenSide)
                             && (pos.pieces(PAWN) & KingSide);
 
+    bool npmDiff =   pos.non_pawn_material(WHITE) != pos.non_pawn_material(BLACK)
+                  && abs(pos.non_pawn_material(WHITE) - pos.non_pawn_material(BLACK)) < 600;
+
     bool almostUnwinnable =   !pe->passed_count()
                            &&  outflanking < 0
                            && !pawnsOnBothFlanks;
@@ -736,6 +739,7 @@ namespace {
     int complexity =   9 * pe->passed_count()
                     + 11 * pos.count<PAWN>()
                     +  9 * outflanking
+                    +  9 * npmDiff
                     + 18 * pawnsOnBothFlanks
                     + 49 * !pos.non_pawn_material()
                     - 36 * almostUnwinnable

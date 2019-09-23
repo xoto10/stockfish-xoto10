@@ -23,14 +23,12 @@
 #include <cstring>   // For std::memset
 #include <iomanip>
 #include <sstream>
-#include <iostream>
 
 #include "bitboard.h"
 #include "evaluate.h"
 #include "material.h"
 #include "pawns.h"
 #include "thread.h"
-#include "uci.h"
 
 namespace Trace {
 
@@ -269,14 +267,11 @@ namespace {
 
     Bitboard b, bb;
     Score score = SCORE_ZERO;
-    bool attackingKing;
 
     attackedBy[Us][Pt] = 0;
 
     for (Square s = *pl; s != SQ_NONE; s = *++pl)
     {
-        attackingKing = false;
-
         // Find attacked squares, including x-ray attacks for bishops and rooks
         b = Pt == BISHOP ? attacks_bb<BISHOP>(s, pos.pieces() ^ pos.pieces(QUEEN))
           : Pt ==   ROOK ? attacks_bb<  ROOK>(s, pos.pieces() ^ pos.pieces(QUEEN) ^ pos.pieces(Us, ROOK))
@@ -294,7 +289,6 @@ namespace {
             kingAttackersCount[Us]++;
             kingAttackersWeight[Us] += KingAttackWeights[Pt];
             kingAttacksCount[Us] += popcount(b & attackedBy[Them][KING]);
-            attackingKing = true;
         }
 
         int mob = popcount(b & mobilityArea[Us]);
@@ -350,7 +344,7 @@ namespace {
         if (Pt == ROOK)
         {
             // Bonus for rook that can attack their kingring
-            if (!attackingKing)
+            if ( !(b & kingRing[Them]) )
             {
                 b &= ~pos.pieces(Us);
                 while (b)
@@ -358,9 +352,8 @@ namespace {
                     Square s2 = pop_lsb(&b);
                     if (attacks_bb<ROOK>(s2, pos.pieces()) & kingRing[Them])
                     {
-//  sync_cout << "info string us " << Us << " sq " << UCI::square(s2) << " pos\n" << pos << sync_endl;
                         kingAttackersCount[Us]++;
-                        kingAttackersWeight[Us] += KingAttackWeights[ROOK] / 2;
+                        kingAttackersWeight[Us] += KingAttackWeights[ROOK] / 4;
                     }
                 }
             }

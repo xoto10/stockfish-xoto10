@@ -344,9 +344,9 @@ namespace {
         if (Pt == ROOK)
         {
             // Bonus for rook that can attack their kingring
+            b &= ~pos.pieces(Us);
             if ( !(b & kingRing[Them]) )
             {
-                b &= ~pos.pieces(Us);
                 while (b)
                 {
                     Square s2 = pop_lsb(&b);

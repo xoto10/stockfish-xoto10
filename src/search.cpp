@@ -58,6 +58,9 @@ using namespace Search;
 
 namespace {
 
+int A = 80, B = 1440, C = 48, D = 1120;
+//TUNE(A, B, C, D);
+
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV };
 
@@ -461,7 +464,7 @@ void Thread::search() {
               {
                   beta = (alpha + beta) / 2;
                   alpha = std::max(bestValue - delta, -VALUE_INFINITE);
-                  delta += (delta * 10 + 180) / 32;
+                  delta += (delta * A + B) / 256;
 
                   failedHighCnt = 0;
                   if (mainThread)
@@ -470,7 +473,7 @@ void Thread::search() {
               else if (bestValue >= beta)
               {
                   beta = std::min(bestValue + delta, VALUE_INFINITE);
-                  delta += (delta * 6 + 140) / 32;
+                  delta += (delta * C + D) / 256;
                   ++failedHighCnt;
               }
               else

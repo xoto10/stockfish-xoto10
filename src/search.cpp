@@ -1284,7 +1284,8 @@ moves_loop: // When in check, search starts from here
         else
             inc = (   value > 0
                    && type_of(pos.moved_piece(bestMove)) == PAWN
-                   && !(forward_file_bb(us, to_sq(bestMove)) & pos.pieces(~us, PAWN)) )
+                   && !(forward_file_bb(us, to_sq(bestMove)) & pos.pieces(~us, PAWN))
+                   && !(PawnAttacks[us][to_sq(bestMove)] & pos.pieces(~us, PAWN)) )
                   ? 2 * ONE_PLY : ONE_PLY;
 
         update_capture_stats(pos, bestMove, capturesSearched, captureCount, stat_bonus(depth + inc));

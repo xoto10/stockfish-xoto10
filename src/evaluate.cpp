@@ -744,7 +744,7 @@ namespace {
                        -103 ;
 
     int mg_complexity =       std::min(eg_complexity + 50, 0)
-                       +  4 * (pos.pieces(strongSide, ROOK) & rank3bb);
+                       +  4 * bool(pos.pieces(strongSide, ROOK) & rank3bb);
 
     // Now apply the bonus: note that we find the attacking side by extracting the
     // sign of the midgame or endgame values, and that we carefully cap the bonus

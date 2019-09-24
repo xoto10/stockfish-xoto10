@@ -23,6 +23,7 @@
 #include <cstring>   // For std::memset
 #include <iomanip>
 #include <sstream>
+#include <iostream>
 
 #include "bitboard.h"
 #include "evaluate.h"
@@ -126,6 +127,9 @@ namespace {
     S(0, 0), S(10, 28), S(17, 33), S(15, 41), S(62, 72), S(168, 177), S(276, 260)
   };
 
+  // kingDanger[color] is true if pawn attack at king may be missed
+  bool kingRisk[COLOR_NB];
+
   // Assorted bonuses and penalties
   constexpr Score BishopPawns        = S(  3,  7);
   constexpr Score CorneredBishop     = S( 50, 50);
@@ -163,7 +167,7 @@ namespace {
   private:
     template<Color Us> void initialize();
     template<Color Us, PieceType Pt> Score pieces();
-    template<Color Us> Score king() const;
+    template<Color Us> Score king();
     template<Color Us> Score threats() const;
     template<Color Us> Score passed() const;
     template<Color Us> Score space() const;
@@ -376,7 +380,7 @@ namespace {
 
   // Evaluation::king() assigns bonuses and penalties to a king of a given color
   template<Tracing T> template<Color Us>
-  Score Evaluation<T>::king() const {
+  Score Evaluation<T>::king() {
 
     constexpr Color    Them = (Us == WHITE ? BLACK : WHITE);
     constexpr Bitboard Camp = (Us == WHITE ? AllSquares ^ Rank6BB ^ Rank7BB ^ Rank8BB
@@ -460,6 +464,22 @@ namespace {
                  +       mg_value(mobility[Them] - mobility[Us])
                  +   5 * kingFlankAttacks * kingFlankAttacks / 16
                  -   7;
+
+    kingRisk[Us] = false;
+    if (   !kingAttackersCount[Them]
+        && !kingAttacksCount[Them]
+        && !(kingRing[Us] & weak)
+        && !unsafeChecks
+        && !pos.blockers_for_king(Us)
+        &&  mg_value(score) < 0
+        &&  mobility[Them] > mobility[Us]
+        &&  pos.count<PAWN>(Us) > 5
+        &&  popcount(pos.pieces(Us, PAWN) & kingRing[Us]) > 2
+        &&  popcount((pos.pieces(Us, ALL_PIECES) ^ pos.pieces(Us, PAWN)) & kingRing[Us]) < 3
+       )
+        kingRisk[Us] = true;
+if (kingRisk[Us] && ksq == SQ_G8)
+sync_cout << "info string us " << Us << " kd " << kingDanger << " pos\n" << pos << sync_endl;
 
     // Transform the kingDanger units into a Score, and subtract it from the evaluation
     if (kingDanger > 100)

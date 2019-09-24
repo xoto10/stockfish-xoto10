@@ -1274,7 +1274,7 @@ moves_loop: // When in check, search starts from here
                    :     inCheck ? mated_in(ss->ply) : VALUE_DRAW;
     else if (bestMove)
     {
-        int deterrent = 0;
+        int deterrent = -17;
 
         // Quiet best move: update move sorting heuristics
         if (!pos.capture_or_promotion(bestMove))
@@ -1282,7 +1282,7 @@ moves_loop: // When in check, search starts from here
                                stat_bonus(depth + (bestValue > beta + PawnValueMg ? ONE_PLY : DEPTH_ZERO)));
 
         else if (bestValue > 0)
-            deterrent = 50;
+            deterrent = 33;
 
         update_capture_stats(pos, bestMove, capturesSearched, captureCount,
                              stat_bonus(depth + ONE_PLY) - deterrent);

@@ -23,7 +23,6 @@
 #include <cstring>   // For std::memset
 #include <iomanip>
 #include <sstream>
-#include <iostream>
 
 #include "bitboard.h"
 #include "evaluate.h"
@@ -568,8 +567,7 @@ namespace {
             Square s = pop_lsb(&b);
             forward += std::max(0, relative_rank(Us, rank_of(s)) - 2);
         }
-        score += make_score(8, 0) * forward;
-//sync_cout << "info string us " << Us << " forw " << forward << " pos\n" << pos << sync_endl;
+        score += make_score(0, 8) * forward;
     }
 
     // Find squares where our pawns can push on the next move

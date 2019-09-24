@@ -1055,7 +1055,7 @@ moves_loop: // When in check, search starts from here
           }
           else if (  !(givesCheck && extension)
                    && !pos.see_ge(move,   Value(-199)
-                                        * (  (depth - (bestValue > 0 && pos.capture(move) && thisThread->contempt > 0))
+                                        * (  (depth - (bestValue > 0 && pos.capture(move) && eg_value(thisThread->contempt) > 0))
                                            / ONE_PLY))) // (~20 Elo)
                   continue;
       }

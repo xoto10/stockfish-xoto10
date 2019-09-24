@@ -561,13 +561,13 @@ namespace {
     if ((rams & FileDBB) && (rams & FileEBB))
     {
         int forward = 0;
-        b = pos.pieces(Us, PAWN) & KingFlank[file_of(pos.square<KING>(Them))];
+        b = attackedBy[Us][PAWN] & KingFlank[file_of(pos.square<KING>(Them))];
         while (b)
         {
             Square s = pop_lsb(&b);
-            forward += std::max(0, relative_rank(Us, rank_of(s)) - 2);
+            forward += std::max(0, relative_rank(Us, rank_of(s)) - 3);
         }
-        score += make_score(0, 8) * forward;
+        score += make_score(0, 6) * forward;
     }
 
     // Find squares where our pawns can push on the next move

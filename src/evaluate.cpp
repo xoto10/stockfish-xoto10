@@ -353,7 +353,7 @@ namespace {
 
             // Bonus for rook with none of our pawns in front
             if ( !(forward_file_bb(Us, s) & pos.pieces(Us, PAWN)) )
-                score += RookOnFile[!(forward_file_bb(Us, s) & pos.pieces(Them, PAWN))];
+                score += RookOnFile[pos.is_on_semiopen_file(Them, s)];
 
             // Penalty when trapped by the king, even more if the king cannot castle
             else if (mob <= 3)

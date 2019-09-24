@@ -1055,7 +1055,7 @@ moves_loop: // When in check, search starts from here
           }
           else if (  !(givesCheck && extension)
                    && !pos.see_ge(move,   Value(-199)
-                                        * (  (depth + (   bestValue > 0
+                                        * (  (depth - (   bestValue > 0
                                                        && pos.capture(move)
                                                        && (pos.side_to_move() == WHITE
                                                            ? thisThread->contempt : -thisThread->contempt) > 0))

@@ -34,10 +34,10 @@ namespace {
     //            OUR PIECES
     // pair pawn knight bishop rook queen
     {1325                               }, // Bishop pair
-    {  39,   38                         }, // Pawn
+    {  40,   38                         }, // Pawn
     {  32,  271, -62                    }, // Knight      OUR PIECES
     {   0,   99,   4,    0              }, // Bishop
-    { -25,   -2,  46,   112,  -207      }, // Rook
+    { -26,   -2,  47,   112,  -207      }, // Rook
     {-191,   24, 117,   136,  -128, -6  }  // Queen
   };
 
@@ -45,10 +45,10 @@ namespace {
     //           THEIR PIECES
     // pair pawn knight bishop rook queen
     {   0                               }, // Bishop pair
-    {  35,    0                         }, // Pawn
+    {  36,    0                         }, // Pawn
     {   9,   61,   0                    }, // Knight      OUR PIECES
-    {  61,   63,  41,     0             }, // Bishop
-    {  45,   38,  23,   -24,    0       }, // Rook
+    {  61,   63,  42,     0             }, // Bishop
+    {  46,   39,  24,   -24,    0       }, // Rook
     {  98,  100, -42,   132,  263,    0 }  // Queen
   };
 
@@ -201,7 +201,7 @@ Entry* probe(const Position& pos) {
 
   if (!pos.count<PAWN>(BLACK) && npm_b - npm_w <= BishopValueMg)
       e->factor[BLACK] = uint8_t(npm_b <  RookValueMg   ? SCALE_FACTOR_DRAW :
-                                 npm_w <= BishopValueMg ? 4 : 13);
+                                 npm_w <= BishopValueMg ? 4 : 14);
 
   // Evaluate the material imbalance. We use PIECE_TYPE_NONE as a place holder
   // for the bishop pair "extended piece", which allows us to be more flexible

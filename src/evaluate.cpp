@@ -23,6 +23,7 @@
 #include <cstring>   // For std::memset
 #include <iomanip>
 #include <sstream>
+#include <iostream>
 
 #include "bitboard.h"
 #include "evaluate.h"
@@ -493,7 +494,7 @@ namespace {
     constexpr Direction Up       = (Us == WHITE ? NORTH   : SOUTH);
     constexpr Bitboard  TRank3BB = (Us == WHITE ? Rank3BB : Rank6BB);
 
-    Bitboard b, weak, defended, nonPawnEnemies, stronglyProtected, safe;
+    Bitboard b, weak, defended, nonPawnEnemies, stronglyProtected, safe, rams;
     Score score = SCORE_ZERO;
 
     // Non-pawn enemies
@@ -509,6 +510,9 @@ namespace {
 
     // Enemies not strongly protected and under our attack
     weak = pos.pieces(Them) & ~stronglyProtected & attackedBy[Us][ALL_PIECES];
+
+    // Rams
+    rams = shift<Up>(pos.pieces(Us, PAWN)) & pos.pieces(Them, PAWN);
 
     // Bonus according to the kind of attacking pieces
     if (defended | weak)
@@ -553,6 +557,20 @@ namespace {
     b = pos.pieces(Us, PAWN) & safe;
     b = pawn_attacks_bb<Us>(b) & nonPawnEnemies;
     score += ThreatBySafePawn * popcount(b);
+
+    // Push pawns at king if centre blocked
+    if ((rams & FileDBB) && (rams & FileEBB))
+    {
+        int forward = 0;
+        b = pos.pieces(Us, PAWN) & KingFlank[file_of(pos.square<KING>(Them))];
+        while (b)
+        {
+            Square s = pop_lsb(&b);
+            forward += std::max(0, relative_rank(Us, rank_of(s)) - 2);
+        }
+        score += make_score(8, 0) * forward;
+//sync_cout << "info string us " << Us << " forw " << forward << " pos\n" << pos << sync_endl;
+    }
 
     // Find squares where our pawns can push on the next move
     b  = shift<Up>(pos.pieces(Us, PAWN)) & ~pos.pieces();

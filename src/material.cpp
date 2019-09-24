@@ -30,26 +30,38 @@ namespace {
 
   // Polynomial material imbalance parameters
 
-  constexpr int QuadraticOurs[][PIECE_TYPE_NB] = {
+int A=1438,B=40,C=38,D=32,E=255,F=-62,G=0,H=104,I=4,J=0,K=-26,L=-2,
+    M=47,N=105,O=-208,P=-189,Q=24,R=117,S=133,T=-134,U=-6;
+TUNE(A,B,C,D,E,F,H,K,M,N,O,P,Q,R,S,T);
+
+int TA=36,TB=9,TC=63,TD=59,TE=65,TF=42,TG=46,TH=39,TI=24,TJ=-24,TK=97,TL=100,TM=-42,TN=137,TO=268;
+TUNE(TA,TB,TC,TD,TE,TF,TG,TH,TI,TJ,TK,TL,TM,TN,TO);
+
+int PA=4,PB=14,PC=4,PD=14,PE=16;
+TUNE(PB,PD,PE);
+TUNE(SetRange(1,20),PA,PC);
+TUNE(SetRange(-20,20),G,I,J,L,U);
+
+            int QuadraticOurs[][PIECE_TYPE_NB] = {
     //            OUR PIECES
     // pair pawn knight bishop rook queen
-    {1438                               }, // Bishop pair
-    {  40,   38                         }, // Pawn
-    {  32,  255, -62                    }, // Knight      OUR PIECES
-    {   0,  104,   4,    0              }, // Bishop
-    { -26,   -2,  47,   105,  -208      }, // Rook
-    {-189,   24, 117,   133,  -134, -6  }  // Queen
+    {   A                               }, // Bishop pair
+    {   B,    C                         }, // Pawn
+    {   D,    E,   F                    }, // Knight      OUR PIECES
+    {   G,    H,   I,     J             }, // Bishop
+    {   K,    L,   M,     N,     O      }, // Rook
+    {   P,    Q,   R,     S,     T,  U  }  // Queen
   };
 
-  constexpr int QuadraticTheirs[][PIECE_TYPE_NB] = {
+            int QuadraticTheirs[][PIECE_TYPE_NB] = {
     //           THEIR PIECES
     // pair pawn knight bishop rook queen
     {   0                               }, // Bishop pair
-    {  36,    0                         }, // Pawn
-    {   9,   63,   0                    }, // Knight      OUR PIECES
-    {  59,   65,  42,     0             }, // Bishop
-    {  46,   39,  24,   -24,    0       }, // Rook
-    {  97,  100, -42,   137,  268,    0 }  // Queen
+    {  TA,    0                         }, // Pawn
+    {  TB,   TC,   0                    }, // Knight      OUR PIECES
+    {  TD,   TE,  TF,     0             }, // Bishop
+    {  TG,   TH,  TI,    TJ,    0       }, // Rook
+    {  TK,   TL,  TM,    TN,   TO,    0 }  // Queen
   };
 
   // Endgame evaluation and scaling functions are accessed directly and not through
@@ -197,11 +209,11 @@ Entry* probe(const Position& pos) {
   // drawish scale factor for cases such as KRKBP and KmmKm (except for KBBKN).
   if (!pos.count<PAWN>(WHITE) && npm_w - npm_b <= BishopValueMg)
       e->factor[WHITE] = uint8_t(npm_w <  RookValueMg   ? SCALE_FACTOR_DRAW :
-                                 npm_b <= BishopValueMg ? 4 : 14);
+                                 npm_b <= BishopValueMg ? PA : PB);
 
   if (!pos.count<PAWN>(BLACK) && npm_b - npm_w <= BishopValueMg)
       e->factor[BLACK] = uint8_t(npm_b <  RookValueMg   ? SCALE_FACTOR_DRAW :
-                                 npm_w <= BishopValueMg ? 4 : 14);
+                                 npm_w <= BishopValueMg ? PC : PD);
 
   // Evaluate the material imbalance. We use PIECE_TYPE_NONE as a place holder
   // for the bishop pair "extended piece", which allows us to be more flexible
@@ -212,7 +224,7 @@ Entry* probe(const Position& pos) {
   { pos.count<BISHOP>(BLACK) > 1, pos.count<PAWN>(BLACK), pos.count<KNIGHT>(BLACK),
     pos.count<BISHOP>(BLACK)    , pos.count<ROOK>(BLACK), pos.count<QUEEN >(BLACK) } };
 
-  e->value = int16_t((imbalance<WHITE>(pieceCount) - imbalance<BLACK>(pieceCount)) / 16);
+  e->value = int16_t((imbalance<WHITE>(pieceCount) - imbalance<BLACK>(pieceCount)) / PE);
   return e;
 }
 

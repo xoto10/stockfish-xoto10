@@ -732,12 +732,21 @@ namespace {
                            &&  outflanking < 0
                            && !pawnsOnBothFlanks;
 
+    Color strongSide = eg > 0 ? WHITE : BLACK;
+    Bitboard Home = (eg > 0 ? Rank6BB | Rank7BB | Rank8BB : Rank1BB | Rank2BB | Rank3BB);
+    Square ksq = pos.square<KING>(~strongSide);
+    int pawnAttacks = popcount(  attackedBy[strongSide][PAWN]
+                               & (file_of(ksq) < FILE_E ? QueenSide : KingSide)
+                               & Home );
+
+
     // Compute the initiative bonus for the attacking side
     int complexity =   9 * pe->passed_count()
                     + 11 * pos.count<PAWN>()
                     +  9 * outflanking
                     + 18 * pawnsOnBothFlanks
                     + 49 * !pos.non_pawn_material()
+                    + 10 * pawnAttacks
                     - 36 * almostUnwinnable
                     -103 ;
 

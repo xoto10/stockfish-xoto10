@@ -466,7 +466,7 @@ namespace {
         && (file_of(ksq) > FILE_E || file_of(ksq) < FILE_D)
         && ((file_of(ksq) < FILE_E) == bool(blocked & TRank3BB & FileDBB))
        )
-        kingOnFlank = 50;
+        kingOnFlank = 100;
 
     kingDanger +=        kingAttackersCount[Them] * kingAttackersWeight[Them]
                  +  69 * kingAttacksCount[Them]

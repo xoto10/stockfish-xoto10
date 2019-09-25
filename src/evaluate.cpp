@@ -448,7 +448,8 @@ namespace {
         unsafeChecks |= knightChecks;
 
     // Enemy pawns attacking king
-    pawnAttacks =  (pawn_double_attacks_bb<Them>(pos.pieces(Them, PAWN)) | (pos.pieces(Them, PAWN) & attackedBy[Them][PAWN]))
+    pawnAttacks =  pos.pieces(Them, PAWN)
+                 & attackedBy[Them][PAWN]
                  & (file_of(ksq) > FILE_D ? KingSide : QueenSide)
                  & TRank4BB;
 
@@ -457,12 +458,11 @@ namespace {
     b1 = attackedBy[Them][ALL_PIECES] & KingFlank[file_of(ksq)] & Camp;
     b2 = b1 & attackedBy2[Them];
 
-    int kingFlankAttacks = popcount(b1) + popcount(b2);
+    int kingFlankAttacks = popcount(b1) + popcount(b2 | pawnAttacks);
 
     kingDanger +=        kingAttackersCount[Them] * kingAttackersWeight[Them]
                  +  69 * kingAttacksCount[Them]
                  + 185 * popcount(kingRing[Us] & weak)
-                 + 100 * pawnAttacks
                  - 100 * bool(attackedBy[Us][KNIGHT] & attackedBy[Us][KING])
                  -  35 * bool(attackedBy[Us][BISHOP] & attackedBy[Us][KING])
                  + 148 * popcount(unsafeChecks)

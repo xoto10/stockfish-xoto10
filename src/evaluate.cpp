@@ -388,9 +388,11 @@ namespace {
     constexpr Bitboard  Camp = (Us == WHITE ? AllSquares ^ Rank6BB ^ Rank7BB ^ Rank8BB
                                             : AllSquares ^ Rank1BB ^ Rank2BB ^ Rank3BB);
     constexpr Bitboard  TRank3BB = (Us == WHITE ? Rank3BB : Rank6BB);
+    constexpr Bitboard  CloseCenter = Us == WHITE ? (FileDBB | FileEBB) & (Rank3BB | Rank4BB)
+                                                  : (FileDBB | FileEBB) & (Rank5BB | Rank6BB);
 
     Bitboard weak, b1, b2, safe, unsafeChecks = 0;
-    Bitboard rookChecks, queenChecks, bishopChecks, knightChecks, rams;
+    Bitboard rookChecks, queenChecks, bishopChecks, knightChecks, blocked;
     int kingDanger = 0, kingOnFlank = 0;
     const Square ksq = pos.square<KING>(Us);
 
@@ -456,18 +458,13 @@ namespace {
     int kingFlankAttacks = popcount(b1) + popcount(b2);
 
     // Prefer king in centre if 2 center files blocked
-    rams =   pos.pieces(Us, PAWN)
-          & ~attackedBy[Them][PAWN]
-          &  shift<Down>(pos.pieces(Them, PAWN) & ~attackedBy[Us][PAWN])
-          & (FileDBB | FileEBB);
+    blocked =   shift<Down>(pos.pieces(Them, PAWN) & ~attackedBy[Us][PAWN])
+             &  pos.pieces(Us, PAWN)
+             & ~attackedBy[Them][PAWN];
 
-    if (   (rams & TRank3BB)
-        && (rams & FileDBB)
-        && (rams & FileEBB)
-       )
-        kingOnFlank =  abs(file_of(ksq) * 2 - 7)
-                     * (1 + ((file_of(ksq) < FILE_E) == (rams & TRank3BB & FileDBB)))
-                     / 2;
+    if (more_than_one(blocked & CloseCenter))
+        kingOnFlank = 1 + ((file_of(ksq) < FILE_E) == (blocked & TRank3BB & FileDBB))
+                          * abs(file_of(ksq) * 2 - 7) / 2;
 
     kingDanger +=        kingAttackersCount[Them] * kingAttackersWeight[Them]
                  +  69 * kingAttacksCount[Them]
@@ -480,7 +477,7 @@ namespace {
                  -   6 * mg_value(score) / 8
                  +       mg_value(mobility[Them] - mobility[Us])
                  +   5 * kingFlankAttacks * kingFlankAttacks / 16
-                 +  60 * kingOnFlank
+                 +  50 * kingOnFlank
                  -   7;
 
     // Transform the kingDanger units into a Score, and subtract it from the evaluation

@@ -31,9 +31,6 @@ namespace {
   #define V Value
   #define S(mg, eg) make_score(mg, eg)
 
-int A=512,B=256,C=256,D=210,E=512,F=256,G=256,H=210,I=192,J=192;
-//TUNE(SetRange(0,1024),A,B,C,D,E,F,G,H,I,J);
-
   // Pawn penalties
   constexpr Score Backward      = S( 9, 24);
   constexpr Score BlockedStorm  = S(82, 82);
@@ -42,9 +39,13 @@ int A=512,B=256,C=256,D=210,E=512,F=256,G=256,H=210,I=192,J=192;
   constexpr Score WeakLever     = S( 0, 56);
   constexpr Score WeakUnopposed = S(13, 27);
 
+int A=512,B=256,C=256,D=210,E=512,F=256,G=256,H=210,I=192,J=192;
+
   // Connected pawn bonus
-  constexpr int CM[RANK_NB] = { 0, 7, 8, 12, 29, 48, 86 };
-  constexpr int CE[RANK_NB] = { 0, 7, 8, 12, 29, 48, 86 };
+            int CM[RANK_NB] = { 0, 7, 8, 12, 29, 48, 86 };
+            int CE[RANK_NB] = { 0, 7, 8, 12, 29, 48, 86 };
+TUNE(CM,CE);
+TUNE(SetRange(0,1024),A,B,C,D,E,F,G,H,I,J);
 
   // Strength of pawn shelter for our king by [distance from edge][rank].
   // RANK_1 = 0 is used for files where we have no pawn, or pawn is behind our king.

@@ -463,7 +463,7 @@ namespace {
              & ~attackedBy[Them][PAWN];
 
     if (more_than_one(blocked & CloseCenter))
-        kingOnFlank = 1 + ((file_of(ksq) < FILE_E) == (blocked & TRank3BB & FileDBB))
+        kingOnFlank = 1 + ((file_of(ksq) < FILE_E) == bool(blocked & TRank3BB & FileDBB))
                           * abs(file_of(ksq) * 2 - 7) / 2;
 
     kingDanger +=        kingAttackersCount[Them] * kingAttackersWeight[Them]

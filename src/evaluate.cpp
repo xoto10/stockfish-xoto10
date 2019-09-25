@@ -459,7 +459,7 @@ namespace {
         && (rams & FileEBB)
        )
         kingOnFlank =  abs(file_of(ksq) * 2 - 7)
-                     * (1 + ((file_of(ksq) < FILE_E) == (rams & TRank3BB & FileDBB)))
+                     * (1 + ((file_of(ksq) < FILE_E) == bool(rams & TRank3BB & FileDBB)))
                      / 2;
 
     // Find the squares that opponent attacks in our king flank, and the squares

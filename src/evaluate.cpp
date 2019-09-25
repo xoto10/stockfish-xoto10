@@ -448,13 +448,6 @@ namespace {
     else
         unsafeChecks |= knightChecks;
 
-    // Find the squares that opponent attacks in our king flank, and the squares
-    // which are attacked twice in that flank.
-    b1 = attackedBy[Them][ALL_PIECES] & KingFlank[file_of(ksq)] & Camp;
-    b2 = b1 & attackedBy2[Them];
-
-    int kingFlankAttacks = popcount(b1) + popcount(b2);
-
     // Prefer king in centre if 2 center files blocked
     rams =   pos.pieces(Us, PAWN)
           & ~attackedBy[Them][PAWN]
@@ -469,6 +462,13 @@ namespace {
                      * (1 + ((file_of(ksq) < FILE_E) == (rams & TRank3BB & FileDBB)))
                      / 2;
 
+    // Find the squares that opponent attacks in our king flank, and the squares
+    // which are attacked twice in that flank.
+    b1 = attackedBy[Them][ALL_PIECES] & KingFlank[file_of(ksq)] & Camp;
+    b2 = b1 & attackedBy2[Them];
+
+    int kingFlankAttacks = popcount(b1) + popcount(b2) + kingOnFlank;
+
     kingDanger +=        kingAttackersCount[Them] * kingAttackersWeight[Them]
                  +  69 * kingAttacksCount[Them]
                  + 185 * popcount(kingRing[Us] & weak)
@@ -480,7 +480,6 @@ namespace {
                  -   6 * mg_value(score) / 8
                  +       mg_value(mobility[Them] - mobility[Us])
                  +   5 * kingFlankAttacks * kingFlankAttacks / 16
-                 +  50 * kingOnFlank
                  -   7;
 
     // Transform the kingDanger units into a Score, and subtract it from the evaluation

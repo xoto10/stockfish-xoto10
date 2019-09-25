@@ -462,10 +462,11 @@ namespace {
              &  pos.pieces(Us, PAWN)
              & ~attackedBy[Them][PAWN];
 
-    if (more_than_one(blocked & CloseCenter))
-        kingOnFlank =  (file_of(ksq) > FILE_E || file_of(ksq) < FILE_D)
-                     * (1 + ((file_of(ksq) < FILE_E) == bool(blocked & TRank3BB & FileDBB)))
-                     / 2;
+    if (   more_than_one(blocked & CloseCenter)
+        && (file_of(ksq) > FILE_E || file_of(ksq) < FILE_D)
+        && ((file_of(ksq) < FILE_E) == bool(blocked & TRank3BB & FileDBB))
+       )
+        kingOnFlank = 50;
 
     kingDanger +=        kingAttackersCount[Them] * kingAttackersWeight[Them]
                  +  69 * kingAttacksCount[Them]
@@ -478,7 +479,7 @@ namespace {
                  -   6 * mg_value(score) / 8
                  +       mg_value(mobility[Them] - mobility[Us])
                  +   5 * kingFlankAttacks * kingFlankAttacks / 16
-                 +  50 * kingOnFlank
+                 +       kingOnFlank
                  -   7;
 
     // Transform the kingDanger units into a Score, and subtract it from the evaluation

@@ -383,11 +383,12 @@ namespace {
   Score Evaluation<T>::king() {
 
     constexpr Color    Them = (Us == WHITE ? BLACK : WHITE);
+    constexpr Direction Down = (Us == WHITE ? SOUTH : NORTH);
     constexpr Bitboard Camp = (Us == WHITE ? AllSquares ^ Rank6BB ^ Rank7BB ^ Rank8BB
                                            : AllSquares ^ Rank1BB ^ Rank2BB ^ Rank3BB);
 
     Bitboard weak, b1, b2, safe, unsafeChecks = 0;
-    Bitboard rookChecks, queenChecks, bishopChecks, knightChecks;
+    Bitboard rookChecks, queenChecks, bishopChecks, knightChecks, blocked;
     int kingDanger = 0;
     const Square ksq = pos.square<KING>(Us);
 
@@ -466,14 +467,20 @@ namespace {
                  -   7;
 
     kingRisk[Us] = false;
-    if (   !kingAttackersCount[Them]
+    blocked =   shift<Down>(pos.pieces(Them, PAWN) & ~attackedBy[Us][PAWN])
+             &  pos.pieces(Us, PAWN)
+             & ~attackedBy[Them][PAWN]
+             &  (FileDBB | FileEBB);
+
+    if (    blocked
+        && !kingAttackersCount[Them]
         && !kingAttacksCount[Them]
         && !(kingRing[Us] & weak)
         && !unsafeChecks
         && !pos.blockers_for_king(Us)
         &&  mg_value(score) < 0
         &&  mobility[Them] > mobility[Us]
-        &&  pos.count<PAWN>(Us) > 5
+        &&  pos.count<PAWN>() > 12
         &&  popcount(pos.pieces(Us, PAWN) & kingRing[Us]) > 2
         &&  popcount((pos.pieces(Us, ALL_PIECES) ^ pos.pieces(Us, PAWN)) & kingRing[Us]) < 3
        )

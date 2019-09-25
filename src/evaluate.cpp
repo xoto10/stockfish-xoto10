@@ -465,7 +465,7 @@ namespace {
         && (rams & FileDBB)
         && (rams & FileEBB)
        )
-        kingOnFlank =  abs(file_of(ksq) * 2 - 7)
+        kingOnFlank =  (file_of(ksq) > FILE_E || file_of(ksq) < FILE_D)
                      * (1 + ((file_of(ksq) < FILE_E) == (rams & TRank3BB & FileDBB)))
                      / 2;
 

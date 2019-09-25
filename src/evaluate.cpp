@@ -567,7 +567,7 @@ namespace {
             Square s = pop_lsb(&b);
             forward += std::max(0, relative_rank(Us, rank_of(s)) - 2);
         }
-        score += make_score(0, 10) * forward;
+        score += make_score(0, 4) * forward;
     }
 
     // Find squares where our pawns can push on the next move

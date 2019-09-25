@@ -244,7 +244,7 @@ Score Entry::do_king_safety(const Position& pos) {
           dangerOnFlank[1] = true;
   }
 
-  Score shelters[3] = { make_score(-VALUE_INFINITE, 0),
+  Score shelters[3] = { make_score(0, 0),
                         make_score(-VALUE_INFINITE, 0),
                         make_score(-VALUE_INFINITE, 0) };
 
@@ -253,13 +253,11 @@ Score Entry::do_king_safety(const Position& pos) {
       shelters[0] = evaluate_shelter<Us>(pos, ksq);
 
   // If we can castle use the bonus after castling if it is bigger
-  if(!dangerOnFlank[0])
-      if (pos.can_castle(Us & KING_SIDE))
-          shelters[1] = evaluate_shelter<Us>(pos, relative_square(Us, SQ_G1));
+  if (pos.can_castle(Us & KING_SIDE) && !dangerOnFlank[0])
+      shelters[1] = evaluate_shelter<Us>(pos, relative_square(Us, SQ_G1));
 
-  if(!dangerOnFlank[1])
-      if (pos.can_castle(Us & QUEEN_SIDE))
-          shelters[2] = evaluate_shelter<Us>(pos, relative_square(Us, SQ_C1));
+  if (pos.can_castle(Us & QUEEN_SIDE) && !dangerOnFlank[1])
+      shelters[2] = evaluate_shelter<Us>(pos, relative_square(Us, SQ_C1));
 
   for (int i : {1, 2})
       if (mg_value(shelters[i]) > mg_value(shelters[0]))

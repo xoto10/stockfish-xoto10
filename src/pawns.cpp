@@ -216,25 +216,54 @@ Score Entry::evaluate_shelter(const Position& pos, Square ksq) {
 
 template<Color Us>
 Score Entry::do_king_safety(const Position& pos) {
+  constexpr Color     Them = (Us == WHITE ? BLACK : WHITE);
+  constexpr Direction Down = (Us == WHITE ? SOUTH : NORTH);
+  constexpr Bitboard  TRank3BB = (Us == WHITE ? Rank3BB : Rank6BB);
+
 
   Square ksq = pos.square<KING>(Us);
   kingSquares[Us] = ksq;
   castlingRights[Us] = pos.castling_rights(Us);
+  Bitboard rams;
+  bool dangerOnFlank[2] = { false, false };  // Kingside, Queenside
 
-  Score shelters[3] = { evaluate_shelter<Us>(pos, ksq),
+  // Prefer king in centre if the two center files blocked
+  rams =   pos.pieces(Us, PAWN)
+        & ~pawn_attacks(Them)
+        &  shift<Down>(pos.pieces(Them, PAWN) & ~pawn_attacks(Us))
+        & (FileDBB | FileEBB);
+
+  if (   (rams & TRank3BB)
+      && (rams & FileDBB)
+      && (rams & FileEBB))
+  {
+      if (rams & TRank3BB & FileEBB)
+          dangerOnFlank[0] = true;
+
+      else if (rams & TRank3BB & FileDBB)
+          dangerOnFlank[1] = true;
+  }
+
+  Score shelters[3] = { make_score(-VALUE_INFINITE, 0),
                         make_score(-VALUE_INFINITE, 0),
                         make_score(-VALUE_INFINITE, 0) };
 
-  // If we can castle use the bonus after castling if it is bigger
-  if (pos.can_castle(Us & KING_SIDE))
-      shelters[1] = evaluate_shelter<Us>(pos, relative_square(Us, SQ_G1));
+  if (   !(dangerOnFlank[0] && file_of(ksq) > FILE_E)
+      && !(dangerOnFlank[1] && file_of(ksq) < FILE_D))
+      shelters[0] = evaluate_shelter<Us>(pos, ksq);
 
-  if (pos.can_castle(Us & QUEEN_SIDE))
-      shelters[2] = evaluate_shelter<Us>(pos, relative_square(Us, SQ_C1));
+  // If we can castle use the bonus after castling if it is bigger
+  if(!dangerOnFlank[0])
+      if (pos.can_castle(Us & KING_SIDE))
+          shelters[1] = evaluate_shelter<Us>(pos, relative_square(Us, SQ_G1));
+
+  if(!dangerOnFlank[1])
+      if (pos.can_castle(Us & QUEEN_SIDE))
+          shelters[2] = evaluate_shelter<Us>(pos, relative_square(Us, SQ_C1));
 
   for (int i : {1, 2})
-     if (mg_value(shelters[i]) > mg_value(shelters[0]))
-         shelters[0] = shelters[i];
+      if (mg_value(shelters[i]) > mg_value(shelters[0]))
+          shelters[0] = shelters[i];
 
   // In endgame we like to bring our king near our closest pawn
   Bitboard pawns = pos.pieces(Us, PAWN);

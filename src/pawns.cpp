@@ -31,6 +31,9 @@ namespace {
   #define V Value
   #define S(mg, eg) make_score(mg, eg)
 
+int A=512,B=256,C=256,D=210,E=512,F=256,G=256,H=210,I=192,J=192;
+//TUNE(SetRange(0,1024),A,B,C,D,E,F,G,H,I,J);
+
   // Pawn penalties
   constexpr Score Backward      = S( 9, 24);
   constexpr Score BlockedStorm  = S(82, 82);
@@ -40,7 +43,8 @@ namespace {
   constexpr Score WeakUnopposed = S(13, 27);
 
   // Connected pawn bonus
-  constexpr int Connected[RANK_NB] = { 0, 7, 8, 12, 29, 48, 86 };
+  constexpr int CM[RANK_NB] = { 0, 7, 8, 12, 29, 48, 86 };
+  constexpr int CE[RANK_NB] = { 0, 7, 8, 12, 29, 48, 86 };
 
   // Strength of pawn shelter for our king by [distance from edge][rank].
   // RANK_1 = 0 is used for files where we have no pawn, or pawn is behind our king.
@@ -130,10 +134,12 @@ namespace {
         // Score this pawn
         if (support | phalanx)
         {
-            int v =  Connected[r] * (2 + bool(phalanx) - opposed)
-                   + 21 * popcount(support);
+            int u =  CM[r] * (A + B*bool(phalanx) - C*opposed)/256
+                   + D * popcount(support) / 10 + I * (r - 2) / 64;
+            int v =  CE[r] * (E + F*bool(phalanx) - G*opposed)/256
+                   + H * popcount(support) / 10 + J * (r - 2) / 64;
 
-            score += make_score(v, v * (r - 2) / 4);
+            score += make_score(u, v);
         }
 
         else if (!neighbours)

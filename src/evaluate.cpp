@@ -372,6 +372,10 @@ namespace {
                 score -= WeakQueen;
         }
     }
+
+    if (pos.count<QUEEN>() == 0)
+        mobility[Us] = mobility[Us] / 2;
+
     if (T)
         Trace::add(Pt, Us, score);
 
@@ -703,7 +707,7 @@ namespace {
 
     int bonus = popcount(safe) + popcount(behind & safe & ~attackedBy[Them][ALL_PIECES]);
     int weight = pos.count<ALL_PIECES>(Us) - 1;
-    Score score = make_score(bonus * weight * weight / 16 / (pos.count<QUEEN>() ? 1 : 2), 0);
+    Score score = make_score(bonus * weight * weight / 16, 0);
 
     if (T)
         Trace::add(SPACE, Us, score);

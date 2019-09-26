@@ -374,6 +374,10 @@ void Thread::search() {
           : Options["Analysis Contempt"] == "Black" && us == WHITE ? -ct
           : ct;
 
+  // No contempt if short on time compared to opponent
+  if (3 * Limits.time[us] + 150 * Limits.inc[us] < Limits.time[us] + 50 * Limits.inc[us])
+      ct = 0;
+
   // Evaluation score is from the white point of view
   contempt = (us == WHITE ?  make_score(ct, ct / 2)
                           : -make_score(ct, ct / 2));

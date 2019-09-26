@@ -128,7 +128,7 @@ namespace {
   };
 
   // kingDanger[color] is true if pawn attack at king may be missed
-  bool kingRisk[COLOR_NB];
+//bool kingRisk[COLOR_NB];
 
   // Assorted bonuses and penalties
   constexpr Score BishopPawns        = S(  3,  7);
@@ -386,10 +386,12 @@ namespace {
     constexpr Direction Down = (Us == WHITE ? SOUTH : NORTH);
     constexpr Bitboard Camp = (Us == WHITE ? AllSquares ^ Rank6BB ^ Rank7BB ^ Rank8BB
                                            : AllSquares ^ Rank1BB ^ Rank2BB ^ Rank3BB);
+    constexpr Bitboard CentFiles = FileDBB | FileEBB;
+    constexpr Bitboard TRank5BB = (Us == WHITE ? Rank5BB : Rank4BB);
 
     Bitboard weak, b1, b2, safe, unsafeChecks = 0;
-    Bitboard rookChecks, queenChecks, bishopChecks, knightChecks, blocked;
-    int kingDanger = 0;
+    Bitboard rookChecks, queenChecks, bishopChecks, knightChecks, blocked, kingZone;
+    int kingDanger = 0, pawnAttack = 0;
     const Square ksq = pos.square<KING>(Us);
 
     // Init the score with king shelter and enemy pawns storm
@@ -453,6 +455,40 @@ namespace {
 
     int kingFlankAttacks = popcount(b1) + popcount(b2);
 
+    // Look for possible kingside pawn attacks
+    kingZone = (KingFlank[file_of(ksq)] & ~CentFiles) & Camp;
+//  kingRisk[Us] = false;
+    blocked =   shift<Down>(pos.pieces(Them, PAWN) & ~attackedBy[Us][PAWN])
+             &  pos.pieces(Us, PAWN)
+             & ~attackedBy[Them][PAWN]
+             &  CentFiles;
+
+    if (    blocked
+        &&  pos.count<PAWN>() > 12
+        &&  pos.non_pawn_material() > 13000
+        &&  mobility[Them] > mobility[Us]
+
+        && !unsafeChecks
+        &&  (pos.pieces(Them, PAWN) & kingZone)
+        && !kingAttackersCount[Them]
+        && !kingAttacksCount[Them]
+        && !(kingRing[Us] & weak)
+
+        && !(CentFiles & ksq)
+        &&  pe->shelter_pawns(Us) > 2
+        && !pos.blockers_for_king(Us)
+        &&  popcount(pos.pieces(Us, PAWN) & kingRing[Us]) > 2
+        &&  popcount((pos.pieces(Us, ALL_PIECES) ^ pos.pieces(Us, PAWN)) & kingRing[Us]) < 3
+
+//      &&  mg_value(score) < 0
+       )
+    {
+//      kingRisk[Us] = true;
+        pawnAttack = 100 + 100 * bool(pos.pieces(Them, PAWN) & kingZone & ~TRank5BB);
+    }
+//if (pawnAttack && ksq == SQ_G8)
+//sync_cout << "info string pos\n" << pos << " us " << Us << " kd " << kingDanger << sync_endl;
+
     kingDanger +=        kingAttackersCount[Them] * kingAttackersWeight[Them]
                  +  69 * kingAttacksCount[Them]
                  + 185 * popcount(kingRing[Us] & weak)
@@ -464,29 +500,8 @@ namespace {
                  -   6 * mg_value(score) / 8
                  +       mg_value(mobility[Them] - mobility[Us])
                  +   5 * kingFlankAttacks * kingFlankAttacks / 16
+                 +       pawnAttack
                  -   7;
-
-    kingRisk[Us] = false;
-    blocked =   shift<Down>(pos.pieces(Them, PAWN) & ~attackedBy[Us][PAWN])
-             &  pos.pieces(Us, PAWN)
-             & ~attackedBy[Them][PAWN]
-             &  (FileDBB | FileEBB);
-
-    if (    blocked
-        && !kingAttackersCount[Them]
-        && !kingAttacksCount[Them]
-        && !(kingRing[Us] & weak)
-        && !unsafeChecks
-        && !pos.blockers_for_king(Us)
-        &&  mg_value(score) < 0
-        &&  mobility[Them] > mobility[Us]
-        &&  pos.count<PAWN>() > 12
-        &&  popcount(pos.pieces(Us, PAWN) & kingRing[Us]) > 2
-        &&  popcount((pos.pieces(Us, ALL_PIECES) ^ pos.pieces(Us, PAWN)) & kingRing[Us]) < 3
-       )
-        kingRisk[Us] = true;
-if (kingRisk[Us] && ksq == SQ_G8)
-sync_cout << "info string us " << Us << " kd " << kingDanger << " pos\n" << pos << sync_endl;
 
     // Transform the kingDanger units into a Score, and subtract it from the evaluation
     if (kingDanger > 100)

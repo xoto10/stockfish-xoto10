@@ -23,7 +23,7 @@
 #include <cstring>   // For std::memset
 #include <iomanip>
 #include <sstream>
-#include <iostream>
+//#include <iostream>
 
 #include "bitboard.h"
 #include "evaluate.h"
@@ -456,36 +456,42 @@ namespace {
     int kingFlankAttacks = popcount(b1) + popcount(b2);
 
     // Look for possible kingside pawn attacks
-    kingZone = (KingFlank[file_of(ksq)] & ~CentFiles) & Camp;
 //  kingRisk[Us] = false;
-    blocked =   shift<Down>(pos.pieces(Them, PAWN) & ~attackedBy[Us][PAWN])
-             &  pos.pieces(Us, PAWN)
-             & ~attackedBy[Them][PAWN]
-             &  CentFiles;
 
-    if (    blocked
-        &&  pos.count<PAWN>() > 12
+    //   Test overall board features before doing calculations
+    if (    pos.count<PAWN>() > 12
         &&  pos.non_pawn_material() > 13000
-        &&  mobility[Them] > mobility[Us]
-
-        && !unsafeChecks
-        &&  (pos.pieces(Them, PAWN) & kingZone)
-        && !kingAttackersCount[Them]
-        && !kingAttacksCount[Them]
-        && !(kingRing[Us] & weak)
-
-        && !(CentFiles & ksq)
-        &&  pe->shelter_pawns(Us) > 2
-        && !pos.blockers_for_king(Us)
-        &&  popcount(pos.pieces(Us, PAWN) & kingRing[Us]) > 2
-        &&  popcount((pos.pieces(Us, ALL_PIECES) ^ pos.pieces(Us, PAWN)) & kingRing[Us]) < 3
-
-//      &&  mg_value(score) < 0
-       )
+        &&  mobility[Them] > mobility[Us])
     {
-//      kingRisk[Us] = true;
-        pawnAttack = 100 + 100 * bool(pos.pieces(Them, PAWN) & kingZone & ~TRank5BB);
+        kingZone = (KingFlank[file_of(ksq)] & ~CentFiles) & Camp;
+        blocked =   shift<Down>(pos.pieces(Them, PAWN) & ~attackedBy[Us][PAWN])
+                 &  pos.pieces(Us, PAWN)
+                 & ~attackedBy[Them][PAWN]
+                 &  CentFiles;
+
+        // Test blocked, their and our features
+        if (    blocked
+            && !unsafeChecks
+            &&  (pos.pieces(Them, PAWN) & kingZone)
+            && !kingAttackersCount[Them]
+            && !kingAttacksCount[Them]
+            && !(kingRing[Us] & weak)
+
+            && !(CentFiles & ksq)
+            &&  pe->shelter_pawns(Us) > 2
+            && !pos.blockers_for_king(Us)
+            &&  popcount(pos.pieces(Us, PAWN) & kingRing[Us]) > 2
+            &&  popcount((pos.pieces(Us, ALL_PIECES) ^ pos.pieces(Us, PAWN)) & kingRing[Us]) < 3
+
+//          &&  mg_value(score) < 0
+           )
+        {
+//          kingRisk[Us] = true;
+            pawnAttack = 100 + 100 * bool(pos.pieces(Them, PAWN) & kingZone & ~TRank5BB);
+        }
     }
+
+//dbg_mean_of( pawnAttack );
 //if (pawnAttack && ksq == SQ_G8)
 //sync_cout << "info string pos\n" << pos << " us " << Us << " kd " << kingDanger << sync_endl;
 

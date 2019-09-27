@@ -375,7 +375,7 @@ void Thread::search() {
           : ct;
 
   // No contempt if short on time compared to opponent
-  if (3 * Limits.time[us] + 150 * Limits.inc[us] < Limits.time[us] + 50 * Limits.inc[us])
+  if (5 * Limits.time[us] + 150 * Limits.inc[us] < Limits.time[us] + 50 * Limits.inc[us])
       ct = 0;
 
   // Evaluation score is from the white point of view
@@ -425,7 +425,7 @@ void Thread::search() {
               int dct = ct + 86 * previousScore / (abs(previousScore) + 176);
 
               // No positive contempt if short on time compared to opponent
-              if (3 * Limits.time[us] + 150 * Limits.inc[us] < Limits.time[us] + 50 * Limits.inc[us])
+              if (5 * Limits.time[us] + 150 * Limits.inc[us] < Limits.time[us] + 50 * Limits.inc[us])
                   dct = std::min(0, dct);
 
               contempt = (us == WHITE ?  make_score(dct, dct / 2)

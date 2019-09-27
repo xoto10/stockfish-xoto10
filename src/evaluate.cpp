@@ -23,7 +23,7 @@
 #include <cstring>   // For std::memset
 #include <iomanip>
 #include <sstream>
-  #include <iostream>
+//#include <iostream>
 
 #include "bitboard.h"
 #include "evaluate.h"
@@ -384,8 +384,6 @@ namespace {
     constexpr Bitboard Camp = (Us == WHITE ? AllSquares ^ Rank6BB ^ Rank7BB ^ Rank8BB
                                            : AllSquares ^ Rank1BB ^ Rank2BB ^ Rank3BB);
     constexpr Bitboard CentFiles = FileDBB | FileEBB;
-    constexpr Bitboard Half = (Us == WHITE ? Rank2BB | Rank3BB | Rank4BB
-                                           : Rank5BB | Rank6BB | Rank7BB);
     constexpr Bitboard TRank5BB = (Us == WHITE ? Rank5BB : Rank4BB);
 
     Bitboard weak, b1, b2, safe, unsafeChecks = 0;
@@ -467,17 +465,17 @@ namespace {
                  &  pos.pieces(Us, PAWN)
                  & ~attackedBy[Them][PAWN]
                  &  CentFiles;
-  sync_cout << "info string pos\n" << pos << " us " << Us << " blkd " << bool(blocked) << sync_endl;
+        kingZone = (KingFlank[file_of(ksq)] & ~CentFiles) & Camp;
 
-        if (blocked)
+        if (   blocked
+            && (pos.pieces(Them, PAWN) & kingZone))
         {
-            kingZone = (KingFlank[file_of(ksq)] & ~CentFiles) & Half;
-            pawnAttack = 100 * bool(pos.pieces(Them, PAWN) & kingZone & ~TRank5BB);
-            kingFlankAttacks += popcount(pos.pieces(Them, PAWN) & kingZone);
+            pawnAttack = 100 + 100 * bool(pos.pieces(Them, PAWN) & kingZone & ~TRank5BB);
+//          kingFlankAttacks += popcount(pos.pieces(Them, PAWN) & kingZone);
         }
     }
-  if (pawnAttack)
-  sync_cout << "info string pos\n" << pos << " us " << Us << " kd " << kingDanger << sync_endl;
+//if (pawnAttack)
+//sync_cout << "info string pos\n" << pos << " us " << Us << " kd " << kingDanger << sync_endl;
 
     kingDanger +=        kingAttackersCount[Them] * kingAttackersWeight[Them]
                  +  69 * kingAttacksCount[Them]
@@ -490,7 +488,7 @@ namespace {
                  -   6 * mg_value(score) / 8
                  +       mg_value(mobility[Them] - mobility[Us])
                  +   5 * kingFlankAttacks * kingFlankAttacks / 16
-//               +       pawnAttack
+                 +       pawnAttack
                  -   7;
 
     // Transform the kingDanger units into a Score, and subtract it from the evaluation

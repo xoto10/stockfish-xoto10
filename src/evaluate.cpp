@@ -384,7 +384,7 @@ namespace {
     constexpr Bitboard Camp = (Us == WHITE ? AllSquares ^ Rank6BB ^ Rank7BB ^ Rank8BB
                                            : AllSquares ^ Rank1BB ^ Rank2BB ^ Rank3BB);
     constexpr Bitboard CentFiles = FileDBB | FileEBB;
-    constexpr Bitboard TRank5BB = (Us == WHITE ? Rank5BB : Rank4BB);
+//  constexpr Bitboard TRank5BB = (Us == WHITE ? Rank5BB : Rank4BB);
 
     Bitboard weak, b1, b2, safe, unsafeChecks = 0;
     Bitboard rookChecks, queenChecks, bishopChecks, knightChecks, blocked, kingZone;
@@ -465,17 +465,16 @@ namespace {
                  &  pos.pieces(Us, PAWN)
                  & ~attackedBy[Them][PAWN]
                  &  CentFiles;
-        kingZone = (KingFlank[file_of(ksq)] & ~CentFiles) & Camp;
 
-        if (   blocked
-            && (pos.pieces(Them, PAWN) & kingZone))
+        if (blocked)
         {
-            pawnAttack = 100 + 100 * bool(pos.pieces(Them, PAWN) & kingZone & ~TRank5BB);
+            kingZone = pos.pieces(Them, PAWN) & (KingFlank[file_of(ksq)] & ~CentFiles) & Camp;
+            pawnAttack = 100 + 100 * bool(kingZone);
 //          kingFlankAttacks += popcount(pos.pieces(Them, PAWN) & kingZone);
         }
     }
 //if (pawnAttack)
-//sync_cout << "info string pos\n" << pos << " us " << Us << " kd " << kingDanger << sync_endl;
+//sync_cout << "info string pos\n" << pos << " us " << Us << " patk " << pawnAttack << sync_endl;
 
     kingDanger +=        kingAttackersCount[Them] * kingAttackersWeight[Them]
                  +  69 * kingAttacksCount[Them]

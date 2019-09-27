@@ -468,7 +468,7 @@ namespace {
         if (blocked)
         {
             kingZone = pos.pieces(Them, PAWN) & (KingFlank[file_of(ksq)] & ~CentFiles) & Camp;
-            kingFlankAttacks += bool(kingZone) + bool(kingZone & ~TRank5BB);
+            kingFlankAttacks += popcount(kingZone) + popcount(kingZone & ~TRank5BB);
         }
     }
 

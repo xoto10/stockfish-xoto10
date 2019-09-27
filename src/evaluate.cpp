@@ -23,7 +23,7 @@
 #include <cstring>   // For std::memset
 #include <iomanip>
 #include <sstream>
-//#include <iostream>
+  #include <iostream>
 
 #include "bitboard.h"
 #include "evaluate.h"
@@ -384,13 +384,13 @@ namespace {
     constexpr Bitboard Camp = (Us == WHITE ? AllSquares ^ Rank6BB ^ Rank7BB ^ Rank8BB
                                            : AllSquares ^ Rank1BB ^ Rank2BB ^ Rank3BB);
     constexpr Bitboard CentFiles = FileDBB | FileEBB;
-    constexpr Bitboard CloseCenter = Us == WHITE ? (FileDBB | FileEBB) & (Rank3BB | Rank4BB)
-                                                 : (FileDBB | FileEBB) & (Rank5BB | Rank6BB);
-//  constexpr Bitboard TRank5BB = (Us == WHITE ? Rank5BB : Rank4BB);
+    constexpr Bitboard Half = (Us == WHITE ? Rank2BB | Rank3BB | Rank4BB
+                                           : Rank5BB | Rank6BB | Rank7BB);
+    constexpr Bitboard TRank5BB = (Us == WHITE ? Rank5BB : Rank4BB);
 
     Bitboard weak, b1, b2, safe, unsafeChecks = 0;
     Bitboard rookChecks, queenChecks, bishopChecks, knightChecks, blocked, kingZone;
-    int kingDanger = 0; //, pawnAttack = 0;
+    int kingDanger = 0, pawnAttack = 0;
     const Square ksq = pos.square<KING>(Us);
 
     // Init the score with king shelter and enemy pawns storm
@@ -465,17 +465,19 @@ namespace {
     {
         blocked =   shift<Down>(pos.pieces(Them, PAWN) & ~attackedBy[Us][PAWN])
                  &  pos.pieces(Us, PAWN)
-                 & ~attackedBy[Them][PAWN];
+                 & ~attackedBy[Them][PAWN]
+                 &  CentFiles;
+  sync_cout << "info string pos\n" << pos << " us " << Us << " blkd " << bool(blocked) << sync_endl;
 
-        if ( more_than_one(blocked & CloseCenter) )
+        if (blocked)
         {
-            kingZone = (KingFlank[file_of(ksq)] & ~CentFiles) & Camp;
-//          pawnAttack = 100 + 100 * bool(pos.pieces(Them, PAWN) & kingZone & ~TRank5BB);
+            kingZone = (KingFlank[file_of(ksq)] & ~CentFiles) & Half;
+            pawnAttack = 100 * bool(pos.pieces(Them, PAWN) & kingZone & ~TRank5BB);
             kingFlankAttacks += popcount(pos.pieces(Them, PAWN) & kingZone);
         }
     }
-//if (pawnAttack && ksq == SQ_G8)
-//sync_cout << "info string pos\n" << pos << " us " << Us << " kd " << kingDanger << sync_endl;
+  if (pawnAttack)
+  sync_cout << "info string pos\n" << pos << " us " << Us << " kd " << kingDanger << sync_endl;
 
     kingDanger +=        kingAttackersCount[Them] * kingAttackersWeight[Them]
                  +  69 * kingAttacksCount[Them]

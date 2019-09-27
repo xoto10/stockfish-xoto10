@@ -739,7 +739,7 @@ namespace {
                     + 18 * pawnsOnBothFlanks
                     - 36 * almostUnwinnable;
 
-    if (pos.non_pawn_material() > 6000)
+    if (pos.non_pawn_material() > 8000)
         complexity /= 2;
 
     complexity +=  49 * !pos.non_pawn_material()

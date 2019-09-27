@@ -382,6 +382,8 @@ namespace {
     constexpr Direction Down = (Us == WHITE ? SOUTH : NORTH);
     constexpr Bitboard Camp = (Us == WHITE ? AllSquares ^ Rank6BB ^ Rank7BB ^ Rank8BB
                                            : AllSquares ^ Rank1BB ^ Rank2BB ^ Rank3BB);
+    constexpr Bitboard Half = (Us == WHITE ? Rank1BB | Rank2BB | Rank3BB | Rank4BB
+                                           : Rank5BB | Rank6BB | Rank7BB | Rank8BB);
     constexpr Bitboard CentFiles = FileDBB | FileEBB;
 
     Bitboard weak, b1, b2, safe, unsafeChecks = 0;
@@ -466,7 +468,7 @@ namespace {
 
         if (blocked)
         {
-            kingZone = (KingFlank[file_of(ksq)] & ~CentFiles) & Camp;
+            kingZone = (KingFlank[file_of(ksq)] & ~CentFiles) & Half;
             kingFlankAttacks += popcount(pos.pieces(Them, PAWN) & kingZone);
         }
     }

@@ -164,7 +164,7 @@ namespace {
   private:
     template<Color Us> void initialize();
     template<Color Us, PieceType Pt> Score pieces();
-    template<Color Us> Score king();
+    template<Color Us> Score king() const;
     template<Color Us> Score threats() const;
     template<Color Us> Score passed() const;
     template<Color Us> Score space() const;
@@ -377,7 +377,7 @@ namespace {
 
   // Evaluation::king() assigns bonuses and penalties to a king of a given color
   template<Tracing T> template<Color Us>
-  Score Evaluation<T>::king() {
+  Score Evaluation<T>::king() const {
 
     constexpr Color    Them = (Us == WHITE ? BLACK : WHITE);
     constexpr Direction Down = (Us == WHITE ? SOUTH : NORTH);
@@ -388,7 +388,7 @@ namespace {
 
     Bitboard weak, b1, b2, safe, unsafeChecks = 0;
     Bitboard rookChecks, queenChecks, bishopChecks, knightChecks, blocked, kingZone;
-    int kingDanger = 0, pawnAttack = 0;
+    int kingDanger = 0;  //, pawnAttack = 0;
     const Square ksq = pos.square<KING>(Us);
 
     // Init the score with king shelter and enemy pawns storm
@@ -458,13 +458,8 @@ namespace {
         && !kingAttackersCount[Them]           // .264
         &&  pos.non_pawn_material() > 13000    // .285
         &&  pe->shelter_pawns(Us) > 2          // .344
-        &&  mobility[Them] > mobility[Us]      // .473
-        && !kingAttacksCount[Them]             // .512
-        && !(kingRing[Us] & weak)              // .532
         && !(CentFiles & ksq)                  // .756
-        && !unsafeChecks                       // .777
-        && !pos.blockers_for_king(Us)          // .918
-        &&  popcount((pos.pieces(Us, ALL_PIECES) ^ pos.pieces(Us, PAWN)) & kingRing[Us]) < 3) // .963
+       )
     {
         blocked =   shift<Down>(pos.pieces(Them, PAWN) & ~attackedBy[Us][PAWN])
                  &  pos.pieces(Us, PAWN)
@@ -474,6 +469,7 @@ namespace {
         if (blocked)
         {
             kingZone = (KingFlank[file_of(ksq)] & ~CentFiles) & Camp;
+//          pawnAttack = 100 + 100 * bool(pos.pieces(Them, PAWN) & kingZone & ~TRank5BB);
             kingFlankAttacks += popcount(pos.pieces(Them, PAWN) & kingZone);
         }
     }
@@ -491,7 +487,7 @@ namespace {
                  -   6 * mg_value(score) / 8
                  +       mg_value(mobility[Them] - mobility[Us])
                  +   5 * kingFlankAttacks * kingFlankAttacks / 16
-                 +       pawnAttack
+//               +       pawnAttack
                  -   7;
 
     // Transform the kingDanger units into a Score, and subtract it from the evaluation

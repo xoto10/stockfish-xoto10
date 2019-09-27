@@ -382,8 +382,6 @@ namespace {
     constexpr Direction Down = (Us == WHITE ? SOUTH : NORTH);
     constexpr Bitboard Camp = (Us == WHITE ? AllSquares ^ Rank6BB ^ Rank7BB ^ Rank8BB
                                            : AllSquares ^ Rank1BB ^ Rank2BB ^ Rank3BB);
-    constexpr Bitboard Half = (Us == WHITE ? Rank1BB | Rank2BB | Rank3BB | Rank4BB
-                                           : Rank5BB | Rank6BB | Rank7BB | Rank8BB);
     constexpr Bitboard CentFiles = FileDBB | FileEBB;
 
     Bitboard weak, b1, b2, safe, unsafeChecks = 0;
@@ -454,7 +452,7 @@ namespace {
 
     // Look for possible kingside pawn attacks
     if (    popcount(pos.pieces(Us, PAWN) & kingRing[Us]) > 2                                 // .163
-        &&  pos.count<PAWN>() > 12             // .237
+        &&  pos.count<PAWN>() > 14             // .237
         && !kingAttackersCount[Them]           // .264
         &&  pos.non_pawn_material() > 13000    // .285
         &&  pe->shelter_pawns(Us) > 2          // .344
@@ -468,7 +466,7 @@ namespace {
 
         if (blocked)
         {
-            kingZone = (KingFlank[file_of(ksq)] & ~CentFiles) & Half;
+            kingZone = (KingFlank[file_of(ksq)] & ~CentFiles) & Camp;
             kingFlankAttacks += popcount(pos.pieces(Them, PAWN) & kingZone);
         }
     }

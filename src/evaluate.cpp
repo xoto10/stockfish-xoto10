@@ -388,7 +388,7 @@ namespace {
 
     Bitboard weak, b1, b2, safe, unsafeChecks = 0;
     Bitboard rookChecks, queenChecks, bishopChecks, knightChecks, blocked, kingZone;
-    int kingDanger = 0;  //, pawnAttack = 0;
+    int kingDanger = 0; //, pawnAttack = 0;
     const Square ksq = pos.square<KING>(Us);
 
     // Init the score with king shelter and enemy pawns storm
@@ -466,7 +466,7 @@ namespace {
                  & ~attackedBy[Them][PAWN]
                  &  CentFiles;
 
-        if (blocked)
+        if ( more_than_one(blocked & CentFiles) )
         {
             kingZone = (KingFlank[file_of(ksq)] & ~CentFiles) & Camp;
 //          pawnAttack = 100 + 100 * bool(pos.pieces(Them, PAWN) & kingZone & ~TRank5BB);

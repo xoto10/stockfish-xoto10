@@ -453,8 +453,10 @@ namespace {
     // Look for possible kingside pawn attacks
     if (    popcount(pos.pieces(Us, PAWN) & kingRing[Us]) > 2                                 // .163
         &&  pos.count<PAWN>() > 12             // .237
+        && !kingAttackersCount[Them]           // .264
         &&  pos.non_pawn_material() > 13000    // .285
         &&  pe->shelter_pawns(Us) > 2          // .344
+        && !kingAttacksCount[Them]             // .512
         && !(CentFiles & ksq)                  // .756
        )
     {

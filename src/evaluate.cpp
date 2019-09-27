@@ -379,11 +379,13 @@ namespace {
   Score Evaluation<T>::king() const {
 
     constexpr Color    Them = (Us == WHITE ? BLACK : WHITE);
+    constexpr Direction Down = (Us == WHITE ? SOUTH : NORTH);
     constexpr Bitboard Camp = (Us == WHITE ? AllSquares ^ Rank6BB ^ Rank7BB ^ Rank8BB
                                            : AllSquares ^ Rank1BB ^ Rank2BB ^ Rank3BB);
+    constexpr Bitboard CentFiles = FileDBB | FileEBB;
 
     Bitboard weak, b1, b2, safe, unsafeChecks = 0;
-    Bitboard rookChecks, queenChecks, bishopChecks, knightChecks;
+    Bitboard rookChecks, queenChecks, bishopChecks, knightChecks, blocked, kingZone;
     int kingDanger = 0;
     const Square ksq = pos.square<KING>(Us);
 
@@ -447,6 +449,27 @@ namespace {
     b2 = b1 & attackedBy2[Them];
 
     int kingFlankAttacks = popcount(b1) + popcount(b2);
+
+    // Look for possible kingside pawn attacks
+    if (    popcount(pos.pieces(Us, PAWN) & kingRing[Us]) > 2                                 // .163
+        &&  pos.count<PAWN>() > 12             // .237
+        && !kingAttackersCount[Them]           // .264
+        &&  pos.non_pawn_material() > 13000    // .285
+        &&  pe->shelter_pawns(Us) > 2          // .344
+        && !(CentFiles & ksq)                  // .756
+       )
+    {
+        blocked =   shift<Down>(pos.pieces(Them, PAWN) & ~attackedBy[Us][PAWN])
+                 &  pos.pieces(Us, PAWN)
+                 & ~attackedBy[Them][PAWN]
+                 &  CentFiles;
+
+        if (blocked)
+        {
+            kingZone = (KingFlank[file_of(ksq)] & ~CentFiles) & Camp;
+            kingFlankAttacks += popcount(pos.pieces(Them, PAWN) & kingZone);
+        }
+    }
 
     kingDanger +=        kingAttackersCount[Them] * kingAttackersWeight[Them]
                  +  69 * kingAttacksCount[Them]

@@ -179,7 +179,7 @@ Entry* probe(const Position& pos) {
 /// penalty for a king, looking at the king file and the two closest files.
 
 template<Color Us>
-Score Entry::evaluate_shelter(const Position& pos, Square ksq, bool current) {
+Score Entry::evaluate_shelter(const Position& pos, Square ksq) {
 
   constexpr Color Them = (Us == WHITE ? BLACK : WHITE);
 
@@ -189,14 +189,11 @@ Score Entry::evaluate_shelter(const Position& pos, Square ksq, bool current) {
 
   Score bonus = make_score(5, 5);
 
-  if (current)
-      shelterPawns[Us] = 0;
-
   File center = clamp(file_of(ksq), FILE_B, FILE_G);
   for (File f = File(center - 1); f <= File(center + 1); ++f)
   {
       b = ourPawns & file_bb(f);
-      int ourRank = b ? (current ? ++shelterPawns[Us] : 0), relative_rank(Us, frontmost_sq(Them, b)) : 0;
+      int ourRank = b ? relative_rank(Us, frontmost_sq(Them, b)) : 0;
 
       b = theirPawns & file_bb(f);
       int theirRank = b ? relative_rank(Us, frontmost_sq(Them, b)) : 0;
@@ -224,16 +221,16 @@ Score Entry::do_king_safety(const Position& pos) {
   kingSquares[Us] = ksq;
   castlingRights[Us] = pos.castling_rights(Us);
 
-  Score shelters[3] = { evaluate_shelter<Us>(pos, ksq, true),
+  Score shelters[3] = { evaluate_shelter<Us>(pos, ksq),
                         make_score(-VALUE_INFINITE, 0),
                         make_score(-VALUE_INFINITE, 0) };
 
   // If we can castle use the bonus after castling if it is bigger
   if (pos.can_castle(Us & KING_SIDE))
-      shelters[1] = evaluate_shelter<Us>(pos, relative_square(Us, SQ_G1), false);
+      shelters[1] = evaluate_shelter<Us>(pos, relative_square(Us, SQ_G1));
 
   if (pos.can_castle(Us & QUEEN_SIDE))
-        shelters[2] = evaluate_shelter<Us>(pos, relative_square(Us, SQ_C1), false);
+      shelters[2] = evaluate_shelter<Us>(pos, relative_square(Us, SQ_C1));
 
   for (int i : {1, 2})
      if (mg_value(shelters[i]) > mg_value(shelters[0]))

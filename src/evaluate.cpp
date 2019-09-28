@@ -129,7 +129,7 @@ namespace {
   // Assorted bonuses and penalties
   constexpr Score BishopPawns        = S(  3,  7);
   constexpr Score CorneredBishop     = S( 50, 50);
-  constexpr Score FlankAttacks       = S(  2,  0);
+  constexpr Score FlankAttacks       = S(  8,  0);
   constexpr Score Hanging            = S( 69, 36);
   constexpr Score KingProtector      = S(  7,  8);
   constexpr Score KnightOnQueen      = S( 16, 12);
@@ -448,27 +448,18 @@ namespace {
     b1 = attackedBy[Them][ALL_PIECES] & KingFlank[file_of(ksq)] & Camp;
     b2 = b1 & attackedBy2[Them];
 
-    int kingFlankAttacks = 4 * (popcount(b1) + popcount(b2));
+    int kingFlankAttacks = popcount(b1) + popcount(b2);
 
-    // Look for possible kingside pawn attacks
-    if (    popcount(pos.pieces(Us, PAWN) & kingRing[Us]) > 2                                 // .163
-        &&  pos.count<PAWN>() > 12             // .237
-        && !kingAttackersCount[Them]           // .264
-        &&  pos.non_pawn_material() > 13000    // .285
-        &&  pe->shelter_pawns(Us) > 2          // .344
-        && !(CentFiles & ksq)                  // .756
-       )
+    // Look for possible king flank pawn attacks
+    blocked =   shift<Down>(pos.pieces(Them, PAWN) & ~attackedBy[Us][PAWN])
+             &  pos.pieces(Us, PAWN)
+             & ~attackedBy[Them][PAWN]
+             &  CentFiles;
+
+    if (blocked)
     {
-        blocked =   shift<Down>(pos.pieces(Them, PAWN) & ~attackedBy[Us][PAWN])
-                 &  pos.pieces(Us, PAWN)
-                 & ~attackedBy[Them][PAWN]
-                 &  CentFiles;
-
-        if (blocked)
-        {
-            kingZone = (KingFlank[file_of(ksq)] & ~CentFiles) & Camp;
-            kingFlankAttacks += 3 * popcount(pos.pieces(Them, PAWN) & kingZone);
-        }
+        kingZone = (KingFlank[file_of(ksq)] & ~CentFiles) & Camp;
+        kingFlankAttacks += popcount(pos.pieces(Them, PAWN) & kingZone);
     }
 
     kingDanger +=        kingAttackersCount[Them] * kingAttackersWeight[Them]
@@ -481,7 +472,7 @@ namespace {
                  - 873 * !pos.count<QUEEN>(Them)
                  -   6 * mg_value(score) / 8
                  +       mg_value(mobility[Them] - mobility[Us])
-                 +   5 * kingFlankAttacks * kingFlankAttacks / 256
+                 +   5 * kingFlankAttacks * kingFlankAttacks / 16
                  -   7;
 
     // Transform the kingDanger units into a Score, and subtract it from the evaluation

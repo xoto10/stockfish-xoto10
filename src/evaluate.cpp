@@ -383,6 +383,8 @@ namespace {
     constexpr Bitboard Camp = (Us == WHITE ? AllSquares ^ Rank6BB ^ Rank7BB ^ Rank8BB
                                            : AllSquares ^ Rank1BB ^ Rank2BB ^ Rank3BB);
     constexpr Bitboard CentFiles = FileDBB | FileEBB;
+    constexpr Bitboard CloseCenter = Us == WHITE ? (FileDBB | FileEBB) & (Rank3BB | Rank4BB)
+                                                 : (FileDBB | FileEBB) & (Rank5BB | Rank6BB);
 
     Bitboard weak, b1, b2, safe, unsafeChecks = 0;
     Bitboard rookChecks, queenChecks, bishopChecks, knightChecks, blocked, kingZone;
@@ -461,10 +463,9 @@ namespace {
     {
         blocked =   shift<Down>(pos.pieces(Them, PAWN) & ~attackedBy[Us][PAWN])
                  &  pos.pieces(Us, PAWN)
-                 & ~attackedBy[Them][PAWN]
-                 &  CentFiles;
+                 & ~attackedBy[Them][PAWN];
 
-        if (blocked)
+        if (more_than_one(blocked & CloseCenter))
         {
             kingZone = (KingFlank[file_of(ksq)] & ~CentFiles) & Camp;
             kingFlankAttacks += popcount(pos.pieces(Them, PAWN) & kingZone);

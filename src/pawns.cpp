@@ -179,9 +179,11 @@ Entry* probe(const Position& pos) {
 /// penalty for a king, looking at the king file and the two closest files.
 
 template<Color Us>
-Score Entry::evaluate_shelter(const Position& pos, Square ksq) {
+Score Entry::evaluate_shelter(const Position& pos, Square ksq, bool blockedCenter) {
 
   constexpr Color Them = (Us == WHITE ? BLACK : WHITE);
+  constexpr Square TSQ_D3 = (Us == WHITE ? SQ_D3 : SQ_D6);
+  constexpr Square TSQ_E3 = (Us == WHITE ? SQ_E3 : SQ_E6);
 
   Bitboard b = pos.pieces(PAWN) & ~forward_ranks_bb(Them, ksq);
   Bitboard ourPawns = b & pos.pieces(Us);
@@ -207,6 +209,12 @@ Score Entry::evaluate_shelter(const Position& pos, Square ksq) {
           bonus -= make_score(UnblockedStorm[d][theirRank], 0);
   }
 
+  if (   blockedCenter
+      && bonus > 0
+      && (   (file_of(ksq) > FILE_E && (ourPawns & TSQ_E3))
+          || (file_of(ksq) < FILE_D && (ourPawns & TSQ_D3))) )
+      bonus = bonus / 2;
+
   return bonus;
 }
 
@@ -217,20 +225,29 @@ Score Entry::evaluate_shelter(const Position& pos, Square ksq) {
 template<Color Us>
 Score Entry::do_king_safety(const Position& pos) {
 
+  constexpr Bitboard  CloseCenter = Us == WHITE ? (FileDBB | FileEBB) & (Rank3BB | Rank4BB)
+                                                : (FileDBB | FileEBB) & (Rank5BB | Rank6BB);
+  constexpr Direction Down = (Us == WHITE ? SOUTH : NORTH);
+
+  Bitboard blocked =   shift<Down>(pos.pieces(~Us, PAWN) & ~pawn_attacks(Us))
+                    &  pos.pieces(Us, PAWN)
+                    & ~pawn_attacks(~Us);
+  bool blockedCenter = more_than_one(blocked & CloseCenter);
+
   Square ksq = pos.square<KING>(Us);
   kingSquares[Us] = ksq;
   castlingRights[Us] = pos.castling_rights(Us);
 
-  Score shelters[3] = { evaluate_shelter<Us>(pos, ksq),
+  Score shelters[3] = { evaluate_shelter<Us>(pos, ksq, blockedCenter),
                         make_score(-VALUE_INFINITE, 0),
                         make_score(-VALUE_INFINITE, 0) };
 
   // If we can castle use the bonus after castling if it is bigger
   if (pos.can_castle(Us & KING_SIDE))
-      shelters[1] = evaluate_shelter<Us>(pos, relative_square(Us, SQ_G1));
+      shelters[1] = evaluate_shelter<Us>(pos, relative_square(Us, SQ_G1), blockedCenter);
 
   if (pos.can_castle(Us & QUEEN_SIDE))
-      shelters[2] = evaluate_shelter<Us>(pos, relative_square(Us, SQ_C1));
+      shelters[2] = evaluate_shelter<Us>(pos, relative_square(Us, SQ_C1), blockedCenter);
 
   for (int i : {1, 2})
      if (mg_value(shelters[i]) > mg_value(shelters[0]))

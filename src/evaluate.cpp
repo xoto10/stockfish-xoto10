@@ -129,7 +129,7 @@ namespace {
   // Assorted bonuses and penalties
   constexpr Score BishopPawns        = S(  3,  7);
   constexpr Score CorneredBishop     = S( 50, 50);
-  constexpr Score FlankAttacks       = S(  8,  0);
+  constexpr Score FlankAttacks       = S(  2,  0);
   constexpr Score Hanging            = S( 69, 36);
   constexpr Score KingProtector      = S(  7,  8);
   constexpr Score KnightOnQueen      = S( 16, 12);
@@ -382,11 +382,10 @@ namespace {
     constexpr Direction Down = (Us == WHITE ? SOUTH : NORTH);
     constexpr Bitboard Camp = (Us == WHITE ? AllSquares ^ Rank6BB ^ Rank7BB ^ Rank8BB
                                            : AllSquares ^ Rank1BB ^ Rank2BB ^ Rank3BB);
-    constexpr Bitboard Ranks45   = Rank4BB | Rank5BB;
     constexpr Bitboard CentFiles = FileDBB | FileEBB;
 
     Bitboard weak, b1, b2, safe, unsafeChecks = 0;
-    Bitboard rookChecks, queenChecks, bishopChecks, knightChecks, blocked, kingSide45;
+    Bitboard rookChecks, queenChecks, bishopChecks, knightChecks, blocked, kingZone;
     int kingDanger = 0;
     const Square ksq = pos.square<KING>(Us);
 
@@ -449,7 +448,7 @@ namespace {
     b1 = attackedBy[Them][ALL_PIECES] & KingFlank[file_of(ksq)] & Camp;
     b2 = b1 & attackedBy2[Them];
 
-    int kingFlankAttacks = popcount(b1) + popcount(b2);
+    int kingFlankAttacks = 4 * (popcount(b1) + popcount(b2));
 
     // Look for possible kingside pawn attacks
     if (    popcount(pos.pieces(Us, PAWN) & kingRing[Us]) > 2                                 // .163
@@ -467,10 +466,8 @@ namespace {
 
         if (blocked)
         {
-            kingSide45 =  (file_of(ksq) < FILE_E ? FileABB | FileBBB | FileCBB
-                                                 : FileFBB | FileGBB | FileHBB)
-                        & Ranks45;
-            kingFlankAttacks += popcount(pos.pieces(Them, PAWN) & kingSide45);
+            kingZone = (KingFlank[file_of(ksq)] & ~CentFiles) & Camp;
+            kingFlankAttacks += 5 * popcount(pos.pieces(Them, PAWN) & kingZone);
         }
     }
 
@@ -484,7 +481,7 @@ namespace {
                  - 873 * !pos.count<QUEEN>(Them)
                  -   6 * mg_value(score) / 8
                  +       mg_value(mobility[Them] - mobility[Us])
-                 +   5 * kingFlankAttacks * kingFlankAttacks / 16
+                 +   5 * kingFlankAttacks * kingFlankAttacks / 256
                  -   7;
 
     // Transform the kingDanger units into a Score, and subtract it from the evaluation

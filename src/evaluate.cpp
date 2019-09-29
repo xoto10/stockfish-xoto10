@@ -764,9 +764,9 @@ namespace {
             && pos.non_pawn_material() == 2 * BishopValueMg)
             sf = 16 + 4 * pe->passed_count();
         else
-            sf = std::min(sf, 32
+            sf = std::min(sf, 28
                              + (pos.opposite_bishops() ? 2 : 7) * pos.count<PAWN>(strongSide)
-                             + pe->unopposed_pawns());
+                             + 2 * pe->unopposed_pawns());
 
         sf = std::max(0, sf - (pos.rule50_count() - 12) / 4  );
     }

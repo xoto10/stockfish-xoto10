@@ -361,6 +361,10 @@ void Thread::search() {
   if (skill.enabled())
       multiPV = std::max(multiPV, (size_t)4);
 
+  // If not using multiPV and multi-threading, consider using multiPV on one thread
+  if (multiPV == 1 && index() % 16 == 7)
+      multiPV = 2;
+
   multiPV = std::min(multiPV, rootMoves.size());
 
   int ct = int(Options["Contempt"]) * PawnValueEg / 100; // From centipawns

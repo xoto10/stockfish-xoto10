@@ -188,6 +188,7 @@ namespace {
     // kingRing[color] are the squares adjacent to the king plus some other
     // very near squares, depending on king position.
     Bitboard kingRing[COLOR_NB];
+    Bitboard kingRing2[COLOR_NB];
 
     // kingAttackersCount[color] is the number of pieces of the given color
     // which attack a square in the kingRing of the enemy king.
@@ -250,7 +251,7 @@ namespace {
     kingAttacksCount[Them] = kingAttackersWeight[Them] = 0;
 
     // Remove from kingRing[] the squares defended by two pawns
-    kingRing[Us] &= ~dblAttackByPawn;
+    kingRing2[Us] = kingRing[Us] & ~dblAttackByPawn;
   }
 
 
@@ -283,7 +284,7 @@ namespace {
         attackedBy[Us][Pt] |= b;
         attackedBy[Us][ALL_PIECES] |= b;
 
-        if (b & kingRing[Them])
+        if (b & kingRing2[Them])
         {
             kingAttackersCount[Us]++;
             kingAttackersWeight[Us] += KingAttackWeights[Pt];
@@ -450,21 +451,30 @@ namespace {
 
     int kingFlankAttacks = popcount(b1) + popcount(b2);
 
-    // Look for possible king flank pawn attacks
-    blocked =   shift<Down>(pos.pieces(Them, PAWN) & ~attackedBy[Us][PAWN])
-             &  pos.pieces(Us, PAWN)
-             & ~attackedBy[Them][PAWN]
-             &  CentFiles;
-
-    if (blocked)
+    // Look for possible kingside pawn attacks
+    if (    popcount(pos.pieces(Us, PAWN) & kingRing[Us]) > 2                                 // .163
+        &&  pos.count<PAWN>() > 12             // .237
+        && !kingAttackersCount[Them]           // .264
+        &&  pos.non_pawn_material() > 13000    // .285
+        &&  pe->shelter_pawns(Us) > 2          // .344
+        && !(CentFiles & ksq)                  // .756
+       )
     {
-        kingZone = (KingFlank[file_of(ksq)] & ~CentFiles) & Camp;
-        kingFlankAttacks += popcount(pos.pieces(Them, PAWN) & kingZone);
+        blocked =   shift<Down>(pos.pieces(Them, PAWN) & ~attackedBy[Us][PAWN])
+                 &  pos.pieces(Us, PAWN)
+                 & ~attackedBy[Them][PAWN]
+                 &  CentFiles;
+
+        if (blocked)
+        {
+            kingZone = (KingFlank[file_of(ksq)] & ~CentFiles) & Camp;
+            kingFlankAttacks += popcount(pos.pieces(Them, PAWN) & kingZone);
+        }
     }
 
     kingDanger +=        kingAttackersCount[Them] * kingAttackersWeight[Them]
                  +  69 * kingAttacksCount[Them]
-                 + 185 * popcount(kingRing[Us] & weak)
+                 + 185 * popcount(kingRing2[Us] & weak)
                  - 100 * bool(attackedBy[Us][KNIGHT] & attackedBy[Us][KING])
                  -  35 * bool(attackedBy[Us][BISHOP] & attackedBy[Us][KING])
                  + 148 * popcount(unsafeChecks)

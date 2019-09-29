@@ -171,6 +171,7 @@ Entry* probe(const Position& pos) {
       return e;
 
   e->key = key;
+  e->unopposed = 0;
   e->scores[WHITE] = evaluate<WHITE>(pos, e);
   e->scores[BLACK] = evaluate<BLACK>(pos, e);
 

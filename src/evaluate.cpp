@@ -766,7 +766,7 @@ namespace {
         else
             sf = std::min(sf, 28
                              + (pos.opposite_bishops() ? 2 : 7) * pos.count<PAWN>(strongSide)
-                             + 2 * pe->unopposed_pawns());
+                             + (1 + pe->unopposed_pawns()) / 2);
 
         sf = std::max(0, sf - (pos.rule50_count() - 12) / 4  );
     }

@@ -361,10 +361,6 @@ void Thread::search() {
   if (skill.enabled())
       multiPV = std::max(multiPV, (size_t)4);
 
-  // If not using multiPV and multi-threading, consider using multiPV on one thread
-  if (multiPV == 1 && index() % 16 == 7)
-      multiPV = 2;
-
   multiPV = std::min(multiPV, rootMoves.size());
 
   int ct = int(Options["Contempt"]) * PawnValueEg / 100; // From centipawns
@@ -389,6 +385,10 @@ void Thread::search() {
       // Age out PV variability metric
       if (mainThread)
           totBestMoveChanges /= 2;
+
+      // If not using multiPV and multi-threading, consider using multiPV on one thread
+      if (multiPV == 1 && index() % 16 == 7 && rootDepth % 2 == 0)
+          multiPV = std::min(2, int(rootMoves.size()));
 
       // Save the last iteration's scores before first PV line is searched and
       // all the move scores except the (new) PV are set to -VALUE_INFINITE.

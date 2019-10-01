@@ -1013,9 +1013,9 @@ moves_loop: // When in check, search starts from here
       if (type_of(move) == CASTLING)
           extension = ONE_PLY;
 
-      // Pawn move extension
+      // Capture extension if rule 50 count is high
       if (   pos.rule50_count() > 18
-          && type_of(movedPiece) == PAWN)
+          && pos.capture(move))
           extension += ONE_PLY;
 
       // Calculate new depth for this move

@@ -518,7 +518,7 @@ void Thread::search() {
           double fallingEval = (354 + 10 * (mainThread->previousScore - bestValue)) / 692.0;
           fallingEval = clamp(fallingEval, 0.5, 1.5);
 
-          double losing = (-240 < bestValue && bestValue < -100) ? 1.1 : 1.0;
+          double losing = (-240 < bestValue && bestValue < -100) ? 1.14 : 0.98;
 
           // If the bestMove is stable over several iterations, reduce time accordingly
           timeReduction = lastBestMoveDepth + 9 * ONE_PLY < completedDepth ? 1.97 : 0.98;

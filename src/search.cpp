@@ -1164,6 +1164,9 @@ moves_loop: // When in check, search starts from here
               if (move == ss->killers[0])
                   bonus += bonus / 4;
 
+              if (pos.rule50_count() > 18 && type_of(movedPiece) == PAWN)
+                  bonus += 1000;
+
               update_continuation_histories(ss, movedPiece, to_sq(move), bonus);
           }
       }

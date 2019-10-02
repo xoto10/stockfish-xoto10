@@ -1273,16 +1273,18 @@ moves_loop: // When in check, search starts from here
                    :     inCheck ? mated_in(ss->ply) : VALUE_DRAW;
     else if (bestMove)
     {
+        bool r50 =   pos.rule50_count() > 18
+                  && bestValue < 0
+                  && (type_of(movedPiece) == PAWN || pos.capture_or_promotion(bestMove));
+
         // Quiet best move: update move sorting heuristics
         if (!pos.capture_or_promotion(bestMove))
-        {
-            bool r50 = pos.rule50_count() > 18 && bestValue < 0 && type_of(movedPiece) == PAWN;
             update_quiet_stats(pos, ss, bestMove, quietsSearched, quietCount,
                                stat_bonus(depth + (bestValue > beta + PawnValueMg ? ONE_PLY : DEPTH_ZERO))
                                / (r50 ? 2 : 1));
-        }
 
-        update_capture_stats(pos, bestMove, capturesSearched, captureCount, stat_bonus(depth + ONE_PLY));
+        update_capture_stats(pos, bestMove, capturesSearched, captureCount,
+                             stat_bonus(depth + ONE_PLY) / (r50 ? 2 : 1));
 
         // Extra penalty for a quiet TT or main killer move in previous ply when it gets refuted
         if (   ((ss-1)->moveCount == 1 || ((ss-1)->currentMove == (ss-1)->killers[0]))

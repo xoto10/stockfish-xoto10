@@ -1151,6 +1151,10 @@ moves_loop: // When in check, search starts from here
       else
           doFullDepthSearch = !PvNode || moveCount > 1, doLMR = false;
 
+      if (   PvNode && moveCount > 1 && value > alpha && (rootNode || value < beta)
+          && doFullDepthSearch)
+          doFullDepthSearch = false;
+
       // Step 17. Full depth search when LMR is skipped or fails high
       if (doFullDepthSearch)
       {

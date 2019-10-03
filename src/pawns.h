@@ -59,6 +59,8 @@ struct Entry {
   Square kingSquares[COLOR_NB];
   Score kingSafety[COLOR_NB];
   int castlingRights[COLOR_NB];
+  int qsIsolated[COLOR_NB];
+  int ksIsolated[COLOR_NB];
 };
 
 typedef HashTable<Entry, 131072> Table;

@@ -83,7 +83,7 @@ namespace {
 
     Bitboard doubleAttackThem = pawn_double_attacks_bb<Them>(theirPawns);
 
-    e->passedPawns[Us] = e->pawnAttacksSpan[Us] = 0;
+    e->passedPawns[Us] = e->pawnAttacksSpan[Us] = e->qsIsolated[Us] = e->ksIsolated[Us] = 0;
     e->kingSquares[Us] = SQ_NONE;
     e->pawnAttacks[Us] = pawn_attacks_bb<Us>(ourPawns);
 
@@ -146,8 +146,15 @@ namespace {
         }
 
         else if (!neighbours)
+        {
+            if (file_of(s) < FILE_E)
+                ++e->qsIsolated[Us];
+            else
+                ++e->ksIsolated[Us];
+
             score -=   Isolated
                      + WeakUnopposed * !opposed;
+        }
 
         else if (backward)
             score -=   Backward
@@ -232,6 +239,7 @@ Score Entry::do_king_safety(const Position& pos) {
   kingSquares[Us] = ksq;
   castlingRights[Us] = pos.castling_rights(Us);
 
+  Score isolatedMinority = SCORE_ZERO;
   Score shelters[3] = { evaluate_shelter<Us>(pos, ksq),
                         make_score(-VALUE_INFINITE, 0),
                         make_score(-VALUE_INFINITE, 0) };
@@ -256,7 +264,16 @@ Score Entry::do_king_safety(const Position& pos) {
   else while (pawns)
       minPawnDist = std::min(minPawnDist, distance(ksq, pop_lsb(&pawns)));
 
-  return shelters[0] - make_score(0, 16 * minPawnDist);
+  if (file_of(ksq) > FILE_D)
+  {
+      if (popcount(pos.pieces(~Us, PAWN) & QueenSide) > popcount(pos.pieces(Us, PAWN) & QueenSide))
+          isolatedMinority = Isolated * qsIsolated;
+  }
+
+  else if (popcount(pos.pieces(~Us, PAWN) & KingSide) > popcount(pos.pieces(Us, PAWN) & KingSide))
+          isolatedMinority = Isolated * ksIsolated;
+
+  return shelters[0] + isolatedMinority - make_score(0, 16 * minPawnDist);
 }
 
 // Explicit template instantiation

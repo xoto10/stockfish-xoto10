@@ -1079,7 +1079,7 @@ moves_loop: // When in check, search starts from here
       if (    depth >= 3 * ONE_PLY
           &&  moveCount >  1
                          + 2 * rootNode
-                         +     (ss->ply == 3 && thisThread->index() % 16 == 7)
+                         + 2 * (ss->ply == 5 && thisThread->index() % 16 == 7)
           && (!rootNode || thisThread->best_move_count(move) == 0)
           && (  !captureOrPromotion
               || moveCountPruning

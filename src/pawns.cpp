@@ -20,11 +20,13 @@
 
 #include <algorithm>
 #include <cassert>
+//#include <iostream>
 
 #include "bitboard.h"
 #include "pawns.h"
 #include "position.h"
 #include "thread.h"
+//#include "uci.h"
 
 namespace {
 
@@ -103,6 +105,18 @@ namespace {
         neighbours = ourPawns   & adjacent_files_bb(s);
         phalanx    = neighbours & rank_bb(s);
         support    = neighbours & rank_bb(s - Up);
+
+        Bitboard notNeighbours = Bitboard(0);
+        Bitboard theirNeighbours = (adjacent_files_bb(s) & theirPawns & forward_ranks_bb(Them, s));
+        while (theirNeighbours)
+            notNeighbours |= forward_file_bb(Them, pop_lsb(&theirNeighbours));
+        neighbours &= ~notNeighbours;
+
+//if (neighbours & notNeighbours)
+//sync_cout << "info string s " << UCI::square(s) << "\n" << pos
+////        << " nbrs\n" << Bitboards::pretty(neighbours)
+//          << " notNeighbours\n" << Bitboards::pretty(notNeighbours) << " iso-neib"
+//          << sync_endl;
 
         // A pawn is backward when it is behind all pawns of the same color on
         // the adjacent files and cannot safely advance. Phalanx and isolated

@@ -59,7 +59,11 @@ using namespace Search;
 namespace {
 
 int A=256,B=256,C=256,D=256,E=256,F=256,G=512,H=256,I=256,J=256,K=512,L=512;
-int M=256,N=256,O=256,P=256,Q=256,S=256,T=0,U=0,V=0,W=256,X=0,Y=0;
+int M=256,N=256,O=256,P=256,Q=256,S=256,W=256;
+int T=0,U=0,V=0,X=0,Y=0;
+TUNE(A,B,C,D,E,F,G,H,I,J,K,L);
+TUNE(M,N,O,P,Q,S,W);
+TUNE(SetRange(-512,512),T,U,V,X,Y);
 
 #define D(i) Depth(i)
 

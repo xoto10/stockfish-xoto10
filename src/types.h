@@ -205,7 +205,7 @@ extern Value PieceValue[PHASE_NB][PIECE_NB];
 
 enum Depth : int {
 
-  ONE_PLY = 1,
+  ONE_PLY = 256,
 
   DEPTH_ZERO          =  0 * ONE_PLY,
   DEPTH_QS_CHECKS     =  0 * ONE_PLY,

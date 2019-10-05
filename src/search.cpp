@@ -1182,6 +1182,9 @@ moves_loop: // When in check, search starts from here
       // Step 18. Undo move
       pos.undo_move(move);
 
+      if (pos.rule50_count() > 18 && value < 0 && type_of(movedPiece) == PAWN)
+          value -= 20;
+
       assert(value > -VALUE_INFINITE && value < VALUE_INFINITE);
 
       // Step 19. Check for a new best move

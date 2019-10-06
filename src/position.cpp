@@ -1058,6 +1058,10 @@ bool Position::see_ge(Move m, Value threshold) const {
   Color us = color_of(piece_on(from));
   Color stm = ~us; // First consider opponent's move
   Value balance;   // Values of the pieces taken by us minus opponent's ones
+  Square ksq = square<KING>(stm);
+
+  if (distance<File>(to, ksq) + distance<Rank>(to, ksq) < 4)
+      threshold -= PawnValueEg;
 
   // The opponent may be able to recapture so this is the best result
   // we can hope for.

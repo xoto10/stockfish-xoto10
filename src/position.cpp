@@ -1061,7 +1061,7 @@ bool Position::see_ge(Move m, Value threshold) const {
   Square ksq = square<KING>(stm);
 
   if (distance<File>(to, ksq) + distance<Rank>(to, ksq) < 4)
-      threshold -= PawnValueEg;
+      threshold -= 2 * PawnValueEg;
 
   // The opponent may be able to recapture so this is the best result
   // we can hope for.

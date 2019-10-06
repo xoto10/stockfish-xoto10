@@ -58,9 +58,6 @@ using namespace Search;
 
 namespace {
 
-int A=297,B=230,C=249,D=267,E=258,F=247,G=464,H=263,I=276,J=246,K=545,L=519;
-int M=263,N=277,O=249,P=254,Q=275,S=264,T=-24,U=-43,V=2,W=253,X=8,Y=-5;
-
 #define D(i) Depth(i)
 
   // Different node types, used as a template parameter
@@ -684,16 +681,16 @@ namespace {
             if (ttValue >= beta)
             {
                 if (!pos.capture_or_promotion(ttMove))
-                    update_quiet_stats(pos, ss, ttMove, nullptr, 0, stat_bonus(depth + D(Y)));
+                    update_quiet_stats(pos, ss, ttMove, nullptr, 0, stat_bonus(depth - D(2)));
 
                 // Extra penalty for early quiet moves of the previous ply
                 if ((ss-1)->moveCount <= 2 && !pos.captured_piece())
-                    update_continuation_histories(ss-1, pos.piece_on(prevSq), prevSq, -stat_bonus(depth + D(S)));
+                    update_continuation_histories(ss-1, pos.piece_on(prevSq), prevSq, -stat_bonus(depth + D(260)));
             }
             // Penalty for a quiet ttMove that fails low
             else if (!pos.capture_or_promotion(ttMove))
             {
-                int penalty = -stat_bonus(depth + D(T));
+                int penalty = -stat_bonus(depth - D(12));
                 thisThread->mainHistory[us][from_to(ttMove)] << penalty;
                 update_continuation_histories(ss, pos.moved_piece(ttMove), to_sq(ttMove), penalty);
             }
@@ -979,7 +976,7 @@ moves_loop: // When in check, search starts from here
 
           if (value < singularBeta)
           {
-              extension = D(A);
+              extension = D(276);
               singularLMR++;
 
               if (value < singularBeta - std::min(4 * depth / ONE_PLY, 36))
@@ -999,24 +996,24 @@ moves_loop: // When in check, search starts from here
       // Check extension (~2 Elo)
       else if (    givesCheck
                && (pos.is_discovery_check_on_king(~us, move) || pos.see_ge(move)))
-          extension = D(B);
+          extension = D(243);
 
       // Shuffle extension
       else if (   PvNode
                && pos.rule50_count() > 18
                && depth < 3 * ONE_PLY
                && ++thisThread->shuffleExts < thisThread->nodes.load(std::memory_order_relaxed) / 4)  // To avoid too many extensions
-          extension = D(C);
+          extension = D(258);
 
       // Passed pawn extension
       else if (   move == ss->killers[0]
                && pos.advanced_pawn_push(move)
                && pos.pawn_passed(us, to_sq(move)))
-          extension = D(D);
+          extension = D(262);
 
       // Castling extension
       if (type_of(move) == CASTLING)
-          extension = D(E);
+          extension = D(257);
 
       // Calculate new depth for this move
       newDepth = depth - ONE_PLY + extension;
@@ -1093,35 +1090,35 @@ moves_loop: // When in check, search starts from here
 
           // Reduction if other threads are searching this position.
           if (th.marked())
-              r += D(F);
+              r += D(252);
 
           // Decrease reduction if position is or has been on the PV
           if (ttPv)
-              r -= D(G);
+              r -= D(488);
 
           // Decrease reduction if opponent's move count is high (~10 Elo)
           if ((ss-1)->moveCount > 15)
-              r -= D(H);
+              r -= D(259);
 
           // Decrease reduction if ttMove has been singularly extended
-          r -= singularLMR * D(I);
+          r -= singularLMR * D(251);
 
           if (!captureOrPromotion)
           {
               // Increase reduction if ttMove is a capture (~0 Elo)
               if (ttCapture)
-                  r += D(J);
+                  r += D(251);
 
               // Increase reduction for cut nodes (~5 Elo)
               if (cutNode)
-                  r += D(K);
+                  r += D(528);
 
               // Decrease reduction for moves that escape a capture. Filter out
               // castling moves, because they are coded as "king captures rook" and
               // hence break make_move(). (~5 Elo)
               else if (    type_of(move) == NORMAL
                        && !pos.see_ge(reverse_move(move)))
-                  r -= D(L);
+                  r -= D(515);
 
               ss->statScore =  thisThread->mainHistory[us][from_to(move)]
                              + (*contHist[0])[movedPiece][to_sq(move)]
@@ -1138,13 +1135,13 @@ moves_loop: // When in check, search starts from here
 
               // Decrease/increase reduction by comparing opponent's stat score (~10 Elo)
               if (ss->statScore >= -99 && (ss-1)->statScore < -116)
-                  r -= D(M);
+                  r -= D(259);
 
               else if ((ss-1)->statScore >= -117 && ss->statScore < -144)
-                  r += D(N);
+                  r += D(266);
 
               // Decrease/increase reduction for moves with a good/bad history (~30 Elo)
-              r -= ss->statScore / 16384 * D(O);
+              r -= ss->statScore / 16384 * D(252);
           }
 
           Depth d = clamp(newDepth - r, ONE_PLY, newDepth);
@@ -1163,8 +1160,8 @@ moves_loop: // When in check, search starts from here
 
           if (doLMR && !captureOrPromotion)
           {
-              int bonus = value > alpha ?  stat_bonus(newDepth + D(U))
-                                        : -stat_bonus(newDepth + D(V));
+              int bonus = value > alpha ?  stat_bonus(newDepth - D(21))
+                                        : -stat_bonus(newDepth);
 
               if (move == ss->killers[0])
                   bonus += bonus / 4;
@@ -1281,20 +1278,20 @@ moves_loop: // When in check, search starts from here
         // Quiet best move: update move sorting heuristics
         if (!pos.capture_or_promotion(bestMove))
             update_quiet_stats(pos, ss, bestMove, quietsSearched, quietCount,
-                               stat_bonus(depth + (bestValue > beta + PawnValueMg ? D(W) : DEPTH_ZERO)));
+                               stat_bonus(depth + (bestValue > beta + PawnValueMg ? D(255) : DEPTH_ZERO)));
 
-        update_capture_stats(pos, bestMove, capturesSearched, captureCount, stat_bonus(depth + D(P)));
+        update_capture_stats(pos, bestMove, capturesSearched, captureCount, stat_bonus(depth + D(255)));
 
         // Extra penalty for a quiet TT or main killer move in previous ply when it gets refuted
         if (   ((ss-1)->moveCount == 1 || ((ss-1)->currentMove == (ss-1)->killers[0]))
             && !pos.captured_piece())
-                update_continuation_histories(ss-1, pos.piece_on(prevSq), prevSq, -stat_bonus(depth + D(Q)));
+                update_continuation_histories(ss-1, pos.piece_on(prevSq), prevSq, -stat_bonus(depth + D(265)));
 
     }
     // Bonus for prior countermove that caused the fail low
     else if (   (depth >= 3 * ONE_PLY || PvNode)
              && !pos.captured_piece())
-        update_continuation_histories(ss-1, pos.piece_on(prevSq), prevSq, stat_bonus(depth + D(X)));
+        update_continuation_histories(ss-1, pos.piece_on(prevSq), prevSq, stat_bonus(depth));
 
     if (PvNode)
         bestValue = std::min(bestValue, maxValue);

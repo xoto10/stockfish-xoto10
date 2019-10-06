@@ -1060,7 +1060,7 @@ bool Position::see_ge(Move m, Value threshold) const {
   Value balance;   // Values of the pieces taken by us minus opponent's ones
   Square ksq = square<KING>(stm);
 
-  if (distance<File>(to, ksq) + distance<Rank>(to, ksq) < 3)
+  if (st->nonPawnMaterial[us] > 4500 && distance<File>(to, ksq) + distance<Rank>(to, ksq) < 3)
       threshold -= PawnValueEg;
 
   // The opponent may be able to recapture so this is the best result

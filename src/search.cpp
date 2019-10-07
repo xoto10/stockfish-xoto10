@@ -515,14 +515,13 @@ void Thread::search() {
           && !Threads.stop
           && !mainThread->stopOnPonderhit)
       {
-          double fallingEval = (354 + 10 * (mainThread->previousScore - bestValue)) / 692.0;
+          double fallingEval =  (354 + 10 * (mainThread->previousScore - bestValue)) / 692.0
+                              * (rootPos.rule50_count() > 20) ? 0.95 : 1;
           fallingEval = clamp(fallingEval, 0.5, 1.5);
 
           // If the bestMove is stable over several iterations, reduce time accordingly
           timeReduction = lastBestMoveDepth + 9 < completedDepth ? 1.97 : 0.98;
           double reduction = (1.36 + mainThread->previousTimeReduction) / (2.29 * timeReduction);
-          if (rootPos.rule50_count() > 20)
-              reduction *= 0.95;
 
           // Use part of the gained time from a previous stable move for the current move
           for (Thread* th : Threads)

@@ -329,10 +329,11 @@ namespace {
                         & pos.pieces(Us, PAWN)
                         & attackedBy[Us][PAWN])
                     && !(b & TRank5BB & ~pos.pieces(Us, PAWN))
-//                  && !(b & pos.pieces(Them) ^ & pos.pieces(Them, PAWN))
+                    && !(b & (pos.pieces(Them) ^ pos.pieces(Them, PAWN)))
                    )
                 {
-//sync_cout << "info string pos\n" << pos << " bb: us " << Us << " sq " << UCI::square(s) << sync_endl;
+//sync_cout << "info string pos\n" << pos << " bb: us " << Us << " sq " << UCI::square(s)
+//          << " b " << Bitboards::pretty(b) << sync_endl;
                     score -= BlockedBishop;
                 }
 

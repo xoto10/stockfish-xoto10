@@ -82,6 +82,7 @@ namespace {
     Bitboard theirPawns = pos.pieces(Them, PAWN);
 
     Bitboard doubleAttackThem = pawn_double_attacks_bb<Them>(theirPawns);
+    int blockedCount = popcount(shift<Up>(pos.pieces(Us, PAWN)) & pos.pieces(Them));
 
     e->passedPawns[Us] = 0;
     e->kingSquares[Us] = SQ_NONE;
@@ -144,7 +145,7 @@ namespace {
 
         else if (backward)
             score -=   Backward
-                     + WeakUnopposed * !opposed;
+                     + WeakUnopposed * !opposed * (3 + blockedCount) / 3;
 
         if (!support)
             score -=   Doubled * doubled

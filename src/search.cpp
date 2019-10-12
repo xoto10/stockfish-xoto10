@@ -1274,8 +1274,12 @@ moves_loop: // When in check, search starts from here
     {
         // Quiet best move: update move sorting heuristics
         if (!pos.capture_or_promotion(bestMove))
+        {
+            bool r50 = pos.rule50_count() > 18 && bestValue < -1 && type_of(movedPiece) == PAWN;
             update_quiet_stats(pos, ss, bestMove, quietsSearched, quietCount,
-                               stat_bonus(depth + (bestValue > beta + PawnValueMg)));
+                               stat_bonus(depth + (bestValue > beta + PawnValueMg))
+                               / (r50 ? 2 : 1));
+        }
 
         update_capture_stats(pos, bestMove, capturesSearched, captureCount, stat_bonus(depth + 1));
 

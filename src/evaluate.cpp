@@ -807,7 +807,7 @@ namespace {
     Score sc2;
     score += sc2 = mobility[WHITE] - mobility[BLACK];
     if (mg_value(sc2) + 75 < 0)
-        score += make_score((mg_value(sc2) + 75) / 16, (mg_value(sc2) + 75) / 8);
+        score += make_score((mg_value(sc2) + 75) / 4, (mg_value(sc2) + 75) / 8);
 
     score +=  king<   WHITE>() - king<   BLACK>()
             + threats<WHITE>() - threats<BLACK>()

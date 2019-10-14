@@ -703,8 +703,14 @@ namespace {
   template<Tracing T>
   Score Evaluation<T>::initiative(Score score) const {
 
+    constexpr Bitboard Outer3 = FILE_A | FILE_B | FILE_C | FILE_F | FILE_G | FILE_H;
+
     Value mg = mg_value(score);
     Value eg = eg_value(score);
+
+    Bitboard blocked =  pos.pieces(WHITE, PAWN)
+                      & shift<SOUTH>(pos.pieces(BLACK, PAWN))
+                      & Outer3;
 
     int outflanking =  distance<File>(pos.square<KING>(WHITE), pos.square<KING>(BLACK))
                      - distance<Rank>(pos.square<KING>(WHITE), pos.square<KING>(BLACK));
@@ -723,6 +729,7 @@ namespace {
                     + 18 * pawnsOnBothFlanks
                     + 49 * !pos.non_pawn_material()
                     - 36 * almostUnwinnable
+                    - 10 * popcount(blocked)
                     -103 ;
 
     // Now apply the bonus: note that we find the attacking side by extracting the

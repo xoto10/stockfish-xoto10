@@ -703,7 +703,7 @@ namespace {
   template<Tracing T>
   Score Evaluation<T>::initiative(Score score) const {
 
-    constexpr Bitboard Outer3 = FILE_A | FILE_B | FILE_C | FILE_F | FILE_G | FILE_H;
+    constexpr Bitboard Outer3 = FileABB | FileBBB | FileCBB | FileFBB | FileGBB | FileHBB;
 
     Value mg = mg_value(score);
     Value eg = eg_value(score);
@@ -730,7 +730,7 @@ namespace {
                     + 49 * !pos.non_pawn_material()
                     - 36 * almostUnwinnable
                     - 10 * popcount(blocked)
-                    -103 ;
+                    -101 ;
 
     // Now apply the bonus: note that we find the attacking side by extracting the
     // sign of the midgame or endgame values, and that we carefully cap the bonus

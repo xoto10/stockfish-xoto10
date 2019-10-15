@@ -385,9 +385,7 @@ namespace {
     Bitboard rookChecks, queenChecks, bishopChecks, knightChecks;
     int kingDanger = 0;
     const Square ksq = pos.square<KING>(Us);
-
-    // Init the score with king shelter and enemy pawns storm
-    Score score = pe->king_safety<Us>(pos);
+    Score score = SCORE_ZERO;
 
     // Attacked squares defended at most once by our queen or king
     weak =  attackedBy[Them][ALL_PIECES]
@@ -470,6 +468,14 @@ namespace {
 
     // Penalty if king flank is under attack, potentially moving toward the king
     score -= FlankAttacks * kingFlankAttacks;
+
+//dbg_mean_of(mg_value(score)); // -179
+//if (mg_value(score) > -100)
+//  dbg_mean_of(mg_value(score)); // -53
+//dbg_mean_of(mg_value(score) >= -30); // 9
+
+    // Add the king shelter and enemy pawns storm
+    score += pe->king_safety<Us>(pos) / (mg_value(score) <= VALUE_ZERO ? 2 : 1);
 
     if (T)
         Trace::add(KING, Us, score);

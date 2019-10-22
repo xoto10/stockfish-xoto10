@@ -532,7 +532,7 @@ namespace {
             b =   attackedBy[Them][ALL_PIECES]
                & ~stronglyProtected
                &  attackedBy[Us][ALL_PIECES];
-            score += make_score(1,1) * 22 * popcount(b) / mobilityCount[Them];
+            score += make_score(3,3) + make_score(1,1) * 12 * popcount(b) / mobilityCount[Them];
         }
         else
             score += make_score(20,20);

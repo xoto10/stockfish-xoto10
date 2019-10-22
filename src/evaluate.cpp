@@ -138,7 +138,6 @@ namespace {
   constexpr Score Outpost            = S( 32, 10);
   constexpr Score PassedFile         = S( 11,  8);
   constexpr Score PawnlessFlank      = S( 17, 95);
-  constexpr Score RestrictedPiece    = S(  6,  6);
   constexpr Score RookOnQueenFile    = S(  7,  6);
   constexpr Score SliderOnQueen      = S( 59, 18);
   constexpr Score ThreatByKing       = S( 24, 89);
@@ -174,6 +173,7 @@ namespace {
     Pawns::Entry* pe;
     Bitboard mobilityArea[COLOR_NB];
     Score mobility[COLOR_NB] = { SCORE_ZERO, SCORE_ZERO };
+    int mobilityCount[COLOR_NB] = { 0, 0 };
 
     // attackedBy[color][piece type] is a bitboard representing all squares
     // attacked by a given color and piece type. Special "piece types" which
@@ -204,9 +204,6 @@ namespace {
     // a white knight on g5 and black's king is on g8, this white knight adds 2
     // to kingAttacksCount[WHITE].
     int kingAttacksCount[COLOR_NB];
-
-    // Record net mobility score
-    Score mobilityBalance;
   };
 
 
@@ -295,6 +292,7 @@ namespace {
         int mob = popcount(b & mobilityArea[Us]);
 
         mobility[Us] += MobilityBonus[Pt - 2][mob];
+        mobilityCount[Us] += mob;
 
         if (Pt == BISHOP || Pt == KNIGHT)
         {
@@ -489,7 +487,6 @@ namespace {
     constexpr Color     Them     = (Us == WHITE ? BLACK   : WHITE);
     constexpr Direction Up       = (Us == WHITE ? NORTH   : SOUTH);
     constexpr Bitboard  TRank3BB = (Us == WHITE ? Rank3BB : Rank6BB);
-    constexpr int       Sign     = (Us == WHITE ? 1       : -1);
 
     Bitboard b, weak, defended, nonPawnEnemies, stronglyProtected, safe;
     Score score = SCORE_ZERO;
@@ -528,11 +525,18 @@ namespace {
     }
 
     // Bonus for restricting their piece moves
-    b =   attackedBy[Them][ALL_PIECES]
-       & ~stronglyProtected
-       &  attackedBy[Us][ALL_PIECES];
-
-    score += RestrictedPiece * (2 + (mobilityBalance * Sign < 0)) * popcount(b) / 2;
+    if (pos.non_pawn_material(Them))
+    {
+        if (mobilityCount[Them])
+        {
+            b =   attackedBy[Them][ALL_PIECES]
+               & ~stronglyProtected
+               &  attackedBy[Us][ALL_PIECES];
+            score += make_score(1,1) * 22 * popcount(b) / mobilityCount[Them];
+        }
+        else
+            score += make_score(20,20);
+    }
 
     // Protected or unattacked squares
     safe = ~attackedBy[Them][ALL_PIECES] | attackedBy[Us][ALL_PIECES];
@@ -808,7 +812,7 @@ namespace {
             + pieces<WHITE, ROOK  >() - pieces<BLACK, ROOK  >()
             + pieces<WHITE, QUEEN >() - pieces<BLACK, QUEEN >();
 
-    score += mobilityBalance = mobility[WHITE] - mobility[BLACK];
+    score += mobility[WHITE] - mobility[BLACK];
 
     score +=  king<   WHITE>() - king<   BLACK>()
             + threats<WHITE>() - threats<BLACK>()

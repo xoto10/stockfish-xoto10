@@ -36,6 +36,7 @@ namespace {
   constexpr Score BlockedStorm  = S(82, 82);
   constexpr Score Doubled       = S(11, 56);
   constexpr Score Isolated      = S( 5, 15);
+  constexpr Score FarSideMajority =  S(10, 10);
   constexpr Score WeakLever     = S( 0, 56);
   constexpr Score WeakUnopposed = S(13, 27);
 
@@ -221,6 +222,8 @@ Score Entry::evaluate_shelter(const Position& pos, Square ksq) {
 template<Color Us>
 Score Entry::do_king_safety(const Position& pos) {
 
+  constexpr Color Them = (Us == WHITE ? BLACK : WHITE);
+
   Square ksq = pos.square<KING>(Us);
   kingSquares[Us] = ksq;
   castlingRights[Us] = pos.castling_rights(Us);
@@ -244,6 +247,16 @@ Score Entry::do_king_safety(const Position& pos) {
       minPawnDist = 1;
   else while (pawns)
       minPawnDist = std::min(minPawnDist, distance(ksq, pop_lsb(&pawns)));
+
+  // Bonus for pawn majority on far side of board from their king
+  if (file_of(pos.square<KING>(Them)) > FILE_D)
+  {
+      if (popcount(pos.pieces(Us, PAWN) & QueenSide) > popcount(pos.pieces(Them, PAWN) & QueenSide))
+          shelter += FarSideMajority;
+  }
+  else
+      if (popcount(pos.pieces(Us, PAWN) & KingSide) > popcount(pos.pieces(Them, PAWN) & KingSide))
+          shelter += FarSideMajority;
 
   return shelter - make_score(0, 16 * minPawnDist);
 }

@@ -535,7 +535,7 @@ namespace {
             score += make_score(1,1) * 22 * popcount(b) / mobilityCount[Them];
         }
         else
-            score += make_score(7,7);
+            score += make_score(0,0);
     }
 
     // Protected or unattacked squares

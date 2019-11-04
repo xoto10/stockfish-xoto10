@@ -340,6 +340,7 @@ void Thread::search() {
   ss->pv = pv;
 
   bestValue = delta = alpha = -VALUE_INFINITE;
+  bestMove = MOVE_NONE;
   beta = VALUE_INFINITE;
 
   size_t multiPV = Options["MultiPV"];
@@ -494,6 +495,7 @@ void Thread::search() {
           completedDepth = rootDepth;
 
       if (rootMoves[0].pv[0] != lastBestMove) {
+         bestMove.store(rootMoves[0].pv[0], std::memory_order_relaxed);
          lastBestMove = rootMoves[0].pv[0];
          lastBestMoveDepth = rootDepth;
       }
@@ -529,7 +531,14 @@ void Thread::search() {
               totBestMoveChanges += th->bestMoveChanges;
               th->bestMoveChanges = 0;
           }
-          double bestMoveInstability = 1 + totBestMoveChanges / Threads.size();
+          double bestMoveInstability = 0.9 + totBestMoveChanges / Threads.size();
+//sdbg_mean_of(bestMoveInstability); // 1.163
+
+          int ebm = Threads.equal_best_moves(rootMoves[0].pv[0]);
+          ebm = std::min(ebm, int(Threads.size() - ebm));
+//sdbg_mean_of(ebm); // 1.2
+          if (ebm)
+              bestMoveInstability *= (Threads.size() + ebm) / Threads.size();
 
           // Stop the search if we have only one legal move, or if available time elapsed
           if (   rootMoves.size() == 1

@@ -526,15 +526,29 @@ void Thread::search() {
           double reduction = (1.36 + mainThread->previousTimeReduction) / (2.29 * timeReduction);
 
           // Use part of the gained time from a previous stable move for the current move
+          Move lastMove = MOVE_NULL;
+          int diffMoves = 0, i = 0;
           for (Thread* th : Threads)
           {
               totBestMoveChanges += th->bestMoveChanges;
               th->bestMoveChanges = 0;
-          }
-          double bestMoveInstability = 0.91 + totBestMoveChanges / Threads.size();
 
-          int ebm = Threads.equal_best_moves();
-          bestMoveInstability *= (double(Threads.size()) + 2 * ebm) / Threads.size();
+              Move thMove = (th->bestMove).load(std::memory_order_relaxed);
+              diffMoves += (i > 0 && thMove != lastMove) ? 1 : 0;
+
+              lastMove = thMove, ++i;
+          }
+
+          double bestMoveInstability;
+          if (Threads.size() == 1)
+              bestMoveInstability = 1 + totBestMoveChanges;
+          else
+          {
+              bestMoveInstability =  0.79
+                                   - 0.075 * std::log(Threads.size())
+                                   + totBestMoveChanges / Threads.size();
+              bestMoveInstability *= (double(Threads.size()) + 2 * diffMoves) / Threads.size();
+          }
 
           // Stop the search if we have only one legal move, or if available time elapsed
           if (   rootMoves.size() == 1

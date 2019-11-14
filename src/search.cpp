@@ -196,7 +196,7 @@ void Search::init() {
   for (int i = 1; i < MAX_MOVES; ++i)
       Reductions[i] = int((23.4 + std::log(Threads.size()) / 2) * std::log(i));
 
-  fallingEvalDiv = 692 - 15.4 * std::log(Threads.size());
+  fallingEvalDiv = 692 + 15.4 * std::log(Threads.size());
 }
 
 

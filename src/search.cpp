@@ -525,7 +525,7 @@ void Thread::search() {
               lowestBestValue = std::min(lowestBestValue, Value(th->bestValue.load(std::memory_order_relaxed)));
           }
           double bestMoveInstability = 1 + totBestMoveChanges / Threads.size();
-          double fallingEval = (354 + 10 * (mainThread->previousScore - lowestBestValue)) / 761.0;
+          double fallingEval = (354 + 10 * (mainThread->previousScore - lowestBestValue)) / 715.0;
           fallingEval = clamp(fallingEval, 0.5, 1.5);
 
           // If the bestMove is stable over several iterations, reduce time accordingly

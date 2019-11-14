@@ -61,6 +61,9 @@ namespace {
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV };
 
+  // Divisor for fallingEval calculation
+  double fallingEvalDiv = 692;
+
   // Razor and futility margins
   constexpr int RazorMargin = 661;
   Value futility_margin(Depth d, bool improving) {
@@ -192,6 +195,8 @@ void Search::init() {
 
   for (int i = 1; i < MAX_MOVES; ++i)
       Reductions[i] = int((23.4 + std::log(Threads.size()) / 2) * std::log(i));
+
+  fallingEvalDiv = 692 - 15.4 * std::log(Threads.size());
 }
 
 
@@ -516,7 +521,7 @@ void Thread::search() {
           && !Threads.stop
           && !mainThread->stopOnPonderhit)
       {
-          double fallingEval = (354 + 10 * (mainThread->previousScore - bestValue)) / 692.0;
+          double fallingEval = (354 + 10 * (mainThread->previousScore - bestValue)) / fallingEvalDiv;
           fallingEval = clamp(fallingEval, 0.5, 1.5);
 
           // If the bestMove is stable over several iterations, reduce time accordingly

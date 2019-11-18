@@ -901,16 +901,13 @@ namespace {
     }
 
     // Step 11. Internal iterative deepening (~2 Elo)
+    if (depth >= 7 && !ttMove)
     {
-        Depth iidRed = 7 - (thisThread->ttHitAverage > 544 * ttHitAverageResolution * ttHitAverageWindow / 1024);
-        if (depth >= iidRed && !ttMove)
-        {
-            search<NT>(pos, ss, alpha, beta, depth - iidRed, cutNode);
+        search<NT>(pos, ss, alpha, beta, depth - 7, cutNode);
 
-            tte = TT.probe(posKey, ttHit);
-            ttValue = ttHit ? value_from_tt(tte->value(), ss->ply, pos.rule50_count()) : VALUE_NONE;
-            ttMove = ttHit ? tte->move() : MOVE_NONE;
-        }
+        tte = TT.probe(posKey, ttHit);
+        ttValue = ttHit ? value_from_tt(tte->value(), ss->ply, pos.rule50_count()) : VALUE_NONE;
+        ttMove = ttHit ? tte->move() : MOVE_NONE;
     }
 
 moves_loop: // When in check, search starts from here
@@ -980,7 +977,8 @@ moves_loop: // When in check, search starts from here
               && !givesCheck)
           {
               // Reduced depth of the next LMR search
-              int lmrDepth = std::max(newDepth - reduction(improving, depth, moveCount), 0);
+              int lmrDepth = std::max(0, newDepth - reduction(improving, depth, moveCount) +
+                        (thisThread->ttHitAverage > 544 * ttHitAverageResolution * ttHitAverageWindow / 1024));
 
               // Countermoves based pruning (~20 Elo)
               if (   lmrDepth < 4 + ((ss-1)->statScore > 0 || (ss-1)->moveCount == 1)

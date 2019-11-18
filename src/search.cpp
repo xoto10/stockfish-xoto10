@@ -823,9 +823,6 @@ namespace {
         // Null move dynamic reduction based on depth and value
         Depth R = (835 + 70 * depth) / 256 + std::min(int(eval - beta) / 185, 3);
 
-        if (thisThread->ttHitAverage > 544 * ttHitAverageResolution * ttHitAverageWindow / 1024)
-            --R;
-
         ss->currentMove = MOVE_NULL;
         ss->continuationHistory = &thisThread->continuationHistory[0][0][NO_PIECE][0];
 
@@ -870,6 +867,7 @@ namespace {
         Value raisedBeta = std::min(beta + 191 - 46 * improving, VALUE_INFINITE);
         MovePicker mp(pos, ttMove, raisedBeta - ss->staticEval, &thisThread->captureHistory);
         int probCutCount = 0;
+        int r = 4 - (thisThread->ttHitAverage > 544 * ttHitAverageResolution * ttHitAverageWindow / 1024);
 
         while (  (move = mp.next_move()) != MOVE_NONE
                && probCutCount < 2 + 2 * cutNode)
@@ -894,7 +892,7 @@ namespace {
 
                 // If the qsearch held, perform the regular search
                 if (value >= raisedBeta)
-                    value = -search<NonPV>(pos, ss+1, -raisedBeta, -raisedBeta+1, depth - 4, !cutNode);
+                    value = -search<NonPV>(pos, ss+1, -raisedBeta, -raisedBeta+1, depth - r, !cutNode);
 
                 pos.undo_move(move);
 

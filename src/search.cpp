@@ -794,7 +794,8 @@ namespace {
     // Step 7. Razoring (~2 Elo)
     if (   !rootNode // The required rootNode PV handling is not available in qsearch
         &&  depth < 2
-        &&  eval <= alpha - RazorMargin)
+        &&  eval <= alpha - RazorMargin
+        &&  thisThread->ttHitAverage < 544 * ttHitAverageResolution * ttHitAverageWindow / 1024)
         return qsearch<NT>(pos, ss, alpha, beta);
 
     improving =   ss->staticEval >= (ss-2)->staticEval

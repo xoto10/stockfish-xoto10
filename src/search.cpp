@@ -527,6 +527,9 @@ void Thread::search() {
           timeReduction = lastBestMoveDepth + 9 < completedDepth ? 1.97 : 0.98;
           double reduction = (1.36 + mainThread->previousTimeReduction) / (2.29 * timeReduction);
 
+          double noProgress =  1
+                             + (0.6 - float(ttHitAverage) / (ttHitAverageResolution * ttHitAverageWindow)) / 6;
+
           // Use part of the gained time from a previous stable move for the current move
           for (Thread* th : Threads)
           {
@@ -537,7 +540,7 @@ void Thread::search() {
 
           // Stop the search if we have only one legal move, or if available time elapsed
           if (   rootMoves.size() == 1
-              || Time.elapsed() > Time.optimum() * fallingEval * reduction * bestMoveInstability)
+              || Time.elapsed() > Time.optimum() * fallingEval * reduction * bestMoveInstability * noProgress)
           {
               // If we are allowed to ponder do not stop the search now but
               // keep pondering until the GUI sends "ponderhit" or "stop".

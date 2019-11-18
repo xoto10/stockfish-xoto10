@@ -867,7 +867,6 @@ namespace {
         Value raisedBeta = std::min(beta + 191 - 46 * improving, VALUE_INFINITE);
         MovePicker mp(pos, ttMove, raisedBeta - ss->staticEval, &thisThread->captureHistory);
         int probCutCount = 0;
-        int r = 4 - (thisThread->ttHitAverage > 544 * ttHitAverageResolution * ttHitAverageWindow / 1024);
 
         while (  (move = mp.next_move()) != MOVE_NONE
                && probCutCount < 2 + 2 * cutNode)
@@ -892,7 +891,7 @@ namespace {
 
                 // If the qsearch held, perform the regular search
                 if (value >= raisedBeta)
-                    value = -search<NonPV>(pos, ss+1, -raisedBeta, -raisedBeta+1, depth - r, !cutNode);
+                    value = -search<NonPV>(pos, ss+1, -raisedBeta, -raisedBeta+1, depth - 4, !cutNode);
 
                 pos.undo_move(move);
 
@@ -902,13 +901,16 @@ namespace {
     }
 
     // Step 11. Internal iterative deepening (~2 Elo)
-    if (depth >= 7 && !ttMove)
     {
-        search<NT>(pos, ss, alpha, beta, depth - 7, cutNode);
+        Depth iidRed = 7 - (thisThread->ttHitAverage > 544 * ttHitAverageResolution * ttHitAverageWindow / 1024);
+        if (depth >= iidRed && !ttMove)
+        {
+            search<NT>(pos, ss, alpha, beta, depth - iidRed, cutNode);
 
-        tte = TT.probe(posKey, ttHit);
-        ttValue = ttHit ? value_from_tt(tte->value(), ss->ply, pos.rule50_count()) : VALUE_NONE;
-        ttMove = ttHit ? tte->move() : MOVE_NONE;
+            tte = TT.probe(posKey, ttHit);
+            ttValue = ttHit ? value_from_tt(tte->value(), ss->ply, pos.rule50_count()) : VALUE_NONE;
+            ttMove = ttHit ? tte->move() : MOVE_NONE;
+        }
     }
 
 moves_loop: // When in check, search starts from here

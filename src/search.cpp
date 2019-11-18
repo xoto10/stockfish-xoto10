@@ -803,7 +803,6 @@ namespace {
     // Step 8. Futility pruning: child node (~30 Elo)
     if (   !PvNode
         &&  depth < 7
-        &&  thisThread->ttHitAverage < 544 * ttHitAverageResolution * ttHitAverageWindow / 1024
         &&  eval - futility_margin(depth, improving) >= beta
         &&  eval < VALUE_KNOWN_WIN) // Do not return unproven wins
         return eval;
@@ -823,6 +822,9 @@ namespace {
 
         // Null move dynamic reduction based on depth and value
         Depth R = (835 + 70 * depth) / 256 + std::min(int(eval - beta) / 185, 3);
+
+        if (thisThread->ttHitAverage > 544 * ttHitAverageResolution * ttHitAverageWindow / 1024)
+            --R;
 
         ss->currentMove = MOVE_NULL;
         ss->continuationHistory = &thisThread->continuationHistory[0][0][NO_PIECE][0];

@@ -393,8 +393,8 @@ void Thread::search() {
           rm.previousScore = rm.score;
 
       // Reset tthit average
-      ttHitCount = 20;
-      ttHitTotal = 40;
+      ttHitCount = 100;
+      ttHitTotal = 200;
 
       size_t pvFirst = 0;
       pvLast = 0;

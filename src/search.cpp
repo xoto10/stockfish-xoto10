@@ -363,8 +363,6 @@ void Thread::search() {
       multiPV = std::max(multiPV, (size_t)4);
 
   multiPV = std::min(multiPV, rootMoves.size());
-  ttHitCount = 0;
-  ttHitTotal = 0;
 
   int ct = int(Options["Contempt"]) * PawnValueEg / 100; // From centipawns
 
@@ -393,6 +391,10 @@ void Thread::search() {
       // all the move scores except the (new) PV are set to -VALUE_INFINITE.
       for (RootMove& rm : rootMoves)
           rm.previousScore = rm.score;
+
+      // Reset tthit average
+      ttHitCount = 50;
+      ttHitTotal = 100;
 
       size_t pvFirst = 0;
       pvLast = 0;

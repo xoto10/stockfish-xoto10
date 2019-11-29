@@ -338,6 +338,8 @@ void Thread::search() {
       (ss-i)->continuationHistory = &this->continuationHistory[0][0][NO_PIECE][0]; // Use as a sentinel
 
   ss->pv = pv;
+  ttHitCount = 50;
+  ttHitTotal = 100;
 
   bestValue = delta = alpha = -VALUE_INFINITE;
   beta = VALUE_INFINITE;
@@ -391,10 +393,6 @@ void Thread::search() {
       // all the move scores except the (new) PV are set to -VALUE_INFINITE.
       for (RootMove& rm : rootMoves)
           rm.previousScore = rm.score;
-
-      // Reset tthit average
-      ttHitCount = 100;
-      ttHitTotal = 200;
 
       size_t pvFirst = 0;
       pvLast = 0;

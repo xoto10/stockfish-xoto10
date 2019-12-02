@@ -787,7 +787,7 @@ namespace {
         }
         else
             ss->staticEval = eval = -(ss-1)->staticEval + 2 * Eval::Tempo
-                 + int(thisThread->ttHitAverage - 440 * ttHitAverageResolution * ttHitAverageWindow / 1024) / 16384;
+                 + int(thisThread->ttHitAverage - 440 * ttHitAverageResolution * ttHitAverageWindow / 1024) / 65536;
 
         tte->save(posKey, VALUE_NONE, ttPv, BOUND_NONE, DEPTH_NONE, MOVE_NONE, eval);
     }

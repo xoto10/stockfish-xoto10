@@ -788,7 +788,7 @@ namespace {
         else
             ss->staticEval = eval =  -(ss-1)->staticEval
                  + Eval::Tempo * int((1146 * ttHitAverageResolution * ttHitAverageWindow / 1024 - 666667)
-                                     / (thisThread->ttHitAverage - 333333));
+                                     / std::max(100000, int(thisThread->ttHitAverage - 333333)));
 
         tte->save(posKey, VALUE_NONE, ttPv, BOUND_NONE, DEPTH_NONE, MOVE_NONE, eval);
     }

@@ -1046,7 +1046,7 @@ moves_loop: // When in check, search starts from here
       // Passed pawn extension
       else if (   move == ss->killers[0]
                && pos.advanced_pawn_push(move)
-               && pos.pawn_passed(us, to_sq(move)))
+               && (pos.pawn_passed(us, to_sq(move)) || pos.non_pawn_material(us) > 6600))
           extension = 1;
 
       // Last captures extension

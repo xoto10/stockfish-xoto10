@@ -188,25 +188,6 @@ namespace {
 
 } // namespace
 
-/// Debug functions used mainly to collect run-time statistics
-static int64_t shits[2], smeans[2];
-
-void sdbg_hit_on(bool b) { ++shits[0]; if (b) ++shits[1]; }
-void sdbg_hit_on(bool c, bool b) { if (c) sdbg_hit_on(b); }
-void sdbg_mean_of(int v) { ++smeans[0]; smeans[1] += v; }
-
-void sdbg_print() {
-
-  if (shits[0])
-      sync_cout << "info string Total " << shits[0] << " Hits " << shits[1]
-           << " hit rate (%) " << 100 * shits[1] / shits[0] << sync_endl;
-
-  if (smeans[0])
-      sync_cout << "info string Total " << smeans[0] << " Mean "
-           << (double)smeans[1] / smeans[0] << sync_endl;
-}
-
-
 
 /// Search::init() is called at startup to initialize various lookup tables
 
@@ -567,7 +548,6 @@ void Thread::search() {
           }
       }
   }
-sdbg_print();
 
   if (!mainThread)
       return;
@@ -807,8 +787,8 @@ namespace {
         }
         else
             ss->staticEval = eval =  -(ss-1)->staticEval
-                 + Eval::Tempo * int((1476 * ttHitAverageResolution * ttHitAverageWindow / 1024 + 4000000)
-                                     / (thisThread->ttHitAverage + 2000000));
+                 + Eval::Tempo * int((1146 * ttHitAverageResolution * ttHitAverageWindow / 1024 - 666667)
+                                     / (thisThread->ttHitAverage - 333333));
 
         tte->save(posKey, VALUE_NONE, ttPv, BOUND_NONE, DEPTH_NONE, MOVE_NONE, eval);
     }

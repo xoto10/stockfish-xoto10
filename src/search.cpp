@@ -59,6 +59,9 @@ using namespace Search;
 
 namespace {
 
+  int A = 5, B = 5, C = 6, D = 354, E = 692;
+TUNE(A,B,C,D,E);
+
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV };
 
@@ -349,9 +352,9 @@ void Thread::search() {
   if (mainThread)
   {
       if (mainThread->previousScore == VALUE_INFINITE)
-          mainThread->iterValue = std::deque<Value>(5, VALUE_ZERO);
+          mainThread->iterValue = std::deque<Value>(A, VALUE_ZERO);
       else
-          mainThread->iterValue = std::deque<Value>(5, mainThread->previousScore);
+          mainThread->iterValue = std::deque<Value>(A, mainThread->previousScore);
   }
 
   size_t multiPV = Options["MultiPV"];
@@ -529,8 +532,8 @@ void Thread::search() {
           && !Threads.stop
           && !mainThread->stopOnPonderhit)
       {
-          double fallingEval = (354 +  5 * (mainThread->previousScore - bestValue)
-                                    +  6 * (mainThread->iterValue[0]  - bestValue)) / 692.0;
+          double fallingEval = (  D +  B * (mainThread->previousScore - bestValue)
+                                    +  C * (mainThread->iterValue[0]  - bestValue)) / double(E);
           fallingEval = clamp(fallingEval, 0.5, 1.5);
 
           // If the bestMove is stable over several iterations, reduce time accordingly

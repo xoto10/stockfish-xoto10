@@ -88,6 +88,7 @@ struct MainThread : public Thread {
 
   double previousTimeReduction;
   Value previousScore;
+  std::deque<Value> iterValue;
   int callsCnt;
   bool stopOnPonderhit;
   std::atomic_bool ponder;

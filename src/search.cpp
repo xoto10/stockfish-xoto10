@@ -22,6 +22,7 @@
 #include <cassert>
 #include <cmath>
 #include <cstring>   // For std::memset
+#include <deque>
 #include <iostream>
 #include <sstream>
 
@@ -345,6 +346,14 @@ void Thread::search() {
   bestValue = delta = alpha = -VALUE_INFINITE;
   beta = VALUE_INFINITE;
 
+  if (mainThread)
+  {
+      if (mainThread->previousScore == VALUE_INFINITE)
+          mainThread->iterValue = std::deque<Value>(5, VALUE_ZERO);
+      else
+          mainThread->iterValue = std::deque<Value>(5, mainThread->previousScore);
+  }
+
   size_t multiPV = Options["MultiPV"];
 
   // Pick integer skill levels, but non-deterministically round up or down
@@ -520,7 +529,9 @@ void Thread::search() {
           && !Threads.stop
           && !mainThread->stopOnPonderhit)
       {
-          double fallingEval = (354 + 10 * (mainThread->previousScore - bestValue)) / 692.0;
+          double fallingEval = (354 +  7 * (mainThread->previousScore - bestValue)
+                                    +  6 * (mainThread->iterValue[0]  - bestValue)) / 692.0;
+//sync_cout << "info string d " << rootDepth << " best " << bestValue << " iter0 " << mainThread->iterValue[0] << sync_endl;
           fallingEval = clamp(fallingEval, 0.5, 1.5);
 
           // If the bestMove is stable over several iterations, reduce time accordingly
@@ -547,6 +558,9 @@ void Thread::search() {
                   Threads.stop = true;
           }
       }
+
+      mainThread->iterValue.pop_front();
+      mainThread->iterValue.push_back(bestValue);
   }
 
   if (!mainThread)

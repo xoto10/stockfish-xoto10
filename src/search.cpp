@@ -531,7 +531,7 @@ void Thread::search() {
           && !Threads.stop
           && !mainThread->stopOnPonderhit)
       {
-          double fallingEval = (354 +  6 * (mainThread->previousScore - bestValue)
+          double fallingEval = (354 +  7 * (mainThread->previousScore - bestValue)
                                     +  6 * (mainThread->iterValue[iterIdx]  - bestValue)) / 692.0;
           fallingEval = clamp(fallingEval, 0.5, 1.5);
 
@@ -561,7 +561,7 @@ void Thread::search() {
       }
 
       mainThread->iterValue[iterIdx] = bestValue;
-      iterIdx = (iterIdx + 1) % 5;
+      iterIdx = (iterIdx + 1) & 7;
   }
 
   if (!mainThread)

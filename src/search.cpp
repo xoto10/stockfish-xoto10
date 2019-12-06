@@ -349,11 +349,9 @@ void Thread::search() {
   if (mainThread)
   {
       if (mainThread->previousScore == VALUE_INFINITE)
-          for (int i=0; i<4; ++i)
-              mainThread->iterValue[i] = VALUE_ZERO;
+          mainThread->iterValue[0] = VALUE_ZERO, mainThread->iterValue[1] = VALUE_ZERO;
       else
-          for (int i=0; i<4; ++i)
-              mainThread->iterValue[i] = mainThread->previousScore;
+          mainThread->iterValue[0] = mainThread->previousScore, mainThread->iterValue[1] = mainThread->previousScore;
   }
 
   size_t multiPV = Options["MultiPV"];
@@ -561,7 +559,7 @@ void Thread::search() {
       }
 
       mainThread->iterValue[iterIdx] = bestValue;
-      iterIdx = (iterIdx + 1) & 3;
+      iterIdx ^= 1;
   }
 
   if (!mainThread)

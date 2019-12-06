@@ -349,10 +349,10 @@ void Thread::search() {
   if (mainThread)
   {
       if (mainThread->previousScore == VALUE_INFINITE)
-          for (int i=0; i<8; ++i)
+          for (int i=0; i<4; ++i)
               mainThread->iterValue[i] = VALUE_ZERO;
       else
-          for (int i=0; i<8; ++i)
+          for (int i=0; i<4; ++i)
               mainThread->iterValue[i] = mainThread->previousScore;
   }
 
@@ -561,7 +561,7 @@ void Thread::search() {
       }
 
       mainThread->iterValue[iterIdx] = bestValue;
-      iterIdx = (iterIdx + 1) & 7;
+      iterIdx = (iterIdx + 1) & 3;
   }
 
   if (!mainThread)

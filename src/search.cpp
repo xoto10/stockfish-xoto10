@@ -349,10 +349,10 @@ void Thread::search() {
   if (mainThread)
   {
       if (mainThread->previousScore == VALUE_INFINITE)
-          for (int i=0; i<5; ++i)
+          for (int i=0; i<8; ++i)
               mainThread->iterValue[i] = VALUE_ZERO;
       else
-          for (int i=0; i<5; ++i)
+          for (int i=0; i<8; ++i)
               mainThread->iterValue[i] = mainThread->previousScore;
   }
 

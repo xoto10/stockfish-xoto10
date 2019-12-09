@@ -67,9 +67,6 @@ namespace {
   #undef S
   #undef V
 
-  bool sideUnopposed[2];
-
-
   template<Color Us>
   Score evaluate(const Position& pos, Pawns::Entry* e) {
 
@@ -136,7 +133,7 @@ namespace {
 
         // Find any unopposed pawns on queenside or kingside
         if (!opposed)
-            sideUnopposed[file_of(s) >> 2] = true;
+            e->sideUnopposed[file_of(s) >> 2] = true;
 
         // Score this pawn
         if (support | phalanx)
@@ -190,11 +187,11 @@ Entry* probe(const Position& pos) {
       return e;
 
   e->key = key;
-  sideUnopposed[0] = false, sideUnopposed[1] = false; // QS and KS
+  e->sideUnopposed[0] = false, e->sideUnopposed[1] = false; // QS and KS
   e->scores[WHITE] = evaluate<WHITE>(pos, e);
   e->scores[BLACK] = evaluate<BLACK>(pos, e);
 
-  if (sideUnopposed[0])
+  if (e->sideUnopposed[0])
   {
     e->scores[WHITE] -=  MinorityRank2 * popcount(A2D2BB & pos.pieces(WHITE, PAWN))
                        + MinorityRank3 * popcount(A3D3BB & pos.pieces(WHITE, PAWN));
@@ -202,7 +199,7 @@ Entry* probe(const Position& pos) {
                        + MinorityRank3 * popcount(A6D6BB & pos.pieces(BLACK, PAWN));
   }
 
-  if (sideUnopposed[1])
+  if (e->sideUnopposed[1])
   {
     e->scores[WHITE] -=  MinorityRank2 * popcount(E2H2BB & pos.pieces(WHITE, PAWN))
                        + MinorityRank3 * popcount(E3H3BB & pos.pieces(WHITE, PAWN));

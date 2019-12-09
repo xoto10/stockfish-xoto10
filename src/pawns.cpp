@@ -36,6 +36,8 @@ namespace {
   constexpr Score BlockedStorm  = S(82, 82);
   constexpr Score Doubled       = S(11, 56);
   constexpr Score Isolated      = S( 5, 15);
+  constexpr Score MinorityRank2 = S(10,  5);
+  constexpr Score MinorityRank3 = S( 5,  2);
   constexpr Score WeakLever     = S( 0, 56);
   constexpr Score WeakUnopposed = S(13, 27);
 
@@ -64,6 +66,9 @@ namespace {
 
   #undef S
   #undef V
+
+  bool sideUnopposed[2];
+
 
   template<Color Us>
   Score evaluate(const Position& pos, Pawns::Entry* e) {
@@ -129,6 +134,10 @@ namespace {
         if (passed)
             e->passedPawns[Us] |= s;
 
+        // Find any unopposed pawns on queenside or kingside
+        if (!opposed)
+            sideUnopposed[file_of(s) >> 2] = true;
+
         // Score this pawn
         if (support | phalanx)
         {
@@ -165,6 +174,15 @@ namespace Pawns {
 
 Entry* probe(const Position& pos) {
 
+  constexpr Bitboard A2D2BB = Rank2BB & QueenSide;
+  constexpr Bitboard E2H2BB = Rank2BB & KingSide;
+  constexpr Bitboard A3D3BB = Rank3BB & QueenSide;
+  constexpr Bitboard E3H3BB = Rank3BB & KingSide;
+  constexpr Bitboard A6D6BB = Rank6BB & QueenSide;
+  constexpr Bitboard E6H6BB = Rank6BB & KingSide;
+  constexpr Bitboard A7D7BB = Rank7BB & QueenSide;
+  constexpr Bitboard E7H7BB = Rank7BB & KingSide;
+
   Key key = pos.pawn_key();
   Entry* e = pos.this_thread()->pawnsTable[key];
 
@@ -172,8 +190,25 @@ Entry* probe(const Position& pos) {
       return e;
 
   e->key = key;
+  sideUnopposed[0] = false, sideUnopposed[1] = false; // QS and KS
   e->scores[WHITE] = evaluate<WHITE>(pos, e);
   e->scores[BLACK] = evaluate<BLACK>(pos, e);
+
+  if (sideUnopposed[0])
+  {
+    e->scores[WHITE] -=  MinorityRank2 * popcount(A2D2BB & pos.pieces(WHITE, PAWN))
+                       + MinorityRank3 * popcount(A3D3BB & pos.pieces(WHITE, PAWN));
+    e->scores[BLACK] -=  MinorityRank2 * popcount(A7D7BB & pos.pieces(BLACK, PAWN))
+                       + MinorityRank3 * popcount(A6D6BB & pos.pieces(BLACK, PAWN));
+  }
+
+  if (sideUnopposed[1])
+  {
+    e->scores[WHITE] -=  MinorityRank2 * popcount(E2H2BB & pos.pieces(WHITE, PAWN))
+                       + MinorityRank3 * popcount(E3H3BB & pos.pieces(WHITE, PAWN));
+    e->scores[BLACK] -=  MinorityRank2 * popcount(E7H7BB & pos.pieces(BLACK, PAWN))
+                       + MinorityRank3 * popcount(E6H6BB & pos.pieces(BLACK, PAWN));
+  }
 
   return e;
 }

@@ -68,7 +68,7 @@ namespace {
   #undef V
 
   template<Color Us>
-  Score evaluate(const Position& pos, Pawns::Entry* e) {
+  Score evaluate(const Position& pos, Pawns::Entry* e, bool sideUnopposed[2]) {
 
     constexpr Color     Them = (Us == WHITE ? BLACK : WHITE);
     constexpr Direction Up   = pawn_push(Us);
@@ -133,7 +133,7 @@ namespace {
 
         // Find any unopposed pawns on queenside or kingside
         if (!opposed)
-            e->sideUnopposed[file_of(s) >> 2] = true;
+            sideUnopposed[file_of(s) >> 2] = true;
 
         // Score this pawn
         if (support | phalanx)
@@ -186,14 +186,16 @@ Entry* probe(const Position& pos) {
   if (e->key == key)
       return e;
 
+  bool sideUnopposed[2];
+
   e->key = key;
-  e->sideUnopposed[0] = false, e->sideUnopposed[1] = false; // QS and KS
-  e->scores[WHITE] = evaluate<WHITE>(pos, e);
-  e->scores[BLACK] = evaluate<BLACK>(pos, e);
+  sideUnopposed[0] = false, sideUnopposed[1] = false; // QS and KS
+  e->scores[WHITE] = evaluate<WHITE>(pos, e, sideUnopposed);
+  e->scores[BLACK] = evaluate<BLACK>(pos, e, sideUnopposed);
 
   if (pos.pieces(WHITE, PAWN) & shift<SOUTH>(pos.pieces(BLACK, PAWN)) & (FileDBB | FileEBB))
   {
-    if (e->sideUnopposed[0])
+    if (sideUnopposed[0])
     {
       e->scores[WHITE] -=  MinorityRank2 * popcount(A2D2BB & pos.pieces(WHITE, PAWN))
                          + MinorityRank3 * popcount(A3D3BB & pos.pieces(WHITE, PAWN));
@@ -201,7 +203,7 @@ Entry* probe(const Position& pos) {
                          + MinorityRank3 * popcount(A6D6BB & pos.pieces(BLACK, PAWN));
     }
 
-    if (e->sideUnopposed[1])
+    if (sideUnopposed[1])
     {
       e->scores[WHITE] -=  MinorityRank2 * popcount(E2H2BB & pos.pieces(WHITE, PAWN))
                          + MinorityRank3 * popcount(E3H3BB & pos.pieces(WHITE, PAWN));

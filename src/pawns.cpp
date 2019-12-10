@@ -37,6 +37,7 @@ namespace {
   constexpr Score Doubled       = S(11, 56);
   constexpr Score Isolated      = S( 5, 15);
   constexpr Score WeakLever     = S( 0, 56);
+  constexpr Score WeakLeverPush = S( 0, 30);
   constexpr Score WeakUnopposed = S(13, 27);
 
   // Connected pawn bonus
@@ -144,7 +145,8 @@ namespace {
 
         else if (backward)
             score -=   Backward
-                     + WeakUnopposed * !opposed;
+                     + WeakUnopposed * !opposed
+                     + WeakLeverPush * (!blocked && more_than_one(leverPush));
 
         if (!support)
             score -=   Doubled * doubled

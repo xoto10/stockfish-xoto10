@@ -71,7 +71,7 @@ namespace {
     constexpr Color     Them = (Us == WHITE ? BLACK : WHITE);
     constexpr Direction Up   = pawn_push(Us);
 
-    Bitboard neighbours, stoppers, support, phalanx, opposed;
+    Bitboard neighbours, stoppers, support, phalanx, opposed, supporting;
     Bitboard lever, leverPush, blocked;
     Square s;
     bool backward, passed, doubled;
@@ -104,6 +104,7 @@ namespace {
         neighbours = ourPawns   & adjacent_files_bb(s);
         phalanx    = neighbours & rank_bb(s);
         support    = neighbours & rank_bb(s - Up);
+        supporting = neighbours & rank_bb(s + Up);
 
         // A pawn is backward when it is behind all pawns of the same color on
         // the adjacent files and cannot safely advance.
@@ -132,7 +133,7 @@ namespace {
         // Score this pawn
         if (support | phalanx)
         {
-            int v =  Connected[r] * (2 + bool(phalanx) - bool(opposed))
+            int v =  Connected[r] * (1 + bool(phalanx) + (!opposed && !supporting))
                    + 21 * popcount(support);
 
             score += make_score(v, v * (r - 2) / 4);

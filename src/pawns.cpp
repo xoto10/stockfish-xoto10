@@ -146,7 +146,7 @@ namespace {
         else if (backward)
             score -=   Backward
                      + WeakUnopposed * !opposed
-                     + WeakLeverPush * (!blocked && more_than_one(leverPush));
+                     + WeakLeverPush * more_than_one(leverPush);
 
         if (!support)
             score -=   Doubled * doubled

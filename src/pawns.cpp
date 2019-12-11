@@ -185,7 +185,7 @@ Entry* probe(const Position& pos) {
   if (e->key == key)
       return e;
 
-  int sidePawns[COLOR_NB][2]; // [color][qs/ks]
+  int sidePawns[COLOR_NB][2] = { { 0, 0 }, { 0, 0 } }; // [color][qs/ks]
 
   e->key = key;
   e->scores[WHITE] = evaluate<WHITE>(pos, e, sidePawns);

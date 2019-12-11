@@ -197,18 +197,22 @@ Entry* probe(const Position& pos) {
   {
     if (sideUnopposed[0])
     {
-      e->scores[WHITE] -=  MinorityRank2 * popcount(A2D2BB & pos.pieces(WHITE, PAWN))
-                         + MinorityRank3 * popcount(A3D3BB & pos.pieces(WHITE, PAWN));
-      e->scores[BLACK] -=  MinorityRank2 * popcount(A7D7BB & pos.pieces(BLACK, PAWN))
-                         + MinorityRank3 * popcount(A6D6BB & pos.pieces(BLACK, PAWN));
+      if (file_of(pos.square<KING>(WHITE)) > FILE_D)
+          e->scores[WHITE] -=  MinorityRank2 * popcount(A2D2BB & pos.pieces(WHITE, PAWN))
+                             + MinorityRank3 * popcount(A3D3BB & pos.pieces(WHITE, PAWN));
+      if (file_of(pos.square<KING>(BLACK)) > FILE_D)
+          e->scores[BLACK] -=  MinorityRank2 * popcount(A7D7BB & pos.pieces(BLACK, PAWN))
+                             + MinorityRank3 * popcount(A6D6BB & pos.pieces(BLACK, PAWN));
     }
 
     if (sideUnopposed[1])
     {
-      e->scores[WHITE] -=  MinorityRank2 * popcount(E2H2BB & pos.pieces(WHITE, PAWN))
-                         + MinorityRank3 * popcount(E3H3BB & pos.pieces(WHITE, PAWN));
-      e->scores[BLACK] -=  MinorityRank2 * popcount(E7H7BB & pos.pieces(BLACK, PAWN))
-                         + MinorityRank3 * popcount(E6H6BB & pos.pieces(BLACK, PAWN));
+      if (file_of(pos.square<KING>(WHITE)) < FILE_E)
+          e->scores[WHITE] -=  MinorityRank2 * popcount(E2H2BB & pos.pieces(WHITE, PAWN))
+                             + MinorityRank3 * popcount(E3H3BB & pos.pieces(WHITE, PAWN));
+      if (file_of(pos.square<KING>(BLACK)) < FILE_E)
+          e->scores[BLACK] -=  MinorityRank2 * popcount(E7H7BB & pos.pieces(BLACK, PAWN))
+                             + MinorityRank3 * popcount(E6H6BB & pos.pieces(BLACK, PAWN));
     }
   }
 

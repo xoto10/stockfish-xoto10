@@ -191,7 +191,7 @@ Entry* probe(const Position& pos) {
   e->scores[WHITE] = evaluate<WHITE>(pos, e, sidePawns);
   e->scores[BLACK] = evaluate<BLACK>(pos, e, sidePawns);
 
-  if (pos.pieces(WHITE, PAWN) & shift<SOUTH>(pos.pieces(BLACK, PAWN)) & (FileDBB | FileEBB))
+//if (pos.pieces(WHITE, PAWN) & shift<SOUTH>(pos.pieces(BLACK, PAWN)) & (FileDBB | FileEBB))
   {
     if (sidePawns[WHITE][0] < sidePawns[BLACK][0])
       e->scores[WHITE] -=  MinorityRank2 * popcount(A2D2BB & pos.pieces(WHITE, PAWN))

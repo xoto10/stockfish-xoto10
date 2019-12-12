@@ -36,8 +36,8 @@ namespace {
   constexpr Score BlockedStorm  = S(82, 82);
   constexpr Score Doubled       = S(11, 56);
   constexpr Score Isolated      = S( 5, 15);
-  constexpr Score MinorityRank2 = S(10,  5);
-  constexpr Score MinorityRank3 = S( 5,  2);
+  constexpr Score MinorityRank2 = S(14,  7);
+  constexpr Score MinorityRank3 = S( 7,  3);
   constexpr Score WeakLever     = S( 0, 56);
   constexpr Score WeakUnopposed = S(13, 27);
 
@@ -191,7 +191,7 @@ Entry* probe(const Position& pos) {
   e->scores[WHITE] = evaluate<WHITE>(pos, e, sidePawns);
   e->scores[BLACK] = evaluate<BLACK>(pos, e, sidePawns);
 
-//if (pos.pieces(WHITE, PAWN) & shift<SOUTH>(pos.pieces(BLACK, PAWN)) & (FileDBB | FileEBB))
+  if (pos.pieces(WHITE, PAWN) & shift<SOUTH>(pos.pieces(BLACK, PAWN)) & (FileDBB | FileEBB))
   {
     if (sidePawns[WHITE][0] < sidePawns[BLACK][0])
       e->scores[WHITE] -=  MinorityRank2 * popcount(A2D2BB & pos.pieces(WHITE, PAWN))

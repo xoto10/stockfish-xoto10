@@ -205,6 +205,10 @@ namespace {
     // a white knight on g5 and black's king is on g8, this white knight adds 2
     // to kingAttacksCount[WHITE].
     int kingAttacksCount[COLOR_NB];
+
+    // farSideUnreachable counts the number of pieces that can't reach the 4 ranks
+    // on the far side of the board.
+    int farSideUnreachable[COLOR_NB];
   };
 
 
@@ -245,6 +249,8 @@ namespace {
 
     // Remove from kingRing[] the squares defended by two pawns
     kingRing[Us] &= ~dblAttackByPawn;
+
+    farSideUnreachable[Us] = 0;
   }
 
 
@@ -256,9 +262,11 @@ namespace {
     constexpr Direction Down = -pawn_push(Us);
     constexpr Bitboard OutpostRanks = (Us == WHITE ? Rank4BB | Rank5BB | Rank6BB
                                                    : Rank5BB | Rank4BB | Rank3BB);
+    constexpr Bitboard FarRanks = (Us == WHITE ? Rank5BB | Rank6BB | Rank7BB | Rank8BB
+                                               : Rank4BB | Rank3BB | Rank2BB | Rank1BB);
     const Square* pl = pos.squares<Pt>(Us);
 
-    Bitboard b, bb;
+    Bitboard b, bb, noPieces = ~pos.pieces();
     Score score = SCORE_ZERO;
 
     attackedBy[Us][Pt] = 0;
@@ -283,6 +291,9 @@ namespace {
             kingAttackersWeight[Us] += KingAttackWeights[Pt];
             kingAttacksCount[Us] += popcount(b & attackedBy[Them][KING]);
         }
+
+        if (Pt != KNIGHT && !(b & FarRanks & noPieces))
+            ++farSideUnreachable[Us];
 
         int mob = popcount(b & mobilityArea[Us]);
 
@@ -719,6 +730,7 @@ namespace {
                     + 21 * pawnsOnBothFlanks
                     + 51 * !pos.non_pawn_material()
                     - 43 * almostUnwinnable
+                    - 10 * ((eg > 0) * farSideUnreachable[WHITE] + (eg < 0) * farSideUnreachable[BLACK])
                     - 95 ;
 
     // Now apply the bonus: note that we find the attacking side by extracting the

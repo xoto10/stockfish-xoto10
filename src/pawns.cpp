@@ -32,7 +32,8 @@ namespace {
   #define S(mg, eg) make_score(mg, eg)
 
   // Pawn penalties
-  constexpr Score Backward      = S( 9, 24);
+  constexpr Score Backward      = S( 6, 16);
+  constexpr Score BackwardConn  = S( 3,  8);
   constexpr Score BlockedStorm  = S(82, 82);
   constexpr Score Doubled       = S(11, 56);
   constexpr Score Isolated      = S( 5, 15);
@@ -133,7 +134,7 @@ namespace {
         // Score this pawn
         if (support | phalanx)
         {
-            int v =  Connected[r] * (1 + bool(phalanx) + (!opposed && !supporting))
+            int v =  Connected[r] * (2 + bool(phalanx) - bool(opposed))
                    + 21 * popcount(support);
 
             score += make_score(v, v * (r - 2) / 4);
@@ -145,6 +146,7 @@ namespace {
 
         else if (backward)
             score -=   Backward
+                     + BackwardConn  * popcount(supporting)
                      + WeakUnopposed * !opposed;
 
         if (!support)

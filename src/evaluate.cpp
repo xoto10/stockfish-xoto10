@@ -699,14 +699,17 @@ namespace {
   template<Tracing T>
   Score Evaluation<T>::initiative(Score score) const {
 
+    constexpr Bitboard FlankABC = (FileABB | FileBBB | FileCBB);
+    constexpr Bitboard FlankFGH = (FileFBB | FileGBB | FileHBB);
+
     Value mg = mg_value(score);
     Value eg = eg_value(score);
 
     int outflanking =  distance<File>(pos.square<KING>(WHITE), pos.square<KING>(BLACK))
                      - distance<Rank>(pos.square<KING>(WHITE), pos.square<KING>(BLACK));
 
-    bool pawnsOnBothFlanks =   (pos.pieces(PAWN) & QueenSide)
-                            && (pos.pieces(PAWN) & KingSide);
+    bool pawnsOnBothFlanks =   (pos.pieces(PAWN) & FlankABC)
+                            && (pos.pieces(PAWN) & FlankFGH);
 
     bool almostUnwinnable =   !pe->passed_count()
                            &&  outflanking < 0

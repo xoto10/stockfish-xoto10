@@ -329,7 +329,7 @@ void Thread::search() {
   // The latter is needed for statScores and killer initialization.
   Stack stack[MAX_PLY+10], *ss = stack+7;
   Move  pv[MAX_PLY+1];
-  Value bestValue, alpha, beta, delta;
+  Value bestValue, alpha, beta, delta, initialDelta = VALUE_INFINITE;
   Move  lastBestMove = MOVE_NONE;
   Depth lastBestMoveDepth = 0;
   MainThread* mainThread = (this == Threads.main() ? Threads.main() : nullptr);
@@ -378,6 +378,7 @@ void Thread::search() {
 
   multiPV = std::min(multiPV, rootMoves.size());
   ttHitAverage = ttHitAverageWindow * ttHitAverageResolution / 2;
+  quickDrawAverage = 0;
 
   int ct = int(Options["Contempt"]) * PawnValueEg / 100; // From centipawns
 
@@ -424,11 +425,15 @@ void Thread::search() {
           // Reset UCI info selDepth for each depth and each PV line
           selDepth = 0;
 
+          // quickDrawAverage can be used to approximate the running average of (iteration gives draw with no fails high/low)
+          quickDrawAverage =  (64 - 1) * quickDrawAverage / 64
+                            + ttHitAverageResolution * (delta == initialDelta && abs(bestValue < 2));
+
           // Reset aspiration window starting size
           if (rootDepth >= 4)
           {
               Value previousScore = rootMoves[pvIdx].previousScore;
-              delta = Value(21 + abs(previousScore) / 256);
+              initialDelta = delta = Value(21 + abs(previousScore) / 256);
               alpha = std::max(previousScore - delta,-VALUE_INFINITE);
               beta  = std::min(previousScore + delta, VALUE_INFINITE);
 
@@ -986,7 +991,9 @@ moves_loop: // When in check, search starts from here
           && bestValue > VALUE_MATED_IN_MAX_PLY)
       {
           // Skip quiet moves if movecount exceeds our FutilityMoveCount threshold
-          moveCountPruning = moveCount >= futility_move_count(improving, depth);
+          moveCountPruning = moveCount >=  futility_move_count(improving, depth)
+                                         + (thisThread->quickDrawAverage >  24 * ttHitAverageResolution * 64
+                                                                          / 1024);
 
           if (   !captureOrPromotion
               && !givesCheck)

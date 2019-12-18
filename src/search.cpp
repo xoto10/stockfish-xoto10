@@ -426,7 +426,7 @@ void Thread::search() {
           selDepth = 0;
 
           // quickDrawAverage can be used to approximate the running average of (iteration gives draw with no fails high/low)
-          quickDrawAverage =  (32 - 1) * quickDrawAverage / 32
+          quickDrawAverage =  (16 - 1) * quickDrawAverage / 16
                             + ttHitAverageResolution * (delta == initialDelta && abs(bestValue < 2));
 
           // Reset aspiration window starting size
@@ -992,7 +992,7 @@ moves_loop: // When in check, search starts from here
       {
           // Skip quiet moves if movecount exceeds our FutilityMoveCount threshold
           moveCountPruning = moveCount >=  futility_move_count(improving, depth)
-                                         + (thisThread->quickDrawAverage >  40 * ttHitAverageResolution * 32
+                                         + (thisThread->quickDrawAverage >  88 * ttHitAverageResolution * 16
                                                                           / 1024);
 
           if (   !captureOrPromotion

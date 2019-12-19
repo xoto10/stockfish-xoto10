@@ -34,6 +34,7 @@ namespace {
   // Pawn penalties
   constexpr Score Backward      = S( 9, 24);
   constexpr Score BlockedStorm  = S(82, 82);
+  constexpr Score BlockedSupportedE5 = S(20,20);
   constexpr Score Doubled       = S(11, 56);
   constexpr Score Isolated      = S( 5, 15);
   constexpr Score WeakLever     = S( 0, 56);
@@ -86,7 +87,6 @@ namespace {
     e->passedPawns[Us] = 0;
     e->kingSquares[Us] = SQ_NONE;
     e->pawnAttacks[Us] = e->pawnAttacksSpan[Us] = pawn_attacks_bb<Us>(ourPawns);
-    e->blockedSupportedE5[Us] = false;
 
     // Loop through all pawns of the current color and score each pawn
     while ((s = *pl++) != SQ_NONE)
@@ -150,7 +150,7 @@ namespace {
         if (support)
         {
             if (blocked && relative_square(Us, s) == SQ_E5)
-                e->blockedSupportedE5[Us] = true;
+                score += BlockedSupportedE5;
         }
         else
             score -=   Doubled * doubled

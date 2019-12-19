@@ -86,6 +86,7 @@ namespace {
     e->passedPawns[Us] = 0;
     e->kingSquares[Us] = SQ_NONE;
     e->pawnAttacks[Us] = e->pawnAttacksSpan[Us] = pawn_attacks_bb<Us>(ourPawns);
+    e->blockedSupportedE5[Us] = false;
 
     // Loop through all pawns of the current color and score each pawn
     while ((s = *pl++) != SQ_NONE)
@@ -146,7 +147,12 @@ namespace {
             score -=   Backward
                      + WeakUnopposed * !opposed;
 
-        if (!support)
+        if (support)
+        {
+            if (blocked && relative_square(Us, s) == SQ_E5)
+                e->blockedSupportedE5[Us] = true;
+        }
+        else
             score -=   Doubled * doubled
                      + WeakLever * more_than_one(lever);
     }

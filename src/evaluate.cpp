@@ -701,7 +701,7 @@ namespace {
 
     Value mg = mg_value(score);
     Value eg = eg_value(score);
-    Color strongSide = eg > 0 ? WHITE : BLACK;
+    Color strongSide = mg > 0 ? WHITE : BLACK;
 
     int outflanking =  distance<File>(pos.square<KING>(WHITE), pos.square<KING>(BLACK))
                      - distance<Rank>(pos.square<KING>(WHITE), pos.square<KING>(BLACK));

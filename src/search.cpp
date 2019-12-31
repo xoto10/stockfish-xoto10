@@ -1003,7 +1003,7 @@ moves_loop: // When in check, search starts from here
       {
           // Skip quiet moves if movecount exceeds our FutilityMoveCount threshold
           moveCountPruning =  moveCount >= futility_move_count(improving, depth)
-                            + (   thisThread->drawAvoider * (2 * us - 1) > 0
+                            + (   thisThread->drawAvoider * (2 * us - 1) < 0
                                && abs(thisThread->drawAvoider) > 216 * ttHitAverageResolution);
 
           if (   !captureOrPromotion

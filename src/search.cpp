@@ -825,7 +825,11 @@ namespace {
     // Step 7. Razoring (~2 Elo)
     if (   !rootNode // The required rootNode PV handling is not available in qsearch
         &&  depth < 2
-        &&  eval <= alpha - RazorMargin)
+        &&  eval <= alpha - RazorMargin
+        && (   thisThread->drawAvoider * (2 * us - 1) <= 0
+//          || abs(thisThread->drawAvoider) <= 216 * ttHitAverageResolution
+            || thisThread->rootMoves[0].score != 0)
+       )
         return qsearch<NT>(pos, ss, alpha, beta);
 
     improving =  (ss-2)->staticEval == VALUE_NONE ? (ss->staticEval >= (ss-4)->staticEval
@@ -1002,10 +1006,7 @@ moves_loop: // When in check, search starts from here
           && bestValue > VALUE_MATED_IN_MAX_PLY)
       {
           // Skip quiet moves if movecount exceeds our FutilityMoveCount threshold
-          moveCountPruning =  moveCount >=  futility_move_count(improving, depth)
-                                          + (   thisThread->drawAvoider * (2 * us - 1) > 0
-//                                           && abs(thisThread->drawAvoider) > 216 * ttHitAverageResolution
-                                             && thisThread->rootMoves[0].score == 0);
+          moveCountPruning = moveCount >= futility_move_count(improving, depth);
 
           if (   !captureOrPromotion
               && !givesCheck)

@@ -317,6 +317,23 @@ void MainThread::search() {
 }
 
 
+/// Thread::many_threads_at_depth() returns true if many threads are already searching at this depth
+bool Thread::many_threads_at_depth(Depth d) {
+  unsigned n = 0;
+
+  // Count threads at or above depth about to be searched
+  for (Thread* th: Threads)
+      if (th->rootDepth >= d)
+          ++n;
+
+  // Abort search at this depth if many threads already searching at this depth or deeper.
+  if (n >= (Threads.size() + 1) / 2)
+      return true;
+
+  return false;
+}
+
+
 /// Thread::search() is the main iterative deepening loop. It calls search()
 /// repeatedly with increasing depth until the allocated thinking time has been
 /// consumed, the user stops the search, or the maximum search depth is reached.
@@ -398,6 +415,9 @@ void Thread::search() {
          && !Threads.stop
          && !(Limits.depth && mainThread && rootDepth > Limits.depth))
   {
+      if (Threads.size() > 1 && many_threads_at_depth(rootDepth))
+          continue;
+
       // Age out PV variability metric
       if (mainThread)
           totBestMoveChanges /= 2;

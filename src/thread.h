@@ -57,6 +57,7 @@ public:
   void start_searching();
   void wait_for_search_finished();
   int best_move_count(Move move);
+  bool many_threads_at_depth(Depth d);
 
   Pawns::Table pawnsTable;
   Material::Table materialTable;

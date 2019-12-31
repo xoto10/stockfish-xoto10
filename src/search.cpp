@@ -825,11 +825,7 @@ namespace {
     // Step 7. Razoring (~2 Elo)
     if (   !rootNode // The required rootNode PV handling is not available in qsearch
         &&  depth < 2
-        &&  eval <= alpha - RazorMargin
-        && (   thisThread->drawAvoider * (2 * us - 1) <= 0
-//          || abs(thisThread->drawAvoider) <= 216 * ttHitAverageResolution
-            || thisThread->rootMoves[0].score != 0)
-       )
+        &&  eval <= alpha - RazorMargin)
         return qsearch<NT>(pos, ss, alpha, beta);
 
     improving =  (ss-2)->staticEval == VALUE_NONE ? (ss->staticEval >= (ss-4)->staticEval
@@ -839,7 +835,11 @@ namespace {
     if (   !PvNode
         &&  depth < 6
         &&  eval - futility_margin(depth, improving) >= beta
-        &&  eval < VALUE_KNOWN_WIN) // Do not return unproven wins
+        &&  eval < VALUE_KNOWN_WIN  // Do not return unproven wins
+        &&  (   thisThread->drawAvoider * (2 * us - 1) <= 0
+//           || abs(thisThread->drawAvoider) <= 216 * ttHitAverageResolution
+             || thisThread->rootMoves[0].score != 0)
+       )
         return eval;
 
     // Step 9. Null move search with verification search (~40 Elo)

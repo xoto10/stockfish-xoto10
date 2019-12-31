@@ -1002,9 +1002,15 @@ moves_loop: // When in check, search starts from here
           && bestValue > VALUE_MATED_IN_MAX_PLY)
       {
           // Skip quiet moves if movecount exceeds our FutilityMoveCount threshold
-          moveCountPruning =  moveCount >= futility_move_count(improving, depth)
-                            + (   thisThread->drawAvoider * (2 * us - 1) < 0
-                               && abs(thisThread->drawAvoider) > 216 * ttHitAverageResolution);
+          moveCountPruning =  moveCount >=  futility_move_count(improving, depth)
+                                          + (   thisThread->drawAvoider * (2 * us - 1) < 0
+                                             && abs(thisThread->drawAvoider) > 216 * ttHitAverageResolution
+                                             && thisThread->rootMoves[0].score == 0);
+if                            (   thisThread->drawAvoider * (2 * us - 1) > 0
+                               && abs(thisThread->drawAvoider) > 216 * ttHitAverageResolution)
+//                             && thisThread->rootMoves[0].score == 0)
+sync_cout << "info string extra: us " << us << " avdr " << thisThread->drawAvoider
+          << " rm0 sc " << thisThread->rootMoves[0].score << sync_endl;
 
           if (   !captureOrPromotion
               && !givesCheck)

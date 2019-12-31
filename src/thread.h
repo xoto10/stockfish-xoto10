@@ -63,7 +63,7 @@ public:
   size_t pvIdx, pvLast;
   uint64_t ttHitAverage;
   int selDepth, nmpMinPly;
-  int drawAvoider; // increments, -1 for white, +1 for black
+  int drawAvoider; // -ve for white, +ve for black
   Color nmpColor;
   std::atomic<uint64_t> nodes, tbHits, bestMoveChanges;
 

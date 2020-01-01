@@ -70,6 +70,7 @@ namespace {
 
     constexpr Color     Them = (Us == WHITE ? BLACK : WHITE);
     constexpr Direction Up   = pawn_push(Us);
+    constexpr Direction Down = pawn_push(Them);
 
     Bitboard neighbours, stoppers, support, phalanx, opposed;
     Bitboard lever, leverPush, blocked;
@@ -80,6 +81,7 @@ namespace {
 
     Bitboard ourPawns   = pos.pieces(  Us, PAWN);
     Bitboard theirPawns = pos.pieces(Them, PAWN);
+    Bitboard ourBlocked = ourPawns & shift<Down>(theirPawns);
 
     Bitboard doubleAttackThem = pawn_double_attacks_bb<Them>(theirPawns);
 
@@ -104,6 +106,12 @@ namespace {
         neighbours = ourPawns   & adjacent_files_bb(s);
         phalanx    = neighbours & rank_bb(s);
         support    = neighbours & rank_bb(s - Up);
+
+        // Remove some neighbours
+        Bitboard notNeighbours = ourBlocked & forward_ranks_bb(Them, s - Up);
+        if (blocked)
+            notNeighbours |= forward_ranks_bb(Us, s + Up);
+        neighbours = neighbours & ~notNeighbours;
 
         // A pawn is backward when it is behind all pawns of the same color on
         // the adjacent files and cannot safely advance.

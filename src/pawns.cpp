@@ -103,15 +103,9 @@ namespace {
         lever      = theirPawns & PawnAttacks[Us][s];
         leverPush  = theirPawns & PawnAttacks[Us][s + Up];
         doubled    = ourPawns   & (s - Up);
-        neighbours = ourPawns   & adjacent_files_bb(s);
+        neighbours = (ourPawns   & adjacent_files_bb(s)) & ~(ourBlocked & forward_ranks_bb(Them, s - Up));
         phalanx    = neighbours & rank_bb(s);
         support    = neighbours & rank_bb(s - Up);
-
-        // Remove some neighbours
-        Bitboard notNeighbours = ourBlocked & forward_ranks_bb(Them, s - Up);
-        if (blocked)
-            notNeighbours |= forward_ranks_bb(Us, s + Up);
-        neighbours = neighbours & ~notNeighbours;
 
         // A pawn is backward when it is behind all pawns of the same color on
         // the adjacent files and cannot safely advance.

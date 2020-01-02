@@ -378,6 +378,7 @@ void Thread::search() {
 
   multiPV = std::min(multiPV, rootMoves.size());
   ttHitAverage = ttHitAverageWindow * ttHitAverageResolution / 2;
+  drawTaker = 0;
 
   int ct = int(Options["Contempt"]) * PawnValueEg / 100; // From centipawns
 
@@ -586,6 +587,9 @@ namespace {
     constexpr bool PvNode = NT == PV;
     const bool rootNode = PvNode && ss->ply == 0;
 
+    Color   us = pos.side_to_move();
+    Thread* thisThread = pos.this_thread();
+
     // Check if we have an upcoming move which draws by repetition, or
     // if the opponent had an alternative move earlier to this position.
     if (   pos.rule50_count() >= 3
@@ -593,6 +597,10 @@ namespace {
         && !rootNode
         && pos.has_game_cycle(ss->ply))
     {
+        // drawTaker approximates the running average of which side is taking draws
+        thisThread->drawTaker =  (256 - 1) * thisThread->drawTaker / 256
+                               + ttHitAverageResolution * (2 * us - 1);
+
         alpha = value_draw(pos.this_thread());
         if (alpha >= beta)
             return alpha;
@@ -620,10 +628,8 @@ namespace {
     int moveCount, captureCount, quietCount;
 
     // Step 1. Initialize node
-    Thread* thisThread = pos.this_thread();
     inCheck = pos.checkers();
     priorCapture = pos.captured_piece();
-    Color us = pos.side_to_move();
     moveCount = captureCount = quietCount = ss->moveCount = 0;
     bestValue = -VALUE_INFINITE;
     maxValue = VALUE_INFINITE;
@@ -642,8 +648,18 @@ namespace {
         if (   Threads.stop.load(std::memory_order_relaxed)
             || pos.is_draw(ss->ply)
             || ss->ply >= MAX_PLY)
-            return (ss->ply >= MAX_PLY && !inCheck) ? evaluate(pos)
-                                                    : value_draw(pos.this_thread());
+        {
+            if (ss->ply >= MAX_PLY && !inCheck)
+                return evaluate(pos);
+            else
+            {
+                if (alpha < VALUE_DRAW)
+                    // drawTaker approximates the running average of which side is taking draws
+                    thisThread->drawTaker =  (256 - 1) * thisThread->drawTaker / 256
+                                           + ttHitAverageResolution * (2 * us - 1);
+                return value_draw(pos.this_thread());
+            }
+        }
 
         // Step 3. Mate distance pruning. Even if we mate at the next move our score
         // would be at best mate_in(ss->ply+1), but if alpha is already bigger because

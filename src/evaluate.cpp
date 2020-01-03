@@ -711,8 +711,8 @@ namespace {
     bool almostUnwinnable =   !pe->passed_count()
                            &&  outflanking < 0
                            && !pawnsOnBothFlanks;
-    bool kingInfiltration = (   rank_of(pos.square<KING>(WHITE)) > RANK_4 
-                             || rank_of(pos.square<KING>(BLACK)) < RANK_5); 
+    bool kingInfiltration = (   rank_of(pos.square<KING>(WHITE)) > RANK_3 
+                             || rank_of(pos.square<KING>(BLACK)) < RANK_6); 
 
     // Compute the initiative bonus for the attacking side
     int complexity =   9 * pe->passed_count()

@@ -37,6 +37,7 @@ namespace {
   constexpr Score Doubled       = S(11, 56);
   constexpr Score Isolated      = S( 5, 15);
   constexpr Score WeakLever     = S( 0, 56);
+  constexpr Score WeakDiagonal  = S( 6, 13);
   constexpr Score WeakUnopposed = S(13, 27);
 
   // Connected pawn bonus
@@ -70,16 +71,19 @@ namespace {
 
     constexpr Color     Them = (Us == WHITE ? BLACK : WHITE);
     constexpr Direction Up   = pawn_push(Us);
+    constexpr Bitboard  FarSide = (Us == WHITE ? Rank6BB | Rank7BB | Rank8BB
+                                               : Rank1BB | Rank2BB | Rank3BB);
 
     Bitboard neighbours, stoppers, support, phalanx, opposed;
     Bitboard lever, leverPush, blocked;
     Square s;
-    bool backward, passed, doubled;
+    bool backward, passed, doubled, weakDiagonal;
     Score score = SCORE_ZERO;
     const Square* pl = pos.squares<PAWN>(Us);
 
     Bitboard ourPawns   = pos.pieces(  Us, PAWN);
     Bitboard theirPawns = pos.pieces(Them, PAWN);
+    Bitboard allPawns   = pos.pieces(PAWN);
 
     Bitboard doubleAttackThem = pawn_double_attacks_bb<Them>(theirPawns);
 
@@ -104,6 +108,7 @@ namespace {
         neighbours = ourPawns   & adjacent_files_bb(s);
         phalanx    = neighbours & rank_bb(s);
         support    = neighbours & rank_bb(s - Up);
+        weakDiagonal = FarSide  & attacks_bb<BISHOP>(s, allPawns);
 
         // A pawn is backward when it is behind all pawns of the same color on
         // the adjacent files and cannot safely advance.
@@ -140,11 +145,13 @@ namespace {
 
         else if (!neighbours)
             score -=   Isolated
-                     + WeakUnopposed * !opposed;
+                     + WeakUnopposed * !opposed
+                     + WeakDiagonal * weakDiagonal;
 
         else if (backward)
             score -=   Backward
-                     + WeakUnopposed * !opposed;
+                     + WeakUnopposed * !opposed
+                     + WeakDiagonal * weakDiagonal;
 
         if (!support)
             score -=   Doubled * doubled

@@ -79,7 +79,7 @@ namespace {
   }
 
   constexpr int futility_move_count(bool improving, Depth depth) {
-    return (5 + depth * depth) * (1 + improving) / 2 - 1;
+    return (5 + depth * depth) * (1 + improving) * 4 - 5;
   }
 
   // History and stats update bonus, based on depth
@@ -986,7 +986,7 @@ moves_loop: // When in check, search starts from here
           && bestValue > VALUE_MATED_IN_MAX_PLY)
       {
           // Skip quiet moves if movecount exceeds our FutilityMoveCount threshold
-          moveCountPruning = moveCount >= futility_move_count(improving, depth);
+          moveCountPruning = 8 * moveCount + int(thisThread->nodes & 7) >= futility_move_count(improving, depth);
 
           if (   !captureOrPromotion
               && !givesCheck)

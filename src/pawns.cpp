@@ -32,16 +32,18 @@ namespace {
   #define S(mg, eg) make_score(mg, eg)
 
   // Pawn penalties
-  constexpr Score Backward      = S(12, 34);
-  constexpr Score BlockedStorm  = S(82, 82);
-  constexpr Score Doubled       = S(11, 56);
-  constexpr Score Isolated      = S( 5, 15);
-  constexpr Score Supporting    = S( 3, 10);
-  constexpr Score WeakLever     = S( 0, 56);
-  constexpr Score WeakUnopposed = S(13, 27);
+            Score Ba            = S(10, 30);
+            Score Bl            = S(82, 82);
+            Score Do            = S(11, 56);
+            Score Is            = S( 5, 15);
+            Score Su            = S( 3, 10);
+            Score Wl            = S( 0, 56);
+            Score Wu            = S(13, 27);
 
   // Connected pawn bonus
-  constexpr int Connected[RANK_NB] = { 0, 7, 8, 12, 29, 48, 86 };
+            int Co       [RANK_NB] = { 0, 7, 8, 12, 29, 48, 86 };
+int Sc = 21;
+TUNE(Ba,Bl,Do,Is,Su,Wl,Wu,Co,Sc);
 
   // Strength of pawn shelter for our king by [distance from edge][rank].
   // RANK_1 = 0 is used for files where we have no pawn, or pawn is behind our king.
@@ -134,22 +136,22 @@ namespace {
         // Score this pawn
         if (support | phalanx)
         {
-            int v =  Connected[r] * (2 + bool(phalanx) - bool(opposed))
-                   + 21 * popcount(support);
+            int v =  Co       [r] * (2 + bool(phalanx) - bool(opposed))
+                   + Sc * popcount(support);
 
             score += make_score(v, v * (r - 2) / 4);
         }
         else if (!neighbours)
-            score -=   Isolated
-                     + WeakUnopposed * !opposed;
+            score -=   Is
+                     + Wu            * !opposed;
         else if (backward)
-            score -=   Backward
-                     + WeakUnopposed * !opposed
-                     - Supporting * supporting;
+            score -=   Ba
+                     + Wu            * !opposed
+                     - Su         * supporting;
 
         if (!support)
-            score -=   Doubled * doubled
-                     + WeakLever * more_than_one(lever);
+            score -=   Do      * doubled
+                     + Wl        * more_than_one(lever);
     }
 
     return score;
@@ -207,7 +209,7 @@ Score Entry::evaluate_shelter(const Position& pos, Square ksq) {
       bonus += make_score(ShelterStrength[d][ourRank], 0);
 
       if (ourRank && (ourRank == theirRank - 1))
-          bonus -= BlockedStorm * int(theirRank == RANK_3);
+          bonus -= Bl           * int(theirRank == RANK_3);
       else
           bonus -= make_score(UnblockedStorm[d][theirRank], 0);
   }

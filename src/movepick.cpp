@@ -21,6 +21,7 @@
 #include <cassert>
 
 #include "movepick.h"
+#include "thread.h"
 
 namespace {
 
@@ -66,6 +67,7 @@ MovePicker::MovePicker(const Position& p, Move ttm, Depth d, const ButterflyHist
   stage = pos.checkers() ? EVASION_TT : MAIN_TT;
   ttMove = ttm && pos.pseudo_legal(ttm) ? ttm : MOVE_NONE;
   stage += (ttMove == MOVE_NONE);
+  preferPieceType = p.this_thread()->preferPieceType;
 }
 
 /// MovePicker constructor for quiescence search
@@ -80,6 +82,7 @@ MovePicker::MovePicker(const Position& p, Move ttm, Depth d, const ButterflyHist
           && (depth > DEPTH_QS_RECAPTURES || to_sq(ttm) == recaptureSquare)
           && pos.pseudo_legal(ttm) ? ttm : MOVE_NONE;
   stage += (ttMove == MOVE_NONE);
+  preferPieceType = p.this_thread()->preferPieceType;
 }
 
 /// MovePicker constructor for ProbCut: we generate captures with SEE greater
@@ -95,6 +98,7 @@ MovePicker::MovePicker(const Position& p, Move ttm, Value th, const CapturePiece
           && pos.pseudo_legal(ttm)
           && pos.see_ge(ttm, threshold) ? ttm : MOVE_NONE;
   stage += (ttMove == MOVE_NONE);
+  preferPieceType = p.this_thread()->preferPieceType;
 }
 
 /// MovePicker::score() assigns a numerical value to each move in a list, used
@@ -115,7 +119,8 @@ void MovePicker::score() {
                    + 2 * (*continuationHistory[0])[pos.moved_piece(m)][to_sq(m)]
                    + 2 * (*continuationHistory[1])[pos.moved_piece(m)][to_sq(m)]
                    + 2 * (*continuationHistory[3])[pos.moved_piece(m)][to_sq(m)]
-                   +     (*continuationHistory[5])[pos.moved_piece(m)][to_sq(m)];
+                   +     (*continuationHistory[5])[pos.moved_piece(m)][to_sq(m)]
+                   +80 * (type_of(pos.moved_piece(m)) == preferPieceType);
 
       else // Type == EVASIONS
       {

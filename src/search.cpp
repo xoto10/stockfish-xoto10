@@ -195,6 +195,13 @@ void Search::init() {
 
   for (int i = 1; i < MAX_MOVES; ++i)
       Reductions[i] = int((24.8 + std::log(Threads.size()) / 2) * std::log(i));
+
+  if (Threads.size() > 4)
+      for (Thread* th : Threads)
+          if (th->index() == 0)
+              th->preferPieceType = NO_PIECE_TYPE;
+          else
+              th->preferPieceType = PieceType(th->index() % 4 + 2);
 }
 
 

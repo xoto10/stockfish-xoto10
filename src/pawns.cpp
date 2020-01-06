@@ -39,6 +39,7 @@ namespace {
   constexpr Score PawnIsland    = S(10, 20);
   constexpr Score WeakLever     = S( 0, 56);
   constexpr Score WeakUnopposed = S(13, 27);
+  constexpr Score Width1        = S( 5, 10);
 
   // Connected pawn bonus
   constexpr int Connected[RANK_NB] = { 0, 7, 8, 12, 29, 48, 86 };
@@ -76,6 +77,7 @@ namespace {
     Bitboard lever, leverPush, blocked;
     Square s;
     File lastFile = FILE_NB;
+    int width = 0;
     bool backward, passed, doubled;
     Score score = SCORE_ZERO;
     const Square* pl = pos.squares<PAWN>(Us);
@@ -153,8 +155,13 @@ namespace {
             score -=   Doubled * doubled
                      + WeakLever * more_than_one(lever);
 
-        if (lastFile != FILE_NB && f - lastFile > 1)
-            score -= PawnIsland;
+        if (lastFile != FILE_NB)
+        {
+            if (f - lastFile > 1)
+                score -= PawnIsland + Width1 * (width == 1), width = 0;
+            else
+                ++width;
+        }
 
         lastFile = f;
     }

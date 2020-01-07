@@ -195,15 +195,6 @@ void Search::init() {
 
   for (int i = 1; i < MAX_MOVES; ++i)
       Reductions[i] = int((24.8 + std::log(Threads.size()) / 2) * std::log(i));
-
-  if (Threads.size() > 5)
-      for (Thread* th : Threads)
-      {
-          if (th->index() == 0)
-              th->preferPieceType = NO_PIECE_TYPE;
-          else
-              th->preferPieceType = PieceType(th->index() % 6);
-      }
 }
 
 
@@ -364,6 +355,9 @@ void Thread::search() {
           for (int i=0; i<4; ++i)
               mainThread->iterValue[i] = mainThread->previousScore;
   }
+
+  if (Threads.size() > 5)
+      preferPieceType = PieceType(idx % 6);
 
   size_t multiPV = Options["MultiPV"];
 

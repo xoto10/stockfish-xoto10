@@ -142,6 +142,7 @@ private:
   Move ttMove;
   ExtMove refutations[3], *cur, *endMoves, *endBadCaptures;
   int stage;
+  char rnd;
   Square recaptureSquare;
   Value threshold;
   Depth depth;

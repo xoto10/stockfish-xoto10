@@ -331,7 +331,7 @@ void Thread::search() {
   Move  pv[MAX_PLY+1];
   Value bestValue, alpha, beta, delta;
   Move  lastBestMove = MOVE_NONE;
-  Depth lastBestMoveDepth = 0;
+  Depth lastBestMoveDepth = 0, d = 0;
   MainThread* mainThread = (this == Threads.main() ? Threads.main() : nullptr);
   double timeReduction = 1, totBestMoveChanges = 0;
   Color us = rootPos.side_to_move();
@@ -394,7 +394,7 @@ void Thread::search() {
                           : -make_score(ct, ct / 2));
 
   // Iterative deepening loop until requested to stop or the target depth is reached
-  while (   ++rootDepth < MAX_PLY
+  while (   (++d, rootDepth = d - d / 4) < MAX_PLY
          && !Threads.stop
          && !(Limits.depth && mainThread && rootDepth > Limits.depth))
   {

@@ -335,6 +335,7 @@ void Thread::search() {
   MainThread* mainThread = (this == Threads.main() ? Threads.main() : nullptr);
   double timeReduction = 1, totBestMoveChanges = 0;
   Color us = rootPos.side_to_move();
+  bool lastDepthIncreased = true;
   int iterIdx = 0;
 
   std::memset(ss-7, 0, 10 * sizeof(Stack));
@@ -558,6 +559,11 @@ void Thread::search() {
               else
                   Threads.stop = true;
           }
+          else if (   lastDepthIncreased
+                   && Time.elapsed() > Time.optimum() * fallingEval * reduction * bestMoveInstability * 0.6)
+              --rootDepth, lastDepthIncreased = false;
+          else
+              lastDepthIncreased = true;
       }
 
       mainThread->iterValue[iterIdx] = bestValue;

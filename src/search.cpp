@@ -565,7 +565,7 @@ void Thread::search() {
       if (timeScaling > 0)
       {
           double used = Time.elapsed() / (Time.optimum() * timeScaling);
-          if (0.1 < used && used < 0.2)
+          if (0.08 < used && used < 0.16)
               rootDepth += 2;
       }
 

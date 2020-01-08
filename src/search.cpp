@@ -527,6 +527,7 @@ void Thread::search() {
           skill.pick_best(multiPV);
 
       // Do we have time for the next iteration? Can we stop searching now?
+      double timeScaling = 0;
       if (    Limits.use_time_management()
           && !Threads.stop
           && !mainThread->stopOnPonderhit)
@@ -546,10 +547,11 @@ void Thread::search() {
               th->bestMoveChanges = 0;
           }
           double bestMoveInstability = 1 + totBestMoveChanges / Threads.size();
+          timeScaling = fallingEval * reduction * bestMoveInstability;
 
           // Stop the search if we have only one legal move, or if available time elapsed
           if (   rootMoves.size() == 1
-              || Time.elapsed() > Time.optimum() * fallingEval * reduction * bestMoveInstability)
+              || Time.elapsed() > Time.optimum() * timeScaling)
           {
               // If we are allowed to ponder do not stop the search now but
               // keep pondering until the GUI sends "ponderhit" or "stop".
@@ -558,6 +560,13 @@ void Thread::search() {
               else
                   Threads.stop = true;
           }
+      }
+
+      if (timeScaling > 0)
+      {
+          double used = Time.elapsed() / (Time.optimum() * timeScaling);
+          if (0.1 < used && used < 0.2)
+              rootDepth += 2;
       }
 
       mainThread->iterValue[iterIdx] = bestValue;

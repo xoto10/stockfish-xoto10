@@ -354,7 +354,7 @@ void Thread::search() {
       else
           for (int i=0; i<4; ++i)
               mainThread->iterValue[i] = mainThread->previousScore;
-      mainThread->lastTimeScalingLarge = false;
+      mainThread->lastTimeScalingLarge.store(false, std::memory_order_relaxed);
   }
 
   size_t multiPV = Options["MultiPV"];
@@ -522,7 +522,7 @@ void Thread::search() {
 
       if (!mainThread)
       {
-          rootDepth -= static_cast<MainThread*>(Threads.main())->lastTimeScalingLarge;
+          rootDepth -= static_cast<MainThread*>(Threads.main())->lastTimeScalingLarge.load(std::memory_order_relaxed);
           continue;
       }
 
@@ -567,8 +567,8 @@ void Thread::search() {
 
       mainThread->iterValue[iterIdx] = bestValue;
       iterIdx = (iterIdx + 1) & 3;
-      rootDepth -= (timeScaling > 2.5 && !(mainThread->lastTimeScalingLarge));
-      mainThread->lastTimeScalingLarge = (timeScaling > 2.5);
+      rootDepth -= (timeScaling > 2.5 && !(mainThread->lastTimeScalingLarge.load(std::memory_order_relaxed)));
+      mainThread->lastTimeScalingLarge.store(timeScaling > 2.5, std::memory_order_relaxed);
   }
 
   if (!mainThread)

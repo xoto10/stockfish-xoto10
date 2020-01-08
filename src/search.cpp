@@ -333,8 +333,9 @@ void Thread::search() {
   Move  lastBestMove = MOVE_NONE;
   Depth lastBestMoveDepth = 0;
   MainThread* mainThread = (this == Threads.main() ? Threads.main() : nullptr);
-  double timeReduction = 1, totBestMoveChanges = 0;
+  double timeReduction = 1, totBestMoveChanges = 0, timeScaling = 0;
   Color us = rootPos.side_to_move();
+  bool lastTimeScalingLarge = true;
   int iterIdx = 0;
 
   std::memset(ss-7, 0, 10 * sizeof(Stack));
@@ -546,10 +547,11 @@ void Thread::search() {
               th->bestMoveChanges = 0;
           }
           double bestMoveInstability = 1 + totBestMoveChanges / Threads.size();
+          timeScaling = fallingEval * reduction * bestMoveInstability;
 
           // Stop the search if we have only one legal move, or if available time elapsed
           if (   rootMoves.size() == 1
-              || Time.elapsed() > Time.optimum() * fallingEval * reduction * bestMoveInstability)
+              || Time.elapsed() > Time.optimum() * timeScaling)
           {
               // If we are allowed to ponder do not stop the search now but
               // keep pondering until the GUI sends "ponderhit" or "stop".
@@ -562,6 +564,8 @@ void Thread::search() {
 
       mainThread->iterValue[iterIdx] = bestValue;
       iterIdx = (iterIdx + 1) & 3;
+      rootDepth -= (timeScaling > 2.5 && !lastTimeScalingLarge);
+      lastTimeScalingLarge = (timeScaling > 2.5);
   }
 
   if (!mainThread)

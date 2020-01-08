@@ -335,7 +335,6 @@ void Thread::search() {
   MainThread* mainThread = (this == Threads.main() ? Threads.main() : nullptr);
   double timeReduction = 1, totBestMoveChanges = 0, timeScaling = 0;
   Color us = rootPos.side_to_move();
-  bool lastTimeScalingLarge = true;
   int iterIdx = 0;
 
   std::memset(ss-7, 0, 10 * sizeof(Stack));
@@ -355,6 +354,7 @@ void Thread::search() {
       else
           for (int i=0; i<4; ++i)
               mainThread->iterValue[i] = mainThread->previousScore;
+      mainThread->lastTimeScalingLarge = false;
   }
 
   size_t multiPV = Options["MultiPV"];
@@ -521,7 +521,10 @@ void Thread::search() {
           Threads.stop = true;
 
       if (!mainThread)
+      {
+          rootDepth -= static_cast<MainThread*>(Threads.main())->lastTimeScalingLarge;
           continue;
+      }
 
       // If skill level is enabled and time is up, pick a sub-optimal best move
       if (skill.enabled() && skill.time_to_pick(rootDepth))
@@ -564,8 +567,8 @@ void Thread::search() {
 
       mainThread->iterValue[iterIdx] = bestValue;
       iterIdx = (iterIdx + 1) & 3;
-      rootDepth -= (timeScaling > 2.5 && !lastTimeScalingLarge);
-      lastTimeScalingLarge = (timeScaling > 2.5);
+      rootDepth -= (timeScaling > 2.5 && !(mainThread->lastTimeScalingLarge));
+      mainThread->lastTimeScalingLarge = (timeScaling > 2.5);
   }
 
   if (!mainThread)

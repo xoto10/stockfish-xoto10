@@ -354,6 +354,7 @@ void Thread::search() {
       else
           for (int i=0; i<4; ++i)
               mainThread->iterValue[i] = mainThread->previousScore;
+      mainThread->lastDepthIncreased.store(true, std::memory_order_relaxed);
   }
 
   size_t multiPV = Options["MultiPV"];
@@ -520,7 +521,10 @@ void Thread::search() {
           Threads.stop = true;
 
       if (!mainThread)
+      {
+          rootDepth -= !(Threads.main()->lastDepthIncreased.load(std::memory_order_relaxed));
           continue;
+      }
 
       // If skill level is enabled and time is up, pick a sub-optimal best move
       if (skill.enabled() && skill.time_to_pick(rootDepth))
@@ -558,6 +562,11 @@ void Thread::search() {
               else
                   Threads.stop = true;
           }
+          else if (   mainThread->lastDepthIncreased.load(std::memory_order_relaxed)
+                   && Time.elapsed() > Time.optimum() * fallingEval * reduction * bestMoveInstability * 0.6)
+              --rootDepth, mainThread->lastDepthIncreased.store(false, std::memory_order_relaxed);
+          else
+              mainThread->lastDepthIncreased.store(true, std::memory_order_relaxed);
       }
 
       mainThread->iterValue[iterIdx] = bestValue;

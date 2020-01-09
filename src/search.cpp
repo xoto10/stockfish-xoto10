@@ -393,6 +393,10 @@ void Thread::search() {
   contempt = (us == WHITE ?  make_score(ct, ct / 2)
                           : -make_score(ct, ct / 2));
 
+  int searchAgainCnt = 0;
+  bool searchedAgain = true;
+  Value lastBestValue = VALUE_NONE;
+
   // Iterative deepening loop until requested to stop or the target depth is reached
   while (   ++rootDepth < MAX_PLY
          && !Threads.stop
@@ -445,7 +449,7 @@ void Thread::search() {
           int failedHighCnt = 0;
           while (true)
           {
-              Depth adjustedDepth = std::max(1, rootDepth - failedHighCnt);
+              Depth adjustedDepth = std::max(1, rootDepth - failedHighCnt - searchAgainCnt);
               bestValue = ::search<PV>(rootPos, ss, alpha, beta, adjustedDepth, false);
 
               // Bring the best move to the front. It is critical that sorting
@@ -518,6 +522,13 @@ void Thread::search() {
           && bestValue >= VALUE_MATE_IN_MAX_PLY
           && VALUE_MATE - bestValue <= 2 * Limits.mate)
           Threads.stop = true;
+
+      if (   !searchedAgain
+          && abs(bestValue - lastBestValue) > 80)
+          ++searchAgainCnt, searchedAgain = true;
+      else
+          searchedAgain = false;
+      lastBestValue = bestValue;
 
       if (!mainThread)
           continue;

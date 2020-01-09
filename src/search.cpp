@@ -563,7 +563,7 @@ void Thread::search() {
                   Threads.stop = true;
           }
           else if (   mainThread->lastDepthIncreased.load(std::memory_order_relaxed)
-                   && Time.elapsed() > Time.optimum() * fallingEval * reduction * bestMoveInstability * 0.6)
+                   && Time.elapsed() > Time.optimum() * fallingEval * reduction * bestMoveInstability * 0.7)
               --rootDepth, mainThread->lastDepthIncreased.store(false, std::memory_order_relaxed);
           else
               mainThread->lastDepthIncreased.store(true, std::memory_order_relaxed);

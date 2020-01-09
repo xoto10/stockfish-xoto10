@@ -354,6 +354,7 @@ void Thread::search() {
       else
           for (int i=0; i<4; ++i)
               mainThread->iterValue[i] = mainThread->previousScore;
+      mainThread->increaseDepth.store(true, std::memory_order_relaxed);
   }
 
   size_t multiPV = Options["MultiPV"];
@@ -393,7 +394,7 @@ void Thread::search() {
   contempt = (us == WHITE ?  make_score(ct, ct / 2)
                           : -make_score(ct, ct / 2));
 
-  int searchAgainCounter = 0;
+  int searchAgainCnt = 0;
 
   // Iterative deepening loop until requested to stop or the target depth is reached
   while (   ++rootDepth < MAX_PLY
@@ -412,8 +413,8 @@ void Thread::search() {
       size_t pvFirst = 0;
       pvLast = 0;
 
-      if (!Threads.increaseDepth)
-         searchAgainCounter++;
+      if (!mainThread->increaseDepth.load(std::memory_order_relaxed))
+          ++searchAgainCnt;
 
       // MultiPV loop. We perform a full root search for each PV line
       for (pvIdx = 0; pvIdx < multiPV && !Threads.stop; ++pvIdx)
@@ -450,7 +451,7 @@ void Thread::search() {
           int failedHighCnt = 0;
           while (true)
           {
-              Depth adjustedDepth = std::max(1, rootDepth - failedHighCnt - searchAgainCounter);
+              Depth adjustedDepth = std::max(1, rootDepth - failedHighCnt - searchAgainCnt);
               bestValue = ::search<PV>(rootPos, ss, alpha, beta, adjustedDepth, false);
 
               // Bring the best move to the front. It is critical that sorting
@@ -563,11 +564,11 @@ void Thread::search() {
               else
                   Threads.stop = true;
           }
-          else if (   Threads.increaseDepth
+          else if (   mainThread->increaseDepth.load(std::memory_order_relaxed)
                    && Time.elapsed() > Time.optimum() * fallingEval * reduction * bestMoveInstability * 0.6)
-                   Threads.increaseDepth = false;
+              mainThread->increaseDepth.store(false, std::memory_order_relaxed);
           else
-                   Threads.increaseDepth = true;
+              mainThread->increaseDepth.store(true, std::memory_order_relaxed);
       }
 
       mainThread->iterValue[iterIdx] = bestValue;

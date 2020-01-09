@@ -393,6 +393,7 @@ void Thread::search() {
   contempt = (us == WHITE ?  make_score(ct, ct / 2)
                           : -make_score(ct, ct / 2));
 
+  bool increaseDepth = true;
   int searchAgainCnt = 0;
 
   // Iterative deepening loop until requested to stop or the target depth is reached
@@ -411,9 +412,6 @@ void Thread::search() {
 
       size_t pvFirst = 0;
       pvLast = 0;
-
-      if (!Threads.increaseDepth.load(std::memory_order_relaxed))
-          ++searchAgainCnt;
 
       // MultiPV loop. We perform a full root search for each PV line
       for (pvIdx = 0; pvIdx < multiPV && !Threads.stop; ++pvIdx)
@@ -563,11 +561,11 @@ void Thread::search() {
               else
                   Threads.stop = true;
           }
-          else if (   Threads.increaseDepth.load(std::memory_order_relaxed)
+          else if (   increaseDepth
                    && Time.elapsed() > Time.optimum() * fallingEval * reduction * bestMoveInstability * 0.6)
-              Threads.increaseDepth.store(false, std::memory_order_relaxed);
+              increaseDepth = false, ++searchAgainCnt;
           else
-              Threads.increaseDepth.store(true, std::memory_order_relaxed);
+              increaseDepth = true;
       }
 
       mainThread->iterValue[iterIdx] = bestValue;

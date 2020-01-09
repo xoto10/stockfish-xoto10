@@ -394,7 +394,7 @@ void Thread::search() {
                           : -make_score(ct, ct / 2));
 
   // Iterative deepening loop until requested to stop or the target depth is reached
-  while (   (++d, rootDepth = d - d / 16) < MAX_PLY
+  while (   (++d, rootDepth = d - d / 3) < MAX_PLY
          && !Threads.stop
          && !(Limits.depth && mainThread && rootDepth > Limits.depth))
   {

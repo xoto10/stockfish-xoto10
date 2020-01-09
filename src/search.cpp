@@ -523,11 +523,13 @@ void Thread::search() {
           && VALUE_MATE - bestValue <= 2 * Limits.mate)
           Threads.stop = true;
 
+      // Increment searchAgainCnt if we want to search this depth again
       int bestDiff = abs(bestValue - lastBestValue);
       if (lastBestValue != VALUE_NONE)
       {
-          if (!searchedAgain && bestDiff * 1024 > avgBestDiff * 11 / 8)
-              searchedAgain = true, ++searchAgainCnt;
+          if (!searchedAgain && bestDiff * 1024 > avgBestDiff * 14 / 8)
+              ++searchAgainCnt,
+              searchedAgain = true;
           else
               searchedAgain = false;
 

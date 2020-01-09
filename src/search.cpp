@@ -330,7 +330,7 @@ void Thread::search() {
   Stack stack[MAX_PLY+10], *ss = stack+7;
   Move  pv[MAX_PLY+1];
   Value bestValue, alpha, beta, delta;
-  Move  lastBestMove = MOVE_NONE;
+  Move  lastBestPv[4] = { MOVE_NONE, MOVE_NONE, MOVE_NONE, MOVE_NONE };
   Depth lastBestMoveDepth = 0;
   MainThread* mainThread = (this == Threads.main() ? Threads.main() : nullptr);
   double timeReduction = 1, totBestMoveChanges = 0;
@@ -393,7 +393,7 @@ void Thread::search() {
   contempt = (us == WHITE ?  make_score(ct, ct / 2)
                           : -make_score(ct, ct / 2));
 
-  int newMoveCounter = 0;
+  int newMoveCnt = 0;
 
   // Iterative deepening loop until requested to stop or the target depth is reached
   while (   ++rootDepth < MAX_PLY
@@ -447,7 +447,7 @@ void Thread::search() {
           int failedHighCnt = 0;
           while (true)
           {
-              Depth adjustedDepth = std::max(1, rootDepth - failedHighCnt - newMoveCounter);
+              Depth adjustedDepth = std::max(1, rootDepth - failedHighCnt - newMoveCnt);
               bestValue = ::search<PV>(rootPos, ss, alpha, beta, adjustedDepth, false);
 
               // Bring the best move to the front. It is critical that sorting
@@ -510,10 +510,22 @@ void Thread::search() {
       if (!Threads.stop)
           completedDepth = rootDepth;
 
-      if (rootMoves[0].pv[0] != lastBestMove) {
-	 newMoveCounter++;
-         lastBestMove = rootMoves[0].pv[0];
-         lastBestMoveDepth = rootDepth;
+      if (rootMoves[0].pv[0] != lastBestPv[0]) {
+          lastBestMoveDepth = rootDepth;
+          lastBestPv[0] = rootMoves[0].pv[0];
+          newMoveCnt++;
+      }
+      else if (rootMoves[0].pv.size() > 1 && rootMoves[0].pv[1] != lastBestPv[1]) {
+          newMoveCnt++;
+          lastBestPv[1] = rootMoves[0].pv[1];
+      }
+      else if (rootMoves[0].pv.size() > 2 && rootMoves[0].pv[2] != lastBestPv[2]) {
+          newMoveCnt++;
+          lastBestPv[2] = rootMoves[0].pv[2];
+      }
+      else if (rootMoves[0].pv.size() > 3 && rootMoves[0].pv[3] != lastBestPv[3]) {
+          newMoveCnt++;
+          lastBestPv[3] = rootMoves[0].pv[3];
       }
 
       // Have we found a "mate in x"?

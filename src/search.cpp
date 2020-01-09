@@ -512,13 +512,13 @@ void Thread::search() {
 
       if (rootMoves[0].pv[0] != lastBestPv[0]) {
           lastBestMoveDepth = rootDepth;
-          for (int j=0; j<4; ++j)
+          for (unsigned j=0; j<2 && j<rootMoves[0].pv.size(); ++j)
               lastBestPv[j] = rootMoves[0].pv[j];
           newMoveCnt++;
       }
       else if (rootMoves[0].pv.size() > 1 && rootMoves[0].pv[1] != lastBestPv[1]) {
           newMoveCnt++;
-          for (int j=1; j<4; ++j)
+          for (unsigned j=1; j<2 && j<rootMoves[0].pv.size(); ++j)
               lastBestPv[j] = rootMoves[0].pv[j];
       }
 //    else if (rootMoves[0].pv.size() > 2 && rootMoves[0].pv[2] != lastBestPv[2]) {

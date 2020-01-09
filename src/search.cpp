@@ -510,23 +510,32 @@ void Thread::search() {
       if (!Threads.stop)
           completedDepth = rootDepth;
 
-      if (rootMoves[0].pv[0] != lastBestPv[0]) {
+      if (rootMoves[0].pv[0] != lastBestPv[0])
+      {
           lastBestMoveDepth = rootDepth;
-          for (unsigned j=0; j<2 && j<rootMoves[0].pv.size(); ++j)
-              lastBestPv[j] = rootMoves[0].pv[j];
+          for (unsigned j=0; j<2; ++j)
+              lastBestPv[j] = j<rootMoves[0].pv.size() ? rootMoves[0].pv[j] : MOVE_NONE;
           newMoveCnt++;
       }
-      else if (rootMoves[0].pv.size() > 1 && rootMoves[0].pv[1] != lastBestPv[1]) {
+      else if (   (rootMoves[0].pv.size() > 1 && rootMoves[0].pv[1] != lastBestPv[1])
+               || (rootMoves[0].pv.size() <= 1 && lastBestPv[1] != MOVE_NONE) )
+      {
           newMoveCnt++;
-          for (unsigned j=1; j<2 && j<rootMoves[0].pv.size(); ++j)
-              lastBestPv[j] = rootMoves[0].pv[j];
+          for (unsigned j=1; j<2; ++j)
+              lastBestPv[j] = j<rootMoves[0].pv.size() ? rootMoves[0].pv[j] : MOVE_NONE;
       }
-//    else if (rootMoves[0].pv.size() > 2 && rootMoves[0].pv[2] != lastBestPv[2]) {
+//    else if (   (rootMoves[0].pv.size() > 2 && rootMoves[0].pv[2] != lastBestPv[2])
+//             || (rootMoves[0].pv.size() <= 2 && lastBestPv[2] != MOVE_NONE) )
+//    {
 //        newMoveCnt++;
 //        lastBestPv[2] = rootMoves[0].pv[2];
 //        lastBestPv[3] = rootMoves[0].pv[3];
+//        for (unsigned j=2; j<4; ++j)
+//            lastBestPv[j] = j<rootMoves[0].pv.size() ? rootMoves[0].pv[j] : MOVE_NONE;
 //    }
-//    else if (rootMoves[0].pv.size() > 3 && rootMoves[0].pv[3] != lastBestPv[3]) {
+//    else if (   (rootMoves[0].pv.size() > 3 && rootMoves[0].pv[3] != lastBestPv[3])
+//             || (rootMoves[0].pv.size() <= 3 && lastBestPv[3] != MOVE_NONE) )
+//    {
 //        newMoveCnt++;
 //        lastBestPv[3] = rootMoves[0].pv[3];
 //    }

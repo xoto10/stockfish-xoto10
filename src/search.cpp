@@ -354,7 +354,6 @@ void Thread::search() {
       else
           for (int i=0; i<4; ++i)
               mainThread->iterValue[i] = mainThread->previousScore;
-      Threads.increaseDepth.store(true, std::memory_order_relaxed);
   }
 
   size_t multiPV = Options["MultiPV"];
@@ -401,8 +400,6 @@ void Thread::search() {
          && !Threads.stop
          && !(Limits.depth && mainThread && rootDepth > Limits.depth))
   {
-      searchAgainCnt += !(Threads.increaseDepth.load(std::memory_order_relaxed));
-
       // Age out PV variability metric
       if (mainThread)
           totBestMoveChanges /= 2;
@@ -414,6 +411,9 @@ void Thread::search() {
 
       size_t pvFirst = 0;
       pvLast = 0;
+
+      if (!Threads.increaseDepth.load(std::memory_order_relaxed))
+          ++searchAgainCnt;
 
       // MultiPV loop. We perform a full root search for each PV line
       for (pvIdx = 0; pvIdx < multiPV && !Threads.stop; ++pvIdx)

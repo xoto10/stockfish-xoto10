@@ -521,15 +521,15 @@ void Thread::search() {
           for (int j=1; j<4; ++j)
               lastBestPv[j] = rootMoves[0].pv[j];
       }
-      else if (rootMoves[0].pv.size() > 2 && rootMoves[0].pv[2] != lastBestPv[2]) {
-          newMoveCnt++;
-          lastBestPv[2] = rootMoves[0].pv[2];
-          lastBestPv[3] = rootMoves[0].pv[3];
-      }
-      else if (rootMoves[0].pv.size() > 3 && rootMoves[0].pv[3] != lastBestPv[3]) {
-          newMoveCnt++;
-          lastBestPv[3] = rootMoves[0].pv[3];
-      }
+//    else if (rootMoves[0].pv.size() > 2 && rootMoves[0].pv[2] != lastBestPv[2]) {
+//        newMoveCnt++;
+//        lastBestPv[2] = rootMoves[0].pv[2];
+//        lastBestPv[3] = rootMoves[0].pv[3];
+//    }
+//    else if (rootMoves[0].pv.size() > 3 && rootMoves[0].pv[3] != lastBestPv[3]) {
+//        newMoveCnt++;
+//        lastBestPv[3] = rootMoves[0].pv[3];
+//    }
 
       // Have we found a "mate in x"?
       if (   Limits.mate

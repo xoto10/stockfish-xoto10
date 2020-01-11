@@ -524,7 +524,7 @@ void Thread::search() {
           Threads.stop = true;
 
       // Increment searchAgainCnt if we want to search this depth again
-      int bestDiff = abs(bestValue - lastBestValue);
+      int bestDiff = bestValue - lastBestValue;
       if (lastBestValue != VALUE_NONE)
       {
           if (!searchedAgain && bestDiff * 1024 > avgBestDiff * 14 / 8)

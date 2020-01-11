@@ -393,9 +393,9 @@ void Thread::search() {
   contempt = (us == WHITE ?  make_score(ct, ct / 2)
                           : -make_score(ct, ct / 2));
 
-  Value lastBestValue = VALUE_NONE;
+  int searchAgainCnt = 0;
   bool searchedAgain = true;
-  int searchAgainCnt = 0, avgBestDiff = 80 * 1024;
+  Value lastBestValue = VALUE_NONE;
 
   // Iterative deepening loop until requested to stop or the target depth is reached
   while (   ++rootDepth < MAX_PLY
@@ -523,18 +523,11 @@ void Thread::search() {
           && VALUE_MATE - bestValue <= 2 * Limits.mate)
           Threads.stop = true;
 
-      // Increment searchAgainCnt if we want to search this depth again
-      int bestDiff = bestValue - lastBestValue;
-      if (lastBestValue != VALUE_NONE)
-      {
-          if (!searchedAgain && bestDiff * 1024 > avgBestDiff * 14 / 8)
-              ++searchAgainCnt,
-              searchedAgain = true;
-          else
-              searchedAgain = false;
-
-          avgBestDiff = avgBestDiff * 7 / 8 + bestDiff * 1024 / 8;
-      }
+      if (   !searchedAgain
+          && bestValue - lastBestValue > 80)
+          ++searchAgainCnt, searchedAgain = true;
+      else
+          searchedAgain = false;
       lastBestValue = bestValue;
 
       if (!mainThread)

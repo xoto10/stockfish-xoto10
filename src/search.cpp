@@ -329,7 +329,7 @@ void Thread::search() {
   // The latter is needed for statScores and killer initialization.
   Stack stack[MAX_PLY+10], *ss = stack+7;
   Move  pv[MAX_PLY+1];
-  Value bestValue, alpha, beta, delta;
+  Value alpha, beta, delta;
   Move  lastBestMove = MOVE_NONE;
   Depth lastBestMoveDepth = 0;
   MainThread* mainThread = (this == Threads.main() ? Threads.main() : nullptr);
@@ -532,25 +532,30 @@ void Thread::search() {
           skill.pick_best(multiPV);
 
       // Do we have time for the next iteration? Can we stop searching now?
+      Value avgBestValue = bestValue;
       if (    Limits.use_time_management()
           && !Threads.stop
           && !mainThread->stopOnPonderhit)
       {
-          double fallingEval = (332 +  6 * (mainThread->previousScore - bestValue)
-                                    +  6 * (mainThread->iterValue[iterIdx]  - bestValue)) / 704.0;
+          Value totBestValue = VALUE_ZERO;
+
+          // Use part of the gained time from a previous stable move for the current move
+          for (Thread* th : Threads)
+          {
+              totBestValue += th->bestValue;
+              totBestMoveChanges += th->bestMoveChanges;
+              th->bestMoveChanges = 0;
+          }
+          double bestMoveInstability = 1 + totBestMoveChanges / Threads.size();
+          avgBestValue = totBestValue / int(Threads.size());
+
+          double fallingEval = (332 +  6 * (mainThread->previousScore - avgBestValue)
+                                    +  6 * (mainThread->iterValue[iterIdx] - avgBestValue)) / 704.0;
           fallingEval = clamp(fallingEval, 0.5, 1.5);
 
           // If the bestMove is stable over several iterations, reduce time accordingly
           timeReduction = lastBestMoveDepth + 9 < completedDepth ? 1.94 : 0.91;
           double reduction = (1.41 + mainThread->previousTimeReduction) / (2.27 * timeReduction);
-
-          // Use part of the gained time from a previous stable move for the current move
-          for (Thread* th : Threads)
-          {
-              totBestMoveChanges += th->bestMoveChanges;
-              th->bestMoveChanges = 0;
-          }
-          double bestMoveInstability = 1 + totBestMoveChanges / Threads.size();
 
           // Stop the search if we have only one legal move, or if available time elapsed
           if (   rootMoves.size() == 1
@@ -571,7 +576,7 @@ void Thread::search() {
                    Threads.increaseDepth = true;
       }
 
-      mainThread->iterValue[iterIdx] = bestValue;
+      mainThread->iterValue[iterIdx] = avgBestValue;
       iterIdx = (iterIdx + 1) & 3;
   }
 

@@ -532,6 +532,7 @@ void Thread::search() {
           skill.pick_best(multiPV);
 
       // Do we have time for the next iteration? Can we stop searching now?
+      Value avgBestValue = bestValue;
       if (    Limits.use_time_management()
           && !Threads.stop
           && !mainThread->stopOnPonderhit)
@@ -546,10 +547,10 @@ void Thread::search() {
               th->bestMoveChanges = 0;
           }
           double bestMoveInstability = 1 + totBestMoveChanges / Threads.size();
-          Value avgBestValue = totBestValue / int(Threads.size());
+          avgBestValue = totBestValue / int(Threads.size());
 
           double fallingEval = (332 +  6 * (mainThread->previousScore - avgBestValue)
-                                    +  6 * (mainThread->iterValue[iterIdx] - bestValue)) / 704.0;
+                                    +  6 * (mainThread->iterValue[iterIdx] - avgBestValue)) / 704.0;
           fallingEval = clamp(fallingEval, 0.5, 1.5);
 
           // If the bestMove is stable over several iterations, reduce time accordingly
@@ -575,7 +576,7 @@ void Thread::search() {
                    Threads.increaseDepth = true;
       }
 
-      mainThread->iterValue[iterIdx] = bestValue;
+      mainThread->iterValue[iterIdx] = avgBestValue;
       iterIdx = (iterIdx + 1) & 3;
   }
 

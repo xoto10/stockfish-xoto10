@@ -33,14 +33,19 @@ namespace {
 
   // Pawn penalties
   constexpr Score Backward      = S( 9, 24);
+  constexpr Score BackSupporting= S( 3,  6);
+  constexpr Score BackUnopposed = S(13, 27);
   constexpr Score BlockedStorm  = S(82, 82);
-  constexpr Score Doubled       = S(11, 56);
+  constexpr Score DoubledBk[2]  = { S( 5, 28), S( 2, 10) };
+  constexpr Score DoubledFr[2]  = { S(11, 56), S( 3, 18) };
   constexpr Score Isolated      = S( 5, 15);
-  constexpr Score WeakLever     = S( 0, 56);
-  constexpr Score WeakUnopposed = S(13, 27);
+  constexpr Score IsoUnopposed  = S(13, 27);
+  constexpr Score Supporting    = S( 3,  6);
+  constexpr Score WeakLever[2]  = { S( 0, 56), S( 0, 10) };
 
   // Connected pawn bonus
   constexpr int Connected[RANK_NB] = { 0, 7, 8, 12, 29, 48, 86 };
+  constexpr int Support = 21;
 
   // Strength of pawn shelter for our king by [distance from edge][rank].
   // RANK_1 = 0 is used for files where we have no pawn, or pawn is behind our king.
@@ -74,7 +79,7 @@ namespace {
     Bitboard neighbours, stoppers, support, phalanx, opposed;
     Bitboard lever, leverPush, blocked;
     Square s;
-    bool backward, passed, doubled;
+    bool backward, passed, doubledFr, doubledBk, supporting;
     Score score = SCORE_ZERO;
     const Square* pl = pos.squares<PAWN>(Us);
 
@@ -100,10 +105,12 @@ namespace {
         stoppers   = theirPawns & passed_pawn_span(Us, s);
         lever      = theirPawns & PawnAttacks[Us][s];
         leverPush  = theirPawns & PawnAttacks[Us][s + Up];
-        doubled    = ourPawns   & (s - Up);
+        doubledFr  = ourPawns   & (s - Up);
+        doubledBk  = ourPawns   & (s + Up);
         neighbours = ourPawns   & adjacent_files_bb(s);
         phalanx    = neighbours & rank_bb(s);
         support    = neighbours & rank_bb(s - Up);
+        supporting = neighbours & rank_bb(s + Up);
 
         // A pawn is backward when it is behind all pawns of the same color on
         // the adjacent files and cannot safely advance.
@@ -130,25 +137,37 @@ namespace {
             e->passedPawns[Us] |= s;
 
         // Score this pawn
-        if (support | phalanx)
+        if (support)
         {
             int v =  Connected[r] * (2 + bool(phalanx) - bool(opposed))
-                   + 21 * popcount(support);
+                   + Support * popcount(support);
+
+            score += make_score(v, v * (r - 2) / 4);
+        }
+
+        else if (phalanx)
+        {
+            int v =  Connected[r] * (2 + bool(phalanx) - bool(opposed));
 
             score += make_score(v, v * (r - 2) / 4);
         }
 
         else if (!neighbours)
             score -=   Isolated
-                     + WeakUnopposed * !opposed;
+                     + IsoUnopposed * !opposed;
 
         else if (backward)
             score -=   Backward
-                     + WeakUnopposed * !opposed;
+                     + BackUnopposed * !opposed
+                     - BackSupporting * supporting;
 
-        if (!support)
-            score -=   Doubled * doubled
-                     + WeakLever * more_than_one(lever);
+        else if (supporting)
+            score +=   Supporting;
+
+        score -=   WeakLever[bool(support)] * more_than_one(lever);
+
+        score -=   DoubledFr[bool(support)] * doubledFr
+                 + DoubledBk[bool(support)] * doubledBk;
     }
 
     return score;

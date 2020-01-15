@@ -532,24 +532,23 @@ void Thread::search() {
           skill.pick_best(multiPV);
 
       // Do we have time for the next iteration? Can we stop searching now?
+      Value minBestValue = VALUE_INFINITE;
       if (    Limits.use_time_management()
           && !Threads.stop
           && !mainThread->stopOnPonderhit)
       {
-          Value totBestValue = VALUE_ZERO;
-
           // Use part of the gained time from a previous stable move for the current move
           for (Thread* th : Threads)
           {
-              totBestValue += th->bestValue;
+              if (th->bestValue < minBestValue)
+                  minBestValue = th->bestValue;
               totBestMoveChanges += th->bestMoveChanges;
               th->bestMoveChanges = 0;
           }
           double bestMoveInstability = 1 + totBestMoveChanges / Threads.size();
-          Value avgBestValue = totBestValue / int(Threads.size());
 
-          double fallingEval = (332 +  6 * (mainThread->previousScore - avgBestValue)
-                                    +  6 * (mainThread->iterValue[iterIdx] - bestValue)) / 704.0;
+          double fallingEval = (332 +  6 * (mainThread->previousScore - minBestValue)
+                                    +  6 * (mainThread->iterValue[iterIdx] - minBestValue)) / 704.0;
           fallingEval = clamp(fallingEval, 0.5, 1.5);
 
           // If the bestMove is stable over several iterations, reduce time accordingly
@@ -575,7 +574,7 @@ void Thread::search() {
                    Threads.increaseDepth = true;
       }
 
-      mainThread->iterValue[iterIdx] = bestValue;
+      mainThread->iterValue[iterIdx] = minBestValue;
       iterIdx = (iterIdx + 1) & 3;
   }
 

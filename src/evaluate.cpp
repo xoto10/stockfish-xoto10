@@ -32,6 +32,9 @@
 
 namespace Trace {
 
+int PP1=5,PP2=13,PP3=0,PP4=19,PP5=4,PP6=2,PP7=0,PP8=35,PP9=20,PP10=9,PP11=0,PP12=5;
+TUNE(PP1,PP2,PP3,PP4,PP5,PP6,PP7,PP8,PP9,PP10,PP11,PP12);
+
   enum Tracing { NO_TRACE, TRACE };
 
   enum Term { // The first 8 entries are reserved for PieceType
@@ -594,19 +597,18 @@ namespace {
         int r = relative_rank(Us, s);
 
         Score bonus = PassedRank[r];
-
         if (r > RANK_3)
         {
-            int w = 5 * r - 13;
+            int w = PP1 * r - PP2;
             Square blockSq = s + Up;
 
             // Adjust bonus based on the king's proximity
-            bonus += make_score(0, (  (king_proximity(Them, blockSq) * 19) / 4
-                                     - king_proximity(Us,   blockSq) *  2) * w);
+            bonus += make_score(PP3, (  (king_proximity(Them, blockSq) * PP4) / PP5
+                                     - king_proximity(Us,   blockSq) *  PP6) * w);
 
             // If blockSq is not the queening square then consider also a second push
             if (r != RANK_7)
-                bonus -= make_score(0, king_proximity(Us, blockSq + Up) * w);
+                bonus -= make_score(PP7, king_proximity(Us, blockSq + Up) * w);
 
             // If the pawn is free to advance, then increase the bonus
             if (pos.empty(blockSq))
@@ -622,14 +624,14 @@ namespace {
                 // If there are no enemy attacks on passed pawn span, assign a big bonus.
                 // Otherwise assign a smaller bonus if the path to queen is not attacked
                 // and even smaller bonus if it is attacked but block square is not.
-                int k = !unsafeSquares                    ? 35 :
-                        !(unsafeSquares & squaresToQueen) ? 20 :
-                        !(unsafeSquares & blockSq)        ?  9 :
-                                                             0 ;
+                int k = !unsafeSquares                    ? PP8 :
+                        !(unsafeSquares & squaresToQueen) ? PP9 :
+                        !(unsafeSquares & blockSq)        ? PP10 :
+                                                            PP11 ;
 
                 // Assign a larger bonus if the block square is defended
                 if ((pos.pieces(Us) & bb) || (attackedBy[Us][ALL_PIECES] & blockSq))
-                    k += 5;
+                    k += PP12;
 
                 bonus += make_score(k * w, k * w);
             }

@@ -49,7 +49,8 @@ int C1=2, C2=2, C3=4, C4=2, C5=2, C6=4, I1=0, B1=5, B2=5, KE1=0, KE2=16;
             Score WL       [2]  = { S( 0, 56), S( 0, 10) };
 
   // Connected pawn bonus
-            int CO       [RANK_NB] = { 0, 7, 8, 12, 29, 48, 86 };
+            int CO1      [RANK_NB] = { 0, 7, 8, 12, 29, 48, 86 };
+            int CO2      [RANK_NB] = { 0, 7, 8, 12, 29, 48, 86 };
             int SP      = 21;
 
   // Strength of pawn shelter for our king by [distance from edge][rank].
@@ -73,7 +74,7 @@ int C1=2, C2=2, C3=4, C4=2, C5=2, C6=4, I1=0, B1=5, B2=5, KE1=0, KE2=16;
   };
 
 TUNE(SetRange(vary30), C1, C2, C3, C4, C5, C6, I1, B1, B2, KE1, KE2);
-TUNE(BW,BS,BU,BLS,DB,DF,IS,IU,PIS,SU,WL,CO,SP,SS,UB);
+TUNE(BW,BS,BU,BLS,DB,DF,IS,IU,PIS,SU,WL,CO1,CO2,SP,SS,UB);
 
   #undef S
   #undef V
@@ -148,7 +149,7 @@ TUNE(BW,BS,BU,BLS,DB,DF,IS,IU,PIS,SU,WL,CO,SP,SS,UB);
         // Score this pawn
         if (support)
         {
-            int v =  CO       [r] * (C1 + bool(phalanx) - bool(opposed))
+            int v =  CO1      [r] * (C1 + bool(phalanx) - bool(opposed))
                    + SP      * popcount(support);
 
             score += make_score(v, v * (r - C2) / C3);
@@ -156,7 +157,7 @@ TUNE(BW,BS,BU,BLS,DB,DF,IS,IU,PIS,SU,WL,CO,SP,SS,UB);
 
         else if (phalanx)
         {
-            int v =  CO       [r] * (C4 + bool(phalanx) - bool(opposed));
+            int v =  CO2      [r] * (C4 + bool(phalanx) - bool(opposed));
 
             score += make_score(v, v * (r - C5) / C6);
         }

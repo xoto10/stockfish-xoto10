@@ -80,7 +80,7 @@ namespace {
     Bitboard neighbours, stoppers, support, phalanx, opposed;
     Bitboard lever, leverPush, blocked;
     Square s;
-    bool backward, passed, doubledFr, doubledBk, supporting, onIsland;
+    bool backward, passed, doubledFr, doubledBk, supporting, onIsland = false;
     Score score = SCORE_ZERO;
     int islands = -1;
     const Square* pl = pos.squares<PAWN>(Us);

@@ -547,7 +547,7 @@ void Thread::search() {
           }
           double bestMoveInstability = 1 + totBestMoveChanges / Threads.size();
 
-          double fallingEval = (332 +  3 * (2 * mainThread->previousScore - minBestValue - bestValue)
+          double fallingEval = (332 +  3 * (4 * mainThread->previousScore - minBestValue - 3 * bestValue) / 2
                                     +  6 * (mainThread->iterValue[iterIdx] - minBestValue)) / 704.0;
           fallingEval = clamp(fallingEval, 0.5, 1.5);
 

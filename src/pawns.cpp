@@ -40,7 +40,7 @@ namespace {
   constexpr Score DoubledFr[2]  = { S(11, 56), S( 3, 18) };
   constexpr Score Isolated      = S( 5, 15);
   constexpr Score IsoUnopposed  = S(13, 27);
-  constexpr Score PawnIsland    = S(10, 20);
+  constexpr Score PawnIsland    = S( 3,  6);
   constexpr Score Supporting    = S( 3,  6);
   constexpr Score WeakLever[2]  = { S( 0, 56), S( 0, 10) };
 

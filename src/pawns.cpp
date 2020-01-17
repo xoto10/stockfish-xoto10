@@ -86,6 +86,7 @@ namespace {
     e->passedPawns[Us] = 0;
     e->kingSquares[Us] = SQ_NONE;
     e->pawnAttacks[Us] = e->pawnAttacksSpan[Us] = pawn_attacks_bb<Us>(ourPawns);
+    e->frontPawnRank[Us][KSIDE] = e->frontPawnRank[Us][QSIDE] = RANK_1;
 
     // Loop through all pawns of the current color and score each pawn
     while ((s = *pl++) != SQ_NONE)
@@ -134,8 +135,12 @@ namespace {
         {
             int v =  Connected[r] * (2 + bool(phalanx) - bool(opposed))
                    + 21 * popcount(support);
-
             score += make_score(v, v * (r - 2) / 4);
+
+            if (file_of(s) > FILE_D)
+                e->frontPawnRank[Us][KSIDE] = std::max(e->frontPawnRank[Us][KSIDE], r);
+            else
+                e->frontPawnRank[Us][QSIDE] = std::max(e->frontPawnRank[Us][QSIDE], r);
         }
 
         else if (!neighbours)

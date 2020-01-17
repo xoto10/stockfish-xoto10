@@ -241,6 +241,8 @@ enum Direction : int {
   NORTH_WEST = NORTH + WEST
 };
 
+enum BOARDSIDE { KSIDE, QSIDE, BOARDSIDE_NB };
+
 enum File : int {
   FILE_A, FILE_B, FILE_C, FILE_D, FILE_E, FILE_F, FILE_G, FILE_H, FILE_NB
 };

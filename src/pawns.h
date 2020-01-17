@@ -58,6 +58,7 @@ struct Entry {
   Bitboard pawnAttacksSpan[COLOR_NB];
   Square kingSquares[COLOR_NB];
   Score kingSafety[COLOR_NB];
+  Rank frontPawnRank[COLOR_NB][BOARDSIDE_NB]; // only pawns with support/phalanx
   int castlingRights[COLOR_NB];
 };
 

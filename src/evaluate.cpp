@@ -377,7 +377,7 @@ namespace {
 
     Bitboard weak, b1, b2, b3, safe, unsafeChecks = 0;
     Bitboard rookChecks, queenChecks, bishopChecks, knightChecks;
-    int kingDanger = 0;
+    int kingDanger = 0, pawnDanger = 0;
     const Square ksq = pos.square<KING>(Us);
 
     // Init the score with king shelter and enemy pawns storm
@@ -436,6 +436,8 @@ namespace {
 
     // Supported enemy pawns in same side of board as king
     Rank frontPawnRank = file_of(ksq) > FILE_D ? pe->frontPawnRank[Them][KSIDE] : pe->frontPawnRank[Them][QSIDE];
+    if (frontPawnRank > RANK_4)
+        pawnDanger = 3 * frontPawnRank * frontPawnRank;
 
     // Find the squares that opponent attacks in our king flank, the squares
     // which they attack twice in that flank, and the squares that we defend.
@@ -453,7 +455,7 @@ namespace {
                  +  69 * kingAttacksCount[Them]
                  +   3 * kingFlankAttack * kingFlankAttack / 8
                  +       mg_value(mobility[Them] - mobility[Us])
-                 +   3 * frontPawnRank * frontPawnRank
+                 +       pawnDanger
                  - 873 * !pos.count<QUEEN>(Them)
                  - 100 * bool(attackedBy[Us][KNIGHT] & attackedBy[Us][KING])
                  -   6 * mg_value(score) / 8

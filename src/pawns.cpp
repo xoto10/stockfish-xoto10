@@ -28,29 +28,34 @@
 
 namespace {
 
+//inline Range vary30(int c) { return Range(c-30, c+30); }
+
+int C1=2, C2=2, C3=4, C4=2, C5=2, C6=4, I1=0, B1=5, B2=5, KE1=0, KE2=16;
+
   #define V Value
   #define S(mg, eg) make_score(mg, eg)
 
   // Pawn penalties
-  constexpr Score Backward      = S( 9, 24);
-  constexpr Score BackSupporting= S( 3,  6);
-  constexpr Score BackUnopposed = S(13, 27);
-  constexpr Score BlockedStorm  = S(82, 82);
-  constexpr Score DoubledBk[2]  = { S( 5, 28), S( 2, 10) };
-  constexpr Score DoubledFr[2]  = { S(11, 56), S( 3, 18) };
-  constexpr Score Isolated      = S( 5, 15);
-  constexpr Score IsoUnopposed  = S(13, 27);
-  constexpr Score PawnIsland    = S( 3,  6);
-  constexpr Score Supporting    = S( 3,  6);
-  constexpr Score WeakLever[2]  = { S( 0, 56), S( 0, 10) };
+            Score BW            = S( 9, 24);
+            Score BS            = S( 3,  6);
+            Score BU            = S(13, 27);
+            Score BLS           = S(82, 82);
+            Score DB       [2]  = { S( 5, 28), S( 2, 10) };
+            Score DF       [2]  = { S(11, 56), S( 3, 18) };
+            Score IS            = S( 5, 15);
+            Score IU            = S(13, 27);
+            Score PIS           = S( 3,  6);
+            Score SU            = S( 3,  6);
+            Score WL       [2]  = { S( 0, 56), S( 0, 10) };
 
   // Connected pawn bonus
-  constexpr int Connected[RANK_NB] = { 0, 7, 8, 12, 29, 48, 86 };
-  constexpr int Support = 21;
+            int CO1      [RANK_NB] = { 0, 7, 8, 12, 29, 48, 86 };
+            int CO2      [RANK_NB] = { 0, 7, 8, 12, 29, 48, 86 };
+            int SP      = 21;
 
   // Strength of pawn shelter for our king by [distance from edge][rank].
   // RANK_1 = 0 is used for files where we have no pawn, or pawn is behind our king.
-  constexpr Value ShelterStrength[int(FILE_NB) / 2][RANK_NB] = {
+            Value SS             [int(FILE_NB) / 2][RANK_NB] = {
     { V( -6), V( 81), V( 93), V( 58), V( 39), V( 18), V(  25) },
     { V(-43), V( 61), V( 35), V(-49), V(-29), V(-11), V( -63) },
     { V(-10), V( 75), V( 23), V( -2), V( 32), V(  3), V( -45) },
@@ -61,12 +66,15 @@ namespace {
   // RANK_1 = 0 is used for files where the enemy has no pawn, or their pawn
   // is behind our king. Note that UnblockedStorm[0][1-2] accommodate opponent pawn
   // on edge, likely blocked by our king.
-  constexpr Value UnblockedStorm[int(FILE_NB) / 2][RANK_NB] = {
+            Value UB            [int(FILE_NB) / 2][RANK_NB] = {
     { V( 85), V(-289), V(-166), V(97), V(50), V( 45), V( 50) },
     { V( 46), V( -25), V( 122), V(45), V(37), V(-10), V( 20) },
     { V( -6), V(  51), V( 168), V(34), V(-2), V(-22), V(-14) },
     { V(-15), V( -11), V( 101), V( 4), V(11), V(-15), V(-29) }
   };
+
+//TUNE(SetRange(vary30), C1, C2, C3, C4, C5, C6, I1, B1, B2, KE1, KE2);
+//TUNE(BW,BS,BU,BLS,DB,DF,IS,IU,PIS,SU,WL,CO1,CO2,SP,SS,UB);
 
   #undef S
   #undef V
@@ -141,35 +149,35 @@ namespace {
         // Score this pawn
         if (support)
         {
-            int v =  Connected[r] * (2 + bool(phalanx) - bool(opposed))
-                   + Support * popcount(support);
+            int v =  CO1      [r] * (C1 + bool(phalanx) - bool(opposed))
+                   + SP      * popcount(support);
 
-            score += make_score(v, v * (r - 2) / 4);
+            score += make_score(v, v * (r - C2) / C3);
         }
 
         else if (phalanx)
         {
-            int v =  Connected[r] * (2 + bool(phalanx) - bool(opposed));
+            int v =  CO2      [r] * (C4 + bool(phalanx) - bool(opposed));
 
-            score += make_score(v, v * (r - 2) / 4);
+            score += make_score(v, v * (r - C5) / C6);
         }
 
         else if (!neighbours)
-            score -=   Isolated
-                     + IsoUnopposed * !opposed;
+            score -=   IS
+                     + IU           * !opposed;
 
         else if (backward)
-            score -=   Backward
-                     + BackUnopposed * !opposed
-                     - BackSupporting * supporting;
+            score -=   BW
+                     + BU            * !opposed
+                     - BS             * supporting;
 
         else if (supporting)
-            score +=   Supporting;
+            score +=   SU        ;
 
-        score -=   WeakLever[bool(support)] * more_than_one(lever);
+        score -=   WL       [bool(support)] * more_than_one(lever);
 
-        score -=   DoubledFr[bool(support)] * doubledFr
-                 + DoubledBk[bool(support)] * doubledBk;
+        score -=   DF       [bool(support)] * doubledFr
+                 + DB       [bool(support)] * doubledBk;
     }
 
     // Count pawn islands
@@ -181,8 +189,8 @@ namespace {
         else
             onIsland = false;
     }
-    if (islands > 0)
-        score -= PawnIsland * islands;
+    if (islands > I1)
+        score -= PIS        * islands;
 
     return score;
   }
@@ -224,7 +232,7 @@ Score Entry::evaluate_shelter(const Position& pos, Square ksq) {
   Bitboard ourPawns = b & pos.pieces(Us);
   Bitboard theirPawns = b & pos.pieces(Them);
 
-  Score bonus = make_score(5, 5);
+  Score bonus = make_score(B1, B2);
 
   File center = clamp(file_of(ksq), FILE_B, FILE_G);
   for (File f = File(center - 1); f <= File(center + 1); ++f)
@@ -236,12 +244,12 @@ Score Entry::evaluate_shelter(const Position& pos, Square ksq) {
       int theirRank = b ? relative_rank(Us, frontmost_sq(Them, b)) : 0;
 
       File d = map_to_queenside(f);
-      bonus += make_score(ShelterStrength[d][ourRank], 0);
+      bonus += make_score(SS             [d][ourRank], 0);
 
       if (ourRank && (ourRank == theirRank - 1))
-          bonus -= BlockedStorm * int(theirRank == RANK_3);
+          bonus -= BLS          * int(theirRank == RANK_3);
       else
-          bonus -= make_score(UnblockedStorm[d][theirRank], 0);
+          bonus -= make_score(UB            [d][theirRank], 0);
   }
 
   return bonus;
@@ -278,7 +286,7 @@ Score Entry::do_king_safety(const Position& pos) {
   else while (pawns)
       minPawnDist = std::min(minPawnDist, distance(ksq, pop_lsb(&pawns)));
 
-  return shelter - make_score(0, 16 * minPawnDist);
+  return shelter - make_score(KE1, KE2 * minPawnDist);
 }
 
 // Explicit template instantiation

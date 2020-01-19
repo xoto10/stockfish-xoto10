@@ -30,7 +30,7 @@ namespace {
 
 //inline Range vary30(int c) { return Range(c-30, c+30); }
 
-int C1=2, C2=2, C3=4, C4=2, C5=2, C6=4, I1=0, B1=5, B2=5, KE1=0, KE2=16;
+int C1=2, C2=2, C3=6, C4=2, C5=2, C6=5, I1=0, B1=4, B2=5, KE1=-1, KE2=17;
 
   #define V Value
   #define S(mg, eg) make_score(mg, eg)
@@ -38,28 +38,28 @@ int C1=2, C2=2, C3=4, C4=2, C5=2, C6=4, I1=0, B1=5, B2=5, KE1=0, KE2=16;
   // Pawn penalties
             Score BW            = S( 9, 24);
             Score BS            = S( 3,  6);
-            Score BU            = S(13, 27);
-            Score BLS           = S(82, 82);
+            Score BU            = S(13, 28);
+            Score BLS           = S(84, 83);
             Score DB       [2]  = { S( 5, 28), S( 2, 10) };
-            Score DF       [2]  = { S(11, 56), S( 3, 18) };
+            Score DF       [2]  = { S(11, 57), S( 3, 18) };
             Score IS            = S( 5, 15);
             Score IU            = S(13, 27);
             Score PIS           = S( 3,  6);
             Score SU            = S( 3,  6);
-            Score WL       [2]  = { S( 0, 56), S( 0, 10) };
+            Score WL       [2]  = { S( 0, 55), S( 0, 10) };
 
   // Connected pawn bonus
-            int CO1      [RANK_NB] = { 0, 7, 8, 12, 29, 48, 86 };
-            int CO2      [RANK_NB] = { 0, 7, 8, 12, 29, 48, 86 };
+            int CO1      [RANK_NB] = { 0, 7, 8, 12, 28, 47, 87 };
+            int CO2      [RANK_NB] = { 0, 7, 8, 12, 29, 47, 83 };
             int SP      = 21;
 
   // Strength of pawn shelter for our king by [distance from edge][rank].
   // RANK_1 = 0 is used for files where we have no pawn, or pawn is behind our king.
             Value SS             [int(FILE_NB) / 2][RANK_NB] = {
-    { V( -6), V( 81), V( 93), V( 58), V( 39), V( 18), V(  25) },
-    { V(-43), V( 61), V( 35), V(-49), V(-29), V(-11), V( -63) },
-    { V(-10), V( 75), V( 23), V( -2), V( 32), V(  3), V( -45) },
-    { V(-39), V(-13), V(-29), V(-52), V(-48), V(-67), V(-166) }
+    { V( -6), V( 81), V( 92), V( 59), V( 39), V( 18), V(  25) },
+    { V(-43), V( 63), V( 35), V(-51), V(-30), V(-11), V( -63) },
+    { V(-10), V( 77), V( 23), V( -2), V( 31), V(  3), V( -43) },
+    { V(-39), V(-13), V(-29), V(-51), V(-47), V(-66), V(-166) }
   };
 
   // Danger of enemy pawns moving toward our king by [distance from edge][rank].
@@ -67,10 +67,10 @@ int C1=2, C2=2, C3=4, C4=2, C5=2, C6=4, I1=0, B1=5, B2=5, KE1=0, KE2=16;
   // is behind our king. Note that UnblockedStorm[0][1-2] accommodate opponent pawn
   // on edge, likely blocked by our king.
             Value UB            [int(FILE_NB) / 2][RANK_NB] = {
-    { V( 85), V(-289), V(-166), V(97), V(50), V( 45), V( 50) },
-    { V( 46), V( -25), V( 122), V(45), V(37), V(-10), V( 20) },
-    { V( -6), V(  51), V( 168), V(34), V(-2), V(-22), V(-14) },
-    { V(-15), V( -11), V( 101), V( 4), V(11), V(-15), V(-29) }
+    { V( 85), V(-290), V(-161), V(94), V(52), V( 45), V( 50) },
+    { V( 44), V( -24), V( 125), V(45), V(37), V(-10), V( 20) },
+    { V( -6), V(  51), V( 171), V(33), V(-2), V(-22), V(-15) },
+    { V(-15), V( -11), V(  98), V( 4), V(11), V(-15), V(-28) }
   };
 
 //TUNE(SetRange(vary30), C1, C2, C3, C4, C5, C6, I1, B1, B2, KE1, KE2);

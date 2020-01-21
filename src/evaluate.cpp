@@ -32,6 +32,8 @@
 
 namespace Trace {
 
+inline Range vary30(int c) { return Range(c-30, c+30); }
+
 int PP1=5,PP2=13,PP3=0,PP4=19,PP5=4,PP6=2,PP7=0,PP8=35,PP9=20,PP10=9,PP11=0,PP12=5;
 TUNE(PP1,PP2,PP3,PP4,PP5,PP6,PP7,PP8,PP9,PP10,PP11,PP12);
 

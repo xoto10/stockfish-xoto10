@@ -156,8 +156,7 @@ const string engine_info(bool to_uci) {
 const std::string compiler_info() {
 
   #define STRINGIFY2(x) #x
-  #define STRINGIFY(x) STRINGIFY2(x)
-  #define VER_STRING(major, minor, patch) STRINGIFY(major) "." STRINGIFY(minor) "." STRINGIFY(patch)
+  #define VER_STRING(major, minor, patch) STRINGIFY2(major) "." STRINGIFY2(minor) "." STRINGIFY2(patch)
 
 /// Predefined macros hell:
 ///

@@ -36,6 +36,8 @@ namespace {
   constexpr Score BlockedStorm  = S(82, 82);
   constexpr Score Doubled       = S(11, 56);
   constexpr Score Isolated      = S( 5, 15);
+  constexpr Score PawnGap       = S( 5, 10);
+  constexpr Score PawnIsland    = S( 3,  3);
   constexpr Score WeakLever     = S( 0, 56);
   constexpr Score WeakUnopposed = S(13, 27);
 
@@ -74,7 +76,7 @@ namespace {
     Bitboard neighbours, stoppers, support, phalanx, opposed;
     Bitboard lever, leverPush, blocked;
     Square s;
-    bool backward, passed, doubled;
+    bool backward, passed, doubled, onIsland = false;
     Score score = SCORE_ZERO;
     const Square* pl = pos.squares<PAWN>(Us);
 
@@ -150,6 +152,27 @@ namespace {
             score -=   Doubled * doubled
                      + WeakLever * more_than_one(lever);
     }
+
+    // Count pawn islands
+    Rank lastRank;
+    int islands = 0;
+    for (File f=FILE_A; f<=FILE_H; ++f)
+    {
+        Bitboard b = ourPawns & file_bb(f);
+        Rank r = rank_of(pop_lsb(&b));
+        if (ourPawns & file_bb(f))
+        {
+            islands += !onIsland;
+            if (onIsland && abs(r-lastRank) > 1) // && std::max(r, lastR) > 3)
+                score -= PawnGap;
+            onIsland = true;
+        }
+        else
+            onIsland = false;
+        lastRank = r;
+     }
+    if (islands > 2)
+        score -= PawnIsland * islands;
 
     return score;
   }

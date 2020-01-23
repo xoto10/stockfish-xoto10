@@ -311,7 +311,10 @@ void MainThread::search() {
   sync_cout << "bestmove " << UCI::move(bestThread->rootMoves[0].pv[0], rootPos.is_chess960());
 
   if (bestThread->rootMoves[0].pv.size() > 1 || bestThread->rootMoves[0].extract_ponder_from_tt(rootPos))
-      std::cout << " ponder " << UCI::move(bestThread->rootMoves[0].pv[1], rootPos.is_chess960());
+      ponderMove = bestThread->rootMoves[0].pv[1],
+      std::cout << " ponder " << UCI::move(ponderMove, rootPos.is_chess960());
+  else
+      ponderMove = MOVE_NONE;
 
   std::cout << sync_endl;
 }
@@ -551,10 +554,15 @@ void Thread::search() {
               th->bestMoveChanges = 0;
           }
           double bestMoveInstability = 1 + totBestMoveChanges / Threads.size();
+          double unexpected = 1;
+          if (   Threads.theirMove != mainThread->ponderMove
+              && Threads.theirMove != MOVE_NONE
+              && mainThread->ponderMove != MOVE_NONE)
+              unexpected = 1.5;
 
           // Stop the search if we have only one legal move, or if available time elapsed
           if (   rootMoves.size() == 1
-              || Time.elapsed() > Time.optimum() * fallingEval * reduction * bestMoveInstability)
+              || Time.elapsed() > Time.optimum() * fallingEval * reduction * bestMoveInstability * unexpected)
           {
               // If we are allowed to ponder do not stop the search now but
               // keep pondering until the GUI sends "ponderhit" or "stop".
@@ -565,7 +573,7 @@ void Thread::search() {
           }
           else if (   Threads.increaseDepth
                    && !mainThread->ponder
-                   && Time.elapsed() > Time.optimum() * fallingEval * reduction * bestMoveInstability * 0.6)
+                   && Time.elapsed() > Time.optimum() * fallingEval * reduction * bestMoveInstability * unexpected * 0.6)
                    Threads.increaseDepth = false;
           else
                    Threads.increaseDepth = true;

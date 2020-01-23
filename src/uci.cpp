@@ -50,7 +50,7 @@ namespace {
 
   void position(Position& pos, istringstream& is, StateListPtr& states) {
 
-    Move m;
+    Move m = MOVE_NONE;
     string token, fen;
 
     is >> token;
@@ -75,6 +75,7 @@ namespace {
         states->emplace_back();
         pos.do_move(m, states->back());
     }
+    Threads.theirMove = m;
   }
 
 

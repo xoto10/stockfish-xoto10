@@ -162,12 +162,15 @@ void ThreadPool::set(size_t requested) {
 
 void ThreadPool::clear() {
 
+  theirMove = MOVE_NONE;
+
   for (Thread* th : *this)
       th->clear();
 
   main()->callsCnt = 0;
   main()->previousScore = VALUE_INFINITE;
   main()->previousTimeReduction = 1.0;
+  main()->ponderMove = MOVE_NONE;
 }
 
 /// ThreadPool::start_thinking() wakes up main thread waiting in idle_loop() and

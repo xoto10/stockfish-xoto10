@@ -554,11 +554,11 @@ void Thread::search() {
               th->bestMoveChanges = 0;
           }
           double bestMoveInstability = 1 + totBestMoveChanges / Threads.size();
-          double unexpected = 0.9;
+          double unexpected = 0.85;
           if (   Threads.theirMove != mainThread->ponderMove
               && Threads.theirMove != MOVE_NONE
               && mainThread->ponderMove != MOVE_NONE)
-              unexpected = 1.4;
+              unexpected = 1.6;
 
           // Stop the search if we have only one legal move, or if available time elapsed
           if (   rootMoves.size() == 1

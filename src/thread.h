@@ -89,7 +89,7 @@ struct MainThread : public Thread {
   double previousTimeReduction;
   Value previousScore;
   Value iterValue[4];
-  Move ponderMove;
+  Move ponderMoves[4];
   int callsCnt;
   bool stopOnPonderhit;
   std::atomic_bool ponder;
@@ -112,6 +112,7 @@ struct ThreadPool : public std::vector<Thread*> {
 
   std::atomic_bool stop, increaseDepth;
   Move theirMove;
+  double unexpected;
 
 private:
   StateListPtr setupStates;

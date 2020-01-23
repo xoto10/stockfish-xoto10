@@ -170,7 +170,8 @@ void ThreadPool::clear() {
   main()->callsCnt = 0;
   main()->previousScore = VALUE_INFINITE;
   main()->previousTimeReduction = 1.0;
-  main()->ponderMove = MOVE_NONE;
+  for (int i=0; i<4; ++i)
+      main()->ponderMoves[i] = MOVE_NONE;
 }
 
 /// ThreadPool::start_thinking() wakes up main thread waiting in idle_loop() and

@@ -311,10 +311,17 @@ void MainThread::search() {
   sync_cout << "bestmove " << UCI::move(bestThread->rootMoves[0].pv[0], rootPos.is_chess960());
 
   if (bestThread->rootMoves[0].pv.size() > 1 || bestThread->rootMoves[0].extract_ponder_from_tt(rootPos))
-      ponderMove = bestThread->rootMoves[0].pv[1],
-      std::cout << " ponder " << UCI::move(ponderMove, rootPos.is_chess960());
+  {
+      unsigned j = 0;
+      for (unsigned i=1; i<8 && i<bestThread->rootMoves[0].pv.size(); i+=2,++j)
+          ponderMoves[j] = bestThread->rootMoves[0].pv[i];
+      while (j<4)
+          ponderMoves[j++] = MOVE_NONE;
+      std::cout << " ponder " << UCI::move(ponderMoves[0], rootPos.is_chess960());
+  }
   else
-      ponderMove = MOVE_NONE;
+      for (unsigned j=0; j<4; ++j)
+          ponderMoves[j] = MOVE_NONE;
 
   std::cout << sync_endl;
 }
@@ -554,15 +561,10 @@ void Thread::search() {
               th->bestMoveChanges = 0;
           }
           double bestMoveInstability = 1 + totBestMoveChanges / Threads.size();
-          double unexpected = 0.9;
-          if (   Threads.theirMove != mainThread->ponderMove
-              && Threads.theirMove != MOVE_NONE
-              && mainThread->ponderMove != MOVE_NONE)
-              unexpected = 1.4;
 
           // Stop the search if we have only one legal move, or if available time elapsed
           if (   rootMoves.size() == 1
-              || Time.elapsed() > Time.optimum() * fallingEval * reduction * bestMoveInstability * unexpected)
+              || Time.elapsed() > Time.optimum() * fallingEval * reduction * bestMoveInstability * Threads.unexpected)
           {
               // If we are allowed to ponder do not stop the search now but
               // keep pondering until the GUI sends "ponderhit" or "stop".
@@ -573,7 +575,8 @@ void Thread::search() {
           }
           else if (   Threads.increaseDepth
                    && !mainThread->ponder
-                   && Time.elapsed() > Time.optimum() * fallingEval * reduction * bestMoveInstability * unexpected * 0.6)
+                   && Time.elapsed() > Time.optimum() * fallingEval * reduction
+                                                      * bestMoveInstability * Threads.unexpected * 0.6)
                    Threads.increaseDepth = false;
           else
                    Threads.increaseDepth = true;

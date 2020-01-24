@@ -132,15 +132,15 @@ void TimeManagement::init(Search::LimitsType& limits, Color us, int ply) {
       optimumTime += optimumTime / 4;
 
   // Set unexpected to higher value if opponent move not early in previous pv
-  Threads.unexpected = 0.9;
+  Threads.unexpected = 1.0;
   if (Threads.theirMove != MOVE_NONE && Threads.main()->ponderMoves[0] != MOVE_NONE)
   {
-      Threads.unexpected = 1.4;
+      Threads.unexpected = 1.5;
       for (int i = 0; i < 4 && Threads.main()->ponderMoves[i] != MOVE_NONE; ++i)
       {
           if (Threads.theirMove == Threads.main()->ponderMoves[i])
           {
-              Threads.unexpected = 0.9;
+              Threads.unexpected = 1.0;
               break;
           }
       }

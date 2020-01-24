@@ -561,10 +561,13 @@ void Thread::search() {
               th->bestMoveChanges = 0;
           }
           double bestMoveInstability = 1 + totBestMoveChanges / Threads.size();
+          double timeMult = fallingEval * reduction * bestMoveInstability;
+          if (timeMult < 1.5)
+              timeMult = std::min(1.5, timeMult * Threads.unexpected);
 
           // Stop the search if we have only one legal move, or if available time elapsed
           if (   rootMoves.size() == 1
-              || Time.elapsed() > Time.optimum() * fallingEval * reduction * bestMoveInstability * Threads.unexpected)
+              || Time.elapsed() > Time.optimum() * timeMult)
           {
               // If we are allowed to ponder do not stop the search now but
               // keep pondering until the GUI sends "ponderhit" or "stop".
@@ -575,8 +578,7 @@ void Thread::search() {
           }
           else if (   Threads.increaseDepth
                    && !mainThread->ponder
-                   && Time.elapsed() > Time.optimum() * fallingEval * reduction
-                                                      * bestMoveInstability * Threads.unexpected * 0.6)
+                   && Time.elapsed() > Time.optimum() * timeMult * 0.6)
                    Threads.increaseDepth = false;
           else
                    Threads.increaseDepth = true;

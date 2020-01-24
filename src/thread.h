@@ -112,6 +112,7 @@ struct ThreadPool : public std::vector<Thread*> {
 
   std::atomic_bool stop, increaseDepth;
   Move theirMove;
+  double unexpected;
 
 private:
   StateListPtr setupStates;

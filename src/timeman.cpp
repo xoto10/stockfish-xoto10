@@ -130,4 +130,10 @@ void TimeManagement::init(Search::LimitsType& limits, Color us, int ply) {
 
   if (Options["Ponder"])
       optimumTime += optimumTime / 4;
+
+  Threads.unexpected = 0.93;
+  if (   Threads.theirMove != Threads.main()->ponderMove
+      && Threads.theirMove != MOVE_NONE
+      && Threads.main()->ponderMove != MOVE_NONE)
+      Threads.unexpected = 1.28;
 }

@@ -35,7 +35,8 @@ namespace {
   constexpr Score Backward      = S( 9, 24);
   constexpr Score BlockedStorm  = S(82, 82);
   constexpr Score Doubled       = S(11, 56);
-  constexpr Score Isolated      = S(10, 25);
+  constexpr Score Isolated      = S( 4, 14);
+  constexpr Score IsolatedInc   = S( 2,  5);
   constexpr Score WeakLever     = S( 0, 56);
   constexpr Score WeakUnopposed = S(13, 27);
 
@@ -75,7 +76,7 @@ namespace {
     Bitboard lever, leverPush, blocked;
     Square s;
     bool backward, passed, doubled;
-    Score score = SCORE_ZERO;
+    Score score = SCORE_ZERO, iso = Isolated;
     const Square* pl = pos.squares<PAWN>(Us);
 
     Bitboard ourPawns   = pos.pieces(  Us, PAWN);
@@ -139,8 +140,9 @@ namespace {
         }
 
         else if (!neighbours)
-            score -=   Isolated
-                     + WeakUnopposed * !opposed;
+            score -=   iso
+                     + WeakUnopposed * !opposed,
+            iso += IsolatedInc;
 
         else if (backward)
             score -=   Backward

@@ -169,7 +169,12 @@ Entry* probe(const Position& pos, bool pv) {
   Entry* e = pos.this_thread()->pawnsTable[key];
 
   if (e->key == key)
+  {
+      if (pv)
+          pos.this_thread()->averagePawns =  pos.this_thread()->averagePawns * 15 / 16
+                                           + (eg_value(e->scores[WHITE]) - eg_value(e->scores[BLACK])) * 64;
       return e;
+  }
 
   e->key = key;
   e->scores[WHITE] = evaluate<WHITE>(pos, e);

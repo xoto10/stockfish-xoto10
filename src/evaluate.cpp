@@ -23,6 +23,7 @@
 #include <cstring>   // For std::memset
 #include <iomanip>
 #include <sstream>
+//#include <iostream>
 
 #include "bitboard.h"
 #include "evaluate.h"
@@ -158,7 +159,7 @@ namespace {
     Evaluation() = delete;
     explicit Evaluation(const Position& p) : pos(p) {}
     Evaluation& operator=(const Evaluation&) = delete;
-    Value value();
+    Value value(bool pv = false);
 
   private:
     template<Color Us> void initialize();
@@ -768,7 +769,7 @@ namespace {
   // of view of the side to move.
 
   template<Tracing T>
-  Value Evaluation<T>::value() {
+  Value Evaluation<T>::value(bool pv) {
 
     assert(!pos.checkers());
 
@@ -786,7 +787,7 @@ namespace {
     Score score = pos.psq_score() + me->imbalance() + pos.this_thread()->contempt;
 
     // Probe the pawn hash table
-    pe = Pawns::probe(pos);
+    pe = Pawns::probe(pos, pv);
     score += pe->pawn_score(WHITE) - pe->pawn_score(BLACK);
 
     // Early exit if score is high
@@ -821,6 +822,13 @@ namespace {
 
     v /= PHASE_MIDGAME;
 
+    bool goodPawns = (eg_value(pe->pawn_score(WHITE)) - eg_value(pe->pawn_score(BLACK))) * 1024 > pos.this_thread()->averagePawns;
+//Value v2 = v;
+    v = (v - abs(v%2)) + goodPawns;
+//if (pv)
+//sync_cout << "info string psc " << 1024 * (eg_value(pe->pawn_score(WHITE)) - eg_value(pe->pawn_score(BLACK)))
+//          << " ap " << pos.this_thread()->averagePawns << " v " << v << " v2 " << v2 << sync_endl;
+
     // In case of tracing add all remaining individual evaluation terms
     if (T)
     {
@@ -841,8 +849,8 @@ namespace {
 /// evaluate() is the evaluator for the outer world. It returns a static
 /// evaluation of the position from the point of view of the side to move.
 
-Value Eval::evaluate(const Position& pos) {
-  return Evaluation<NO_TRACE>(pos).value();
+Value Eval::evaluate(const Position& pos, bool pv) {
+  return Evaluation<NO_TRACE>(pos).value(pv);
 }
 
 

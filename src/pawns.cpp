@@ -163,7 +163,7 @@ namespace Pawns {
 /// is found. Otherwise a new Entry is computed and stored there, so we don't
 /// have to recompute all when the same pawns configuration occurs again.
 
-Entry* probe(const Position& pos) {
+Entry* probe(const Position& pos, bool pv) {
 
   Key key = pos.pawn_key();
   Entry* e = pos.this_thread()->pawnsTable[key];
@@ -174,6 +174,10 @@ Entry* probe(const Position& pos) {
   e->key = key;
   e->scores[WHITE] = evaluate<WHITE>(pos, e);
   e->scores[BLACK] = evaluate<BLACK>(pos, e);
+
+  if (pv)
+      pos.this_thread()->averagePawns =  pos.this_thread()->averagePawns * 15 / 16
+                                       + (eg_value(e->scores[WHITE]) - eg_value(e->scores[BLACK])) * 64;
 
   return e;
 }

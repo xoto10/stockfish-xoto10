@@ -814,6 +814,11 @@ namespace {
 
     score += initiative(score);
 
+    if (abs(eg_value(score)) < 80)
+        score += (pe->pawn_score(WHITE) - pe->pawn_score(BLACK)) / 8;
+    else if (abs(eg_value(score)) < 120)
+        score += (pe->pawn_score(WHITE) - pe->pawn_score(BLACK)) / 16;
+
     // Interpolate between a middlegame and a (scaled by 'sf') endgame score
     ScaleFactor sf = scale_factor(eg_value(score));
     v =  mg_value(score) * int(me->game_phase())

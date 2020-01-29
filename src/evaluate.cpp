@@ -722,7 +722,8 @@ namespace {
                     - 100 ;
 
     // Give more importance to non-material score
-    score = score - pos.psq_score() / 2;
+    score = score + (pe->pawn_score(WHITE) - pe->pawn_score(BLACK) - pos.psq_score()) / 2;
+   
     Value mg = mg_value(score);
     Value eg = eg_value(score);
 

@@ -790,9 +790,9 @@ namespace {
     score += pe->pawn_score(WHITE) - pe->pawn_score(BLACK);
     Value diff = eg_value(pe->pawn_score(WHITE)) - eg_value(pe->pawn_score(BLACK));
     if (abs(diff) > 118)
-        score += make_score(0, (diff > 0 ? 1 : -1) * (abs(diff) - 102) / 2);
+        score += make_score(0, (diff > 0 ? 1 : -1) * (abs(diff) - 101));
     else if (abs(diff) > 84)
-        score += make_score(0, (diff > 0 ? 1 : -1) * (abs(diff) - 84) / 4);
+        score += make_score(0, (diff > 0 ? 1 : -1) * (abs(diff) - 84) / 2);
 //dbg_mean_of(abs(diff)); // mean 43, next 84, next 118
 
     // Early exit if score is high

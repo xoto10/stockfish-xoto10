@@ -23,6 +23,7 @@
 #include <cstring>   // For std::memset
 #include <iomanip>
 #include <sstream>
+#include <iostream>
 
 #include "bitboard.h"
 #include "evaluate.h"
@@ -137,6 +138,7 @@ namespace {
   constexpr Score MinorBehindPawn    = S( 18,  3);
   constexpr Score Outpost            = S( 30, 21);
   constexpr Score PassedFile         = S( 11,  8);
+  constexpr Score PawnBlocksBishop   = S( 16, 16);
   constexpr Score PawnlessFlank      = S( 17, 95);
   constexpr Score RestrictedPiece    = S(  7,  7);
   constexpr Score ReachableOutpost   = S( 32, 10);
@@ -318,13 +320,17 @@ namespace {
                 if (more_than_one(attacks_bb<BISHOP>(s, pos.pieces(PAWN)) & Center))
                     score += LongDiagonalBishop;
 
+                // Penalty for bishop with own pawn blocking access to center of board
+                Direction d = pawn_push(Us) + (file_of(s) < FILE_E ? EAST : WEST);
+                if (relative_square(Us, s) < SQ_A5 && pos.piece_on(s + d) == make_piece(Us, PAWN))
+                    score -= PawnBlocksBishop;
+
                 // An important Chess960 pattern: a cornered bishop blocked by a friendly
                 // pawn diagonally in front of it is a very serious problem, especially
                 // when that pawn is also blocked.
                 if (   pos.is_chess960()
                     && (s == relative_square(Us, SQ_A1) || s == relative_square(Us, SQ_H1)))
                 {
-                    Direction d = pawn_push(Us) + (file_of(s) == FILE_A ? EAST : WEST);
                     if (pos.piece_on(s + d) == make_piece(Us, PAWN))
                         score -= !pos.empty(s + d + pawn_push(Us))                ? CorneredBishop * 4
                                 : pos.piece_on(s + d + d) == make_piece(Us, PAWN) ? CorneredBishop * 2

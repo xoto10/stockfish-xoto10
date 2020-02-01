@@ -322,7 +322,7 @@ namespace {
 
                 // Penalty for bishop with own pawn blocking access to center of board
                 Direction d = pawn_push(Us) + (file_of(s) < FILE_E ? EAST : WEST);
-                if (relative_square(Us, s) < SQ_A5 && pos.piece_on(s + d) == make_piece(Us, PAWN))
+                if (relative_rank(Us, s) < RANK_8 && pos.piece_on(s + d) == make_piece(Us, PAWN))
                     score -= PawnBlocksBishop;
 
                 // An important Chess960 pattern: a cornered bishop blocked by a friendly

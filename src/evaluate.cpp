@@ -23,7 +23,6 @@
 #include <cstring>   // For std::memset
 #include <iomanip>
 #include <sstream>
-#include <iostream>
 
 #include "bitboard.h"
 #include "evaluate.h"
@@ -138,7 +137,7 @@ namespace {
   constexpr Score MinorBehindPawn    = S( 18,  3);
   constexpr Score Outpost            = S( 30, 21);
   constexpr Score PassedFile         = S( 11,  8);
-  constexpr Score PawnBlocksBishop   = S( 14, 14);
+  constexpr Score PawnBlocksBishop   = S( 16, 16);
   constexpr Score PawnlessFlank      = S( 17, 95);
   constexpr Score RestrictedPiece    = S(  7,  7);
   constexpr Score ReachableOutpost   = S( 32, 10);
@@ -322,7 +321,9 @@ namespace {
 
                 // Penalty for bishop with own pawn blocking access to center of board
                 Direction d = pawn_push(Us) + (file_of(s) < FILE_E ? EAST : WEST);
-                if (relative_rank(Us, s) < RANK_8 && pos.piece_on(s + d) == make_piece(Us, PAWN))
+                if (   !(s & (FileDBB | FileEBB))
+                    && relative_rank(Us, s) < RANK_8
+                    && pos.piece_on(s + d) == make_piece(Us, PAWN))
                     score -= PawnBlocksBishop;
 
                 // An important Chess960 pattern: a cornered bishop blocked by a friendly

@@ -23,6 +23,7 @@
 #include <cstring>   // For std::memset
 #include <iomanip>
 #include <sstream>
+#include <iostream>
 
 #include "bitboard.h"
 #include "evaluate.h"
@@ -711,7 +712,8 @@ namespace {
     Value mg = mg_value(score);
     Value eg = eg_value(score);
 
-    bool allDefended =    pos.non_pawn_material(WHITE) < 4500
+    bool allDefended =    pos.non_pawn_material() < 9000
+                       && pos.non_pawn_material(WHITE) != pos.non_pawn_material(BLACK)
                        && (   (   (eg > 0)
                                && !((pos.pieces(BLACK) ^ pos.pieces(BLACK, KING, QUEEN)) & ~attackedBy[BLACK][ALL_PIECES]))
                            || (   (eg < 0)

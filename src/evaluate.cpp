@@ -708,19 +708,27 @@ namespace {
                            &&  outflanking < 0
                            && !pawnsOnBothFlanks;
 
+    Value mg = mg_value(score);
+    Value eg = eg_value(score);
+
+    Bitboard undefended[COLOR_NB] = { (pos.pieces(WHITE) ^ pos.pieces(WHITE, KING, QUEEN)) & ~attackedBy[WHITE][ALL_PIECES],
+                                      (pos.pieces(BLACK) ^ pos.pieces(BLACK, KING, QUEEN)) & ~attackedBy[BLACK][ALL_PIECES]};
+
+    bool allDefended =    pos.non_pawn_material(WHITE) < 4500
+                       && (   ((eg>0) && !undefended[BLACK])
+                           || ((eg<0) && !undefended[WHITE]));
+
     // Compute the initiative bonus for the attacking side
     int complexity =   9 * pe->passed_count()
                     + 11 * pos.count<PAWN>()
                     +  9 * outflanking
                     + 21 * pawnsOnBothFlanks
                     + 51 * !pos.non_pawn_material()
+                    - 40 * allDefended
                     - 43 * almostUnwinnable
                     - 95 ;
 
     // Give more importance to non-material score
-    Value mg = mg_value(score);
-    Value eg = eg_value(score);
-
     // Now apply the bonus: note that we find the attacking side by extracting the
     // sign of the midgame or endgame values, and that we carefully cap the bonus
     // so that the midgame and endgame scores do not change sign after the bonus.

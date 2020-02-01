@@ -711,12 +711,11 @@ namespace {
     Value mg = mg_value(score);
     Value eg = eg_value(score);
 
-    Bitboard undefended[COLOR_NB] = { (pos.pieces(WHITE) ^ pos.pieces(WHITE, KING, QUEEN)) & ~attackedBy[WHITE][ALL_PIECES],
-                                      (pos.pieces(BLACK) ^ pos.pieces(BLACK, KING, QUEEN)) & ~attackedBy[BLACK][ALL_PIECES]};
-
     bool allDefended =    pos.non_pawn_material(WHITE) < 4500
-                       && (   ((eg>0) && !undefended[BLACK])
-                           || ((eg<0) && !undefended[WHITE]));
+                       && (   (   (eg > 0)
+                               && !((pos.pieces(BLACK) ^ pos.pieces(BLACK, KING, QUEEN)) & ~attackedBy[BLACK][ALL_PIECES]))
+                           || (   (eg < 0)
+                               && !((pos.pieces(WHITE) ^ pos.pieces(WHITE, KING, QUEEN)) & ~attackedBy[WHITE][ALL_PIECES])));
 
     // Compute the initiative bonus for the attacking side
     int complexity =   9 * pe->passed_count()

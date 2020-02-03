@@ -163,7 +163,7 @@ namespace {
         if (ourPawns & file_bb(f))
         {
             islands += !onIsland;
-            if (onIsland && abs(r-lastRank) > 1 && std::max(r, lastRank) > 3)
+            if (onIsland && abs(r-lastRank) > 1)
                 score -= PawnGap;
             onIsland = true;
         }
@@ -171,8 +171,7 @@ namespace {
             onIsland = false;
         lastRank = r;
      }
-    if (islands > 2)
-        score -= PawnIsland * islands;
+    score -= PawnIsland * islands;
 
     return score;
   }

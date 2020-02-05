@@ -714,7 +714,7 @@ namespace {
     Value mg = mg_value(score);
     Value eg = eg_value(score);
 
-    bool allDefended =    pos.non_pawn_material(WHITE) < 4500
+    bool allDefended =    pos.non_pawn_material() < 4600
                        && (   (   (eg > 0)
                                && !((pos.pieces(BLACK) ^ pos.pieces(BLACK, KING, QUEEN)) & ~attackedBy[BLACK][ALL_PIECES]))
                            || (   (eg < 0)

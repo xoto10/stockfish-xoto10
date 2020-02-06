@@ -28,6 +28,14 @@
 
 namespace {
 
+Range vary20(int c) { return Range(c-20, c+20); }
+
+int D1=2, E1=1, F1=1, G1=21, H1=0, I1=0, J1=0, K1=0, L1=2, M1=0, N1=0, O1=0, P1=0, Q1=0;
+int D2=2, E2=1, F2=1, G2=21, H2=0, I2=0, J2=0, K2=0, L2=2, M2=0, N2=0, O2=0, P2=0, Q2=0;
+
+TUNE(SetRange(vary20), D1, E1, F1, G1, H1, I1, J1, K1, L1, M1, N1, O1, P1, Q1);
+TUNE(SetRange(vary20), D2, E2, F1, G2, H2, I2, J2, K2, L2, M2, N2, O2, P2, Q2);
+
   #define V Value
   #define S(mg, eg) make_score(mg, eg)
 
@@ -40,7 +48,8 @@ namespace {
   constexpr Score WeakUnopposed = S(13, 27);
 
   // Connected pawn bonus
-  constexpr int Connected[RANK_NB] = { 0, 7, 8, 12, 29, 48, 86 };
+            int C1       [RANK_NB] = { 0, 7, 8, 12, 29, 48, 86 };
+            int C2       [RANK_NB] = { 0, 7, 8, 12, 29, 48, 86 };
 
   // Strength of pawn shelter for our king by [distance from edge][rank].
   // RANK_1 = 0 is used for files where we have no pawn, or pawn is behind our king.
@@ -130,12 +139,20 @@ namespace {
             e->passedPawns[Us] |= s;
 
         // Score this pawn
-        if (support | phalanx)
+        if (support)
         {
-            int v =  Connected[r] * (2 + bool(phalanx) - bool(opposed))
-                   + 21 * popcount(support);
+            int v =  C1       [r] * (D1 + E1*bool(phalanx) - F1*bool(opposed) + O1*(r>RANK_4))
+                   + (G1 + H1*r + P1*(r>RANK_4) - I1) * popcount(support);
 
-            score += make_score(v, v * (r - 2) / 4);
+            score += make_score(v + J1*r + Q1*(r>RANK_4) - K1, v * (r - L1) / 4 + M1*r - N1);
+        }
+
+        else if (phalanx)
+        {
+            int v =  C2       [r] * (D2 + E2*bool(phalanx) - F2*bool(opposed) + O2*(r>RANK_4))
+                   + (G2 + H2*r + P2*(r>RANK_4) - I2) * popcount(support);
+
+            score += make_score(v + J2*r + Q2*(r>RANK_4) - K2, v * (r - L2) / 4 + M2*r - N2);
         }
 
         else if (!neighbours)

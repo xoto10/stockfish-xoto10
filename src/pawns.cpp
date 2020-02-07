@@ -211,6 +211,11 @@ Score Entry::evaluate_shelter(const Position& pos, Square ksq) {
           bonus -= make_score(UnblockedStorm[d][theirRank], 0);
   }
 
+  // Penalty if opponent has dangerous supported pawn
+  Bitboard rank4 = (Us == WHITE ? Rank4BB : Rank5BB) & (file_of(ksq) > FILE_D ? KingSide : QueenSide);
+  if (Bitboard suppRank4 = theirPawns & rank4 & pawn_attacks_bb<Them>(theirPawns))
+      bonus -= make_score(6 * popcount(suppRank4), 0);
+
   return bonus;
 }
 

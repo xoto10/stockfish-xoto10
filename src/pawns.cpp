@@ -136,7 +136,7 @@ namespace {
             int v =  Connected[r] * (2 + bool(phalanx) - bool(opposed))
                    + 21 * popcount(support);
 
-            score += make_score(v + 4 * bool(s & DE5), v * (r - 2) / 4);
+            score += make_score(v + 6 * bool(s & DE5), v * (r - 2) / 4);
         }
 
         else if (!neighbours)

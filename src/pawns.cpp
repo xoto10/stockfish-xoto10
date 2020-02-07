@@ -70,7 +70,7 @@ namespace {
 
     constexpr Color     Them = (Us == WHITE ? BLACK : WHITE);
     constexpr Direction Up   = pawn_push(Us);
-    Bitboard  DE5  = (Us == WHITE ? square_bb(SQ_D5) | SQ_E5 : square_bb(SQ_D4) | SQ_E4);
+    constexpr Bitboard  DE5  = (FileDBB | FileEBB) & (Us == WHITE ? Rank5BB : Rank4BB);
 
     Bitboard neighbours, stoppers, support, phalanx, opposed;
     Bitboard lever, leverPush, blocked;

@@ -241,6 +241,7 @@ void MainThread::search() {
           th->bestMoveChanges = 0;
           th->nonDrawMove = MOVE_NONE;
           th->nonDrawMoveValue = -VALUE_INFINITE;
+          th->nonDrawMoveDepth = 0;
           if (th != this)
               th->start_searching();
       }
@@ -509,14 +510,19 @@ void Thread::search() {
 
           // Note move if score doesn't indicate a draw
           if (abs(rootMoves[0].score) > 1)
-              nonDrawMove = rootMoves[0].pv[0], nonDrawMoveValue = rootMoves[0].score;
+          {
+              nonDrawMove = rootMoves[0].pv[0];
+              nonDrawMoveValue = rootMoves[0].score;
+              nonDrawMoveDepth = rootDepth;
+          }
 
           // Try different move if stopping and draw eval
           if (   (Threads.stop || (Limits.depth && mainThread && rootDepth == Limits.depth))
               && abs(rootMoves[0].score) < 2
-              && nonDrawMove != rootMoves[0].pv[0]
               && nonDrawMove != MOVE_NONE
-              && nonDrawMoveValue > 1)
+              && nonDrawMove != rootMoves[0].pv[0]
+              && nonDrawMoveValue > 1
+              && nonDrawMoveDepth > rootDepth - 4)
               rootMoves[0].pv.resize(1), rootMoves[0].pv[0] = nonDrawMove; // Minimal pv - needs expanding?
 
           if (    mainThread

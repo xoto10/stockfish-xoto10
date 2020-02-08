@@ -239,6 +239,8 @@ void MainThread::search() {
       for (Thread* th : Threads)
       {
           th->bestMoveChanges = 0;
+          th->nonDrawMove = MOVE_NONE;
+          th->nonDrawMoveValue = -VALUE_INFINITE;
           if (th != this)
               th->start_searching();
       }
@@ -504,6 +506,18 @@ void Thread::search() {
 
           // Sort the PV lines searched so far and update the GUI
           std::stable_sort(rootMoves.begin() + pvFirst, rootMoves.begin() + pvIdx + 1);
+
+          // Note move if score doesn't indicate a draw
+          if (abs(rootMoves[0].score) > 1)
+              nonDrawMove = rootMoves[0].pv[0], nonDrawMoveValue = rootMoves[0].score;
+
+          // Try different move if stopping and draw eval
+          if (   (Threads.stop || (Limits.depth && mainThread && rootDepth == Limits.depth))
+              && abs(rootMoves[0].score) < 2
+              && nonDrawMove != rootMoves[0].pv[0]
+              && nonDrawMove != MOVE_NONE
+              && nonDrawMoveValue > 1)
+              rootMoves[0].pv.resize(1), rootMoves[0].pv[0] = nonDrawMove; // Minimal pv - needs expanding?
 
           if (    mainThread
               && (Threads.stop || pvIdx + 1 == multiPV || Time.elapsed() > 3000))
@@ -1263,10 +1277,15 @@ moves_loop: // When in check, search starts from here
                   ++thisThread->bestMoveChanges;
           }
           else
+          {
               // All other moves but the PV are set to the lowest value: this
               // is not a problem when sorting because the sort is stable and the
               // move position in the list is preserved - just the PV is pushed up.
               rm.score = -VALUE_INFINITE;
+
+              if (move == thisThread->nonDrawMove && abs(value) > 1)
+                  thisThread->nonDrawMoveValue = value;
+          }
       }
 
       if (value > bestValue)

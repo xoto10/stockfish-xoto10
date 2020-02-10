@@ -90,8 +90,8 @@ namespace {
   // Add a small random component to draw evaluations to avoid 3fold-blindness
   Value value_draw(Thread* thisThread) {
     if (thisThread->nonDrawMoveValue != -VALUE_INFINITE)
-        return VALUE_DRAW + Value((thisThread->nodes & 1) - (thisThread->nonDrawMoveValue< -1))
-                            * (thisThread->rootPos.side_to_move() == Time.sideToMove ? 1 : -1);
+        return VALUE_DRAW + Value((thisThread->nodes & 1) - (thisThread->nonDrawMoveValue < -1))
+                            * (thisThread->rootPos.side_to_move() == Time.sideToMove ? -1 : 1);
     else
         return VALUE_DRAW + Value(2 * (thisThread->nodes & 1) - 1);
   }

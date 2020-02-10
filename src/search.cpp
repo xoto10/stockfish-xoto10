@@ -89,8 +89,13 @@ namespace {
 
   // Add a small random component to draw evaluations to avoid 3fold-blindness
   Value value_draw(Thread* thisThread) {
-    return VALUE_DRAW + Value(2 * (thisThread->nodes & 1) - 1);
+    if (thisThread->nonDrawMoveValue != -VALUE_INFINITE)
+        return VALUE_DRAW + Value((thisThread->nodes & 1) - (thisThread->nonDrawMoveValue< -1))
+                            * (thisThread->rootPos.side_to_move() == Time.sideToMove ? 1 : -1);
+    else
+        return VALUE_DRAW + Value(2 * (thisThread->nodes & 1) - 1);
   }
+
 
   // Skill structure is used to implement strength limit
   struct Skill {
@@ -239,6 +244,7 @@ void MainThread::search() {
       for (Thread* th : Threads)
       {
           th->bestMoveChanges = 0;
+          th->nonDrawMoveValue = -VALUE_INFINITE;
           if (th != this)
               th->start_searching();
       }
@@ -504,6 +510,10 @@ void Thread::search() {
 
           // Sort the PV lines searched so far and update the GUI
           std::stable_sort(rootMoves.begin() + pvFirst, rootMoves.begin() + pvIdx + 1);
+
+          // Remember move if score doesn't indicate a draw
+          if (abs(rootMoves[0].score) > 1)
+              nonDrawMoveValue = rootMoves[0].score;
 
           if (    mainThread
               && (Threads.stop || pvIdx + 1 == multiPV || Time.elapsed() > 3000))

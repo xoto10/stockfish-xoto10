@@ -137,6 +137,7 @@ namespace {
   constexpr Score MinorBehindPawn    = S( 18,  3);
   constexpr Score Outpost            = S( 30, 21);
   constexpr Score PassedFile         = S( 11,  8);
+  constexpr Score PawnAttack         = S(  7,  0);
   constexpr Score PawnlessFlank      = S( 17, 95);
   constexpr Score RestrictedPiece    = S(  7,  7);
   constexpr Score ReachableOutpost   = S( 32, 10);
@@ -466,6 +467,11 @@ namespace {
 
     // Penalty if king flank is under attack, potentially moving toward the king
     score -= FlankAttacks * kingFlankAttack;
+
+    // Penalty if opponent has dangerous supported pawn
+    Bitboard rank4 = (Us == WHITE ? Rank4BB : Rank5BB) & (file_of(ksq) > FILE_D ? KingSide : QueenSide);
+    if (Bitboard suppRank4 = pos.pieces(Them, PAWN) & rank4 & pawn_attacks_bb<Them>(pos.pieces(Them, PAWN)))
+        score -= PawnAttack * popcount(suppRank4);
 
     if (T)
         Trace::add(KING, Us, score);

@@ -240,6 +240,7 @@ void MainThread::search() {
       {
           th->bestMoveChanges = 0;
           th->nonDrawMove = MOVE_NONE;
+          th->nonDrawMoveValue = -VALUE_INFINITE;
           th->nonDrawMoveLatest = -VALUE_INFINITE;
           th->nonDrawMoveDepth = 0;
           if (th != this)
@@ -512,6 +513,7 @@ void Thread::search() {
           if (rootMoves[0].score > 1)
           {
               nonDrawMove = rootMoves[0].pv[0];
+              nonDrawMoveValue = rootMoves[0].score;
               nonDrawMoveLatest = rootMoves[0].score;
               nonDrawMoveDepth = rootDepth;
           }
@@ -526,7 +528,9 @@ void Thread::search() {
               && nonDrawMove != MOVE_NONE
               && nonDrawMove != rootMoves[0].pv[0]
               && nonDrawMoveLatest > -2
-              && nonDrawMoveDepth > rootDepth - 5)
+              && nonDrawMoveValue >= 30
+              && nonDrawMoveDepth >= rootDepth - 1
+              && rootDepth >= 18)
               rootMoves[0].pv.resize(1), rootMoves[0].pv[0] = nonDrawMove; // Minimal pv - needs expanding?
 
           if (    mainThread
@@ -601,7 +605,9 @@ void Thread::search() {
           && nonDrawMove != MOVE_NONE
           && nonDrawMove != rootMoves[0].pv[0]
           && nonDrawMoveLatest > -2
-          && nonDrawMoveDepth > rootDepth - 5)
+          && nonDrawMoveValue >= 30
+          && nonDrawMoveDepth >= rootDepth - 1
+          && rootDepth >= 18)
           rootMoves[0].pv.resize(1), rootMoves[0].pv[0] = nonDrawMove; // Minimal pv - needs expanding?
 
       mainThread->iterValue[iterIdx] = bestValue;

@@ -36,6 +36,7 @@ namespace {
   constexpr Score BlockedStorm  = S(82, 82);
   constexpr Score Doubled       = S(11, 56);
   constexpr Score Isolated      = S( 5, 15);
+  constexpr Score PawnAttack    = S( 8,  0);
   constexpr Score WeakLever     = S( 0, 56);
   constexpr Score WeakUnopposed = S(13, 27);
 
@@ -214,7 +215,7 @@ Score Entry::evaluate_shelter(const Position& pos, Square ksq) {
   // Penalty if opponent has dangerous supported pawn
   Bitboard rank4 = (Us == WHITE ? Rank4BB : Rank5BB) & (file_of(ksq) > FILE_D ? KingSide : QueenSide);
   if (Bitboard suppRank4 = theirPawns & rank4 & pawn_attacks_bb<Them>(theirPawns))
-      bonus -= make_score(6 * popcount(suppRank4), 6);
+      bonus -= PawnAttack * popcount(suppRank4);
 
   return bonus;
 }

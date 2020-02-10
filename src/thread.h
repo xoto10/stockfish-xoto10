@@ -60,6 +60,9 @@ public:
 
   Pawns::Table pawnsTable;
   Material::Table materialTable;
+  Move nonDrawMove;
+  Value nonDrawMoveLatest;
+  Depth nonDrawMoveDepth;
   size_t pvIdx, pvLast;
   uint64_t ttHitAverage;
   int selDepth, nmpMinPly;

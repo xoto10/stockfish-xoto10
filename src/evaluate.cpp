@@ -137,7 +137,6 @@ namespace {
   constexpr Score MinorBehindPawn    = S( 18,  3);
   constexpr Score Outpost            = S( 30, 21);
   constexpr Score PassedFile         = S( 11,  8);
-  constexpr Score PawnAttack         = S(  7,  0);
   constexpr Score PawnlessFlank      = S( 17, 95);
   constexpr Score RestrictedPiece    = S(  7,  7);
   constexpr Score ReachableOutpost   = S( 32, 10);
@@ -435,6 +434,12 @@ namespace {
     else
         unsafeChecks |= knightChecks;
 
+    // Supported pawn attackers
+    int rank4pawns = 0;
+    Bitboard rank4 = (Us == WHITE ? Rank4BB : Rank5BB) & (file_of(ksq) > FILE_D ? KingSide : QueenSide);
+    if (Bitboard suppRank4 = pos.pieces(Them, PAWN) & rank4 & pawn_attacks_bb<Them>(pos.pieces(Them, PAWN)))
+        rank4pawns = popcount(suppRank4);
+
     // Find the squares that opponent attacks in our king flank, the squares
     // which they attack twice in that flank, and the squares that we defend.
     b1 = attackedBy[Them][ALL_PIECES] & KingFlank[file_of(ksq)] & Camp;
@@ -449,6 +454,7 @@ namespace {
                  + 148 * popcount(unsafeChecks)
                  +  98 * popcount(pos.blockers_for_king(Us))
                  +  69 * kingAttacksCount[Them]
+                 +  50 * rank4pawns
                  +   3 * kingFlankAttack * kingFlankAttack / 8
                  +       mg_value(mobility[Them] - mobility[Us])
                  - 873 * !pos.count<QUEEN>(Them)
@@ -467,11 +473,6 @@ namespace {
 
     // Penalty if king flank is under attack, potentially moving toward the king
     score -= FlankAttacks * kingFlankAttack;
-
-    // Penalty if opponent has dangerous supported pawn
-    Bitboard rank4 = (Us == WHITE ? Rank4BB : Rank5BB) & (file_of(ksq) > FILE_D ? KingSide : QueenSide);
-    if (Bitboard suppRank4 = pos.pieces(Them, PAWN) & rank4 & pawn_attacks_bb<Them>(pos.pieces(Them, PAWN)))
-        score -= PawnAttack * popcount(suppRank4);
 
     if (T)
         Trace::add(KING, Us, score);

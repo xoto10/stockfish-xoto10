@@ -146,6 +146,7 @@ namespace {
   constexpr Score ThreatByPawnPush   = S( 48, 39);
   constexpr Score ThreatBySafePawn   = S(173, 94);
   constexpr Score TrappedRook        = S( 52, 10);
+  constexpr Score TrappedRookPawn    = S( 10,  0);
   constexpr Score WeakQueen          = S( 49, 15);
 
 #undef S
@@ -347,8 +348,12 @@ namespace {
             else if (mob <= 3)
             {
                 File kf = file_of(pos.square<KING>(Us));
+                bool pawnDE5 = (FileDBB | FileEBB) & (Us == WHITE ? Rank4BB : Rank5BB) & pos.pieces(Them, PAWN);
+//              Bitboard rank4 = (Us == WHITE ? Rank4BB : Rank5BB) & (file_of(ksq) > FILE_D ? KingSide : QueenSide);
+//              Bitboard suppRank4 = theirPawns & rank4 & pawn_attacks_bb<Them>(theirPawns);
                 if ((kf < FILE_E) == (file_of(s) < kf))
-                    score -= TrappedRook * (1 + !pos.castling_rights(Us));
+                    score -=  TrappedRook * (1 + !pos.castling_rights(Us))
+                            + TrappedRookPawn * pawnDE5;
             }
         }
 

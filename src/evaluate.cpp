@@ -348,11 +348,9 @@ namespace {
             else if (mob <= 3)
             {
                 File kf = file_of(pos.square<KING>(Us));
-                Bitboard rank4 = (Us == WHITE ? Rank4BB : Rank5BB) & (kf > FILE_D ? KingSide : QueenSide);
-                Bitboard rank4SuppPawn = pos.pieces(Them, PAWN) & rank4 & attackedBy[Them][PAWN];
                 if ((kf < FILE_E) == (file_of(s) < kf))
                     score -=  TrappedRook * (1 + !pos.castling_rights(Us))
-                            + TrappedRookPawn * popcount(rank4SuppPawn);
+                            + TrappedRookPawn * popcount(pe->rank5SuppPawns[Them]);
             }
         }
 

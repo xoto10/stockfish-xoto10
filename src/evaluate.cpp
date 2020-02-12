@@ -348,12 +348,11 @@ namespace {
             else if (mob <= 3)
             {
                 File kf = file_of(pos.square<KING>(Us));
-                bool pawnDE5 = (FileDBB | FileEBB) & (Us == WHITE ? Rank4BB : Rank5BB) & pos.pieces(Them, PAWN);
-//              Bitboard rank4 = (Us == WHITE ? Rank4BB : Rank5BB) & (file_of(ksq) > FILE_D ? KingSide : QueenSide);
-//              Bitboard suppRank4 = theirPawns & rank4 & pawn_attacks_bb<Them>(theirPawns);
+                Bitboard rank4 = (Us == WHITE ? Rank4BB : Rank5BB) & (kf > FILE_D ? KingSide : QueenSide);
+                bool rank4SuppPawn = pos.pieces(Them, PAWN) & rank4 & attackedBy[Them][PAWN];
                 if ((kf < FILE_E) == (file_of(s) < kf))
                     score -=  TrappedRook * (1 + !pos.castling_rights(Us))
-                            + TrappedRookPawn * pawnDE5;
+                            + TrappedRookPawn * rank4SuppPawn;
             }
         }
 

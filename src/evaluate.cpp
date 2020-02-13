@@ -145,7 +145,7 @@ namespace {
   constexpr Score ThreatByKing       = S( 24, 89);
   constexpr Score ThreatByPawnPush   = S( 48, 39);
   constexpr Score ThreatBySafePawn   = S(173, 94);
-  constexpr Score TrappedRook        = S( 37,  7);
+  constexpr Score TrappedRook        = S( 56, 10);
   constexpr Score WeakQueen          = S( 49, 15);
 
 #undef S
@@ -256,7 +256,6 @@ namespace {
     constexpr Direction Down = -pawn_push(Us);
     constexpr Bitboard OutpostRanks = (Us == WHITE ? Rank4BB | Rank5BB | Rank6BB
                                                    : Rank5BB | Rank4BB | Rank3BB);
-    constexpr Square   OurA1A8 = (Us == WHITE ? SQ_A1   : SQ_A8);
     constexpr Square   OurH1H8 = (Us == WHITE ? SQ_H1   : SQ_H8);
     constexpr Piece    OurRook = (Us == WHITE ? W_ROOK  : B_ROOK);
     const Square* pl = pos.squares<Pt>(Us);
@@ -351,9 +350,7 @@ namespace {
             {
                 File kf = file_of(pos.square<KING>(Us));
                 if ((kf < FILE_E) == (file_of(s) < kf))
-                    score -=  TrappedRook * (1 + !pos.castling_rights(Us)
-                                             + (   (kf >= FILE_E && pos.piece_on(OurA1A8) == OurRook)
-                                                || (kf <  FILE_E && pos.piece_on(OurH1H8) == OurRook)));
+                    score -=  TrappedRook * (1 + (kf < FILE_E || pos.piece_on(OurH1H8) == OurRook));
             }
         }
 

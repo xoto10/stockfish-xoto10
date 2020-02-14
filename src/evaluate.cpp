@@ -23,6 +23,7 @@
 #include <cstring>   // For std::memset
 #include <iomanip>
 #include <sstream>
+#include <iostream>
 
 #include "bitboard.h"
 #include "evaluate.h"
@@ -744,12 +745,25 @@ namespace {
     Color strongSide = eg > VALUE_DRAW ? WHITE : BLACK;
     int sf = me->scale_factor(pos, strongSide);
 
+//if (   pos.non_pawn_material(strongSide) == QueenValueMg
+//    && pos.non_pawn_material(~strongSide) == RookValueMg + BishopValueMg)
+//{
+//    sync_cout << "info string qrb, sf = " << sf << " pos\n" << pos << sync_endl;
+//}
+
     // If scale is not already specific, scale down the endgame via general heuristics
     if (sf == SCALE_FACTOR_NORMAL)
     {
         if (   pos.opposite_bishops()
             && pos.non_pawn_material() == 2 * BishopValueMg)
             sf = 22 ;
+        else if (   pos.non_pawn_material(strongSide) == QueenValueMg
+                 && pos.non_pawn_material(~strongSide) == RookValueMg + BishopValueMg)
+        {
+            Bitboard b = pos.pieces(~strongSide, BISHOP);
+            sf += (pos.count<PAWN>(~strongSide) - pos.pawns_on_same_color_squares(~strongSide, pop_lsb(&b)) - 8);
+sync_cout << "info string qrb adj, sf = " << sf << " pos\n" << pos << sync_endl;
+        }
         else
             sf = std::min(sf, 36 + (pos.opposite_bishops() ? 2 : 7) * pos.count<PAWN>(strongSide));
 

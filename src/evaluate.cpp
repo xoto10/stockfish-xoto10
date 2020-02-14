@@ -168,7 +168,7 @@ namespace {
     template<Color Us> Score threats() const;
     template<Color Us> Score passed() const;
     template<Color Us> Score space() const;
-    ScaleFactor scale_factor(Value eg) const;
+    ScaleFactor scale_factor(Value eg, Score& sc) const;
     Score initiative(Score score) const;
 
     const Position& pos;
@@ -740,7 +740,7 @@ namespace {
   // Evaluation::scale_factor() computes the scale factor for the winning side
 
   template<Tracing T>
-  ScaleFactor Evaluation<T>::scale_factor(Value eg) const {
+  ScaleFactor Evaluation<T>::scale_factor(Value eg, Score& sc) const {
 
     Color strongSide = eg > VALUE_DRAW ? WHITE : BLACK;
     int sf = me->scale_factor(pos, strongSide);
@@ -760,9 +760,21 @@ namespace {
         else if (   pos.non_pawn_material(strongSide) == QueenValueMg
                  && pos.non_pawn_material(~strongSide) == RookValueMg + BishopValueMg)
         {
-            Bitboard b = pos.pieces(~strongSide, BISHOP);
-            sf += (pos.count<PAWN>(~strongSide) - pos.pawns_on_same_color_squares(~strongSide, pop_lsb(&b)) - 8)
-                 + (pos.count<PAWN>(strongSide) + 1 - pos.count<PAWN>(~strongSide));
+// Other possible factors:
+// - defended 7th rank pawn for weak side
+            int rank7pawns = popcount(  pos.pieces(~strongSide, PAWN)
+                                      & (strongSide == WHITE ? Rank2BB : Rank7BB)
+                                      & attackedBy[~strongSide][ALL_PIECES]);
+            if (rank7pawns)
+            {
+                sc = -sc; // RB may be winning!
+                //sf = 96;
+            }
+            else
+            {
+                Bitboard b = pos.pieces(~strongSide, BISHOP);
+                sf += (pos.count<PAWN>(~strongSide) - pos.pawns_on_same_color_squares(~strongSide, pop_lsb(&b)) - 8);
+            }
 sync_cout << "info string qrb adj, sf = " << sf << " pos\n" << pos << sync_endl;
         }
         else
@@ -827,7 +839,7 @@ sync_cout << "info string qrb adj, sf = " << sf << " pos\n" << pos << sync_endl;
     score += initiative(score);
 
     // Interpolate between a middlegame and a (scaled by 'sf') endgame score
-    ScaleFactor sf = scale_factor(eg_value(score));
+    ScaleFactor sf = scale_factor(eg_value(score), score);
     v =  mg_value(score) * int(me->game_phase())
        + eg_value(score) * int(PHASE_MIDGAME - me->game_phase()) * sf / SCALE_FACTOR_NORMAL;
 

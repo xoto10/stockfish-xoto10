@@ -36,6 +36,7 @@ namespace {
   constexpr Score BlockedStorm  = S(82, 82);
   constexpr Score Doubled       = S(11, 56);
   constexpr Score Isolated      = S( 5, 15);
+  constexpr Score WeakKingPawns = S( 8,  8);
   constexpr Score WeakLever     = S( 0, 56);
   constexpr Score WeakUnopposed = S(13, 27);
 
@@ -83,7 +84,7 @@ namespace {
 
     Bitboard doubleAttackThem = pawn_double_attacks_bb<Them>(theirPawns);
 
-    e->passedPawns[Us] = 0;
+    e->passedPawns[Us] = e->weakPawns[Us] = 0;
     e->kingSquares[Us] = SQ_NONE;
     e->pawnAttacks[Us] = e->pawnAttacksSpan[Us] = pawn_attacks_bb<Us>(ourPawns);
 
@@ -140,15 +141,20 @@ namespace {
 
         else if (!neighbours)
             score -=   Isolated
-                     + WeakUnopposed * !opposed;
+                     + WeakUnopposed * !opposed,
+            e->weakPawns[Us] |= s;
 
         else if (backward)
             score -=   Backward
-                     + WeakUnopposed * !opposed;
+                     + WeakUnopposed * !opposed,
+            e->weakPawns[Us] |= s;
 
         if (!support)
-            score -=   Doubled * doubled
-                     + WeakLever * more_than_one(lever);
+        {
+            score -= Doubled * doubled;
+            if (more_than_one(lever))
+                score -= WeakLever, e->weakPawns[Us] |= s;
+        }
     }
 
     return score;
@@ -210,6 +216,9 @@ Score Entry::evaluate_shelter(const Position& pos, Square ksq) {
       else
           bonus -= make_score(UnblockedStorm[d][theirRank], 0);
   }
+
+  // Penalty for weak pawns in kingflank
+  bonus -= WeakKingPawns * popcount(weakPawns[Us] & KingFlank[file_of(ksq)]);
 
   return bonus;
 }

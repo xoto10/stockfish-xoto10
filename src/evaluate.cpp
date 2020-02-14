@@ -761,7 +761,8 @@ namespace {
                  && pos.non_pawn_material(~strongSide) == RookValueMg + BishopValueMg)
         {
             Bitboard b = pos.pieces(~strongSide, BISHOP);
-            sf += 2 * (pos.count<PAWN>(~strongSide) - pos.pawns_on_same_color_squares(~strongSide, pop_lsb(&b))) - 3;
+            sf += (pos.count<PAWN>(~strongSide) - pos.pawns_on_same_color_squares(~strongSide, pop_lsb(&b)) - 8)
+                 + 4 * (pos.count<PAWN>(strongSide) + 1 - pos.count<PAWN>(~strongSide));
 sync_cout << "info string qrb adj, sf = " << sf << " pos\n" << pos << sync_endl;
         }
         else

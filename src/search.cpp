@@ -696,7 +696,7 @@ namespace {
             : ttHit    ? tte->move() : MOVE_NONE;
     ttPv = PvNode || (ttHit && tte->is_pv());
 
-    if (ttPv && depth > 13 && ss->ply < 5 && is_ok((ss-1)->currentMove))
+    if (ttPv && depth > 10 && ss->ply < 5 && is_ok((ss-1)->currentMove))
        thisThread->lowPlyHistory[~us][from_to((ss-1)->currentMove)] << 4000;
 
     // thisThread->ttHitAverage can be used to approximate the running average of ttHit

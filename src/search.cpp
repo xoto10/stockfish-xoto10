@@ -625,7 +625,7 @@ namespace {
     Move ttMove, move, excludedMove, bestMove;
     Depth extension, newDepth;
     Value bestValue, value, ttValue, eval, maxValue;
-    bool ttHit, ttPv, inCheck, givesCheck, improving, didLMR, priorCapture, attackWithPawn;
+    bool ttHit, ttPv, inCheck, givesCheck, improving, didLMR, priorCapture;
     bool captureOrPromotion, doFullDepthSearch, moveCountPruning, ttCapture, singularLMR;
     Piece movedPiece;
     int moveCount, captureCount, quietCount;
@@ -996,7 +996,6 @@ moves_loop: // When in check, search starts from here
       captureOrPromotion = pos.capture_or_promotion(move);
       movedPiece = pos.moved_piece(move);
       givesCheck = pos.gives_check(move);
-      attackWithPawn = pos.attack_with_pawn(us, move);
 
       // Calculate new depth for this move
       newDepth = depth - 1;
@@ -1152,10 +1151,6 @@ moves_loop: // When in check, search starts from here
           // Decrease reduction if ttMove has been singularly extended (~3 Elo)
           if (singularLMR)
               r -= 2;
-
-          // Decrease reduction if pawn move attacks their npm
-          if (attackWithPawn)
-              r--;
 
           if (!captureOrPromotion)
           {

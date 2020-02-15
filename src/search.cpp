@@ -204,7 +204,7 @@ void Search::clear() {
 
   Threads.main()->wait_for_search_finished();
 
-  Time.availableNodes = 0;
+  Time.availableNodes = Time.scoresTotal = 0;
   TT.clear();
   Threads.clear();
   Tablebases::init(Options["SyzygyPath"]); // Free mapped files
@@ -302,7 +302,11 @@ void MainThread::search() {
       }
   }
 
+  // Time.scoresTotal adds up the scores during a game, but resets when crossing zero
+  if (int(previousScore) * bestThread->rootMoves[0].score > 0 && int(previousScore) * Time.scoresTotal < 0)
+      Time.scoresTotal = 0;
   previousScore = bestThread->rootMoves[0].score;
+  Time.scoresTotal += previousScore;
 
   // Send again PV info if we have a new best thread
   if (bestThread != this)
@@ -314,6 +318,7 @@ void MainThread::search() {
       std::cout << " ponder " << UCI::move(bestThread->rootMoves[0].pv[1], rootPos.is_chess960());
 
   std::cout << sync_endl;
+  sync_cout << "info string totalsc " << Time.scoresTotal << sync_endl;
 }
 
 

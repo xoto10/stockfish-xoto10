@@ -73,6 +73,12 @@ using namespace Trace;
 
 namespace {
 
+Range vary30(int c) { return Range(c-30, c+30); }
+
+int P[17] = { 0, 11, 22, 33, 44, 55, 66, 77, 88, 99, 110, 121, 132, 143, 154, 154, 154 };
+
+TUNE(SetRange(vary30), P);
+
   // Threshold for lazy and space evaluation
   constexpr Value LazyThreshold  = Value(1400);
   constexpr Value SpaceThreshold = Value(12222);
@@ -712,7 +718,7 @@ namespace {
 
     // Compute the initiative bonus for the attacking side
     int complexity =   9 * pe->passed_count()
-                    + 11 * pos.count<PAWN>()
+                    +      P[pos.count<PAWN>()]
                     +  9 * outflanking
                     + 21 * pawnsOnBothFlanks
                     + 24 * infiltration

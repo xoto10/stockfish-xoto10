@@ -696,7 +696,7 @@ namespace {
             : ttHit    ? tte->move() : MOVE_NONE;
     ttPv = PvNode || (ttHit && tte->is_pv());
 
-    if (ttPv && depth > 10 && ss->ply < 5 && is_ok((ss-1)->currentMove))
+    if (ttPv && depth > 15 && ss->ply < 7 && is_ok((ss-1)->currentMove))
        thisThread->lowPlyHistory[~us][from_to((ss-1)->currentMove)] << 4000;
 
     // thisThread->ttHitAverage can be used to approximate the running average of ttHit
@@ -955,7 +955,7 @@ moves_loop: // When in check, search starts from here
                                       &thisThread->captureHistory,
                                       contHist,
                                       countermove,
-                                      ss->killers, depth > 15 ? ss->ply : 6);
+                                      ss->killers, depth > 15 ? ss->ply : 256);
 
     value = bestValue;
     singularLMR = moveCountPruning = false;
@@ -1699,7 +1699,7 @@ moves_loop: // When in check, search starts from here
         thisThread->counterMoves[pos.piece_on(prevSq)][prevSq] = move;
     }
 
-    if (bonus == -8 && ss->ply < 4)
+    if (bonus == -8 && ss->ply < 7) // bonus == -8 => depth > 15
         thisThread->lowPlyHistory[us][from_to(move)] << 4000;
   }
 

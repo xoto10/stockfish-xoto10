@@ -1087,7 +1087,7 @@ moves_loop: // When in check, search starts from here
           extension = 1;
 
       // Castling extension
-      if (type_of(move) == CASTLING)
+      if (pos.can_castle(ANY_CASTLING) && type_of(movedPiece) == KING)
           extension = 1;
 
       // Add extension to new depth

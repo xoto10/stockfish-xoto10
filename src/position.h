@@ -125,6 +125,7 @@ public:
   bool capture_or_promotion(Move m) const;
   bool gives_check(Move m) const;
   bool advanced_pawn_push(Move m) const;
+  bool attack_with_pawn(Color c, Move m) const;
   Piece moved_piece(Move m) const;
   Piece captured_piece() const;
 
@@ -333,6 +334,11 @@ inline bool Position::pawn_passed(Color c, Square s) const {
 inline bool Position::advanced_pawn_push(Move m) const {
   return   type_of(moved_piece(m)) == PAWN
         && relative_rank(sideToMove, to_sq(m)) > RANK_5;
+}
+
+inline bool Position::attack_with_pawn(Color c, Move m) const {
+  return   type_of(moved_piece(m)) == PAWN
+        && (attacks_from<PAWN>(to_sq(m), c) & (pieces(~c, KNIGHT, BISHOP) | pieces(~c, ROOK, QUEEN)));
 }
 
 inline int Position::pawns_on_same_color_squares(Color c, Square s) const {

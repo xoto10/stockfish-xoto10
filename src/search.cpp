@@ -1096,6 +1096,9 @@ moves_loop: // When in check, search starts from here
       if (type_of(move) == CASTLING)
           extension = 1;
 
+      if (pos.attack_with_pawn(us, move))
+          extension = 1;
+
       // Add extension to new depth
       newDepth += extension;
 

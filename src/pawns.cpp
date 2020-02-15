@@ -34,7 +34,7 @@ int D1=2, E1=1, F1=1, G1=21, H1=0, I1=0, J1=0, K1=0, L1=2, M1=0, N1=0, O1=0, P1=
 int D2=2, E2=1, F2=1, G2=21, H2=0, I2=0, J2=0, K2=0, L2=2, M2=0, N2=0, O2=0, P2=0, Q2=0;
 
 TUNE(SetRange(vary20), D1, E1, F1, G1, H1, I1, J1, K1, L1, M1, N1, O1, P1, Q1);
-TUNE(SetRange(vary20), D2, E2, F1, G2, H2, I2, J2, K2, L2, M2, N2, O2, P2, Q2);
+TUNE(SetRange(vary20), D2, E2, F2, G2, H2, I2, J2, K2, L2, M2, N2, O2, P2, Q2);
 
   #define V Value
   #define S(mg, eg) make_score(mg, eg)

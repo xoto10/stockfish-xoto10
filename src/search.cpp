@@ -89,7 +89,7 @@ namespace {
 
   // Add a small random component to draw evaluations to avoid 3fold-blindness
   Value value_draw(Thread* thisThread) {
-    return VALUE_DRAW + Value(2 * (thisThread->nodes & 1) - 1) + (Time.scoresTotal > 100 ? 1 : Time.scoresTotal < -100 ? -1 : 0);
+    return VALUE_DRAW + Value(2 * (thisThread->nodes & 1) - 1) + (Time.scoresTotal > 0 ? 1 : Time.scoresTotal < 0 ? -1 : 0);
   }
 
   // Skill structure is used to implement strength limit
@@ -318,7 +318,7 @@ void MainThread::search() {
       std::cout << " ponder " << UCI::move(bestThread->rootMoves[0].pv[1], rootPos.is_chess960());
 
   std::cout << sync_endl;
-  sync_cout << "info string totalsc " << Time.scoresTotal << sync_endl;
+//sync_cout << "info string totalsc " << Time.scoresTotal << sync_endl;
 }
 
 

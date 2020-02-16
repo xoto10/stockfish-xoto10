@@ -709,6 +709,10 @@ namespace {
     bool infiltration = rank_of(pos.square<KING>(WHITE)) > RANK_4
                      || rank_of(pos.square<KING>(BLACK)) < RANK_5;
 
+    bool noQueen =   pos.count<QUEEN>() == 0
+                  && pos.count<ROOK>() == 4
+                  && pos.count<KNIGHT>() + pos.count<BISHOP>() >= 6;
+
     // Compute the initiative bonus for the attacking side
     int complexity =   9 * pe->passed_count()
                     + 11 * pos.count<PAWN>()
@@ -717,6 +721,7 @@ namespace {
                     + 24 * infiltration
                     + 51 * !pos.non_pawn_material()
                     - 43 * almostUnwinnable
+                    - 20 * noQueen
                     -110 ;
 
     Value mg = mg_value(score);

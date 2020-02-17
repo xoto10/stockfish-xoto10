@@ -132,18 +132,18 @@ namespace {
         // Score this pawn
         if (support)
         {
-            int v =  Connected[r] * (1 + 2*bool(phalanx) - bool(opposed))
-                   + 22 * popcount(support);
+            int v =  Connected[r] * (1 + 2*bool(phalanx) - 2*bool(opposed) + (r>RANK_4))
+                   + 21 * popcount(support);
 
-            score += make_score(v + 4*r, v * (r - 5) / 4 + r + 2);
+            score += make_score(v + 5*r + (r>RANK_4) - 1, v * (r - 5) / 4 + 2*r + 2);
         }
 
         else if (phalanx)
         {
-            int v =  Connected[r] * (2 - bool(opposed) + (r>RANK_4))
-                   + (20 + 2*r) * popcount(support);
+            int v =  Connected[r] * (2 + bool(phalanx) - bool(opposed) + (r>RANK_4))
+                   + (21 + 2*r - (r>RANK_4) - 2) * popcount(support);
 
-            score += make_score(v + r + (r>RANK_4) - 2, v * (r - 4) / 4 - 2*r + 1);
+            score += make_score(v + r + 3*(r>RANK_4) - 2, v * (r - 5) / 4 - 2*r + 1);
         }
 
         else if (!neighbours)

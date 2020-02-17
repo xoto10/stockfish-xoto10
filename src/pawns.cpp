@@ -28,14 +28,6 @@
 
 namespace {
 
-//Range vary20(int c) { return Range(c-20, c+20); }
-
-int D1=0, E1=2, F1=1, G1=21, H1=0, I1=-1, J1=4, K1=0, L1=5, M1=1, N1=-2, O1=0, P1=0, Q1=0;
-int D2=2, E2=0, F2=1, G2=22, H2=2, I2=2, J2=1, K2=2, L2=4, M2=-2, N2=-1, O2=1, P2=0, Q2=3;
-
-//TUNE(SetRange(vary20), D1, E1, F1, G1, H1, I1, J1, K1, L1, M1, N1, O1, P1, Q1);
-//TUNE(SetRange(vary20), D2, E2, F2, G2, H2, I2, J2, K2, L2, M2, N2, O2, P2, Q2);
-
   #define V Value
   #define S(mg, eg) make_score(mg, eg)
 
@@ -48,8 +40,7 @@ int D2=2, E2=0, F2=1, G2=22, H2=2, I2=2, J2=1, K2=2, L2=4, M2=-2, N2=-1, O2=1, P
   constexpr Score WeakUnopposed = S(13, 27);
 
   // Connected pawn bonus
-            int C1       [RANK_NB] = { 0, 7, 8, 12, 29, 48, 86 };
-            int C2       [RANK_NB] = { 0, 7, 8, 12, 29, 48, 86 };
+            int Connected[RANK_NB] = { 0, 7, 8, 12, 29, 48, 86 };
 
   // Strength of pawn shelter for our king by [distance from edge][rank].
   // RANK_1 = 0 is used for files where we have no pawn, or pawn is behind our king.
@@ -141,18 +132,18 @@ int D2=2, E2=0, F2=1, G2=22, H2=2, I2=2, J2=1, K2=2, L2=4, M2=-2, N2=-1, O2=1, P
         // Score this pawn
         if (support)
         {
-            int v =  C1       [r] * (D1 + E1*bool(phalanx) - F1*bool(opposed) + O1*(r>RANK_4))
-                   + (G1 + H1*r + P1*(r>RANK_4) - I1) * popcount(support);
+            int v =  Connected[r] * (2*bool(phalanx) - bool(opposed))
+                   + 22 * popcount(support);
 
-            score += make_score(v + J1*r + Q1*(r>RANK_4) - K1, v * (r - L1) / 4 + M1*r - N1);
+            score += make_score(v + 4*r, v * (r - 5) / 4 + r + 2);
         }
 
         else if (phalanx)
         {
-            int v =  C2       [r] * (D2 + E2*bool(phalanx) - F2*bool(opposed) + O2*(r>RANK_4))
-                   + (G2 + H2*r + P2*(r>RANK_4) - I2) * popcount(support);
+            int v =  Connected[r] * (2 - bool(opposed) + (r>RANK_4))
+                   + (20 + 2*r) * popcount(support);
 
-            score += make_score(v + J2*r + Q2*(r>RANK_4) - K2, v * (r - L2) / 4 + M2*r - N2);
+            score += make_score(v + r + (r>RANK_4) - 2, v * (r - 4) / 4 - 2*r + 1);
         }
 
         else if (!neighbours)

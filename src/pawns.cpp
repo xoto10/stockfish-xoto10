@@ -133,14 +133,14 @@ namespace {
         if (support)
         {
             int v =  Connected[r] * (1 + 2*bool(phalanx) - 2*bool(opposed) + (r>RANK_4))
-                   + 21 * popcount(support);
+                   + (21 - r) * popcount(support);
 
             score += make_score(v + 5*r + (r>RANK_4) - 1, v * (r - 5) / 4 + 2*r + 2);
         }
 
         else if (phalanx)
         {
-            int v =  Connected[r] * (2 + bool(phalanx) - bool(opposed) + (r>RANK_4))
+            int v =  Connected[r] * (2 + bool(phalanx) - bool(opposed))
                    + (21 + 2*r - (r>RANK_4) - 2) * popcount(support);
 
             score += make_score(v + r + 3*(r>RANK_4) - 2, v * (r - 5) / 4 - 2*r + 1);

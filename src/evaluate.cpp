@@ -710,6 +710,8 @@ namespace {
     bool infiltration = rank_of(pos.square<KING>(WHITE)) > RANK_4
                      || rank_of(pos.square<KING>(BLACK)) < RANK_5;
 
+    bool allOpposed = pos.count<PAWN>() < 16 && pe->allOpposed[WHITE] && pe->allOpposed[BLACK];
+
     // Compute the initiative bonus for the attacking side
     int complexity =   9 * pe->passed_count()
                     + 11 * pos.count<PAWN>()
@@ -717,7 +719,7 @@ namespace {
                     + 21 * pawnsOnBothFlanks
                     + 24 * infiltration
                     + 51 * !pos.non_pawn_material()
-                    - 20 * (pe->allOpposed[WHITE] && pe->allOpposed[BLACK])
+                    -      allOpposed * (28 - pos.count<PAWN>())
                     - 43 * almostUnwinnable
                     -110 ;
 

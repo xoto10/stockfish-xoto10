@@ -205,7 +205,7 @@ Score Entry::evaluate_shelter(const Position& pos, Square ksq, Square ksq2) {
 
       File d = map_to_queenside(f);
       int push = oppositeCastling * (3 - theirRank);
-      bonus += make_score(ShelterStrength[d][ourRank] - push, - push);
+      bonus += make_score(ShelterStrength[d][ourRank] - push, 0);
 
       if (ourRank && (ourRank == theirRank - 1))
           bonus -= BlockedStorm * int(theirRank == RANK_3);

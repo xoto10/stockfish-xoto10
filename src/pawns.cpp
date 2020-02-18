@@ -204,7 +204,7 @@ Score Entry::evaluate_shelter(const Position& pos, Square ksq, Square ksq2) {
       int theirRank = b ? relative_rank(Us, frontmost_sq(Them, b)) : 0;
 
       File d = map_to_queenside(f);
-      int push = oppositeCastling * (3 - theirRank);
+      int push = oppositeCastling * (5 - theirRank);
       bonus += make_score(ShelterStrength[d][ourRank] - push, 0);
 
       if (ourRank && (ourRank == theirRank - 1))

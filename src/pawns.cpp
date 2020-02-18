@@ -186,7 +186,7 @@ template<Color Us>
 Score Entry::evaluate_shelter(const Position& pos, Square ksq, Square ksq2) {
 
   constexpr Color Them = (Us == WHITE ? BLACK : WHITE);
-  int oppositeCastling = 6 * (abs(file_of(ksq) - file_of(ksq2)) > 3);
+  int oppositeCastling = 4 * (abs(file_of(ksq) - file_of(ksq2)) > 3);
 
   Bitboard b = pos.pieces(PAWN) & ~forward_ranks_bb(Them, ksq);
   Bitboard ourPawns = b & pos.pieces(Us);
@@ -204,7 +204,7 @@ Score Entry::evaluate_shelter(const Position& pos, Square ksq, Square ksq2) {
       int theirRank = b ? relative_rank(Us, frontmost_sq(Them, b)) : 0;
 
       File d = map_to_queenside(f);
-      int push = oppositeCastling * (7 - theirRank);
+      int push = oppositeCastling * (3 - theirRank);
       bonus += make_score(ShelterStrength[d][ourRank] - push, - push);
 
       if (ourRank && (ourRank == theirRank - 1))

@@ -142,7 +142,7 @@ namespace {
         {
             int v =  Connected[r] * (2 + bool(phalanx) - bool(opposed));
 
-            score += make_score(v + 3*(r>RANK_4) - 2, v * (r - 2) / 4);
+            score += make_score(v, v * (r - 5) / 4 - 2 * r + 1);
         }
 
         else if (!neighbours)

@@ -714,15 +714,16 @@ namespace {
                   && pos.count<KNIGHT>() + pos.count<BISHOP>() >= 6;
 
     // Compute the initiative bonus for the attacking side
-    int complexity =   9 * pe->passed_count()
-                    + 11 * pos.count<PAWN>()
-                    +  9 * outflanking
-                    + 21 * pawnsOnBothFlanks
-                    + 24 * infiltration
-                    + 51 * !pos.non_pawn_material()
-                    - 43 * almostUnwinnable
-                    - 16 * noQueen
-                    -110 ;
+    int complexityMg = -20 * noQueen;
+
+    int complexityEg =   9 * pe->passed_count()
+                      + 11 * pos.count<PAWN>()
+                      +  9 * outflanking
+                      + 21 * pawnsOnBothFlanks
+                      + 24 * infiltration
+                      + 51 * !pos.non_pawn_material()
+                      - 43 * almostUnwinnable
+                      -110 ;
 
     Value mg = mg_value(score);
     Value eg = eg_value(score);
@@ -730,8 +731,8 @@ namespace {
     // Now apply the bonus: note that we find the attacking side by extracting the
     // sign of the midgame or endgame values, and that we carefully cap the bonus
     // so that the midgame and endgame scores do not change sign after the bonus.
-    int u = ((mg > 0) - (mg < 0)) * std::max(std::min(complexity + 50, 0), -abs(mg));
-    int v = ((eg > 0) - (eg < 0)) * std::max(complexity, -abs(eg));
+    int u = ((mg > 0) - (mg < 0)) * std::max(complexityMg + std::min(complexityEg + 50, 0), -abs(mg));
+    int v = ((eg > 0) - (eg < 0)) * std::max(complexityEg, -abs(eg));
 
     if (T)
         Trace::add(INITIATIVE, make_score(u, v));

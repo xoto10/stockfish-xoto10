@@ -714,7 +714,7 @@ namespace {
                   && pos.count<KNIGHT>() + pos.count<BISHOP>() >= 6;
 
     // Compute the initiative bonus for the attacking side
-    int complexityMg = -20 * noQueen;
+    int complexityMg = -12 * noQueen;
 
     int complexityEg =   9 * pe->passed_count()
                       + 11 * pos.count<PAWN>()

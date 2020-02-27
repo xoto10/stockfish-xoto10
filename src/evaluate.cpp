@@ -156,7 +156,7 @@ namespace {
 
   public:
     Evaluation() = delete;
-    explicit Evaluation(const Position& p) : pos(p) {}
+    explicit Evaluation(const Position& p, const int ply_) : pos(p), ply(ply_) {}
     Evaluation& operator=(const Evaluation&) = delete;
     Value value();
 
@@ -171,6 +171,7 @@ namespace {
     Score initiative(Score score) const;
 
     const Position& pos;
+    const int ply;
     Material::Entry* me;
     Pawns::Entry* pe;
     Bitboard mobilityArea[COLOR_NB];
@@ -348,7 +349,7 @@ namespace {
             {
                 File kf = file_of(pos.square<KING>(Us));
                 if ((kf < FILE_E) == (file_of(s) < kf))
-                    score -= TrappedRook * (1 + !pos.castling_rights(Us));
+                    score -= TrappedRook * (1 + !pos.castling_rights(Us)) + make_score(ply, ply/2);
             }
         }
 
@@ -840,8 +841,8 @@ namespace {
 /// evaluate() is the evaluator for the outer world. It returns a static
 /// evaluation of the position from the point of view of the side to move.
 
-Value Eval::evaluate(const Position& pos) {
-  return Evaluation<NO_TRACE>(pos).value();
+Value Eval::evaluate(const Position& pos, const int ply) {
+  return Evaluation<NO_TRACE>(pos, ply).value();
 }
 
 
@@ -858,7 +859,7 @@ std::string Eval::trace(const Position& pos) {
 
   pos.this_thread()->contempt = SCORE_ZERO; // Reset any dynamic contempt
 
-  Value v = Evaluation<TRACE>(pos).value();
+  Value v = Evaluation<TRACE>(pos, 0).value();
 
   v = pos.side_to_move() == WHITE ? v : -v; // Trace scores are from white's point of view
 

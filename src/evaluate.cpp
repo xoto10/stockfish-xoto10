@@ -132,6 +132,7 @@ namespace {
   constexpr Score FlankAttacks        = S(  8,  0);
   constexpr Score Hanging             = S( 69, 36);
   constexpr Score KingProtector       = S(  7,  8);
+  constexpr Score KingToEdge          = S( 40,  0);
   constexpr Score KnightOnQueen       = S( 16, 12);
   constexpr Score LongDiagonalBishop  = S( 45,  0);
   constexpr Score MinorBehindPawn     = S( 18,  3);
@@ -466,6 +467,9 @@ namespace {
 
     // Penalty if king flank is under attack, potentially moving toward the king
     score -= FlankAttacks * kingFlankAttack;
+
+    // Prefer King near edge if most material still on board
+    score -= KingToEdge * (pos.non_pawn_material(Us) > 5400 && map_to_queenside(file_of(ksq)) > FILE_B);
 
     if (T)
         Trace::add(KING, Us, score);

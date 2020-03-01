@@ -112,9 +112,10 @@ void init() {
 
       for (Square s = SQ_A1; s <= SQ_H8; ++s)
       {
-          File f = edge_distance(file_of(s));
+          File f = map_to_queenside(file_of(s));
+          int dec = (pc == W_KING && rank_of(s) == RANK_1 && file_of(s) / 2 == 1);
           psq[ pc][ s] = score + (type_of(pc) == PAWN ? PBonus[rank_of(s)][file_of(s)]
-                                                      : Bonus[pc][rank_of(s)][f - (pc == W_KING && (file_of(s) / 2) == 1)]);
+                                                      : Bonus[pc][rank_of(s)][f - dec]);
           psq[~pc][flip_rank(s)] = -psq[pc][s];
       }
   }

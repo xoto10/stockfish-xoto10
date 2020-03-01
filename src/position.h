@@ -338,7 +338,7 @@ inline bool Position::advanced_pawn_push(Move m) const {
 
 inline bool Position::attack_with_pawn(Color c, Move m) const {
   return   type_of(moved_piece(m)) == PAWN
-        && (attacks_from<PAWN>(to_sq(m), c) & (pieces(~c, KNIGHT, BISHOP) | pieces(~c, ROOK, QUEEN)));
+        && (attacks_from<PAWN>(to_sq(m), c) & pieces(~c));
 }
 
 inline int Position::pawns_on_same_color_squares(Color c, Square s) const {

@@ -74,8 +74,8 @@ constexpr Score Bonus[][RANK_NB][int(FILE_NB) / 2] = {
    { S(-2,-75), S(-2,-52), S( 1,-43), S(-2,-36) }
   },
   { // King
-   { S(271,  1), S(327, 45), S(271, 85), S(198, 76) },
-   { S(278, 53), S(303,100), S(234,133), S(179,135) },
+   { S(271,  1), S(327, 45), S(190, 85), S(198, 76) },
+   { S(278, 53), S(303,100), S(204,133), S(179,135) },
    { S(195, 88), S(258,130), S(169,169), S(120,175) },
    { S(164,103), S(190,156), S(138,172), S( 98,172) },
    { S(154, 96), S(179,166), S(105,199), S( 70,199) },
@@ -112,8 +112,9 @@ void init() {
       for (Square s = SQ_A1; s <= SQ_H8; ++s)
       {
           File f = map_to_queenside(file_of(s));
+          int dec = (pc == W_KING && rank_of(s) <= RANK_2 && file_of(s) / 2 == 1);
           psq[ pc][ s] = score + (type_of(pc) == PAWN ? PBonus[rank_of(s)][file_of(s)]
-                                                      : Bonus[pc][rank_of(s)][f]);
+                                                      : Bonus[pc][rank_of(s)][f - dec]);
           psq[~pc][~s] = -psq[pc][s];
       }
   }

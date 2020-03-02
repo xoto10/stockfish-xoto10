@@ -85,6 +85,13 @@ constexpr Score Bonus[][RANK_NB][int(FILE_NB) / 2] = {
   }
 };
 
+Score K[2][int(FILE_NB) / 2] = {
+ { S(271,  1), S(327, 45), S(190, 85), S(198, 76) },
+ { S(278, 53), S(303,100), S(204,133), S(179,135) }
+};
+Range vary50(int c) { return Range(c-50, c+50); }
+TUNE(SetRange(vary50), K);
+
 constexpr Score PBonus[RANK_NB][FILE_NB] =
   { // Pawn (asymmetric distribution)
    { },
@@ -114,7 +121,8 @@ void init() {
           File f = map_to_queenside(file_of(s));
           int dec = (pc == W_KING && rank_of(s) <= RANK_2 && file_of(s) / 2 == 1);
           psq[ pc][ s] = score + (type_of(pc) == PAWN ? PBonus[rank_of(s)][file_of(s)]
-                                                      : Bonus[pc][rank_of(s)][f - dec]);
+                                                      : (pc == W_KING && rank_of(s) <= RANK_2) ? K[rank_of(s)][f - dec]
+                                                                                               : Bonus[pc][rank_of(s)][f - dec]);
           psq[~pc][~s] = -psq[pc][s];
       }
   }

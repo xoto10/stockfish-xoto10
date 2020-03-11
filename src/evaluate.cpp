@@ -349,7 +349,7 @@ namespace {
             {
                 File kf = file_of(pos.square<KING>(Us));
                 if ((kf < FILE_E) == (file_of(s) < kf))
-                    score -= TrappedRook * (1 + !pos.castling_rights(Us)) + make_score(ply, 0);
+                    score -= TrappedRook * (1 + !pos.castling_rights(Us)) + make_score(ply, ply/2);
             }
         }
 
@@ -842,7 +842,7 @@ namespace {
 /// evaluation of the position from the point of view of the side to move.
 
 Value Eval::evaluate(const Position& pos, const int ply) {
-  return Evaluation<NO_TRACE>(pos, ply).value();
+  return Evaluation<NO_TRACE>(pos, std::min(20, ply)).value();
 }
 
 

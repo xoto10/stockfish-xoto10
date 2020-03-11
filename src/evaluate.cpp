@@ -126,9 +126,6 @@ namespace {
     S(0, 0), S(10, 28), S(17, 33), S(15, 41), S(62, 72), S(168, 177), S(276, 260)
   };
 
-  // TrappedRook[Color] contains penalty according to our color
-  constexpr Score TrappedRook[COLOR_NB] = { S(40, 10), S(58, 10) };
-
   // Assorted bonuses and penalties
   constexpr Score BishopPawns         = S(  3,  7);
   constexpr Score CorneredBishop      = S( 50, 50);
@@ -207,9 +204,6 @@ namespace {
     // a white knight on g5 and black's king is on g8, this white knight adds 2
     // to kingAttacksCount[WHITE].
     int kingAttacksCount[COLOR_NB];
-
-    // rookIsTrapped[color] records if given color has a rook trapped
-    bool rookIsTrapped[COLOR_NB];
   };
 
 
@@ -250,8 +244,6 @@ namespace {
 
     // Remove from kingRing[] the squares defended by two pawns
     kingRing[Us] &= ~dblAttackByPawn;
-
-    rookIsTrapped[Us] = false;
   }
 
 
@@ -355,8 +347,7 @@ namespace {
             {
                 File kf = file_of(pos.square<KING>(Us));
                 if ((kf < FILE_E) == (file_of(s) < kf))
-dbg_mean_of(pos.non_pawn_material(Us));
-                    rookIsTrapped[Us] = true;
+                    score -= make_score(26 + pos.non_pawn_material(Us) / 256, 10) * (1 + !pos.castling_rights(Us));
             }
         }
 
@@ -814,22 +805,11 @@ dbg_mean_of(pos.non_pawn_material(Us));
             + pieces<WHITE, QUEEN >() - pieces<BLACK, QUEEN >();
 
     score += mobility[WHITE] - mobility[BLACK];
-//                  score -= TrappedRook[Us] * (1 + !pos.castling_rights(Us));
-//if (rookIsTrapped[WHITE])
-//  dbg_mean_of(mg_value(mobility[WHITE]) - mg_value(mobility[BLACK])); // -16
-//if (rookIsTrapped[BLACK])
-//  dbg_mean_of(mg_value(mobility[BLACK]) - mg_value(mobility[WHITE])); // -14
 
     score +=  king<   WHITE>() - king<   BLACK>()
             + threats<WHITE>() - threats<BLACK>()
-            + passed< WHITE>() - passed< BLACK>();
-    Score spaceDiff = space<WHITE>() - space<BLACK>();
-    score += spaceDiff;
-
-//if (rookIsTrapped[WHITE])
-//  dbg_mean_of(mg_value(spaceDiff)); // 7.7
-//if (rookIsTrapped[BLACK])
-//  dbg_mean_of(mg_value(-spaceDiff)); // -4.6
+            + passed< WHITE>() - passed< BLACK>()
+            + space<  WHITE>() - space<  BLACK>();
 
     score += initiative(score);
 

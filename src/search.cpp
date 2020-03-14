@@ -551,8 +551,7 @@ void Thread::search() {
               th->bestMoveChanges = 0;
           }
           double bestMoveInstability = totBestMoveChanges / Threads.size();
-          bestMoveInstability = 1 + (240 * bestMoveInstability + 208 * bestMoveInstability / completedDepth) / 256;
-//sdbg_mean_of(bestMoveInstability); // 1.28, 1.81
+          bestMoveInstability = 1 + (248 * bestMoveInstability + 104 * bestMoveInstability / completedDepth) / 256;
 
           // Stop the search if we have only one legal move, or if available time elapsed
           if (   rootMoves.size() == 1

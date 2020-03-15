@@ -552,7 +552,7 @@ void Thread::search() {
           }
           double bestMoveInstability = totBestMoveChanges / Threads.size();
           bestMoveInstability = 1 + (  240 * bestMoveInstability
-                                     + 1612800 * bestMoveInstability
+                                     + 1881600 * bestMoveInstability
                                        / (16 + completedDepth) / (1000 + rootPos.non_pawn_material(us))) / 256;
 
           // Stop the search if we have only one legal move, or if available time elapsed

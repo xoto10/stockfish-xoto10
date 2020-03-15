@@ -58,6 +58,13 @@ using namespace Search;
 
 namespace {
 
+int A=960, B=1024, C=1024, D=1000;
+double A2=A/4.0, C2=C/64.0;
+
+Range vary500(int c) { return Range(c-500, c+500); }
+
+TUNE(SetRange(vary500), A, B, C, D);
+
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV };
 
@@ -550,7 +557,10 @@ void Thread::search() {
               totBestMoveChanges += th->bestMoveChanges;
               th->bestMoveChanges = 0;
           }
-          double bestMoveInstability = 1 + totBestMoveChanges / Threads.size();
+          double bestMoveInstability = totBestMoveChanges / Threads.size();
+          bestMoveInstability = 1 + (  A2 * bestMoveInstability
+                                     + 1575*B * bestMoveInstability
+                                       / (C2 + completedDepth) / (D + rootPos.non_pawn_material(us))) / 256;
 
           // Stop the search if we have only one legal move, or if available time elapsed
           if (   rootMoves.size() == 1

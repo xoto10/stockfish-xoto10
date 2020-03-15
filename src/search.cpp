@@ -243,7 +243,6 @@ void MainThread::search() {
               th->start_searching();
       }
 
-      tchg = 0;
       Thread::search(); // Let's start searching!
   }
 
@@ -552,16 +551,9 @@ void Thread::search() {
               th->bestMoveChanges = 0;
           }
           double bestMoveInstability = totBestMoveChanges / Threads.size();
-          double oldbmi = 1 + bestMoveInstability;
           bestMoveInstability = 1 + (  240 * bestMoveInstability
-                                     + 1344000 * bestMoveInstability
+                                     + 1612800 * bestMoveInstability
                                        / (16 + completedDepth) / (1000 + rootPos.non_pawn_material(us))) / 256;
-mainThread->tchg += Time.optimum() * fallingEval * reduction * (bestMoveInstability - oldbmi);
-if (   completedDepth > 10 && bestMoveInstability > 1.5
-    && (bestMoveInstability / oldbmi < 0.99 || 1.01 < bestMoveInstability / oldbmi))
-  sync_cout << "info string cd " << completedDepth << " npm " << rootPos.non_pawn_material(us)/500
-            << " oldbmi " << oldbmi << " new " << bestMoveInstability << " sc " << bestValue
-            << " chg " << mainThread->tchg << sync_endl;
 
           // Stop the search if we have only one legal move, or if available time elapsed
           if (   rootMoves.size() == 1

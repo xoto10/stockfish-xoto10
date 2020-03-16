@@ -35,13 +35,28 @@ public:
   TimePoint maximum() const { return maximumTime; }
   TimePoint elapsed() const { return Search::Limits.npmsec ?
                                      TimePoint(Threads.nodes_searched()) : now() - startTime; }
+  void resetPreSearchTime() { optimumTime = origOptimumTime, maximumTime = origMaximumTime; }
+  bool setPreSearchTime()
+  {
+    origOptimumTime = optimumTime;
+    origMaximumTime = maximumTime;
+    maximumTime = optimumTime = optimumTime / 10;
+    if (optimumTime < 5)
+    {
+      resetPreSearchTime();
+      return false;
+    }
+    return true;
+  }
 
   int64_t availableNodes; // When in 'nodes as time' mode
 
 private:
   TimePoint startTime;
   TimePoint optimumTime;
+  TimePoint origOptimumTime;
   TimePoint maximumTime;
+  TimePoint origMaximumTime;
 };
 
 extern TimeManagement Time;

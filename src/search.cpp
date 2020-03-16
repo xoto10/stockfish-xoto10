@@ -226,6 +226,15 @@ void MainThread::search() {
   Color us = rootPos.side_to_move();
   Time.init(Limits, us, rootPos.game_ply());
   TT.new_search();
+  bool preSearch = Options["MultiPV"] == 1 && Limits.use_time_management();
+
+  // Do pre-search with multipv = 3
+  if (preSearch)
+      if ((preSearch = Time.setPreSearchTime()))
+      {
+          Options["MultiPV"] = string("3");
+          sync_cout << "info string reduced time for multipv presearch: " << Time.optimum() << sync_endl;
+      }
 
   if (rootMoves.empty())
   {
@@ -244,6 +253,37 @@ void MainThread::search() {
       }
 
       Thread::search(); // Let's start searching!
+
+      if (preSearch)
+      {
+          Time.resetPreSearchTime();
+          sync_cout << "info string presearch suggests " << UCI::move(rootMoves[0].pv[0], rootPos.is_chess960())
+                    << " " << UCI::move(rootMoves[1].pv[0], rootPos.is_chess960())
+                    << " " << UCI::move(rootMoves[2].pv[0], rootPos.is_chess960()) << sync_endl;
+          sync_cout << "info string optimum time for main search: " << Time.optimum() << sync_endl;
+
+          // Stop the threads if not already stopped (also raise the stop if
+          // "ponderhit" just reset Threads.ponder).
+          Threads.stop = true;
+
+          // Wait until all threads have finished
+          for (Thread* th : Threads)
+              if (th != this)
+                  th->wait_for_search_finished();
+
+          // Now do main search
+          Options["MultiPV"] = 1;
+          Threads.stop = false;
+
+          for (Thread* th : Threads)
+          {
+              th->bestMoveChanges = 0;
+              if (th != this)
+                  th->start_searching();
+          }
+
+          Thread::search(); // Let's start searching!
+      }
   }
 
   // When we reach the maximum depth, we can arrive here without a raise of

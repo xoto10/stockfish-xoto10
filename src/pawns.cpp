@@ -36,6 +36,7 @@ namespace {
   constexpr Score BlockedStorm  = S(82, 82);
   constexpr Score Doubled       = S(11, 56);
   constexpr Score Isolated      = S( 5, 15);
+  constexpr Score NotCastled    = S(10, 10);
   constexpr Score WeakLever     = S( 0, 56);
   constexpr Score WeakUnopposed = S(13, 27);
 
@@ -224,24 +225,17 @@ Score Entry::do_king_safety(const Position& pos) {
   Square ksq = pos.square<KING>(Us);
   kingSquares[Us] = ksq;
   castlingRights[Us] = pos.castling_rights(Us);
+  auto compare = [](Score a, Score b) { return mg_value(a) < mg_value(b); };
 
   Score shelter = evaluate_shelter<Us>(pos, ksq);
 
   // If we can castle use the bonus after castling if it is bigger
 
   if (pos.can_castle(Us & KING_SIDE))
-  {
-      Score shelterKS = evaluate_shelter<Us>(pos, relative_square(Us, SQ_G1));
-      if (mg_value(shelterKS) > mg_value(shelter))
-          shelter += (shelterKS - shelter) * 7 / 8;
-  }
+      shelter = std::max(shelter, evaluate_shelter<Us>(pos, relative_square(Us, SQ_G1)) - NotCastled, compare);
 
   if (pos.can_castle(Us & QUEEN_SIDE))
-  {
-      Score shelterQS = evaluate_shelter<Us>(pos, relative_square(Us, SQ_C1));
-      if (mg_value(shelterQS) > mg_value(shelter))
-          shelter += (shelterQS - shelter) * 7 / 8;
-  }
+      shelter = std::max(shelter, evaluate_shelter<Us>(pos, relative_square(Us, SQ_C1)) - NotCastled, compare);
 
   // In endgame we like to bring our king near our closest pawn
   Bitboard pawns = pos.pieces(Us, PAWN);

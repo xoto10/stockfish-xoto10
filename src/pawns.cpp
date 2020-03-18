@@ -44,12 +44,24 @@ namespace {
 
   // Strength of pawn shelter for our king by [distance from edge][rank].
   // RANK_1 = 0 is used for files where we have no pawn, or pawn is behind our king.
-  constexpr Value ShelterStrength[int(FILE_NB) / 2][RANK_NB] = {
-    { V( -6), V( 81), V( 93), V( 58), V( 39), V( 18), V(  25) },
-    { V(-43), V( 61), V( 35), V(-49), V(-29), V(-11), V( -63) },
-    { V(-10), V( 75), V( 23), V( -2), V( 32), V(  3), V( -45) },
-    { V(-39), V(-13), V(-29), V(-52), V(-48), V(-67), V(-166) }
+  // tuning - also index by realKsq
+            Value SS          [2][int(FILE_NB) / 2][RANK_NB] = {
+    { { V( -6), V( 81), V( 93), V( 58), V( 39), V( 18), V(  25) },
+      { V(-43), V( 61), V( 35), V(-49), V(-29), V(-11), V( -63) },
+      { V(-10), V( 75), V( 23), V( -2), V( 32), V(  3), V( -45) },
+      { V(-39), V(-13), V(-29), V(-52), V(-48), V(-67), V(-166) }
+    },
+    { { V( -6), V( 81), V( 93), V( 58), V( 39), V( 18), V(  25) },
+      { V(-43), V( 61), V( 35), V(-49), V(-29), V(-11), V( -63) },
+      { V(-10), V( 75), V( 23), V( -2), V( 32), V(  3), V( -45) },
+      { V(-39), V(-13), V(-29), V(-52), V(-48), V(-67), V(-166) }
+    }
   };
+Score A=S(5,5), B=S(-5,-5);
+
+Range vary100(int c) { return Range(c-100, c+100); }
+
+TUNE(SetRange(vary100), A, B, SS);
 
   // Danger of enemy pawns moving toward our king by [distance from edge][rank].
   // RANK_1 = 0 is used for files where the enemy has no pawn, or their pawn
@@ -191,7 +203,7 @@ Score Entry::evaluate_shelter(const Position& pos, Square ksq, bool realKSq) {
   Bitboard ourPawns = b & pos.pieces(Us);
   Bitboard theirPawns = b & pos.pieces(Them);
 
-  Score bonus = realKSq ? make_score(5, 5) : SCORE_ZERO;
+  Score bonus = realKSq ? A : B;
 
   File center = Utility::clamp(file_of(ksq), FILE_B, FILE_G);
   for (File f = File(center - 1); f <= File(center + 1); ++f)
@@ -203,7 +215,7 @@ Score Entry::evaluate_shelter(const Position& pos, Square ksq, bool realKSq) {
       int theirRank = b ? relative_rank(Us, frontmost_sq(Them, b)) : 0;
 
       File d = edge_distance(f);
-      bonus += make_score(ShelterStrength[d][ourRank], 0);
+      bonus += make_score(SS[realKSq][d][ourRank], 0);
 
       if (ourRank && (ourRank == theirRank - 1))
           bonus -= BlockedStorm * int(theirRank == RANK_3);

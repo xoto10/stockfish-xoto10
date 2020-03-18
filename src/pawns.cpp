@@ -233,14 +233,14 @@ Score Entry::do_king_safety(const Position& pos) {
   {
       Score shelterKS = evaluate_shelter<Us>(pos, relative_square(Us, SQ_G1));
       if (mg_value(shelterKS) > mg_value(shelter))
-          shelter += (shelterKS - shelter) * 3 / 4;
+          shelter += (shelterKS - shelter) * 7 / 8;
   }
 
   if (pos.can_castle(Us & QUEEN_SIDE))
   {
       Score shelterQS = evaluate_shelter<Us>(pos, relative_square(Us, SQ_C1));
       if (mg_value(shelterQS) > mg_value(shelter))
-          shelter += (shelterQS - shelter) * 3 / 4;
+          shelter += (shelterQS - shelter) * 7 / 8;
   }
 
   // In endgame we like to bring our king near our closest pawn

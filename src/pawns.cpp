@@ -226,7 +226,7 @@ Score Entry::do_king_safety(const Position& pos) {
   castlingRights[Us] = pos.castling_rights(Us);
   auto compare = [](Score a, Score b) { return mg_value(a) < mg_value(b); };
 
-  Score shelter = evaluate_shelter<Us>(pos, ksq) + make_score(5, 5);
+  Score shelter = evaluate_shelter<Us>(pos, ksq) + make_score(7, 7);
 
   // If we can castle use the bonus after castling if it is bigger
 

@@ -59,9 +59,9 @@ namespace {
   };
 Score A=S(6,6), B=S(0,0);
 
-Range vary100(int c) { return Range(c-100, c+100); }
+Range vary40(int c) { return Range(c-40, c+40); }
 
-TUNE(SetRange(vary100), A, B, SS);
+TUNE(SetRange(vary40), A, B, SS);
 
   // Danger of enemy pawns moving toward our king by [distance from edge][rank].
   // RANK_1 = 0 is used for files where the enemy has no pawn, or their pawn

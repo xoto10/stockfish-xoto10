@@ -23,12 +23,14 @@
 #include <cstring>   // For std::memset
 #include <iomanip>
 #include <sstream>
+#include <iostream>
 
 #include "bitboard.h"
 #include "evaluate.h"
 #include "material.h"
 #include "pawns.h"
 #include "thread.h"
+#include "uci.h"
 
 namespace Trace {
 
@@ -128,12 +130,13 @@ namespace {
 
   // Assorted bonuses and penalties
   constexpr Score BishopPawns         = S(  3,  7);
+  constexpr Score BlockedBishop       = S( 10, 20);
   constexpr Score CorneredBishop      = S( 50, 50);
   constexpr Score FlankAttacks        = S(  8,  0);
   constexpr Score Hanging             = S( 69, 36);
   constexpr Score KingProtector       = S(  7,  8);
   constexpr Score KnightOnQueen       = S( 16, 12);
-  constexpr Score LongDiagonalBishop  = S( 45,  0);
+  constexpr Score LongDiagonalBishop  = S( 45,  0) + BlockedBishop;
   constexpr Score MinorBehindPawn     = S( 18,  3);
   constexpr Score Outpost             = S( 30, 21);
   constexpr Score PassedFile          = S( 11,  8);
@@ -256,6 +259,7 @@ namespace {
     constexpr Direction Down = -pawn_push(Us);
     constexpr Bitboard OutpostRanks = (Us == WHITE ? Rank4BB | Rank5BB | Rank6BB
                                                    : Rank5BB | Rank4BB | Rank3BB);
+    constexpr Bitboard TRank5BB = (Us == WHITE ? Rank5BB : Rank4BB);
     const Square* pl = pos.squares<Pt>(Us);
 
     Bitboard b, bb;
@@ -314,6 +318,20 @@ namespace {
 
                 score -= BishopPawns * pos.pawns_on_same_color_squares(Us, s)
                                      * (!bool(attackedBy[Us][PAWN] & s) + popcount(blocked & CenterFiles));
+
+                // Penalty for bishop "attacking" our pawn which is also defended by a pawn
+                if (   (  attacks_bb<BISHOP>(s, pos.pieces(PAWN))
+                        & forward_ranks_bb(Us, s)
+                        & pos.pieces(Us, PAWN)
+                        & attackedBy[Us][PAWN])
+                    && !(b & TRank5BB & ~pos.pieces(Us, PAWN))
+                    && !(b & (pos.pieces(Them) ^ pos.pieces(Them, PAWN)))
+                   )
+                {
+//sync_cout << "info string pos\n" << pos << " bb: us " << Us << " sq " << UCI::square(s)
+//          << " b\n" << Bitboards::pretty(b) << sync_endl;
+                    score -= BlockedBishop;
+                }
 
                 // Bonus for bishop on a long diagonal which can "see" both center squares
                 if (more_than_one(attacks_bb<BISHOP>(s, pos.pieces(PAWN)) & Center))

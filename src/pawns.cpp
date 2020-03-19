@@ -57,7 +57,7 @@ namespace {
       { V(-39), V(-13), V(-29), V(-52), V(-48), V(-67), V(-166) }
     }
   };
-Score A=S(5,5), B=S(-5,-5);
+Score A=S(6,6), B=S(0,0);
 
 Range vary100(int c) { return Range(c-100, c+100); }
 
@@ -203,7 +203,7 @@ Score Entry::evaluate_shelter(const Position& pos, Square ksq, bool realKSq) {
   Bitboard ourPawns = b & pos.pieces(Us);
   Bitboard theirPawns = b & pos.pieces(Them);
 
-  Score bonus = realKSq ? A : B;
+  Score bonus = B;
 
   File center = Utility::clamp(file_of(ksq), FILE_B, FILE_G);
   for (File f = File(center - 1); f <= File(center + 1); ++f)
@@ -238,7 +238,7 @@ Score Entry::do_king_safety(const Position& pos) {
   castlingRights[Us] = pos.castling_rights(Us);
   auto compare = [](Score a, Score b) { return mg_value(a) < mg_value(b); };
 
-  Score shelter = evaluate_shelter<Us>(pos, ksq, true);
+  Score shelter = evaluate_shelter<Us>(pos, ksq, true) + A;
 
   // If we can castle use the bonus after castling if it is bigger
 

@@ -525,13 +525,14 @@ void Thread::search() {
           Threads.stop = true;
 
       // Penalise 2nd best move if top 2 moves transpose
-      if (   rootMoves[0].pv.size() > 3
+      if (   rootMoves.size() > 1
+          && rootMoves[0].pv.size() > 3
           && rootMoves[1].pv.size() > 3
           && rootMoves[0].pv[0] == rootMoves[1].pv[2]
           && rootMoves[0].pv[2] == rootMoves[1].pv[0]
           && (rootMoves[0].pv[1] == rootMoves[1].pv[1] || rootMoves[0].pv[1] == rootMoves[1].pv[3])
           && (rootMoves[0].pv[3] == rootMoves[1].pv[1] || rootMoves[0].pv[3] == rootMoves[1].pv[3]))
-          mainHistory[us][from_to(rootMoves[1].pv[0])] << -1600;
+          mainHistory[us][from_to(rootMoves[1].pv[0])] << -3000;
 
       if (!mainThread)
           continue;

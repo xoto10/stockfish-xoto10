@@ -531,7 +531,7 @@ void Thread::search() {
           && rootMoves[0].pv[2] == rootMoves[1].pv[0]
           && (rootMoves[0].pv[1] == rootMoves[1].pv[1] || rootMoves[0].pv[1] == rootMoves[1].pv[3])
           && (rootMoves[0].pv[3] == rootMoves[1].pv[1] || rootMoves[0].pv[3] == rootMoves[1].pv[3]))
-          mainHistory[us][from_to(rootMoves[1].pv[0])] << -10000;
+          mainHistory[us][from_to(rootMoves[1].pv[0])] << -3000;
 
       if (!mainThread)
           continue;

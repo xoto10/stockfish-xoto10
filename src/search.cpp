@@ -552,9 +552,17 @@ void Thread::search() {
           }
           double bestMoveInstability = 1 + totBestMoveChanges / Threads.size();
 
+          double transpose = (   rootMoves[0].pv.size() > 3
+                              && rootMoves[1].pv.size() > 3
+                              && rootMoves[0].pv[0] == rootMoves[1].pv[2]
+                              && rootMoves[0].pv[2] == rootMoves[1].pv[0]
+                              && (rootMoves[0].pv[1] == rootMoves[1].pv[1] || rootMoves[0].pv[1] == rootMoves[1].pv[3])
+                              && (rootMoves[0].pv[3] == rootMoves[1].pv[1] || rootMoves[0].pv[3] == rootMoves[1].pv[3]))
+                             ? 0.9 : 1.0;
+
           // Stop the search if we have only one legal move, or if available time elapsed
           if (   rootMoves.size() == 1
-              || Time.elapsed() > Time.optimum() * fallingEval * reduction * bestMoveInstability)
+              || Time.elapsed() > Time.optimum() * fallingEval * reduction * bestMoveInstability * transpose)
           {
               // If we are allowed to ponder do not stop the search now but
               // keep pondering until the GUI sends "ponderhit" or "stop".

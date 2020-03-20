@@ -36,6 +36,7 @@ namespace {
   constexpr Score BlockedStorm  = S(82, 82);
   constexpr Score Doubled       = S(11, 56);
   constexpr Score Isolated      = S( 5, 15);
+  constexpr Score OutpostPawn   = S(16, 16);
   constexpr Score WeakLever     = S( 0, 56);
   constexpr Score WeakUnopposed = S(13, 27);
 
@@ -114,6 +115,9 @@ namespace {
         if (!backward && !blocked)
             e->pawnAttacksSpan[Us] |= pawn_attack_span(Us, s);
 
+        // An outpost pawn is blocked by one of their pawns, but cannot be attacked by their pawns
+        bool outpostPawn = stoppers == blocked && r >= RANK_5;
+
         // A pawn is passed if one of the three following conditions is true:
         // (a) there is no stoppers except some levers
         // (b) the only stoppers are the leverPush, but we outnumber them
@@ -121,8 +125,10 @@ namespace {
         passed =   !(stoppers ^ lever)
                 || (   !(stoppers ^ leverPush)
                     && popcount(phalanx) >= popcount(leverPush))
-                || (   stoppers == blocked && r >= RANK_5
+                || (   outpostPawn
                     && (shift<Up>(support) & ~(theirPawns | doubleAttackThem)));
+
+        score += OutpostPawn * outpostPawn;
 
         // Passed pawns will be properly scored later in evaluation when we have
         // full attack info.

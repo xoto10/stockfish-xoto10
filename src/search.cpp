@@ -222,6 +222,24 @@ bool transposes(RootMove& rm1, RootMove& rm2) {
   return false;
 }
 
+
+/// transposes() checks if 2 rootmoves transpose
+
+bool transposes3(RootMove& rm1, RootMove& rm2) {
+  if (   rm1.pv.size() > 5    && rm2.pv.size() > 5
+      &&
+         (rm1.pv[0] == rm2.pv[2] || rm1.pv[0] == rm2.pv[4])
+      && (rm1.pv[2] == rm2.pv[0] || rm1.pv[2] == rm2.pv[4])
+      && (rm1.pv[4] == rm2.pv[0] || rm1.pv[4] == rm2.pv[2])
+      &&
+         (rm1.pv[1] == rm2.pv[1] || rm1.pv[1] == rm2.pv[3] || rm1.pv[1] == rm2.pv[5])
+      && (rm1.pv[3] == rm2.pv[1] || rm1.pv[3] == rm2.pv[3] || rm1.pv[3] == rm2.pv[5])
+      && (rm1.pv[5] == rm2.pv[1] || rm1.pv[5] == rm2.pv[3] || rm1.pv[5] == rm2.pv[5])
+     )
+    return true;
+  return false;
+}
+
 /// MainThread::search() is started when the program receives the UCI 'go'
 /// command. It searches from the root position and outputs the "bestmove".
 
@@ -536,7 +554,7 @@ void Thread::search() {
           Threads.stop = true;
 
       // Penalise 2nd best move if top 2 moves transpose
-      if (transposes(rootMoves[0], rootMoves[1]))
+      if (transposes3(rootMoves[0], rootMoves[1]))
           mainHistory[us][from_to(rootMoves[1].pv[0])] << -3000;
 
       if (!mainThread)

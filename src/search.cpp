@@ -1000,6 +1000,12 @@ moves_loop: // When in check, search starts from here
       // Calculate new depth for this move
       newDepth = depth - 1;
 
+      // Bonus for pawn moves towards their king
+      if (   type_of(movedPiece) == PAWN
+          && rank_of(to_sq(move)) > relative_rank(us, RANK_3)
+          && distance<File>(to_sq(move), pos.square<KING>(~us)) < 2)
+          thisThread->mainHistory[us][from_to(move)] << 1000;
+
       // Step 13. Pruning at shallow depth (~200 Elo)
       if (  !rootNode
           && pos.non_pawn_material(us)

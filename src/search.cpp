@@ -524,6 +524,16 @@ void Thread::search() {
           && VALUE_MATE - bestValue <= 2 * Limits.mate)
           Threads.stop = true;
 
+      // Penalise 2nd best move if top 2 moves transpose
+      if (   rootMoves.size() > 1
+          && rootMoves[0].pv.size() > 3
+          && rootMoves[1].pv.size() > 3
+          && rootMoves[0].pv[0] == rootMoves[1].pv[2]
+          && rootMoves[0].pv[2] == rootMoves[1].pv[0]
+          && (rootMoves[0].pv[1] == rootMoves[1].pv[1] || rootMoves[0].pv[1] == rootMoves[1].pv[3])
+          && (rootMoves[0].pv[3] == rootMoves[1].pv[1] || rootMoves[0].pv[3] == rootMoves[1].pv[3]))
+          mainHistory[us][from_to(rootMoves[1].pv[0])] << rootPos.non_pawn_material() / 8 - 4438; //8302
+
       if (!mainThread)
           continue;
 

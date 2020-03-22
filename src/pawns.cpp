@@ -129,6 +129,10 @@ namespace {
         if (passed)
             e->passedPawns[Us] |= s;
 
+        // Position is not drawish if there are any unopposed pawns
+        if (!opposed)
+            e->simplePawns = false;
+
         // Score this pawn
         if (support | phalanx)
         {
@@ -165,6 +169,8 @@ namespace Pawns {
 
 Entry* probe(const Position& pos) {
 
+  constexpr Bitboard CenterFilesList[4] = { FileCBB, FileDBB, FileEBB, FileFBB };
+
   Key key = pos.pawn_key();
   Entry* e = pos.this_thread()->pawnsTable[key];
 
@@ -172,8 +178,25 @@ Entry* probe(const Position& pos) {
       return e;
 
   e->key = key;
+  e->simplePawns = true;
   e->scores[WHITE] = evaluate<WHITE>(pos, e);
   e->scores[BLACK] = evaluate<BLACK>(pos, e);
+
+  // Test pawn structure
+  if (e->simple_pawns())
+  {
+      e->simplePawns = false;
+      bool lastFileOpen = false;
+      for (Bitboard fbb: CenterFilesList)
+      {
+          if (!(pos.pieces(PAWN) & fbb) && lastFileOpen)
+          {
+              e->simplePawns = true;
+              break;
+          }
+          lastFileOpen = !(pos.pieces(PAWN) & fbb);
+      }
+  }
 
   return e;
 }

@@ -33,7 +33,7 @@ namespace {
 
   // Pawn penalties
   constexpr Score Backward      = S( 9, 24);
-  constexpr Score BlockedStorm  = S(82, 82);
+            Score BS[2]         = { S(82, 82), S(82, 82) };
   constexpr Score Doubled       = S(11, 56);
   constexpr Score Isolated      = S( 5, 15);
   constexpr Score WeakLever     = S( 0, 56);
@@ -57,22 +57,30 @@ namespace {
       { V(-39), V(-13), V(-29), V(-52), V(-48), V(-67), V(-166) }
     }
   };
-Score A=S(6,6), B=S(0,0);
-
-Range vary40(int c) { return Range(c-40, c+40); }
-
-TUNE(SetRange(vary40), A, B, SS);
 
   // Danger of enemy pawns moving toward our king by [distance from edge][rank].
   // RANK_1 = 0 is used for files where the enemy has no pawn, or their pawn
   // is behind our king. Note that UnblockedStorm[0][1-2] accommodate opponent pawn
   // on edge, likely blocked by our king.
-  constexpr Value UnblockedStorm[int(FILE_NB) / 2][RANK_NB] = {
-    { V( 85), V(-289), V(-166), V(97), V(50), V( 45), V( 50) },
-    { V( 46), V( -25), V( 122), V(45), V(37), V(-10), V( 20) },
-    { V( -6), V(  51), V( 168), V(34), V(-2), V(-22), V(-14) },
-    { V(-15), V( -11), V( 101), V( 4), V(11), V(-15), V(-29) }
+            Value UN         [2][int(FILE_NB) / 2][RANK_NB] = {
+    { { V( 85), V(-289), V(-166), V(97), V(50), V( 45), V( 50) },
+      { V( 46), V( -25), V( 122), V(45), V(37), V(-10), V( 20) },
+      { V( -6), V(  51), V( 168), V(34), V(-2), V(-22), V(-14) },
+      { V(-15), V( -11), V( 101), V( 4), V(11), V(-15), V(-29) }
+    },
+    { { V( 85), V(-289), V(-166), V(97), V(50), V( 45), V( 50) },
+      { V( 46), V( -25), V( 122), V(45), V(37), V(-10), V( 20) },
+      { V( -6), V(  51), V( 168), V(34), V(-2), V(-22), V(-14) },
+      { V(-15), V( -11), V( 101), V( 4), V(11), V(-15), V(-29) }
+    }
   };
+
+Score A=S(6,6), B=S(0,0);
+
+Range vary20(int c) { return Range(c-20, c+20); }
+Range vary60(int c) { return Range(c-60, c+60); }
+
+TUNE(SetRange(vary20), A, B, SetRange(vary60), BS, SS, UN);
 
   #undef S
   #undef V
@@ -218,9 +226,9 @@ Score Entry::evaluate_shelter(const Position& pos, Square ksq, bool realKSq) {
       bonus += make_score(SS[realKSq][d][ourRank], 0);
 
       if (ourRank && (ourRank == theirRank - 1))
-          bonus -= BlockedStorm * int(theirRank == RANK_3);
+          bonus -= BS[realKSq] * int(theirRank == RANK_3);
       else
-          bonus -= make_score(UnblockedStorm[d][theirRank], 0);
+          bonus -= make_score(UN[realKSq][d][theirRank], 0);
   }
 
   return bonus;

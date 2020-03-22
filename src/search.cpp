@@ -551,7 +551,7 @@ void Thread::search() {
 
       // Penalise 2nd best move if top 2 moves transpose
       if (rootMoves.size() > 1 && transposes(rootMoves[0], rootMoves[1]))
-          mainHistory[us][from_to(rootMoves[1].pv[0])] << -3000;
+          mainHistory[us][from_to(rootMoves[1].pv[0])] << rootPos.non_pawn_material() / 8 - 4438; //8302
 
       if (!mainThread)
           continue;

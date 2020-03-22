@@ -721,7 +721,7 @@ namespace {
                     + 21 * pawnsOnBothFlanks
                     + 24 * infiltration
                     + 51 * !pos.non_pawn_material()
-                    - 33 * almostUnwinnable
+                    - 43 * almostUnwinnable
                     - 20 * pe->simple_pawns()
                     -110 ;
 

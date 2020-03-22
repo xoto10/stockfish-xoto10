@@ -532,7 +532,7 @@ void Thread::search() {
           && rootMoves[0].pv[2] == rootMoves[1].pv[0]
           && (rootMoves[0].pv[1] == rootMoves[1].pv[1] || rootMoves[0].pv[1] == rootMoves[1].pv[3])
           && (rootMoves[0].pv[3] == rootMoves[1].pv[1] || rootMoves[0].pv[3] == rootMoves[1].pv[3]))
-          mainHistory[us][from_to(rootMoves[1].pv[0])] << rootPos.non_pawn_material() / 8 - 4438; //8302
+          mainHistory[us][from_to(rootMoves[1].pv[0])] << rootPos.non_pawn_material() / 4 - 5476; //8302
 
       if (!mainThread)
           continue;

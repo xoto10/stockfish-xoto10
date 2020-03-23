@@ -524,6 +524,21 @@ void Thread::search() {
           && VALUE_MATE - bestValue <= 2 * Limits.mate)
           Threads.stop = true;
 
+      // Penalise 2nd best move if top 2 moves transpose
+      if (   rootMoves.size() > 1
+          && rootMoves[0].pv.size() > 3
+          && rootMoves[1].pv.size() > 3
+          && rootMoves[0].pv[0] == rootMoves[1].pv[2]
+          && rootMoves[0].pv[2] == rootMoves[1].pv[0]
+          && (rootMoves[0].pv[1] == rootMoves[1].pv[1] || rootMoves[0].pv[1] == rootMoves[1].pv[3])
+          && (rootMoves[0].pv[3] == rootMoves[1].pv[1] || rootMoves[0].pv[3] == rootMoves[1].pv[3]))
+      {
+          transposes = true;
+          mainHistory[us][from_to(rootMoves[1].pv[0])] << -1324 - rootPos.non_pawn_material() / 4; //8302
+      }
+      else
+          transposes = false;
+
       if (!mainThread)
           continue;
 
@@ -973,6 +988,12 @@ moves_loop: // When in check, search starts from here
       assert(is_ok(move));
 
       if (move == excludedMove)
+          continue;
+
+      if (   thisThread->transposes
+          && thisThread->rootMoves.size() > 1
+          && move == thisThread->rootMoves[1].pv[0]
+          && (ss->ply & 1) == 0)
           continue;
 
       // At root obey the "searchmoves" option and skip moves not listed in Root

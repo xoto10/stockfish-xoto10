@@ -203,6 +203,7 @@ void Search::init() {
 void Search::clear() {
 
   Threads.main()->wait_for_search_finished();
+  Threads.main()->timeFactor = 0.75;
 
   Time.availableNodes = 0;
   TT.clear();
@@ -551,12 +552,15 @@ void Thread::search() {
               th->bestMoveChanges = 0;
           }
           double bestMoveInstability = 1 + totBestMoveChanges / Threads.size();
-          double winning = bestValue > 90 ? 1.05 : 1;
+          double winning = bestValue > 50 && mainThread->timeFactor < 0.7 ? 1.05 : 1;
 
           // Stop the search if we have only one legal move, or if available time elapsed
           if (   rootMoves.size() == 1
               || Time.elapsed() > Time.optimum() * fallingEval * reduction * bestMoveInstability * winning)
           {
+              mainThread->timeFactor =  0.8 * mainThread->timeFactor
+                                      + 0.2 * fallingEval * reduction * bestMoveInstability * winning;
+
               // If we are allowed to ponder do not stop the search now but
               // keep pondering until the GUI sends "ponderhit" or "stop".
               if (mainThread->ponder)

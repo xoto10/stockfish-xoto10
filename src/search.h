@@ -71,7 +71,7 @@ struct RootMove {
   int selDepth = 0;
   int tbRank = 0;
   int bestMoveCount = 0;
-  Value tbScore;
+  Value tbScore, scoreEma = VALUE_NONE;
   std::vector<Move> pv;
 };
 

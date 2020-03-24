@@ -285,18 +285,24 @@ void MainThread::search() {
           minScore = std::min(minScore, th->rootMoves[0].score);
 
       // Vote according to score and depth, and select the best thread
+      int n = 0;
       for (Thread* th : Threads)
       {
+          Value thScore = Threads.size() > 1 ? th->rootMoves[0].scoreEma : th->rootMoves[0].score;
+
+//        sync_cout << "info string th " << n++ << " " << UCI::move(th->rootMoves[0].pv[0], rootPos.is_chess960())
+//                  << " ema " << UCI::value(th->rootMoves[0].scoreEma) << sync_endl;
+
           votes[th->rootMoves[0].pv[0]] +=
-              (th->rootMoves[0].score - minScore + 14) * int(th->completedDepth);
+              (thScore - minScore + 14) * int(th->completedDepth);
 
           if (bestThread->rootMoves[0].score >= VALUE_TB_WIN_IN_MAX_PLY)
           {
               // Make sure we pick the shortest mate
-              if (th->rootMoves[0].score > bestThread->rootMoves[0].score)
+              if (thScore > bestThread->rootMoves[0].score)
                   bestThread = th;
           }
-          else if (   th->rootMoves[0].score >= VALUE_TB_WIN_IN_MAX_PLY
+          else if (   thScore >= VALUE_TB_WIN_IN_MAX_PLY
                    || votes[th->rootMoves[0].pv[0]] > votes[bestThread->rootMoves[0].pv[0]])
               bestThread = th;
       }
@@ -474,6 +480,11 @@ void Thread::search() {
                   && (bestValue <= alpha || bestValue >= beta)
                   && Time.elapsed() > 3000)
                   sync_cout << UCI::pv(rootPos, rootDepth, alpha, beta) << sync_endl;
+
+              if (rootMoves[pvIdx].scoreEma == VALUE_NONE)
+                  rootMoves[pvIdx].scoreEma = bestValue;
+              else
+                  rootMoves[pvIdx].scoreEma = (7 * rootMoves[pvIdx].scoreEma + bestValue) / 8;
 
               // In case of failing low/high increase aspiration window and
               // re-search, otherwise exit the loop.

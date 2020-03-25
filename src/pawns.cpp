@@ -33,10 +33,10 @@ namespace {
 
   // Pawn penalties
   constexpr Score Backward      = S( 9, 24);
-  constexpr Score CanCastle     = S( 7,  5);
+  constexpr Score CanCastle     = S( 8,  5);
   constexpr Score Doubled       = S(11, 56);
   constexpr Score Isolated      = S( 5, 15);
-  constexpr Score ShelterBase   = S( 6,  7);
+  constexpr Score ShelterBase   = S( 7,  7);
   constexpr Score WeakLever     = S( 0, 56);
   constexpr Score WeakUnopposed = S(13, 27);
 
@@ -47,35 +47,35 @@ namespace {
   // RANK_1 = 0 is used for files where we have no pawn, or pawn is behind our king.
   // tuning - also index by realKsq
   constexpr Value ShelterStrength[2][int(FILE_NB) / 2][RANK_NB] = {
-    { { V( -2), V( 80), V( 98), V( 58), V( 38), V( 18), V(  26) },
-      { V(-42), V( 62), V( 38), V(-49), V(-33), V( -9), V( -62) },
-      { V(-11), V( 77), V( 25), V( -4), V( 34), V(  4), V( -46) },
-      { V(-41), V(-16), V(-29), V(-52), V(-52), V(-64), V(-165) }
+    { { V( -2), V( 82), V(101), V( 59), V( 37), V( 19), V(  25) },
+      { V(-42), V( 61), V( 37), V(-51), V(-32), V( -8), V( -64) },
+      { V(-10), V( 75), V( 28), V( -2), V( 33), V(  3), V( -45) },
+      { V(-41), V(-17), V(-31), V(-49), V(-50), V(-64), V(-167) }
     },
-    { { V( -8), V( 79), V( 88), V( 57), V( 45), V( 15), V(  24) },
-      { V(-44), V( 64), V( 28), V(-50), V(-30), V(-12), V( -60) },
-      { V( -8), V( 77), V( 27), V( -3), V( 29), V(  3), V( -43) },
-      { V(-38), V(-15), V(-25), V(-51), V(-47), V(-61), V(-165) }
+    { { V( -6), V( 78), V( 88), V( 56), V( 47), V( 17), V(  27) },
+      { V(-47), V( 63), V( 30), V(-51), V(-29), V(-13), V( -59) },
+      { V(-10), V( 78), V( 27), V( -2), V( 27), V(  0), V( -46) },
+      { V(-39), V(-15), V(-24), V(-50), V(-47), V(-59), V(-169) }
     }
   };
 
   // Enemy pawns blocked by our pawns
-  constexpr Score BlockedStorm[2] = { S(83, 82), S(80, 78) };
+  constexpr Score BlockedStorm[2] = { S(81, 82), S(81, 75) };
 
   // Danger of enemy pawns moving toward our king by [distance from edge][rank].
   // RANK_1 = 0 is used for files where the enemy has no pawn, or their pawn
   // is behind our king. Note that UnblockedStorm[0][1-2] accommodate opponent pawn
   // on edge, likely blocked by our king.
   constexpr Value UnblockedStorm[2][int(FILE_NB) / 2][RANK_NB] = {
-    { { V( 84), V(-289), V(-163), V(95), V(49), V( 45), V( 47) },
-      { V( 51), V( -29), V( 122), V(43), V(39), V(-13), V( 19) },
-      { V( -5), V(  53), V( 170), V(31), V( 3), V(-20), V(-13) },
-      { V(-18), V(  -9), V(  99), V( 1), V(10), V(-15), V(-31) }
+    { { V( 84), V(-288), V(-163), V(97), V(49), V( 46), V( 48) },
+      { V( 50), V( -31), V( 122), V(42), V(38), V(-12), V( 18) },
+      { V( -3), V(  53), V( 168), V(31), V( 4), V(-21), V(-17) },
+      { V(-17), V( -10), V( 101), V(-1), V(14), V(-14), V(-29) }
     },
-    { { V( 86), V(-290), V(-167), V(95), V(47), V( 46), V( 53) },
-      { V( 41), V( -24), V( 122), V(44), V(34), V( -9), V( 18) },
-      { V( -7), V(  59), V( 166), V(32), V(-1), V(-20), V(-13) },
-      { V(-17), V(  -8), V(  96), V( 3), V( 9), V(-15), V(-25) }
+    { { V( 85), V(-292), V(-168), V(94), V(50), V( 46), V( 52) },
+      { V( 43), V( -25), V( 122), V(49), V(35), V(-10), V( 17) },
+      { V( -8), V(  60), V( 166), V(32), V(-2), V(-18), V(-12) },
+      { V(-16), V(  -8), V(  96), V( 1), V(10), V(-15), V(-26) }
     }
   };
 

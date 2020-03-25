@@ -393,7 +393,7 @@ void Thread::search() {
   contempt = (us == WHITE ?  make_score(ct, ct / 2)
                           : -make_score(ct, ct / 2));
 
-  int searchAgainCounter = 0;
+  int searchAgainCounter = 0, avgFails = -1;
 
   // Iterative deepening loop until requested to stop or the target depth is reached
   while (   ++rootDepth < MAX_PLY
@@ -433,7 +433,7 @@ void Thread::search() {
           if (rootDepth >= 4)
           {
               Value previousScore = rootMoves[pvIdx].previousScore;
-              delta = Value(21 + abs(previousScore) / 256);
+              delta = Value(21 + abs(previousScore) / 256) + 10 * (avgFails > 3000);
               alpha = std::max(previousScore - delta,-VALUE_INFINITE);
               beta  = std::min(previousScore + delta, VALUE_INFINITE);
 
@@ -447,7 +447,7 @@ void Thread::search() {
           // Start with a small aspiration window and, in the case of a fail
           // high/low, re-search with a bigger window until we don't fail
           // high/low anymore.
-          int failedHighCnt = 0;
+          int failedHighCnt = 0, failCnt = 0;
           while (true)
           {
               Depth adjustedDepth = std::max(1, rootDepth - failedHighCnt - searchAgainCounter);
@@ -482,14 +482,14 @@ void Thread::search() {
                   beta = (alpha + beta) / 2;
                   alpha = std::max(bestValue - delta, -VALUE_INFINITE);
 
-                  failedHighCnt = 0;
+                  failedHighCnt = 0, ++failCnt;
                   if (mainThread)
                       mainThread->stopOnPonderhit = false;
               }
               else if (bestValue >= beta)
               {
                   beta = std::min(bestValue + delta, VALUE_INFINITE);
-                  ++failedHighCnt;
+                  ++failedHighCnt, ++failCnt;
               }
               else
               {
@@ -501,6 +501,9 @@ void Thread::search() {
 
               assert(alpha >= -VALUE_INFINITE && beta <= VALUE_INFINITE);
           }
+
+          avgFails = avgFails < 0 ? failCnt : (7 * avgFails + 1024 * failCnt) / 8;
+//sync_cout << "info string af " << avgFails << sync_endl;
 
           // Sort the PV lines searched so far and update the GUI
           std::stable_sort(rootMoves.begin() + pvFirst, rootMoves.begin() + pvIdx + 1);

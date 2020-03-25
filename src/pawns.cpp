@@ -66,17 +66,11 @@ namespace {
   // RANK_1 = 0 is used for files where the enemy has no pawn, or their pawn
   // is behind our king. Note that UnblockedStorm[0][1-2] accommodate opponent pawn
   // on edge, likely blocked by our king.
-  constexpr Value UnblockedStorm[2][int(FILE_NB) / 2][RANK_NB] = {
-    { { V( 84), V(-288), V(-163), V(97), V(49), V( 46), V( 48) },
-      { V( 50), V( -31), V( 122), V(42), V(38), V(-12), V( 18) },
-      { V( -3), V(  53), V( 168), V(31), V( 4), V(-21), V(-17) },
-      { V(-17), V( -10), V( 101), V(-1), V(14), V(-14), V(-29) }
-    },
-    { { V( 85), V(-292), V(-168), V(94), V(50), V( 46), V( 52) },
-      { V( 43), V( -25), V( 122), V(49), V(35), V(-10), V( 17) },
-      { V( -8), V(  60), V( 166), V(32), V(-2), V(-18), V(-12) },
-      { V(-16), V(  -8), V(  96), V( 1), V(10), V(-15), V(-26) }
-    }
+  constexpr Value UnblockedStorm[int(FILE_NB) / 2][RANK_NB] = {
+    { V( 85), V(-289), V(-166), V(97), V(50), V( 45), V( 50) },
+    { V( 46), V( -25), V( 122), V(45), V(37), V(-10), V( 20) },
+    { V( -6), V(  51), V( 168), V(34), V(-2), V(-22), V(-14) },
+    { V(-15), V( -11), V( 101), V( 4), V(11), V(-15), V(-29) }
   };
 
   #undef S
@@ -225,7 +219,7 @@ Score Entry::evaluate_shelter(const Position& pos, Square ksq, bool realKSq) {
       if (ourRank && (ourRank == theirRank - 1))
           bonus -= BlockedStorm[realKSq] * int(theirRank == RANK_3);
       else
-          bonus -= make_score(UnblockedStorm[realKSq][d][theirRank], 0);
+          bonus -= make_score(UnblockedStorm[d][theirRank], 0);
   }
 
   return bonus;

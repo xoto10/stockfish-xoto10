@@ -165,7 +165,7 @@ namespace {
     template<Color Us, PieceType Pt> Score pieces();
     template<Color Us> Score king() const;
     template<Color Us> Score threats() const;
-    template<Color Us> Score passed() const;
+    template<Color Us> Score passed();
     template<Color Us> Score space() const;
     ScaleFactor scale_factor(Value eg) const;
     Score initiative(Score score) const;
@@ -205,6 +205,9 @@ namespace {
     // a white knight on g5 and black's king is on g8, this white knight adds 2
     // to kingAttacksCount[WHITE].
     int kingAttacksCount[COLOR_NB];
+
+    // truePassers[color] is the number of real passed pawns
+    int truePassers[COLOR_NB];
   };
 
 
@@ -245,6 +248,8 @@ namespace {
 
     // Remove from kingRing[] the squares defended by two pawns
     kingRing[Us] &= ~dblAttackByPawn;
+
+    truePassers[Us] = 0;
   }
 
 
@@ -574,7 +579,7 @@ namespace {
   // pawns of the given color.
 
   template<Tracing T> template<Color Us>
-  Score Evaluation<T>::passed() const {
+  Score Evaluation<T>::passed() {
 
     constexpr Color     Them = (Us == WHITE ? BLACK : WHITE);
     constexpr Direction Up   = pawn_push(Us);
@@ -643,6 +648,8 @@ namespace {
         if (   !pos.pawn_passed(Us, s + Up)
             || (pos.pieces(PAWN) & (s + Up)))
             bonus = bonus / 2;
+        else
+            ++truePassers[Us];
 
         score += bonus - PassedFile * edge_distance(file_of(s));
     }
@@ -707,7 +714,7 @@ namespace {
     bool pawnsOnBothFlanks =   (pos.pieces(PAWN) & QueenSide)
                             && (pos.pieces(PAWN) & KingSide);
 
-    bool almostUnwinnable =   !pe->passed_count()
+    bool almostUnwinnable =    truePassers[WHITE] + truePassers[BLACK] == 0
                            &&  outflanking < 0
                            && !pawnsOnBothFlanks;
 

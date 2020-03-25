@@ -33,10 +33,9 @@ namespace {
 
   // Pawn penalties
   constexpr Score Backward      = S( 9, 24);
-  constexpr Score CanCastle     = S( 8,  5);
+  constexpr Score BlockedStorm  = S(81, 80);
   constexpr Score Doubled       = S(11, 56);
   constexpr Score Isolated      = S( 5, 15);
-  constexpr Score ShelterBase   = S( 7,  7);
   constexpr Score WeakLever     = S( 0, 56);
   constexpr Score WeakUnopposed = S(13, 27);
 
@@ -45,32 +44,28 @@ namespace {
 
   // Strength of pawn shelter for our king by [distance from edge][rank].
   // RANK_1 = 0 is used for files where we have no pawn, or pawn is behind our king.
-  // tuning - also index by realKsq
-  constexpr Value ShelterStrength[2][int(FILE_NB) / 2][RANK_NB] = {
-    { { V( -2), V( 82), V(101), V( 59), V( 37), V( 19), V(  25) },
-      { V(-42), V( 61), V( 37), V(-51), V(-32), V( -8), V( -64) },
-      { V(-10), V( 75), V( 28), V( -2), V( 33), V(  3), V( -45) },
-      { V(-41), V(-17), V(-31), V(-49), V(-50), V(-64), V(-167) }
-    },
-    { { V( -6), V( 78), V( 88), V( 56), V( 47), V( 17), V(  27) },
-      { V(-47), V( 63), V( 30), V(-51), V(-29), V(-13), V( -59) },
-      { V(-10), V( 78), V( 27), V( -2), V( 27), V(  0), V( -46) },
-      { V(-39), V(-15), V(-24), V(-50), V(-47), V(-59), V(-169) }
-    }
+  constexpr Value ShelterStrength[int(FILE_NB) / 2][RANK_NB] = {
+    { V( -6), V( 81), V( 93), V( 58), V( 39), V( 18), V(  25) },
+    { V(-43), V( 61), V( 35), V(-49), V(-29), V(-11), V( -63) },
+    { V(-10), V( 75), V( 23), V( -2), V( 32), V(  3), V( -45) },
+    { V(-39), V(-13), V(-29), V(-52), V(-48), V(-67), V(-166) }
   };
-
-  // Enemy pawns blocked by our pawns
-  constexpr Score BlockedStorm[2] = { S(81, 82), S(81, 75) };
 
   // Danger of enemy pawns moving toward our king by [distance from edge][rank].
   // RANK_1 = 0 is used for files where the enemy has no pawn, or their pawn
   // is behind our king. Note that UnblockedStorm[0][1-2] accommodate opponent pawn
   // on edge, likely blocked by our king.
-  constexpr Value UnblockedStorm[int(FILE_NB) / 2][RANK_NB] = {
-    { V( 85), V(-289), V(-166), V(97), V(50), V( 45), V( 50) },
-    { V( 46), V( -25), V( 122), V(45), V(37), V(-10), V( 20) },
-    { V( -6), V(  51), V( 168), V(34), V(-2), V(-22), V(-14) },
-    { V(-15), V( -11), V( 101), V( 4), V(11), V(-15), V(-29) }
+  constexpr Value UnblockedStorm[2][int(FILE_NB) / 2][RANK_NB] = {
+    { { V( 84), V(-288), V(-163), V(97), V(49), V( 46), V( 48) },
+      { V( 50), V( -31), V( 122), V(42), V(38), V(-12), V( 18) },
+      { V( -3), V(  53), V( 168), V(31), V( 4), V(-21), V(-17) },
+      { V(-17), V( -10), V( 101), V(-1), V(14), V(-14), V(-29) }
+    },
+    { { V( 85), V(-292), V(-168), V(94), V(50), V( 46), V( 52) },
+      { V( 43), V( -25), V( 122), V(49), V(35), V(-10), V( 17) },
+      { V( -8), V(  60), V( 166), V(32), V(-2), V(-18), V(-12) },
+      { V(-16), V(  -8), V(  96), V( 1), V(10), V(-15), V(-26) }
+    }
   };
 
   #undef S
@@ -202,7 +197,7 @@ Score Entry::evaluate_shelter(const Position& pos, Square ksq, bool realKSq) {
   Bitboard ourPawns = b & pos.pieces(Us);
   Bitboard theirPawns = b & pos.pieces(Them);
 
-  Score bonus = ShelterBase;
+  Score bonus = make_score(5, 5);
 
   File center = Utility::clamp(file_of(ksq), FILE_B, FILE_G);
   for (File f = File(center - 1); f <= File(center + 1); ++f)
@@ -214,12 +209,12 @@ Score Entry::evaluate_shelter(const Position& pos, Square ksq, bool realKSq) {
       int theirRank = b ? relative_rank(Us, frontmost_sq(Them, b)) : 0;
 
       File d = edge_distance(f);
-      bonus += make_score(ShelterStrength[realKSq][d][ourRank], 0);
+      bonus += make_score(ShelterStrength[d][ourRank], 0);
 
       if (ourRank && (ourRank == theirRank - 1))
-          bonus -= BlockedStorm[realKSq] * int(theirRank == RANK_3);
+          bonus -= BlockedStorm * int(theirRank == RANK_3);
       else
-          bonus -= make_score(UnblockedStorm[d][theirRank], 0);
+          bonus -= make_score(UnblockedStorm[realKSq][d][theirRank], 0);
   }
 
   return bonus;
@@ -242,10 +237,10 @@ Score Entry::do_king_safety(const Position& pos) {
   // If we can castle use the bonus after castling if it is bigger
 
   if (pos.can_castle(Us & KING_SIDE))
-      shelter = std::max(shelter, evaluate_shelter<Us>(pos, relative_square(Us, SQ_G1), false) - CanCastle, compare);
+      shelter = std::max(shelter, evaluate_shelter<Us>(pos, relative_square(Us, SQ_G1), false), compare);
 
   if (pos.can_castle(Us & QUEEN_SIDE))
-      shelter = std::max(shelter, evaluate_shelter<Us>(pos, relative_square(Us, SQ_C1), false) - CanCastle, compare);
+      shelter = std::max(shelter, evaluate_shelter<Us>(pos, relative_square(Us, SQ_C1), false), compare);
 
   // In endgame we like to bring our king near our closest pawn
   Bitboard pawns = pos.pieces(Us, PAWN);

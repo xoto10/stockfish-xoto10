@@ -132,7 +132,6 @@ namespace {
   constexpr Score FlankAttacks        = S(  8,  0);
   constexpr Score Hanging             = S( 69, 36);
   constexpr Score KingProtector       = S(  7,  8);
-  constexpr Score KingToEdge          = S( 16,  0);
   constexpr Score KnightOnQueen       = S( 16, 12);
   constexpr Score LongDiagonalBishop  = S( 45,  0);
   constexpr Score MinorBehindPawn     = S( 18,  3);
@@ -461,9 +460,6 @@ namespace {
     // Transform the kingDanger units into a Score, and subtract it from the evaluation
     if (kingDanger > 100)
         score -= make_score(kingDanger * kingDanger / 4096, kingDanger / 16);
-
-    // Prefer King near edge if most material still on board
-    score -= KingToEdge * bool(CenterFiles & ksq);
 
     // Penalty when our king is on a pawnless flank
     if (!(pos.pieces(PAWN) & KingFlank[file_of(ksq)]))

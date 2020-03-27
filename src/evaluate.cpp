@@ -707,7 +707,12 @@ namespace {
     bool pawnsOnBothFlanks =   (pos.pieces(PAWN) & QueenSide)
                             && (pos.pieces(PAWN) & KingSide);
 
-    bool pawnDiff = pos.count<PAWN>(WHITE) != pos.count<PAWN>(BLACK);
+    bool farPawnDiff =   (   file_of(pos.square<KING>(WHITE)) > FILE_D
+                          && file_of(pos.square<KING>(BLACK)) > FILE_D
+                          && popcount(pos.pieces(WHITE, PAWN) & QueenSide) != popcount(pos.pieces(BLACK, PAWN) & QueenSide))
+                      || (   file_of(pos.square<KING>(WHITE)) < FILE_E
+                          && file_of(pos.square<KING>(BLACK)) < FILE_E
+                          && popcount(pos.pieces(WHITE, PAWN) & QueenSide) != popcount(pos.pieces(BLACK, PAWN) & QueenSide));
 
     bool almostUnwinnable =   outflanking < 0
                            && !pawnsOnBothFlanks;
@@ -722,7 +727,7 @@ namespace {
                     + 21 * pawnsOnBothFlanks
                     + 24 * infiltration
                     + 51 * !pos.non_pawn_material()
-                    + 20 * pawnDiff
+                    + 20 * farPawnDiff
                     - 43 * almostUnwinnable
                     -110 ;
 

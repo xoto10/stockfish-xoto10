@@ -704,6 +704,8 @@ namespace {
     int outflanking =  distance<File>(pos.square<KING>(WHITE), pos.square<KING>(BLACK))
                      - distance<Rank>(pos.square<KING>(WHITE), pos.square<KING>(BLACK));
 
+    int oppositeBishops = pos.opposite_bishops() * std::max(0, 8302 - pos.non_pawn_material()) / 64;
+
     bool pawnsOnBothFlanks =   (pos.pieces(PAWN) & QueenSide)
                             && (pos.pieces(PAWN) & KingSide);
 
@@ -721,7 +723,7 @@ namespace {
                     + 24 * infiltration
                     + 51 * !pos.non_pawn_material()
                     - 43 * almostUnwinnable
-                    -      pos.opposite_bishops() * std::max(0, 8302 - pos.non_pawn_material()) / 256
+                    -      oppositeBishops
                     -110 ;
 
     Value mg = mg_value(score);

@@ -721,7 +721,7 @@ namespace {
                     + 24 * infiltration
                     + 51 * !pos.non_pawn_material()
                     - 43 * almostUnwinnable
-                    - 20 * pos.opposite_bishops()
+                    -      pos.opposite_bishops() * std::max(0, 8302 - pos.non_pawn_material()) / 256
                     -110 ;
 
     Value mg = mg_value(score);

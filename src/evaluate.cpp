@@ -704,7 +704,7 @@ namespace {
     int outflanking =  distance<File>(pos.square<KING>(WHITE), pos.square<KING>(BLACK))
                      - distance<Rank>(pos.square<KING>(WHITE), pos.square<KING>(BLACK));
 
-    int oppositeBishops = pos.opposite_bishops() * std::max(0, 8302 - pos.non_pawn_material()) / 64;
+    int oppositeBishops = pos.opposite_bishops() * std::max(0, 8302 - pos.non_pawn_material()) / 128;
 
     bool pawnsOnBothFlanks =   (pos.pieces(PAWN) & QueenSide)
                             && (pos.pieces(PAWN) & KingSide);

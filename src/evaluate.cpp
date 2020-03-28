@@ -721,7 +721,7 @@ namespace {
                     + 24 * infiltration
                     + 51 * !pos.non_pawn_material()
                     - 43 * almostUnwinnable
-                    - 24 * pos.opposite_bishops()
+                    - 16 * pos.opposite_bishops()
                     -110 ;
 
     Value mg = mg_value(score);

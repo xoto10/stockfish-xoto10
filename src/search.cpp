@@ -202,8 +202,11 @@ void Search::init() {
 
 void Search::clear() {
 
+sync_cout << "info string oops search::clear" << sync_endl;
   Threads.main()->wait_for_search_finished();
 
+  Threads.main()->movesPlayed = 0;
+  Threads.main()->ponderMove = MOVE_NONE;
   Time.availableNodes = 0;
   TT.clear();
   Threads.clear();
@@ -310,8 +313,12 @@ void MainThread::search() {
 
   sync_cout << "bestmove " << UCI::move(bestThread->rootMoves[0].pv[0], rootPos.is_chess960());
 
+  ponderMove = MOVE_NONE;
   if (bestThread->rootMoves[0].pv.size() > 1 || bestThread->rootMoves[0].extract_ponder_from_tt(rootPos))
+  {
+      ponderMove = bestThread->rootMoves[0].pv[1];
       std::cout << " ponder " << UCI::move(bestThread->rootMoves[0].pv[1], rootPos.is_chess960());
+  }
 
   std::cout << sync_endl;
 }
@@ -550,6 +557,10 @@ void Thread::search() {
               totBestMoveChanges += th->bestMoveChanges;
               th->bestMoveChanges = 0;
           }
+          // Did they find a different move than we were expecting?
+          if (/*mainThread->movesPlayed > 1 &&*/ mainThread->ponderMove && mainThread->theirMove != mainThread->ponderMove)
+              totBestMoveChanges += Threads.size();
+
           double bestMoveInstability = 1 + totBestMoveChanges / Threads.size();
 
           // Stop the search if we have only one legal move, or if available time elapsed

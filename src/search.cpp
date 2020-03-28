@@ -407,7 +407,11 @@ void Thread::search() {
       // Save the last iteration's scores before first PV line is searched and
       // all the move scores except the (new) PV are set to -VALUE_INFINITE.
       for (RootMove& rm : rootMoves)
+      {
           rm.previousScore = rm.score;
+          if (abs(rm.score) > 1 || rootDepth < 4)
+              rm.beforeDraw = rm.score;
+      }
 
       size_t pvFirst = 0;
       pvLast = 0;
@@ -523,6 +527,13 @@ void Thread::search() {
           && bestValue >= VALUE_MATE_IN_MAX_PLY
           && VALUE_MATE - bestValue <= 2 * Limits.mate)
           Threads.stop = true;
+
+      // Penalise top move if top 2 have draw scores but 2nd move has better beforeDraw value
+      if (   rootMoves.size() > 1
+          && abs(rootMoves[0].score) < 2
+          && abs(rootMoves[1].score) < 2
+          && rootMoves[0].beforeDraw < rootMoves[1].beforeDraw)
+          mainHistory[us][from_to(rootMoves[0].pv[0])] << 3000;
 
       if (!mainThread)
           continue;

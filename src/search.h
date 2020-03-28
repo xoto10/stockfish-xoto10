@@ -22,6 +22,7 @@
 #define SEARCH_H_INCLUDED
 
 #include <vector>
+//#include <iostream>
 
 #include "misc.h"
 #include "movepick.h"
@@ -62,12 +63,19 @@ struct RootMove {
   bool extract_ponder_from_tt(Position& pos);
   bool operator==(const Move& m) const { return pv[0] == m; }
   bool operator<(const RootMove& m) const { // Sort in descending order
-    return m.score != score ? m.score < score
+    bool
+     ret = m.score != score ? m.score < score
                             : m.previousScore < previousScore;
+//                          : abs(score) > 1 ? m.previousScore < previousScore
+//                                           : m.beforeDraw < beforeDraw;
+//if (abs(score) < 2 && m.score == score)
+//sync_cout << "info string <: msc " << m.score << " sc " << score << " mb4 " << m.beforeDraw << " b4 " << beforeDraw << sync_endl;
+    return ret;
   }
 
   Value score = -VALUE_INFINITE;
   Value previousScore = -VALUE_INFINITE;
+  Value beforeDraw = -VALUE_INFINITE;
   int selDepth = 0;
   int tbRank = 0;
   int bestMoveCount = 0;

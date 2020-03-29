@@ -726,7 +726,7 @@ namespace {
                     + 21 * pawnsOnBothFlanks
                     + 24 * infiltration
                     + 51 * !pos.non_pawn_material()
-                    - 15 * kingCenter
+                    - 17 * kingCenter
                     - 43 * almostUnwinnable
                     -110 ;
 

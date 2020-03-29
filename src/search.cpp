@@ -528,12 +528,23 @@ void Thread::search() {
           && VALUE_MATE - bestValue <= 2 * Limits.mate)
           Threads.stop = true;
 
-      // Penalise top move if top 2 have draw scores but 2nd move has better beforeDraw value
+      // Bonus for 2nd move if top 2 have draw scores but 2nd move has better beforeDraw value
       if (   rootMoves.size() > 1
           && abs(rootMoves[0].score) < 2
           && abs(rootMoves[1].score) < 2
+          && rootMoves[0].beforeDraw > -VALUE_INFINITE
           && rootMoves[0].beforeDraw < rootMoves[1].beforeDraw)
-          mainHistory[us][from_to(rootMoves[0].pv[0])] << 3000;
+          {
+//sync_cout << "info string stm " << rootPos.side_to_move() << " rd " << rootDepth
+//          << " mv0 " << UCI::move(rootMoves[0].pv[0],false)
+//          << " " << rootMoves[0].beforeDraw
+//          << " mv1 " << UCI::move(rootMoves[1].pv[0],false)
+//          << " " << rootMoves[1].beforeDraw
+//          << " pos\n" << rootPos << sync_endl;
+//sdbg_mean_of(1);
+//sdbg_print();
+          mainHistory[us][from_to(rootMoves[0].pv[0])] << -3000;
+          }
 
       if (!mainThread)
           continue;

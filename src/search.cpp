@@ -533,7 +533,7 @@ void Thread::search() {
           && rootMoves[0].pv[2] == rootMoves[1].pv[0]
           && (rootMoves[0].pv[1] == rootMoves[1].pv[1] || rootMoves[0].pv[1] == rootMoves[1].pv[3])
           && (rootMoves[0].pv[3] == rootMoves[1].pv[1] || rootMoves[0].pv[3] == rootMoves[1].pv[3]))
-          --bestMoveChanges;
+          bestMoveChanges = bestMoveChanges  * 3 / 4;
 
       if (!mainThread)
           continue;

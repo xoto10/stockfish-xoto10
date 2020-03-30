@@ -23,7 +23,6 @@
 #include <cstring>   // For std::memset
 #include <iomanip>
 #include <sstream>
-//#include <iostream>
 
 #include "bitboard.h"
 #include "evaluate.h"
@@ -815,15 +814,9 @@ namespace {
     Score safety = king<WHITE>() - king<BLACK>();
 
     // Adjust safety score
-    if (   trappedRook[WHITE] != trappedRook[BLACK]
-        && (   (   trappedRook[BLACK] && !pos.castling_rights(BLACK) && mg_value(safety) < 0)
-            || (   trappedRook[WHITE] && !pos.castling_rights(WHITE) && mg_value(safety) > 0))
-        && (file_of(pos.square<KING>(WHITE)) > FILE_D) == (file_of(pos.square<KING>(BLACK)) > FILE_D))
-//{
-//sync_cout << "info string\n" << pos << " safety " << trappedRook[WHITE] << " " << trappedRook[BLACK]
-//          << " sfty " << mg_value(safety) << "/" << eg_value(safety) << sync_endl;
+    if (   (trappedRook[WHITE] && mg_value(safety) > 0 && file_of(pos.square<KING>(WHITE)) != FILE_E)
+        || (trappedRook[BLACK] && mg_value(safety) < 0 && file_of(pos.square<KING>(BLACK)) != FILE_E))
         safety = SCORE_ZERO;
-//}
 
     score +=  safety
             + threats<WHITE>() - threats<BLACK>()

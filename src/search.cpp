@@ -531,15 +531,18 @@ void Thread::search() {
       // Bonus for 2nd move if top 2 have draw scores but 2nd move has better beforeDraw value
       if (   rootMoves.size() > 1
           && abs(rootMoves[0].score) < 2 && abs(rootMoves[1].score) < 2
-          && -VALUE_INFINITE < rootMoves[0].beforeDraw && rootMoves[0].beforeDraw < rootMoves[1].beforeDraw)
+          && rootMoves[0].beforeDraw < rootMoves[1].beforeDraw
+          && rootDepth > 6)
+//        && -VALUE_INFINITE < rootMoves[0].beforeDraw && rootMoves[0].beforeDraw < rootMoves[1].beforeDraw)
 {
 sync_cout << "info string stm " << rootPos.side_to_move() << " rd " << rootDepth
           << " mv0 " << UCI::move(rootMoves[0].pv[0],false)
-          << " " << rootMoves[0].beforeDraw
+          << " " << rootMoves[0].beforeDraw << " " << rootMoves[0].score
           << " mv1 " << UCI::move(rootMoves[1].pv[0],false)
-          << " " << rootMoves[1].beforeDraw
-          << " pos\n" << rootPos << sync_endl;
+          << " " << rootMoves[1].beforeDraw << " " << rootMoves[1].score
+          << " r50c " << rootPos.rule50_count() << "\n" << rootPos << sync_endl;
           mainHistory[us][from_to(rootMoves[0].pv[0])] << -3000;
+          rootMoves[0].score = Value(1);
 }
 
       if (!mainThread)

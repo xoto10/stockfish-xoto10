@@ -546,8 +546,14 @@ void Thread::search() {
                                     +  6 * (mainThread->iterValue[iterIdx]  - bestValue)) / 704.0;
           fallingEval = Utility::clamp(fallingEval, 0.5, 1.5);
 
+          // Did they find a different move than we were expecting?
+          bool unexpected = mainThread->ponderMove && mainThread->theirMove != mainThread->ponderMove
+                            ? true : false;
+          /*mainThread->movesPlayed > 1 &&*/
+
           // If the bestMove is stable over several iterations, reduce time accordingly
-          timeReduction = lastBestMoveDepth + 9 < completedDepth ? 1.94 : 0.91;
+          timeReduction = lastBestMoveDepth + 9 < completedDepth && !unexpected ? 1.94 : 0.91;
+
           double reduction = (1.41 + mainThread->previousTimeReduction) / (2.27 * timeReduction);
 
           // Use part of the gained time from a previous stable move for the current move
@@ -556,11 +562,8 @@ void Thread::search() {
               totBestMoveChanges += th->bestMoveChanges;
               th->bestMoveChanges = 0;
           }
-          // Did they find a different move than we were expecting?
-          int unexpected = mainThread->ponderMove && mainThread->theirMove != mainThread->ponderMove ? 1 : 0;
-          /*mainThread->movesPlayed > 1 &&*/
 
-          double bestMoveInstability = 1 + totBestMoveChanges / Threads.size() + unexpected;
+          double bestMoveInstability = 1 + totBestMoveChanges / Threads.size();
 
           // Stop the search if we have only one legal move, or if available time elapsed
           if (   rootMoves.size() == 1

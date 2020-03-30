@@ -23,6 +23,7 @@
 #include <cstring>   // For std::memset
 #include <iomanip>
 #include <sstream>
+//#include <iostream>
 
 #include "bitboard.h"
 #include "evaluate.h"
@@ -205,6 +206,9 @@ namespace {
     // a white knight on g5 and black's king is on g8, this white knight adds 2
     // to kingAttacksCount[WHITE].
     int kingAttacksCount[COLOR_NB];
+
+    // trappedRook[color] stores whether each side has a trapped rook
+    bool trappedRook[COLOR_NB];
   };
 
 
@@ -242,6 +246,7 @@ namespace {
 
     kingAttackersCount[Them] = popcount(kingRing[Us] & pe->pawn_attacks(Them));
     kingAttacksCount[Them] = kingAttackersWeight[Them] = 0;
+    trappedRook[Us] = false;
 
     // Remove from kingRing[] the squares defended by two pawns
     kingRing[Us] &= ~dblAttackByPawn;
@@ -349,7 +354,7 @@ namespace {
             {
                 File kf = file_of(pos.square<KING>(Us));
                 if ((kf < FILE_E) == (file_of(s) < kf))
-                    score -= TrappedRook * (1 + !pos.castling_rights(Us));
+                    score -= TrappedRook * (1 + !pos.castling_rights(Us)), trappedRook[Us] = true;
             }
         }
 
@@ -807,7 +812,20 @@ namespace {
 
     score += mobility[WHITE] - mobility[BLACK];
 
-    score +=  king<   WHITE>() - king<   BLACK>()
+    Score safety = king<WHITE>() - king<BLACK>();
+
+    // Adjust safety score
+    if (   trappedRook[WHITE] != trappedRook[BLACK]
+        && (   (   trappedRook[BLACK] && !pos.castling_rights(BLACK) && mg_value(safety) < 0)
+            || (   trappedRook[WHITE] && !pos.castling_rights(WHITE) && mg_value(safety) > 0))
+        && (file_of(pos.square<KING>(WHITE)) > FILE_D) == (file_of(pos.square<KING>(BLACK)) > FILE_D))
+//{
+//sync_cout << "info string\n" << pos << " safety " << trappedRook[WHITE] << " " << trappedRook[BLACK]
+//          << " sfty " << mg_value(safety) << "/" << eg_value(safety) << sync_endl;
+        safety = SCORE_ZERO;
+//}
+
+    score +=  safety
             + threats<WHITE>() - threats<BLACK>()
             + passed< WHITE>() - passed< BLACK>()
             + space<  WHITE>() - space<  BLACK>();

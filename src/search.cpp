@@ -202,10 +202,9 @@ void Search::init() {
 
 void Search::clear() {
 
-sync_cout << "info string oops search::clear" << sync_endl;
   Threads.main()->wait_for_search_finished();
 
-  Threads.main()->movesPlayed = 0;
+//Threads.main()->movesPlayed = 0;
   Threads.main()->ponderMove = MOVE_NONE;
   Time.availableNodes = 0;
   TT.clear();

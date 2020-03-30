@@ -304,6 +304,13 @@ void MainThread::search() {
 
   previousScore = bestThread->rootMoves[0].score;
 
+//if (abs(rootMoves[0].score) < 2)
+//sync_cout << "info string bestinfo "
+//          << " best0 " << UCI::move(rootMoves[0].pv[0],false)
+//          << " " << rootMoves[0].beforeDraw << " " << rootMoves[0].previousScore << " " << rootMoves[0].score
+//          << " best1 " << UCI::move(rootMoves[1].pv[0],false)
+//          << " " << rootMoves[1].beforeDraw << " " << rootMoves[1].previousScore << " " << rootMoves[1].score << sync_endl;
+
   // Send again PV info if we have a new best thread
   if (bestThread != this)
       sync_cout << UCI::pv(bestThread->rootPos, bestThread->completedDepth, -VALUE_INFINITE, VALUE_INFINITE) << sync_endl;
@@ -528,14 +535,23 @@ void Thread::search() {
           && VALUE_MATE - bestValue <= 2 * Limits.mate)
           Threads.stop = true;
 
-      // Bonus for 2nd move if top 2 have draw scores but 2nd move has better beforeDraw value
+      // Penalise top move if top 2 have draw scores but 2nd move has better beforeDraw value
       if (   rootMoves.size() > 1
           && abs(rootMoves[0].score) < 2 && abs(rootMoves[1].score) < 2
           && rootMoves[0].beforeDraw < rootMoves[1].beforeDraw
           && rootDepth > 6)
+//        && -VALUE_INFINITE < rootMoves[0].beforeDraw && rootMoves[0].beforeDraw < rootMoves[1].beforeDraw)
       {
-          mainHistory[us][from_to(rootMoves[0].pv[0])] << -3000;
-          rootMoves[0].score = Value(1);
+//sync_cout << "info string stm " << rootPos.side_to_move() << " rd " << rootDepth
+//          << " mv0 " << UCI::move(rootMoves[0].pv[0],false)
+//          << " " << rootMoves[0].beforeDraw << " " << rootMoves[0].previousScore << " " << rootMoves[0].score
+//          << " mv1 " << UCI::move(rootMoves[1].pv[0],false)
+//          << " " << rootMoves[1].beforeDraw << " " << rootMoves[1].previousScore << " " << rootMoves[1].score
+//          << " r50c " << rootPos.rule50_count() << "\n" << rootPos << sync_endl;
+          mainHistory[us][from_to(rootMoves[0].pv[0])] << -9000;
+          rootMoves[0].previousScore = rootMoves[1].previousScore - 1;
+          rootMoves[0].score = Value(-1);
+          rootMoves[1].score = Value(1);
       }
 
       if (!mainThread)

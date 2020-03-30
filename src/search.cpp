@@ -416,7 +416,8 @@ void Thread::search() {
       for (RootMove& rm : rootMoves)
       {
           rm.previousScore = rm.score;
-          if (abs(rm.score) > 1 || rootDepth < 3)
+          if (   (abs(rm.score) > 1 && abs(rm.score) < VALUE_INFINITE)
+              || rootDepth < 3)
               rm.beforeDraw = rm.score;
       }
 

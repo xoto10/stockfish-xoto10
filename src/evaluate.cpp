@@ -816,7 +816,7 @@ namespace {
     // Adjust safety score
     if (   (trappedRook[WHITE] && mg_value(safety) > 0 && file_of(pos.square<KING>(WHITE)) != FILE_E)
         || (trappedRook[BLACK] && mg_value(safety) < 0 && file_of(pos.square<KING>(BLACK)) != FILE_E))
-        safety = safety / 2;
+        safety = safety * 3 / 4;
 
     score +=  safety
             + threats<WHITE>() - threats<BLACK>()

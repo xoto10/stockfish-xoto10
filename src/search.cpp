@@ -549,7 +549,7 @@ void Thread::search() {
 //          << " mv1 " << UCI::move(rootMoves[1].pv[0],false)
 //          << " " << rootMoves[1].beforeDraw << " " << rootMoves[1].previousScore << " " << rootMoves[1].score
 //          << " r50c " << rootPos.rule50_count() << "\n" << rootPos << sync_endl;
-          mainHistory[us][from_to(rootMoves[0].pv[0])] << -18000;
+          mainHistory[us][from_to(rootMoves[0].pv[0])] << -9000;
           rootMoves[0].previousScore = rootMoves[1].previousScore - 1;
           rootMoves[0].score = Value(-1);
           rootMoves[1].score = Value(1);
@@ -1302,7 +1302,7 @@ moves_loop: // When in check, search starts from here
               if (moveCount > 1)
                   ++thisThread->bestMoveChanges;
           }
-          else
+          else if (rm.pv[0] != thisThread->rootMoves[1].pv[0])
               // All other moves but the PV are set to the lowest value: this
               // is not a problem when sorting because the sort is stable and the
               // move position in the list is preserved - just the PV is pushed up.

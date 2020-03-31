@@ -728,7 +728,6 @@ namespace {
 
     int opponentMobility =  (eg > 0) * (NumPieces[BLACK] ? 10 * TotalMobility[BLACK] / NumPieces[BLACK] : 0)
                           - (eg < 0) * (NumPieces[WHITE] ? 10 * TotalMobility[WHITE] / NumPieces[WHITE] : 0);
-dbg_mean_of(opponentMobility);
 
     // Compute the initiative bonus for the attacking side
     int complexity =   9 * pe->passed_count()

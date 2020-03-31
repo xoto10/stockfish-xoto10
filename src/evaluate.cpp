@@ -205,6 +205,10 @@ namespace {
     // a white knight on g5 and black's king is on g8, this white knight adds 2
     // to kingAttacksCount[WHITE].
     int kingAttacksCount[COLOR_NB];
+
+    // TotalMobility[color] is the total mobility for each side
+    int TotalMobility[COLOR_NB];
+    int NumPieces[COLOR_NB];
   };
 
 
@@ -245,6 +249,9 @@ namespace {
 
     // Remove from kingRing[] the squares defended by two pawns
     kingRing[Us] &= ~dblAttackByPawn;
+
+    TotalMobility[Us] = 0;
+    NumPieces[Us] = 0;
   }
 
 
@@ -360,7 +367,11 @@ namespace {
             if (pos.slider_blockers(pos.pieces(Them, ROOK, BISHOP), s, queenPinners))
                 score -= WeakQueen;
         }
+
+        ++NumPieces[Us];
+        TotalMobility[Us] += mob;
     }
+
     if (T)
         Trace::add(Pt, Us, score);
 
@@ -713,6 +724,12 @@ namespace {
     bool infiltration = rank_of(pos.square<KING>(WHITE)) > RANK_4
                      || rank_of(pos.square<KING>(BLACK)) < RANK_5;
 
+    Value eg = eg_value(score);
+
+    int opponentMobility =  (eg > 0) * (NumPieces[BLACK] ? 10 * TotalMobility[BLACK] / NumPieces[BLACK] : 0)
+                          - (eg < 0) * (NumPieces[WHITE] ? 10 * TotalMobility[WHITE] / NumPieces[WHITE] : 0);
+dbg_mean_of(opponentMobility);
+
     // Compute the initiative bonus for the attacking side
     int complexity =   9 * pe->passed_count()
                     + 11 * pos.count<PAWN>()
@@ -721,10 +738,10 @@ namespace {
                     + 24 * infiltration
                     + 51 * !pos.non_pawn_material()
                     - 43 * almostUnwinnable
-                    -110 ;
+                    -      opponentMobility
+                    - 85 ;
 
     Value mg = mg_value(score);
-    Value eg = eg_value(score);
 
     // Now apply the bonus: note that we find the attacking side by extracting the
     // sign of the midgame or endgame values, and that we carefully cap the bonus

@@ -145,7 +145,6 @@ namespace {
   constexpr Score ThreatByPawnPush    = S( 48, 39);
   constexpr Score ThreatBySafePawn    = S(173, 94);
   constexpr Score TrappedRook         = S( 52, 10);
-  constexpr Score TrappedRook2        = S( 52, 10);
   constexpr Score WeakQueen           = S( 49, 15);
   constexpr Score WeakQueenProtection = S( 14,  0);
 
@@ -387,7 +386,7 @@ namespace {
     const Square ksq = pos.square<KING>(Us);
 
     // Init the score with king shelter and enemy pawns storm
-    Score score = pe->king_safety<Us>(pos) - TrappedRook2 * trappedRook[Us];
+    Score score = pe->king_safety<Us>(pos);
 
     // Attacked squares defended at most once by our queen or king
     weak =  attackedBy[Them][ALL_PIECES]
@@ -812,7 +811,14 @@ namespace {
 
     score += mobility[WHITE] - mobility[BLACK];
 
-    score +=  king<   WHITE>() - king<   BLACK>()
+    Score safety = king<WHITE>() - king<BLACK>();
+
+    // Adjust safety score
+    if (   (trappedRook[WHITE] && mg_value(safety) > 0 && file_of(pos.square<KING>(WHITE)) != FILE_E)
+        || (trappedRook[BLACK] && mg_value(safety) < 0 && file_of(pos.square<KING>(BLACK)) != FILE_E))
+        safety = safety / 2;
+
+    score +=  safety
             + threats<WHITE>() - threats<BLACK>()
             + passed< WHITE>() - passed< BLACK>()
             + space<  WHITE>() - space<  BLACK>();

@@ -62,8 +62,10 @@ struct RootMove {
   bool extract_ponder_from_tt(Position& pos);
   bool operator==(const Move& m) const { return pv[0] == m; }
   bool operator<(const RootMove& m) const { // Sort in descending order
-    return m.score != score ? m.score < score
-                            : m.previousScore < previousScore;
+    return m.previousScore != -VALUE_INFINITE && previousScore != -VALUE_INFINITE
+               ? m.score + m.previousScore < score + previousScore
+               : (m.score != score ? m.score < score
+                                   : m.previousScore < previousScore);
   }
 
   Value score = -VALUE_INFINITE;

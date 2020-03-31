@@ -210,7 +210,7 @@ Score Entry::evaluate_shelter(const Position& pos, Square ksq) {
       if (ourRank && (ourRank == theirRank - 1))
           bonus -= BlockedStorm * int(theirRank == RANK_3);
       else
-          bonus -= make_score(UnblockedStorm[d][theirRank], 0);
+          bonus -= make_score(UnblockedStorm[d][theirRank], UnblockedStorm[d][theirRank]);
   }
 
   return bonus;

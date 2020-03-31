@@ -1302,7 +1302,7 @@ moves_loop: // When in check, search starts from here
               if (moveCount > 1)
                   ++thisThread->bestMoveChanges;
           }
-          else if (rm.pv[0] != thisThread->rootMoves[1].pv[0])
+          else if (&rm != &(thisThread->rootMoves[1]))
               // All other moves but the PV are set to the lowest value: this
               // is not a problem when sorting because the sort is stable and the
               // move position in the list is preserved - just the PV is pushed up.

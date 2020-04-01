@@ -64,6 +64,8 @@ namespace {
   constexpr uint64_t ttHitAverageWindow     = 4096;
   constexpr uint64_t ttHitAverageResolution = 1024;
 
+  constexpr double timeExtra[4] = { 1.0, 1.2, 1.1, 1.05 };
+
   // Razor and futility margins
   constexpr int RazorMargin = 531;
   Value futility_margin(Depth d, bool improving) {
@@ -204,6 +206,7 @@ void Search::clear() {
 
   Threads.main()->wait_for_search_finished();
 
+  Threads.main()->movesPlayed = -1;
   Time.availableNodes = 0;
   TT.clear();
   Threads.clear();
@@ -542,6 +545,7 @@ void Thread::search() {
 
           // If the bestMove is stable over several iterations, reduce time accordingly
           timeReduction = lastBestMoveDepth + 9 < completedDepth ? 1.94 : 0.91;
+
           double reduction = (1.41 + mainThread->previousTimeReduction) / (2.27 * timeReduction);
 
           // Use part of the gained time from a previous stable move for the current move
@@ -550,11 +554,14 @@ void Thread::search() {
               totBestMoveChanges += th->bestMoveChanges;
               th->bestMoveChanges = 0;
           }
+
           double bestMoveInstability = 1 + totBestMoveChanges / Threads.size();
+          double moreAtStart = mainThread->movesPlayed < 4 ? timeExtra[mainThread->movesPlayed] : 1.0;
 
           // Stop the search if we have only one legal move, or if available time elapsed
           if (   rootMoves.size() == 1
-              || Time.elapsed() > Time.optimum() * fallingEval * reduction * bestMoveInstability)
+              || Time.elapsed() > Time.optimum() * fallingEval * reduction * bestMoveInstability
+                                                 * moreAtStart)
           {
               // If we are allowed to ponder do not stop the search now but
               // keep pondering until the GUI sends "ponderhit" or "stop".

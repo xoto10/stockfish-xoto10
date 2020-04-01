@@ -90,7 +90,7 @@ struct MainThread : public Thread {
   double previousTimeReduction;
   Value previousScore;
   Value iterValue[4];
-  int callsCnt;
+  int callsCnt, movesPlayed;
   bool stopOnPonderhit;
   std::atomic_bool ponder;
 };

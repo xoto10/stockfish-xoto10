@@ -205,6 +205,9 @@ namespace {
     // a white knight on g5 and black's king is on g8, this white knight adds 2
     // to kingAttacksCount[WHITE].
     int kingAttacksCount[COLOR_NB];
+
+    // trappedRookF1[color] stores whether color has a trapped rook on F1/F8
+    bool trappedRookF1[COLOR_NB];
   };
 
 
@@ -242,6 +245,7 @@ namespace {
 
     kingAttackersCount[Them] = popcount(kingRing[Us] & pe->pawn_attacks(Them));
     kingAttacksCount[Them] = kingAttackersWeight[Them] = 0;
+    trappedRookF1[Us] = false;
 
     // Remove from kingRing[] the squares defended by two pawns
     kingRing[Us] &= ~dblAttackByPawn;
@@ -349,7 +353,10 @@ namespace {
             {
                 File kf = file_of(pos.square<KING>(Us));
                 if ((kf < FILE_E) == (file_of(s) < kf))
+                {
                     score -= TrappedRook * (1 + !pos.castling_rights(Us));
+                    trappedRookF1[Us] = s == relative_square(Us, SQ_F1);
+                }
             }
         }
 
@@ -726,10 +733,13 @@ namespace {
     Value mg = mg_value(score);
     Value eg = eg_value(score);
 
+    Color strongSide = eg > 0 ? WHITE : BLACK;
+    int rookTrap = 52 * trappedRookF1[~strongSide];
+
     // Now apply the bonus: note that we find the attacking side by extracting the
     // sign of the midgame or endgame values, and that we carefully cap the bonus
     // so that the midgame and endgame scores do not change sign after the bonus.
-    int u = ((mg > 0) - (mg < 0)) * std::max(std::min(complexity + 50, 0), -abs(mg));
+    int u = ((mg > 0) - (mg < 0)) * std::max(std::min(complexity + 50, 0) + rookTrap, -abs(mg));
     int v = ((eg > 0) - (eg < 0)) * std::max(complexity, -abs(eg));
 
     if (T)

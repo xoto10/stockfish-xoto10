@@ -64,7 +64,7 @@ namespace {
   constexpr uint64_t ttHitAverageWindow     = 4096;
   constexpr uint64_t ttHitAverageResolution = 1024;
 
-  constexpr double timeExtra[4] = { 1.0, 1.2, 1.1, 1.05 };
+  constexpr double timeExtra[4] = { 1.1, 1.25, 1.15, 1.05 };
 
   // Razor and futility margins
   constexpr int RazorMargin = 531;

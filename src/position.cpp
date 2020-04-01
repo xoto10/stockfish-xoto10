@@ -258,6 +258,9 @@ Position& Position::set(const string& fenStr, bool isChess960, StateInfo* si, Th
 
       set_castling_right(c, rsq);
   }
+  canCastleAtRoot[WHITE] = can_castle(WHITE & ANY_CASTLING);
+  canCastleAtRoot[BLACK] = can_castle(BLACK & ANY_CASTLING);
+
 
   // 4. En passant square. Ignore if no pawn capture is possible
   if (   ((ss >> col) && (col >= 'a' && col <= 'h'))

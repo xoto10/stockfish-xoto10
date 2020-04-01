@@ -100,6 +100,7 @@ public:
   // Castling
   int castling_rights(Color c) const;
   bool can_castle(CastlingRights cr) const;
+  bool can_castle_at_root(Color c) const;
   bool castling_impeded(CastlingRights cr) const;
   Square castling_rook_square(CastlingRights cr) const;
 
@@ -188,6 +189,7 @@ private:
   int castlingRightsMask[SQUARE_NB];
   Square castlingRookSquare[CASTLING_RIGHT_NB];
   Bitboard castlingPath[CASTLING_RIGHT_NB];
+  bool canCastleAtRoot[COLOR_NB];
   int gamePly;
   Color sideToMove;
   Score psq;
@@ -266,6 +268,10 @@ inline bool Position::is_on_semiopen_file(Color c, Square s) const {
 
 inline bool Position::can_castle(CastlingRights cr) const {
   return st->castlingRights & cr;
+}
+
+inline bool Position::can_castle_at_root(Color c) const {
+  return canCastleAtRoot[c];
 }
 
 inline int Position::castling_rights(Color c) const {

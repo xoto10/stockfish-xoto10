@@ -50,7 +50,7 @@ namespace {
 
   void position(Position& pos, istringstream& is, StateListPtr& states) {
 
-    Move m;
+    Move m = MOVE_NONE;
     string token, fen;
 
     is >> token;

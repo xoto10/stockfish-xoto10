@@ -205,6 +205,7 @@ namespace {
     // a white knight on g5 and black's king is on g8, this white knight adds 2
     // to kingAttacksCount[WHITE].
     int kingAttacksCount[COLOR_NB];
+    bool badTR[COLOR_NB];
   };
 
 
@@ -245,6 +246,8 @@ namespace {
 
     // Remove from kingRing[] the squares defended by two pawns
     kingRing[Us] &= ~dblAttackByPawn;
+
+    badTR[Us] = false;
   }
 
 
@@ -349,7 +352,10 @@ namespace {
             {
                 File kf = file_of(pos.square<KING>(Us));
                 if ((kf < FILE_E) == (file_of(s) < kf))
+                {
                     score -= TrappedRook * (1 + !pos.castling_rights(Us));
+                    badTR[Us] = badTR[Us] || (SQ_F1 == relative_square(Us, s));
+                }
             }
         }
 
@@ -617,7 +623,7 @@ namespace {
                 squaresToQueen = forward_file_bb(Us, s);
                 unsafeSquares = passed_pawn_span(Us, s);
 
-                bb = forward_file_bb(Them, s) & pos.attacks_from<ROOK>(s) & pos.pieces(ROOK, QUEEN);
+                bb = forward_file_bb(Them, s) & pos.pieces(ROOK, QUEEN);
 
                 if (!(pos.pieces(Them) & bb))
                     unsafeSquares &= attackedBy[Them][ALL_PIECES];
@@ -631,9 +637,7 @@ namespace {
                                                              0 ;
 
                 // Assign a larger bonus if the block square is defended
-                if (pos.pieces(Us) & bb)
-                    k += 8;
-                else if (attackedBy[Us][ALL_PIECES] & blockSq)
+                if ((pos.pieces(Us) & bb) || (attackedBy[Us][ALL_PIECES] & blockSq))
                     k += 5;
 
                 bonus += make_score(k * w, k * w);
@@ -733,6 +737,9 @@ namespace {
     // so that the midgame and endgame scores do not change sign after the bonus.
     int u = ((mg > 0) - (mg < 0)) * std::max(std::min(complexity + 50, 0), -abs(mg));
     int v = ((eg > 0) - (eg < 0)) * std::max(complexity, -abs(eg));
+
+    Color strongSide = mg > VALUE_DRAW ? WHITE : BLACK;
+    u += ((mg > 0) - (mg < 0)) * 50 * badTR[~strongSide];
 
     if (T)
         Trace::add(INITIATIVE, make_score(u, v));

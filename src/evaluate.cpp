@@ -737,10 +737,15 @@ namespace {
     Value mg = mg_value(score);
     Value eg = eg_value(score);
 
+    int pawnAttack =  (mg > 0) * bool(  pe->attack_pawns(WHITE)
+                                      & (file_of(pos.square<KING>(BLACK)) > FILE_D ? KingSide : QueenSide))
+                    - (mg < 0) * bool(  pe->attack_pawns(BLACK)
+                                      & (file_of(pos.square<KING>(WHITE)) > FILE_D ? KingSide : QueenSide));
+
     // Now apply the bonus: note that we find the attacking side by extracting the
     // sign of the midgame or endgame values, and that we carefully cap the bonus
     // so that the midgame and endgame scores do not change sign after the bonus.
-    int u = ((mg > 0) - (mg < 0)) * std::max(std::min(complexity + 50, 0), -abs(mg));
+    int u = ((mg > 0) - (mg < 0)) * std::max(std::min(complexity + 50, 0) + 20 * pawnAttack, -abs(mg));
     int v = ((eg > 0) - (eg < 0)) * std::max(complexity, -abs(eg));
 
     if (T)

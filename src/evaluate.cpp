@@ -23,6 +23,7 @@
 #include <cstring>   // For std::memset
 #include <iomanip>
 #include <sstream>
+//#include <iostream>
 
 #include "bitboard.h"
 #include "evaluate.h"
@@ -467,8 +468,12 @@ namespace {
         Bitboard rank4 = Rank4 & (file_of(ksq) > FILE_D ? KingSide : QueenSide);
         if (Bitboard suppRank4 =  pos.pieces(Them, PAWN)
                                 & rank4
-                                & pawn_attacks_bb<Them>(pos.pieces(Them, PAWN)))
+                                & pawn_attacks_bb<Them>(pos.pieces(Them, PAWN))
+                                & CenterFiles)
+            {
+//sync_cout << "info string pos\n" << pos << " patk: us " << Us << " mg " << mg_value(score) << sync_endl;
             score = score * 2;
+            }
     }
 
     // Penalty when our king is on a pawnless flank

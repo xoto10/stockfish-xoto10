@@ -375,6 +375,7 @@ namespace {
     constexpr Color    Them = ~Us;
     constexpr Bitboard Camp = (Us == WHITE ? AllSquares ^ Rank6BB ^ Rank7BB ^ Rank8BB
                                            : AllSquares ^ Rank1BB ^ Rank2BB ^ Rank3BB);
+    constexpr Bitboard Rank4 = (Us == WHITE ? Rank4BB : Rank5BB);
 
     Bitboard weak, b1, b2, b3, safe, unsafeChecks = 0;
     Bitboard rookChecks, queenChecks, bishopChecks, knightChecks;
@@ -459,7 +460,16 @@ namespace {
 
     // Transform the kingDanger units into a Score, and subtract it from the evaluation
     if (kingDanger > 100)
+    {
         score -= make_score(kingDanger * kingDanger / 4096, kingDanger / 16);
+
+        // Supported pawn attackers
+        Bitboard rank4 = Rank4 & (file_of(ksq) > FILE_D ? KingSide : QueenSide);
+        if (Bitboard suppRank4 =  pos.pieces(Them, PAWN)
+                                & rank4
+                                & pawn_attacks_bb<Them>(pos.pieces(Them, PAWN)))
+            score = score * 2;
+    }
 
     // Penalty when our king is on a pawnless flank
     if (!(pos.pieces(PAWN) & KingFlank[file_of(ksq)]))

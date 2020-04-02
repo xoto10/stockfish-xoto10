@@ -724,6 +724,29 @@ namespace {
     bool infiltration = rank_of(pos.square<KING>(WHITE)) > RANK_4
                      || rank_of(pos.square<KING>(BLACK)) < RANK_5;
 
+    Value mg = mg_value(score);
+
+    // Supported pawn attackers
+    bool pawnAttack = false;
+    if (mg > 0)
+    {
+        Bitboard rank4ks = Rank5BB & (file_of(pos.square<KING>(BLACK)) > FILE_D ? KingSide : QueenSide);
+        if (  pos.pieces(WHITE, PAWN)
+            & rank4ks
+            & pawn_attacks_bb<WHITE>(pos.pieces(WHITE, PAWN))
+            & CenterFiles)
+            pawnAttack = true;
+    }
+    else
+    {
+        Bitboard rank4ks = Rank4BB & (file_of(pos.square<KING>(WHITE)) > FILE_D ? KingSide : QueenSide);
+        if (  pos.pieces(BLACK, PAWN)
+            & rank4ks
+            & pawn_attacks_bb<BLACK>(pos.pieces(BLACK, PAWN))
+            & CenterFiles)
+            pawnAttack = true;
+    }
+
     // Compute the initiative bonus for the attacking side
     int complexity =   9 * pe->passed_count()
                     + 11 * pos.count<PAWN>()
@@ -731,10 +754,10 @@ namespace {
                     + 21 * pawnsOnBothFlanks
                     + 24 * infiltration
                     + 51 * !pos.non_pawn_material()
+                    + 50 * pawnAttack
                     - 43 * almostUnwinnable
                     -110 ;
 
-    Value mg = mg_value(score);
     Value eg = eg_value(score);
 
     // Now apply the bonus: note that we find the attacking side by extracting the

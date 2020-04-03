@@ -749,18 +749,15 @@ namespace {
     // If scale is not already specific, scale down the endgame via general heuristics
     if (sf == SCALE_FACTOR_NORMAL)
     {
-        if (   pos.opposite_bishops()
-            && pos.non_pawn_material() == 2 * BishopValueMg)
-            sf = 22 ;
-        else
-        {
-            sf = std::min(sf, 36 + (pos.opposite_bishops() ? 2 : 7) * pos.count<PAWN>(strongSide));
+        bool oppBishopsOnly =   pos.opposite_bishops()
+                             && pos.non_pawn_material() == 2 * BishopValueMg;
 
-            if (   pos.count<BISHOP>(strongSide) == 1
-                && pos.count<KNIGHT>(strongSide) == 1
-                && pos.count<BISHOP>(~strongSide) == 2)
-                sf -= 16;
-        }
+        sf =  oppBishopsOnly  * 22
+            + !oppBishopsOnly * (  std::min(sf, 36 + 7 * pos.count<PAWN>(strongSide)
+                                                   - 5 * pos.count<PAWN>(strongSide) * pos.opposite_bishops())
+                                 - 16 * (   pos.count<BISHOP>(strongSide) == 1
+                                         && pos.count<KNIGHT>(strongSide) == 1
+                                         && pos.count<BISHOP>(~strongSide) == 2)) ;
 
         sf = std::max(0, sf - (pos.rule50_count() - 12) / 4);
     }

@@ -370,7 +370,8 @@ inline int Position::rule50_count() const {
 inline bool Position::opposite_bishops() const {
   return   count<BISHOP>(WHITE) == 1
         && count<BISHOP>(BLACK) == 1
-        && opposite_colors(square<BISHOP>(WHITE), square<BISHOP>(BLACK));
+        && opposite_colors(square<BISHOP>(WHITE), square<BISHOP>(BLACK))
+        && count<PAWN>();
 }
 
 inline bool Position::is_chess960() const {

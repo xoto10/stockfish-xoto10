@@ -747,7 +747,7 @@ namespace {
         if (   pos.opposite_bishops()
             && pos.non_pawn_material() == 2 * BishopValueMg)
             sf = 22 ;
-        if (pos.opposite_bishops())
+        else if (pos.opposite_bishops())
 //          sf = std::min(sf, 36 + 2 * pos.count<PAWN>(strongSide)); // 36-44-52
             sf = std::min(sf, 28 + 3 * pos.count<PAWN>(strongSide)); // 28-40-52
         else

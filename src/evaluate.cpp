@@ -714,10 +714,10 @@ namespace {
 
     Value eg = eg_value(score);
 
-    bool kingCenter =   (   eg > 0
-                         && edge_distance(file_of(pos.square<KING>(WHITE))) < edge_distance(file_of(pos.square<KING>(BLACK))))
-                     || (   eg < 0
-                         && edge_distance(file_of(pos.square<KING>(BLACK))) < edge_distance(file_of(pos.square<KING>(WHITE))));
+    bool kingCenter =  (eg > 0) * (  edge_distance(file_of(pos.square<KING>(WHITE)))
+                                   < edge_distance(file_of(pos.square<KING>(BLACK))))
+                     + (eg < 0) * (  edge_distance(file_of(pos.square<KING>(BLACK)))
+                                   < edge_distance(file_of(pos.square<KING>(WHITE))));
 
     // Compute the initiative bonus for the attacking side
     int complexity =   9 * pe->passed_count()
@@ -726,7 +726,7 @@ namespace {
                     + 21 * pawnsOnBothFlanks
                     + 24 * infiltration
                     + 51 * !pos.non_pawn_material()
-                    - 20 * kingCenter
+                    - 15 * kingCenter
                     - 43 * almostUnwinnable
                     -110 ;
 

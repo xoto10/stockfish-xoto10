@@ -319,6 +319,10 @@ namespace {
                 if (more_than_one(attacks_bb<BISHOP>(s, pos.pieces(PAWN)) & Center))
                     score += LongDiagonalBishop;
 
+                // Bonus for bishop for length of diagonals
+                int n = edge_distance(file_of(s)) + edge_distance(rank_of(s));
+                score += make_score(n, n);
+
                 // An important Chess960 pattern: a cornered bishop blocked by a friendly
                 // pawn diagonally in front of it is a very serious problem, especially
                 // when that pawn is also blocked.

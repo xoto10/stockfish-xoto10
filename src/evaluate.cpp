@@ -320,7 +320,7 @@ namespace {
                     score += LongDiagonalBishop;
 
                 // Bonus for bishop for length of diagonals
-                int n = edge_distance(file_of(s)) + edge_distance(rank_of(s));
+                int n = edge_distance(file_of(s)) + edge_distance(rank_of(s)) -3;
                 score += make_score(n, n);
 
                 // An important Chess960 pattern: a cornered bishop blocked by a friendly

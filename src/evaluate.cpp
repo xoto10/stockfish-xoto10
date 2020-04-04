@@ -205,6 +205,10 @@ namespace {
     // a white knight on g5 and black's king is on g8, this white knight adds 2
     // to kingAttacksCount[WHITE].
     int kingAttacksCount[COLOR_NB];
+
+    // bnbb[color] is incremented if side has only 1 bishop against 2 and a
+    // knight is  on same color square as that bishop
+    int bnbb[2];
   };
 
 
@@ -245,6 +249,8 @@ namespace {
 
     // Remove from kingRing[] the squares defended by two pawns
     kingRing[Us] &= ~dblAttackByPawn;
+
+    bnbb[Us] = 0;
   }
 
 
@@ -331,6 +337,13 @@ namespace {
                                 : pos.piece_on(s + d + d) == make_piece(Us, PAWN) ? CorneredBishop * 2
                                                                                   : CorneredBishop;
                 }
+            }
+            else /* Knight */
+            {
+                if (   pos.count<BISHOP>(Them) == 2
+                    && pos.count<BISHOP>(Us) == 1
+                    && (pos.pieces(Us, BISHOP) & ((DarkSquares & s) ? DarkSquares : ~DarkSquares)))
+                    ++bnbb[Us];
             }
         }
 
@@ -754,6 +767,8 @@ namespace {
             sf = 22 ;
         else
             sf = std::min(sf, 36 + (pos.opposite_bishops() ? 2 : 7) * pos.count<PAWN>(strongSide));
+
+        sf -= bnbb[strongSide];
 
         sf = std::max(0, sf - (pos.rule50_count() - 12) / 4);
     }

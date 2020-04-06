@@ -28,29 +28,43 @@ using namespace std;
 
 namespace {
 
+int QO1=1438, QO2=40, QO3=38, QO4=32, QO5=255, QO6=-62, QO7=0, QO8=104, QO9=4, QO10=0, QO11=-26;
+int QO12=-2, QO13=47, QO14=105, QO15=-208, QO16=-189, QO17=24, QO18=117, QO19=133, QO20=-134, QO21=-6;
+
+int QT1=36, QT2=9, QT3=63, QT4=59, QT5=65, QT6=42, QT7=46, QT8=39, QT9=24, QT10=-24;
+int QT11=97, QT12=100, QT13=-42, QT14=137, QT15=268;
+
   // Polynomial material imbalance parameters
 
-  constexpr int QuadraticOurs[][PIECE_TYPE_NB] = {
+  int QuadraticOurs[][PIECE_TYPE_NB] = {
     //            OUR PIECES
     // pair pawn knight bishop rook queen
-    {1438                               }, // Bishop pair
-    {  40,   38                         }, // Pawn
-    {  32,  255, -62                    }, // Knight      OUR PIECES
-    {   0,  104,   4,    0              }, // Bishop
-    { -26,   -2,  47,   105,  -208      }, // Rook
-    {-189,   24, 117,   133,  -134, -6  }  // Queen
+    { QO1                               }, // Bishop pair
+    { QO2,  QO3                         }, // Pawn
+    { QO4,  QO5, QO6                    }, // Knight      OUR PIECES
+    { QO7,  QO8, QO9,  QO10             }, // Bishop
+    {QO11, QO12,QO13,  QO14,  QO15      }, // Rook
+    {QO16, QO17,QO18,  QO19,  QO20,QO21 }  // Queen
   };
 
-  constexpr int QuadraticTheirs[][PIECE_TYPE_NB] = {
+  int QuadraticTheirs[][PIECE_TYPE_NB] = {
     //           THEIR PIECES
     // pair pawn knight bishop rook queen
     {   0                               }, // Bishop pair
-    {  36,    0                         }, // Pawn
-    {   9,   63,   0                    }, // Knight      OUR PIECES
-    {  59,   65,  42,     0             }, // Bishop
-    {  46,   39,  24,   -24,    0       }, // Rook
-    {  97,  100, -42,   137,  268,    0 }  // Queen
+    { QT1,    0                         }, // Pawn
+    { QT2,  QT3,   0                    }, // Knight      OUR PIECES
+    { QT4,  QT5, QT6,     0             }, // Bishop
+    { QT7,  QT8, QT9,  QT10,    0       }, // Rook
+    {QT11, QT12,QT13,  QT14, QT15,    0 }  // Queen
   };
+
+Range vary20(int c) { return Range(c-20, c+20); }
+
+TUNE(SetDefaultRange, QO1, QO2, QO3, QO4, QO5, QO6, QO8, SetRange(vary20), QO7, QO9, QO10, QO11);
+TUNE(SetDefaultRange, QO13, QO14, QO15, QO16, QO18, QO19, QO20, SetRange(vary20), QO12, QO17, QO21);
+
+TUNE(SetDefaultRange, QT1, QT3, QT4, QT5, QT6, QT7, QT8, SetRange(vary20), QT2, QT9, QT10);
+TUNE(SetDefaultRange, QT11, QT12, QT13, QT14, QT15);
 
   // Endgame evaluation and scaling functions are accessed directly and not through
   // the function maps because they correspond to more than one material hash key.

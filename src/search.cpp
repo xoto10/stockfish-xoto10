@@ -1010,13 +1010,12 @@ moves_loop: // When in check, search starts from here
           // Skip quiet moves if movecount exceeds our FutilityMoveCount threshold
           moveCountPruning = moveCount >= futility_move_count(improving, depth);
 
-          if (   !captureOrPromotion
-              && !givesCheck
-              && pos.non_pawn_material(~us))
-          {
-              // Reduced depth of the next LMR search
-              int lmrDepth = std::max(newDepth - reduction(improving, depth, moveCount), 0);
+          // Reduced depth of the next LMR search
+          int lmrDepth = std::max(newDepth - reduction(improving, depth, moveCount), 0);
 
+          if (   !captureOrPromotion
+              && !givesCheck)
+          {
               // Countermoves based pruning (~20 Elo)
               if (   lmrDepth < 4 + ((ss-1)->statScore > 0 || (ss-1)->moveCount == 1)
                   && (*contHist[0])[movedPiece][to_sq(move)] < CounterMovePruneThreshold
@@ -1036,8 +1035,19 @@ moves_loop: // When in check, search starts from here
               if (!pos.see_ge(move, Value(-(32 - std::min(lmrDepth, 18)) * lmrDepth * lmrDepth)))
                   continue;
           }
-          else if (!pos.see_ge(move, Value(-194) * depth)) // (~25 Elo)
+          else 
+          {
+          if (captureOrPromotion && !givesCheck)
+              {
+                  CapturePieceToHistory& captureHistory = thisThread->captureHistory;
+                  if (   lmrDepth < 3 
+                      && captureHistory[movedPiece][to_sq(move)][type_of(pos.piece_on(to_sq(move)))] < 0)
+                      continue;
+              }
+
+          if (!pos.see_ge(move, Value(-194) * depth)) // (~25 Elo)
               continue;
+          }
       }
 
       // Step 14. Extensions (~75 Elo)

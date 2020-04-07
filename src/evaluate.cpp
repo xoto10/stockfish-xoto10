@@ -711,11 +711,11 @@ namespace {
     int complexity =   9 * pe->passed_count()
                     + 11 * pos.count<PAWN>()
                     +  9 * outflanking
-                    + 21 * pawnsOnBothFlanks
-                    + 24 * infiltration
-                    + 51 * !pos.non_pawn_material()
-                    - 43 * almostUnwinnable
-                    -110 ;
+                    + 20 * pawnsOnBothFlanks
+                    + 23 * infiltration
+                    + 50 * !pos.non_pawn_material()
+                    - 40 * almostUnwinnable
+                    -116 ;
 
     Value mg = mg_value(score);
     Value eg = eg_value(score);

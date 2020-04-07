@@ -189,7 +189,7 @@ namespace {
     // very near squares, depending on king position.
     Bitboard kingRing[COLOR_NB];
 
-    int pinnedKnight[COLOR_NB];
+    Bitboard pinnedKnight[COLOR_NB];
 
     // kingAttackersCount[color] is the number of pieces of the given color
     // which attack a square in the kingRing of the enemy king.
@@ -368,7 +368,7 @@ namespace {
             {
                 score -= WeakQueen;
                 if (b & kingRing[Us] & pos.pieces(Us, KNIGHT))
-                    pinnedKnight[Us]++;
+                    pinnedKnight[Us] |= s;
             }
         }
     }
@@ -459,7 +459,7 @@ namespace {
                  + 185 * popcount(kingRing[Us] & weak)
                  + 148 * popcount(unsafeChecks)
                  +  98 * popcount(pos.blockers_for_king(Us))
-                 +  60 * pinnedKnight[Us]
+                 +  80 * popcount(pinnedKnight[Us] & ~(attackedBy[Us][KNIGHT] | attackedBy[Us][BISHOP]))
                  +  69 * kingAttacksCount[Them]
                  +   3 * kingFlankAttack * kingFlankAttack / 8
                  +       mg_value(mobility[Them] - mobility[Us])

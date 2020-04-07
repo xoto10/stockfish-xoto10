@@ -841,16 +841,6 @@ namespace {
         &&  eval < VALUE_KNOWN_WIN) // Do not return unproven wins
         return eval;
 
-    if (   !PvNode
-        &&  eval - 300 * depth >= beta
-        &&  eval < VALUE_KNOWN_WIN)
-       {
-       Value raisedBeta = beta + 300 * depth;
-       value = search<NonPV>(pos, ss, raisedBeta - 1, raisedBeta, depth - 5, cutNode);
-       if (value >= raisedBeta)
-           return raisedBeta;
-       }
-
     // Step 9. Null move search with verification search (~40 Elo)
     if (   !PvNode
         && (ss-1)->currentMove != MOVE_NULL
@@ -953,6 +943,16 @@ namespace {
         ttValue = ttHit ? value_from_tt(tte->value(), ss->ply, pos.rule50_count()) : VALUE_NONE;
         ttMove = ttHit ? tte->move() : MOVE_NONE;
     }
+
+    if (   !PvNode
+        &&  eval - 300 * depth >= beta
+        &&  eval < VALUE_KNOWN_WIN)
+       {
+       Value raisedBeta = beta + 300 * depth;
+       value = search<NonPV>(pos, ss, raisedBeta - 1, raisedBeta, depth - 5, cutNode);
+       if (value >= raisedBeta)
+           return raisedBeta;
+       }
 
 moves_loop: // When in check, search starts from here
 

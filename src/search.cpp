@@ -842,10 +842,10 @@ namespace {
         return eval;
 
     if (   !PvNode
-        &&  eval - futility_margin(depth, improving) >= beta
+        &&  eval - 300 * depth >= beta
         &&  eval < VALUE_KNOWN_WIN)
        {
-       Value raisedBeta = beta + futility_margin(depth, improving);
+       Value raisedBeta = beta + 300 * depth;
        value = search<NonPV>(pos, ss, raisedBeta - 1, raisedBeta, depth - 5, cutNode);
        if (value >= raisedBeta)
            return raisedBeta;

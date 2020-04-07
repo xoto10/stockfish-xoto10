@@ -749,7 +749,7 @@ namespace {
             sf = 22 ;
         else if (pos.opposite_bishops())
 //          sf = std::min(sf, 36 + 2 * pos.count<PAWN>(strongSide)); // 36-44-52
-            sf = 24 + 3 * pos.count<PAWN>(strongSide);  // 24-36-48
+            sf = 32 + 3 * pos.count<PAWN>(strongSide);  // 32-44-56
         else
             sf = std::min(sf, 36 + 7 * pos.count<PAWN>(strongSide)); // 36-64-64
 

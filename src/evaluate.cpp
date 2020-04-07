@@ -23,6 +23,7 @@
 #include <cstring>   // For std::memset
 #include <iomanip>
 #include <sstream>
+//#include <iostream>
 
 #include "bitboard.h"
 #include "evaluate.h"
@@ -720,10 +721,32 @@ namespace {
     Value mg = mg_value(score);
     Value eg = eg_value(score);
 
+    Color strongMg = mg > 0 ? WHITE : BLACK;
+    Bitboard attackSquares = (rank_of(pos.square<KING>(~strongMg)) / 4
+                                  + file_of(pos.square<KING>(~strongMg)) / 4) % 2 == 0
+                             ? DarkSquares : ~DarkSquares;
+
+    bool bishopAttack =   pos.non_pawn_material(strongMg) > 4000
+                       && pos.count<BISHOP>(strongMg)
+                       && edge_distance(file_of(pos.square<KING>(~strongMg))) < 2
+                       && (pos.pieces(strongMg, BISHOP) & attackSquares)
+                       && (   (   (   square_bb(Square(  SQ_B2
+                                                  + (5 * (file_of(pos.square<KING>(~strongMg)) > FILE_D))
+                                                  + 40 * (strongMg == WHITE)))
+                                   & ~pos.pieces(~strongMg, PAWN)
+                               && !(pos.pieces(~strongMg, BISHOP) & attackSquares)))
+                           || (   square_bb(Square(  SQ_A3
+                                                   + 7 * (file_of(pos.square<KING>(~strongMg)) > FILE_D)
+                                                   + 24 * (strongMg == WHITE)))
+                               & pos.pieces(~strongMg, PAWN)) );
+//if (bishopAttack)
+//sync_cout << "info string pos\n" << pos << " batk: strong " << strongMg << sync_endl;
+
     // Now apply the bonus: note that we find the attacking side by extracting the
     // sign of the midgame or endgame values, and that we carefully cap the bonus
     // so that the midgame and endgame scores do not change sign after the bonus.
-    int u = ((mg > 0) - (mg < 0)) * std::max(std::min(complexity + 50, 0), -abs(mg));
+    int u = ((mg > 0) - (mg < 0)) * std::max(  std::min(complexity + 50, 0)
+                                             + 20 * bishopAttack, -abs(mg));
     int v = ((eg > 0) - (eg < 0)) * std::max(complexity, -abs(eg));
 
     if (T)

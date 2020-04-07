@@ -841,6 +841,16 @@ namespace {
         &&  eval < VALUE_KNOWN_WIN) // Do not return unproven wins
         return eval;
 
+    if (   !PvNode
+        &&  eval - futility_margin(depth, improving) >= beta
+        &&  eval < VALUE_KNOWN_WIN)
+       {
+       Value raisedBeta = beta + futility_margin(depth, improving);
+       value = search<NonPV>(pos, ss, raisedBeta - 1, raisedBeta, depth - 5, cutNode);
+       if (value >= raisedBeta)
+           return raisedBeta;
+       }
+
     // Step 9. Null move search with verification search (~40 Elo)
     if (   !PvNode
         && (ss-1)->currentMove != MOVE_NULL
@@ -975,10 +985,7 @@ moves_loop: // When in check, search starts from here
       assert(is_ok(move));
 
       if (move == excludedMove)
-      {
-          ss->moveCount = ++moveCount;
           continue;
-      }
 
       // At root obey the "searchmoves" option and skip moves not listed in Root
       // Move List. As a consequence any illegal move is also skipped. In MultiPV

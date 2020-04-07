@@ -944,16 +944,6 @@ namespace {
         ttMove = ttHit ? tte->move() : MOVE_NONE;
     }
 
-    if (   !PvNode
-        &&  eval - 300 * depth >= beta
-        &&  eval < VALUE_KNOWN_WIN)
-       {
-       Value raisedBeta = beta + 300 * depth;
-       value = search<NonPV>(pos, ss, raisedBeta - 1, raisedBeta, depth - 5, cutNode);
-       if (value >= raisedBeta)
-           return raisedBeta;
-       }
-
 moves_loop: // When in check, search starts from here
 
     const PieceToHistory* contHist[] = { (ss-1)->continuationHistory, (ss-2)->continuationHistory,
@@ -1021,7 +1011,8 @@ moves_loop: // When in check, search starts from here
           moveCountPruning = moveCount >= futility_move_count(improving, depth);
 
           if (   !captureOrPromotion
-              && !givesCheck)
+              && !givesCheck
+              && pos.non_pawn_material(~us))
           {
               // Reduced depth of the next LMR search
               int lmrDepth = std::max(newDepth - reduction(improving, depth, moveCount), 0);

@@ -975,7 +975,10 @@ moves_loop: // When in check, search starts from here
       assert(is_ok(move));
 
       if (move == excludedMove)
+      {
+          ss->moveCount = ++moveCount;
           continue;
+      }
 
       // At root obey the "searchmoves" option and skip moves not listed in Root
       // Move List. As a consequence any illegal move is also skipped. In MultiPV

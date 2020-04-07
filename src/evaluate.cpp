@@ -74,79 +74,79 @@ using namespace Trace;
 namespace {
 
   // Threshold for lazy and space evaluation
-  constexpr Value LazyThreshold  = Value(1490);
-  constexpr Value SpaceThreshold = Value(12222);
+  constexpr Value LazyThreshold  = Value(1513);
+  constexpr Value SpaceThreshold = Value(12062);
 
   // KingAttackWeights[PieceType] contains king attack weights by piece type
-  constexpr int KingAttackWeights[PIECE_TYPE_NB] = { 0, 0, 84, 49, 49, 10 };
+  constexpr int KingAttackWeights[PIECE_TYPE_NB] = { 0, 0, 86, 48, 49, 10 };
 
   // Penalties for enemy's safe checks
-  constexpr int QueenSafeCheck  = 800;
-  constexpr int RookSafeCheck   = 1234;
-  constexpr int BishopSafeCheck = 663;
-  constexpr int KnightSafeCheck = 805;
+  constexpr int QueenSafeCheck  = 769;
+  constexpr int RookSafeCheck   = 1253;
+  constexpr int BishopSafeCheck = 661;
+  constexpr int KnightSafeCheck = 783;
 
 #define S(mg, eg) make_score(mg, eg)
 
   // MobilityBonus[PieceType-2][attacked] contains bonuses for middle and end game,
   // indexed by piece type and number of attacked squares in the mobility area.
   constexpr Score MobilityBonus[][32] = {
-    { S(-67,-73), S(-53,-56), S(-13,-28), S( -4,-12), S(  3,  8), S( 13, 13), // Knight
-      S( 22, 22), S( 28, 24), S( 40, 29) },
-    { S(-55,-55), S(-21,-19), S( 16, -3), S( 28, 13), S( 41, 29), S( 51, 50), // Bishop
-      S( 60, 45), S( 58, 51), S( 68, 59), S( 70, 86), S( 92, 83), S( 75, 95),
-      S( 89, 92), S(104, 91) },
-    { S(-53,-75), S(-25,-18), S(-14, 27), S(-11, 56), S( -5, 61), S( -2, 83), // Rook
-      S( 10,100), S( 16,122), S( 31,121), S( 28,142), S( 35,156), S( 38,173),
-      S( 48,176), S( 42,168), S( 61,179) },
-    { S(-41,-39), S(-23,-15), S(  3,  8), S(  3, 17), S( 14, 37), S( 22, 54), // Queen
-      S( 25, 58), S( 43, 72), S( 46, 81), S( 46, 87), S( 53, 97), S( 59,103),
-      S( 67,114), S( 72,100), S( 67,116), S( 75,135), S( 72,147), S( 71,148),
-      S( 75,132), S(102,130), S( 81,137), S( 88,171), S(115,180), S(109,184),
-      S(105,177), S(116,186), S(101,219), S(101,217) }
+    { S(-70,-74), S(-55,-58), S(-13,-28), S( -4,-11), S(  3,  8), S( 13, 13), // Knight
+      S( 21, 23), S( 27, 26), S( 40, 30) },
+    { S(-53,-56), S(-21,-18), S( 15, -3), S( 27, 13), S( 41, 29), S( 48, 48), // Bishop
+      S( 60, 47), S( 61, 52), S( 66, 59), S( 72, 83), S( 87, 84), S( 74, 96),
+      S( 91, 93), S(106, 85) },
+    { S(-51,-71), S(-26,-19), S(-13, 26), S(-11, 56), S( -5, 65), S( -2, 83), // Rook
+      S( 10, 99), S( 16,121), S( 32,128), S( 27,145), S( 34,157), S( 38,173),
+      S( 51,174), S( 41,169), S( 59,186) },
+    { S(-41,-38), S(-23,-15), S(  3,  8), S(  3, 18), S( 14, 35), S( 22, 55), // Queen
+      S( 25, 58), S( 44, 74), S( 42, 80), S( 43, 84), S( 54, 97), S( 58,102),
+      S( 70,111), S( 73, 94), S( 71,112), S( 74,137), S( 72,148), S( 74,148),
+      S( 74,134), S(101,137), S( 80,140), S( 89,173), S(118,180), S(111,182),
+      S(100,161), S(112,193), S(105,226), S(108,221) }
   };
 
   // RookOnFile[semiopen/open] contains bonuses for each rook when there is
   // no (friendly) pawn on the rook file.
-  constexpr Score RookOnFile[] = { S(20, 4), S(50, 24) };
+  constexpr Score RookOnFile[] = { S(20, 4), S(49, 25) };
 
   // ThreatByMinor/ByRook[attacked PieceType] contains bonuses according to
   // which piece type attacks which one. Attacks on lesser pieces which are
   // pawn-defended are not considered.
   constexpr Score ThreatByMinor[PIECE_TYPE_NB] = {
-    S(0, 0), S(4, 36), S(63, 40), S(80, 48), S(92, 121), S(90, 156)
+    S(0, 0), S(4, 36), S(65, 39), S(82, 51), S(93, 121), S(93, 153)
   };
 
   constexpr Score ThreatByRook[PIECE_TYPE_NB] = {
-    S(0, 0), S(2, 48), S(38, 71), S(35, 70), S(0, 33), S(60, 38)
+    S(0, 0), S(2, 48), S(38, 66), S(36, 70), S(0, 33), S(59, 37)
   };
 
   // PassedRank[Rank] contains a bonus according to the rank of a passed pawn
   constexpr Score PassedRank[RANK_NB] = {
-    S(0, 0), S(11, 28), S(16, 36), S(15, 40), S(70, 72), S(171, 203), S(275, 359)
+    S(0, 0), S(10, 28), S(17, 33), S(15, 41), S(62, 72), S(168, 177), S(276, 260)
   };
 
   // Assorted bonuses and penalties
   constexpr Score BishopPawns         = S(  3,  7);
-  constexpr Score CorneredBishop      = S( 47, 50);
+  constexpr Score CorneredBishop      = S( 50, 50);
   constexpr Score FlankAttacks        = S(  7,  0);
-  constexpr Score Hanging             = S( 63, 32);
+  constexpr Score Hanging             = S( 64, 32);
   constexpr Score KingProtector       = S(  7,  8);
-  constexpr Score KnightOnQueen       = S( 16, 12);
+  constexpr Score KnightOnQueen       = S( 16, 13);
   constexpr Score LongDiagonalBishop  = S( 46,  0);
   constexpr Score MinorBehindPawn     = S( 18,  3);
-  constexpr Score Outpost             = S( 35, 19);
+  constexpr Score Outpost             = S( 34, 19);
   constexpr Score PassedFile          = S( 10,  8);
-  constexpr Score PawnlessFlank       = S( 16, 88);
+  constexpr Score PawnlessFlank       = S( 16, 90);
   constexpr Score RestrictedPiece     = S(  6,  7);
   constexpr Score RookOnQueenFile     = S(  7,  6);
-  constexpr Score SliderOnQueen       = S( 60, 18);
-  constexpr Score ThreatByKing        = S( 21, 90);
-  constexpr Score ThreatByPawnPush    = S( 44, 42);
-  constexpr Score ThreatBySafePawn    = S(163, 94);
-  constexpr Score TrappedRook         = S( 55,  9);
-  constexpr Score WeakQueen           = S( 52, 14);
-  constexpr Score WeakQueenProtection = S( 17,  0);
+  constexpr Score SliderOnQueen       = S( 61, 19);
+  constexpr Score ThreatByKing        = S( 23, 92);
+  constexpr Score ThreatByPawnPush    = S( 42, 43);
+  constexpr Score ThreatBySafePawn    = S(159, 95);
+  constexpr Score TrappedRook         = S( 54,  9);
+  constexpr Score WeakQueen           = S( 53, 15);
+  constexpr Score WeakQueenProtection = S( 16,  0);
 
 #undef S
 
@@ -446,19 +446,19 @@ namespace {
 
     kingDanger +=        kingAttackersCount[Them] * kingAttackersWeight[Them]
                  + 180 * popcount(kingRing[Us] & weak)
-                 + 140 * popcount(unsafeChecks)
-                 + 103 * popcount(pos.blockers_for_king(Us))
+                 + 146 * popcount(unsafeChecks)
+                 + 104 * popcount(pos.blockers_for_king(Us))
                  +  74 * kingAttacksCount[Them]
-                 +   3 * kingFlankAttack * kingFlankAttack / 8
+                 +  11 * kingFlankAttack * kingFlankAttack / 32
                  +       mg_value(mobility[Them] - mobility[Us])
-                 - 985 * !pos.count<QUEEN>(Them)
-                 -  86 * bool(attackedBy[Us][KNIGHT] & attackedBy[Us][KING])
-                 -   5 * mg_value(score) / 8
+                 - 982 * !pos.count<QUEEN>(Them)
+                 -  84 * bool(attackedBy[Us][KNIGHT] & attackedBy[Us][KING])
+                 -  21 * mg_value(score) / 32
                  -   4 * kingFlankDefense
                  +  39;
 
     // Transform the kingDanger units into a Score, and subtract it from the evaluation
-    if (kingDanger > 105)
+    if (kingDanger > 107)
         score -= make_score(kingDanger * kingDanger / 4096, kingDanger / 16);
 
     // Penalty when our king is on a pawnless flank
@@ -647,7 +647,6 @@ namespace {
     return score;
   }
 
-
   // Evaluation::space() computes the space evaluation for a given side. The
   // space evaluation is a simple bonus based on the number of safe squares
   // available for minor pieces on the central four files on ranks 2--4. Safe
@@ -711,11 +710,11 @@ namespace {
     int complexity =   9 * pe->passed_count()
                     + 11 * pos.count<PAWN>()
                     +  9 * outflanking
-                    + 21 * pawnsOnBothFlanks
+                    + 20 * pawnsOnBothFlanks
                     + 23 * infiltration
                     + 50 * !pos.non_pawn_material()
-                    - 38 * almostUnwinnable
-                    -111 ;
+                    - 40 * almostUnwinnable
+                    -116 ;
 
     Value mg = mg_value(score);
     Value eg = eg_value(score);
@@ -723,7 +722,7 @@ namespace {
     // Now apply the bonus: note that we find the attacking side by extracting the
     // sign of the midgame or endgame values, and that we carefully cap the bonus
     // so that the midgame and endgame scores do not change sign after the bonus.
-    int u = ((mg > 0) - (mg < 0)) * std::max(std::min(complexity + 50, 0), -abs(mg));
+    int u = ((mg > 0) - (mg < 0)) * std::max(std::min(complexity + 53, 0), -abs(mg));
     int v = ((eg > 0) - (eg < 0)) * std::max(complexity, -abs(eg));
 
     if (T)
@@ -747,17 +746,14 @@ namespace {
         if (   pos.opposite_bishops()
             && pos.non_pawn_material() == 2 * BishopValueMg)
             sf = 21 ;
-        else if(pos.opposite_bishops())
-            sf = std::min(sf, 33 + 2 * pos.count<PAWN>(strongSide));
         else
-            sf = std::min(sf, 33 + 6 * pos.count<PAWN>(strongSide));
+            sf = std::min(sf, 32 + (pos.opposite_bishops() ? 2 : 6) * pos.count<PAWN>(strongSide));
 
         sf = std::max(0, sf - (pos.rule50_count() - 13) / 4);
     }
 
     return ScaleFactor(sf);
   }
-
 
   // Evaluation::value() is the main function of the class. It computes the various
   // parts of the evaluation and returns the value of the position from the point

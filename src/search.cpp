@@ -392,7 +392,7 @@ void Thread::search() {
 
   // Evaluation score is from the white point of view
   contempt = (us == WHITE ?  make_score(ct, ct / 2)
-                          : -make_score(ct, ct / 2));
+                          : -make_score( 0, 0));
 
   int searchAgainCounter = 0;
 

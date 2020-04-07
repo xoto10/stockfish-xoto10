@@ -189,6 +189,8 @@ namespace {
     // very near squares, depending on king position.
     Bitboard kingRing[COLOR_NB];
 
+    int pinnedKnight[COLOR_NB];
+
     // kingAttackersCount[color] is the number of pieces of the given color
     // which attack a square in the kingRing of the enemy king.
     int kingAttackersCount[COLOR_NB];
@@ -245,6 +247,8 @@ namespace {
 
     // Remove from kingRing[] the squares defended by two pawns
     kingRing[Us] &= ~dblAttackByPawn;
+
+    pinnedKnight[Us] = 0;
   }
 
 
@@ -357,8 +361,15 @@ namespace {
         {
             // Penalty if any relative pin or discovered attack against the queen
             Bitboard queenPinners;
-            if (pos.slider_blockers(pos.pieces(Them, ROOK, BISHOP), s, queenPinners))
+
+            b = pos.slider_blockers(pos.pieces(Them, ROOK, BISHOP), s, queenPinners);
+            
+            if (b)
+            {
                 score -= WeakQueen;
+                if (b & kingRing[Us] & pos.pieces(Us, KNIGHT))
+                    pinnedKnight[Us]++;
+            }
         }
     }
     if (T)
@@ -448,6 +459,7 @@ namespace {
                  + 185 * popcount(kingRing[Us] & weak)
                  + 148 * popcount(unsafeChecks)
                  +  98 * popcount(pos.blockers_for_king(Us))
+                 +  60 * pinnedKnight[Us]
                  +  69 * kingAttacksCount[Them]
                  +   3 * kingFlankAttack * kingFlankAttack / 8
                  +       mg_value(mobility[Them] - mobility[Us])

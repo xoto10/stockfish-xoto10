@@ -1040,7 +1040,7 @@ moves_loop: // When in check, search starts from here
           if (captureOrPromotion && !givesCheck)
               {
                   CapturePieceToHistory& captureHistory = thisThread->captureHistory;
-                  if (   lmrDepth < 5 
+                  if (   lmrDepth < 1 
                       && captureHistory[movedPiece][to_sq(move)][type_of(pos.piece_on(to_sq(move)))] < 0)
                       continue;
               }

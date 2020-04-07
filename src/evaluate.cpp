@@ -114,11 +114,11 @@ namespace {
   // which piece type attacks which one. Attacks on lesser pieces which are
   // pawn-defended are not considered.
   constexpr Score ThreatByMinor[PIECE_TYPE_NB] = {
-    S(0, 0), S(5, 32), S(57, 41), S(77, 56), S(88, 119), S(79, 161)
+    S(0, 0), S(4, 36), S(65, 39), S(82, 51), S(93, 121), S(93, 153)
   };
 
   constexpr Score ThreatByRook[PIECE_TYPE_NB] = {
-    S(0, 0), S(2, 44), S(36, 71), S(36, 61), S(0, 38), S(51, 38)
+    S(0, 0), S(2, 48), S(38, 66), S(36, 70), S(0, 33), S(59, 37)
   };
 
   // PassedRank[Rank] contains a bonus according to the rank of a passed pawn
@@ -130,23 +130,23 @@ namespace {
   constexpr Score BishopPawns         = S(  3,  7);
   constexpr Score CorneredBishop      = S( 50, 50);
   constexpr Score FlankAttacks        = S(  8,  0);
-  constexpr Score Hanging             = S( 69, 36);
+  constexpr Score Hanging             = S( 64, 32);
   constexpr Score KingProtector       = S(  7,  8);
-  constexpr Score KnightOnQueen       = S( 16, 12);
+  constexpr Score KnightOnQueen       = S( 16, 13);
   constexpr Score LongDiagonalBishop  = S( 45,  0);
   constexpr Score MinorBehindPawn     = S( 18,  3);
   constexpr Score Outpost             = S( 30, 21);
   constexpr Score PassedFile          = S( 11,  8);
   constexpr Score PawnlessFlank       = S( 17, 95);
-  constexpr Score RestrictedPiece     = S(  7,  7);
+  constexpr Score RestrictedPiece     = S(  6,  7);
   constexpr Score RookOnQueenFile     = S(  7,  6);
-  constexpr Score SliderOnQueen       = S( 59, 18);
-  constexpr Score ThreatByKing        = S( 24, 89);
-  constexpr Score ThreatByPawnPush    = S( 48, 39);
-  constexpr Score ThreatBySafePawn    = S(173, 94);
+  constexpr Score SliderOnQueen       = S( 61, 19);
+  constexpr Score ThreatByKing        = S( 23, 92);
+  constexpr Score ThreatByPawnPush    = S( 42, 43);
+  constexpr Score ThreatBySafePawn    = S(159, 95);
   constexpr Score TrappedRook         = S( 52, 10);
   constexpr Score WeakQueen           = S( 49, 15);
-  constexpr Score WeakQueenProtection = S( 14,  0);
+  constexpr Score WeakQueenProtection = S( 16,  0);
 
 #undef S
 

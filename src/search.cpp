@@ -330,9 +330,9 @@ void Thread::search() {
   // The latter is needed for statScores and killer initialization.
   Stack stack[MAX_PLY+10], *ss = stack+7;
   Move  pv[MAX_PLY+1];
-  Value bestValue, alpha, beta, delta;
+  Value bestValue, lastBestValue = VALUE_ZERO, alpha, beta, delta;
   Move  lastBestMove = MOVE_NONE;
-  Depth lastBestMoveDepth = 0;
+  Depth lastBestMoveDepth = 0, lastRootDepth = 0;
   MainThread* mainThread = (this == Threads.main() ? Threads.main() : nullptr);
   double timeReduction = 1, totBestMoveChanges = 0;
   Color us = rootPos.side_to_move();
@@ -524,6 +524,18 @@ void Thread::search() {
           && bestValue >= VALUE_MATE_IN_MAX_PLY
           && VALUE_MATE - bestValue <= 2 * Limits.mate)
           Threads.stop = true;
+
+      // Tempo
+    if (   rootDepth > 1
+        && rootDepth == lastRootDepth + 1
+        && abs(bestValue - lastBestValue) < 113
+        && abs(bestValue) < 2 * PawnValueEg)
+    {
+sync_cout << "info string rd " << rootDepth << " v " << bestValue << " chg " << bestValue-lastBestValue
+          << " tavg " << tempoAvg/16 << sync_endl;
+        tempoAvg = (7 * tempoAvg + 16 * (bestValue - lastBestValue)) / 8;
+    }
+      lastBestValue = bestValue; lastRootDepth = rootDepth;
 
       if (!mainThread)
           continue;

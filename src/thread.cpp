@@ -27,6 +27,7 @@
 #include "uci.h"
 #include "syzygy/tbprobe.h"
 #include "tt.h"
+#include "types.h"
 
 ThreadPool Threads; // Global object
 
@@ -70,6 +71,7 @@ void Thread::clear() {
   mainHistory.fill(0);
   lowPlyHistory.fill(0);
   captureHistory.fill(0);
+  tempoAvg = Tempo * 16;
 
   for (bool inCheck : { false, true })
       for (StatsType c : { NoCaptures, Captures })

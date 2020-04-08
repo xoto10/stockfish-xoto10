@@ -32,19 +32,19 @@ namespace {
   #define S(mg, eg) make_score(mg, eg)
 
   // Pawn penalties
-  constexpr Score Backward      = S( 9, 24);
-  constexpr Score BlockedStorm  = S(82, 82);
-  constexpr Score Doubled       = S(11, 56);
-  constexpr Score Isolated      = S( 5, 15);
-  constexpr Score WeakLever     = S( 0, 56);
-  constexpr Score WeakUnopposed = S(13, 27);
+            Score PBW            = S( 9, 24);
+            Score PBS            = S(82, 82);
+            Score PDB            = S(11, 56);
+            Score PIS            = S( 5, 15);
+            Score PWL            = S( 0, 56);
+            Score PWU            = S(13, 27);
 
   // Connected pawn bonus
-  constexpr int Connected[RANK_NB] = { 0, 7, 8, 12, 29, 48, 86 };
+            int PCO       [RANK_NB] = { 0, 7, 8, 12, 29, 48, 86 };
 
   // Strength of pawn shelter for our king by [distance from edge][rank].
   // RANK_1 = 0 is used for files where we have no pawn, or pawn is behind our king.
-  constexpr Value ShelterStrength[int(FILE_NB) / 2][RANK_NB] = {
+            Value PSS             [int(FILE_NB) / 2][RANK_NB] = {
     { V( -6), V( 81), V( 93), V( 58), V( 39), V( 18), V(  25) },
     { V(-43), V( 61), V( 35), V(-49), V(-29), V(-11), V( -63) },
     { V(-10), V( 75), V( 23), V( -2), V( 32), V(  3), V( -45) },
@@ -55,12 +55,18 @@ namespace {
   // RANK_1 = 0 is used for files where the enemy has no pawn, or their pawn
   // is behind our king. Note that UnblockedStorm[0][1-2] accommodate opponent pawn
   // on edge, likely blocked by our king.
-  constexpr Value UnblockedStorm[int(FILE_NB) / 2][RANK_NB] = {
+            Value PUS            [int(FILE_NB) / 2][RANK_NB] = {
     { V( 85), V(-289), V(-166), V(97), V(50), V( 45), V( 50) },
     { V( 46), V( -25), V( 122), V(45), V(37), V(-10), V( 20) },
     { V( -6), V(  51), V( 168), V(34), V(-2), V(-22), V(-14) },
     { V(-15), V( -11), V( 101), V( 4), V(11), V(-15), V(-29) }
   };
+
+int PDKS1=16;
+
+Range vary20(int c) {
+  return (abs(c) < 20) ? Range(c-20, c+20) : c < 0 ? Range(c * 2, 0) : Range(0, c * 2);
+}
 
   #undef S
   #undef V
@@ -134,23 +140,23 @@ namespace {
         // Score this pawn
         if (support | phalanx)
         {
-            int v =  Connected[r] * (2 + bool(phalanx) - bool(opposed))
+            int v =  PCO       [r] * (2 + bool(phalanx) - bool(opposed))
                    + 21 * popcount(support);
 
             score += make_score(v, v * (r - 2) / 4);
         }
 
         else if (!neighbours)
-            score -=   Isolated
-                     + WeakUnopposed * !opposed;
+            score -=   PIS
+                     + PWU            * !opposed;
 
         else if (backward)
-            score -=   Backward
-                     + WeakUnopposed * !opposed;
+            score -=   PBW
+                     + PWU            * !opposed;
 
         if (!support)
-            score -=   Doubled * doubled
-                     + WeakLever * more_than_one(lever);
+            score -=   PDB      * doubled
+                     + PWL        * more_than_one(lever);
     }
 
     return score;
@@ -205,12 +211,12 @@ Score Entry::evaluate_shelter(const Position& pos, Square ksq) {
       int theirRank = b ? relative_rank(Us, frontmost_sq(Them, b)) : 0;
 
       File d = edge_distance(f);
-      bonus += make_score(ShelterStrength[d][ourRank], 0);
+      bonus += make_score(PSS             [d][ourRank], 0);
 
       if (ourRank && (ourRank == theirRank - 1))
-          bonus -= BlockedStorm * int(theirRank == RANK_3);
+          bonus -= PBS           * int(theirRank == RANK_3);
       else
-          bonus -= make_score(UnblockedStorm[d][theirRank], 0);
+          bonus -= make_score(PUS            [d][theirRank], 0);
   }
 
   return bonus;
@@ -247,7 +253,7 @@ Score Entry::do_king_safety(const Position& pos) {
   else while (pawns)
       minPawnDist = std::min(minPawnDist, distance(ksq, pop_lsb(&pawns)));
 
-  return shelter - make_score(0, 16 * minPawnDist);
+  return shelter - make_score(0, PDKS1 * minPawnDist);
 }
 
 // Explicit template instantiation

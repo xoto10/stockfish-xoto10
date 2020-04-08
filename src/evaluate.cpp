@@ -586,6 +586,7 @@ namespace {
 
     Bitboard b, bb, squaresToQueen, unsafeSquares, candidatePassers, leverable;
     Score score = SCORE_ZERO;
+    File minFile = FILE_H, maxFile = FILE_A;
 
     b = pe->passed_pawns(Us);
 
@@ -655,8 +656,15 @@ namespace {
             }
         } // r > RANK_3
 
+        minFile = std::min(minFile, file_of(s));
+        maxFile = std::max(maxFile, file_of(s));
+
         score += bonus - PassedFile * edge_distance(file_of(s));
     }
+
+    // Bonus for passers further apart
+    int width = maxFile - minFile;
+    score += make_score(6 * width, 6 * width);
 
     if (T)
         Trace::add(PASSED, Us, score);

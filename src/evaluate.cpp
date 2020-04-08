@@ -153,17 +153,15 @@ int PP1=5, PP2=5, PP3=13, PP4=19, PP5=2, PP6=35, PP7=20, PP8=9, PP9=0, PP10=5;
 int CY1=0, CY2=9, CY3=11, CY4=9, CY5=21, CY6=24, CY7=51, CY8=43, CY9=110, CY10=50;
 int SF1=22, SF2=36, SF3=2, SF4=36, SF5=7, SF6=12;
 
-Range vary20(int c) { return Range(c-20, c+20); }
+Range vary20(int c) { return (abs(c) < 20) ? Range(c-20, c+20) : Range(0, c * 2); }
 
-TUNE(SetDefaultRange, KD1, KD2, KD3, KD4, KD5, KD6, KD7, KD8, KD9, KD10, KD11);
-TUNE(SetRange(vary20), PP1, PP2, PP3, PP4, PP5, PP6, PP7, PP8, PP9, PP10);
-TUNE(SetDefaultRange, CY1, CY2, CY3, CY4, CY5, CY6, CY7, CY8, CY9, CY10);
-TUNE(SetDefaultRange, SF1, SF2, SF3, SF4, SF5, SF6);
+TUNE(SetRange(vary20), KD1, KD2, KD3, KD4, KD5, KD6, KD7, KD8, KD9, KD10, KD11);
+TUNE(SetRange(vary20), PP2, PP3, PP4, PP5, PP6, PP7, PP8, PP9, PP10);
+TUNE(SetRange(vary20), CY1, CY2, CY3, CY4, CY5, CY6, CY7, CY8, CY9, CY10);
+TUNE(SetRange(vary20), SF1, SF2, SF3, SF4, SF5, SF6);
 
-TUNE(SetDefaultRange, BP, BSC, CB, FA, H, KAW, KP, KOQ, LT, LDB, MBP, MB, NSC, OP, PF, PR, PLF, QSC);
-TUNE(SetDefaultRange, RP, ROF, RQF, RSC, SOQ, ST, TBK, TBM, TPP, TBR, TSP, TR, WQ, WQP);
-
-//TUNE(SetRange(vary30), PBW, PBS, PCO, PDB, PDKS1, PDKS2, PIS, PSS, PUS, PWL, PWU); pawns.cpp
+TUNE(SetRange(vary20), BP, BSC, FA, H, KAW, KP, KOQ, LT, LDB, MBP, MB, NSC, OP, PF, PR, PLF, QSC);
+TUNE(SetRange(vary20), RP, ROF, RQF, RSC, SOQ, TBK, TBM, TPP, TBR, TSP, TR, WQ, WQP);
 
 #undef S
 

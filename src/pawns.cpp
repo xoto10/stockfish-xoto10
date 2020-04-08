@@ -64,9 +64,9 @@ namespace {
 
 int PDKS1=16;
 
-Range vary30(int c) { return Range(c-30, c+30); }
+Range vary20(int c) { return (abs(c) < 20) ? Range(c-20, c+20) : Range(0, c * 2); }
 
-TUNE(SetRange(vary30), PBW, PBS, PCO, PDB, PDKS1, PIS, PSS, PUS, PWL, PWU);
+TUNE(SetRange(vary20), PBW, PBS, PCO, PDB, PDKS1, PIS, PSS, PUS, PWL, PWU);
 
   #undef S
   #undef V

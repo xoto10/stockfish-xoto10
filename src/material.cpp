@@ -58,13 +58,57 @@ int QT11=97, QT12=100, QT13=-42, QT14=137, QT15=268;
     {QT11, QT12,QT13,  QT14, QT15,    0 }  // Queen
   };
 
-Range vary20(int c) { return Range(c-20, c+20); }
+  // Update QuadraticOurs from QO vars
+  void updateQO() {
+    QuadraticOurs[0][0] = QO1;
+    QuadraticOurs[1][0] = QO2;
+    QuadraticOurs[1][1] = QO3;
+    QuadraticOurs[2][0] = QO4;
+    QuadraticOurs[2][1] = QO5;
+    QuadraticOurs[2][2] = QO6;
+    QuadraticOurs[3][0] = QO7;
+    QuadraticOurs[3][1] = QO8;
+    QuadraticOurs[3][2] = QO9;
+    QuadraticOurs[3][3] = QO10;
+    QuadraticOurs[4][0] = QO11;
+    QuadraticOurs[4][1] = QO12;
+    QuadraticOurs[4][2] = QO13;
+    QuadraticOurs[4][3] = QO14;
+    QuadraticOurs[4][4] = QO15;
+    QuadraticOurs[5][0] = QO16;
+    QuadraticOurs[5][1] = QO17;
+    QuadraticOurs[5][2] = QO18;
+    QuadraticOurs[5][3] = QO19;
+    QuadraticOurs[5][4] = QO20;
+    QuadraticOurs[5][5] = QO21;
+  }
 
-TUNE(SetDefaultRange, QO1, QO2, QO3, QO4, QO5, QO6, QO8, SetRange(vary20), QO7, QO9, QO10, QO11);
-TUNE(SetDefaultRange, QO13, QO14, QO15, QO16, QO18, QO19, QO20, SetRange(vary20), QO12, QO17, QO21);
+  // Update QuadraticTheirs from QO vars
+  void updateQT() {
+    QuadraticTheirs[1][0] = QT1;
+    QuadraticTheirs[2][0] = QT2;
+    QuadraticTheirs[2][1] = QT3;
+    QuadraticTheirs[3][0] = QT4;
+    QuadraticTheirs[3][1] = QT5;
+    QuadraticTheirs[3][2] = QT6;
+    QuadraticTheirs[4][0] = QT7;
+    QuadraticTheirs[4][1] = QT8;
+    QuadraticTheirs[4][2] = QT9;
+    QuadraticTheirs[4][3] = QT10;
+    QuadraticTheirs[5][0] = QT11;
+    QuadraticTheirs[5][1] = QT12;
+    QuadraticTheirs[5][2] = QT13;
+    QuadraticTheirs[5][3] = QT14;
+    QuadraticTheirs[5][4] = QT15;
+  }
 
-TUNE(SetDefaultRange, QT1, QT3, QT4, QT5, QT6, QT7, QT8, SetRange(vary20), QT2, QT9, QT10);
-TUNE(SetDefaultRange, QT11, QT12, QT13, QT14, QT15);
+Range vary20(int c) { return (abs(c) < 20) ? Range(c-20, c+20) : Range(0, c * 2); }
+
+TUNE(SetRange(vary20), QO1, QO2, QO3, QO4, QO5, QO6, QO8, QO7, QO9, QO10, QO11,
+     QO13, QO14, QO15, QO16, QO18, QO19, QO20, QO12, QO17, QO21, updateQO);
+
+TUNE(SetRange(vary20), QT1, QT3, QT4, QT5, QT6, QT7, QT8, QT2, QT9, QT10,
+     QT11, QT12, QT13, QT14, QT15, updateQT);
 
   // Endgame evaluation and scaling functions are accessed directly and not through
   // the function maps because they correspond to more than one material hash key.

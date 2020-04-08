@@ -284,8 +284,8 @@ namespace {
             kingAttacksCount[Us] += popcount(b & attackedBy[Them][KING]);
         }
 
-        int mob = popcount(b & mobilityArea[Us]) + bool(b & kingRing[Them]);
-
+        int mob = std::min(popcount(b & mobilityArea[Us]) + bool(b & kingRing[Them]),
+                           Pt == KNIGHT ? 8 : Pt == BISHOP ? 13 : Pt == ROOK ? 14 : 27);
         mobility[Us] += MobilityBonus[Pt - 2][mob];
 
         if (Pt == BISHOP || Pt == KNIGHT)

@@ -128,6 +128,7 @@ namespace {
 
   // Assorted bonuses and penalties
   constexpr Score BishopPawns         = S(  3,  7);
+  constexpr Score BadBishopPair       = S( 20, 20);
   constexpr Score CorneredBishop      = S( 50, 50);
   constexpr Score FlankAttacks        = S(  8,  0);
   constexpr Score Hanging             = S( 69, 36);
@@ -313,10 +314,7 @@ namespace {
                 Bitboard blocked = pos.pieces(Us, PAWN) & shift<Down>(pos.pieces());
 
                 score -= BishopPawns * pos.pawns_on_same_color_squares(Us, s)
-                                     * (  !(attackedBy[Us][PAWN] & s)
-                                        + popcount(blocked & CenterFiles)
-                                        + (   popcount(blocked & CenterFiles) > 1
-                                           && pos.count<BISHOP>(Us) > 1));
+                                     * (!(attackedBy[Us][PAWN] & s) + popcount(blocked & CenterFiles));
 
                 // Bonus for bishop on a long diagonal which can "see" both center squares
                 if (more_than_one(attacks_bb<BISHOP>(s, pos.pieces(PAWN)) & Center))
@@ -378,6 +376,7 @@ namespace {
     constexpr Color    Them = ~Us;
     constexpr Bitboard Camp = (Us == WHITE ? AllSquares ^ Rank6BB ^ Rank7BB ^ Rank8BB
                                            : AllSquares ^ Rank1BB ^ Rank2BB ^ Rank3BB);
+    constexpr Direction Down = -pawn_push(Us);
 
     Bitboard weak, b1, b2, b3, safe, unsafeChecks = 0;
     Bitboard rookChecks, queenChecks, bishopChecks, knightChecks;
@@ -470,6 +469,11 @@ namespace {
 
     // Penalty if king flank is under attack, potentially moving toward the king
     score -= FlankAttacks * kingFlankAttack;
+
+    // Penalty if we have bishop pair and center blocked
+    Bitboard blocked = pos.pieces(Us, PAWN) & shift<Down>(pos.pieces());
+    score -= BadBishopPair * (   popcount(blocked & CenterFiles) > 1
+                              && pos.count<BISHOP>(Us) > 1);
 
     if (T)
         Trace::add(KING, Us, score);

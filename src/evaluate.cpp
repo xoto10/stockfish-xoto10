@@ -284,7 +284,7 @@ namespace {
             kingAttacksCount[Us] += popcount(b & attackedBy[Them][KING]);
         }
 
-        int mob = popcount(b & mobilityArea[Us]);
+        int mob = popcount(b & mobilityArea[Us]) + bool(b & kingRing[Them]);
 
         mobility[Us] += MobilityBonus[Pt - 2][mob];
 

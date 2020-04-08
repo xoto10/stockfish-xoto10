@@ -525,17 +525,16 @@ void Thread::search() {
           && VALUE_MATE - bestValue <= 2 * Limits.mate)
           Threads.stop = true;
 
-      // Tempo
-    if (   rootDepth > 1
-        && rootDepth == lastRootDepth + 1
-        && abs(bestValue - lastBestValue) < 113
-        && abs(bestValue) < 2 * PawnValueEg)
-    {
-sync_cout << "info string rd " << rootDepth << " v " << bestValue << " chg " << bestValue-lastBestValue
-          << " tavg " << tempoAvg/16 << sync_endl;
-        tempoAvg = (7 * tempoAvg + 16 * (bestValue - lastBestValue)) / 8;
-    }
-      lastBestValue = bestValue; lastRootDepth = rootDepth;
+      // Tempo adjustment
+      if (   rootDepth > 6
+          && rootDepth == lastRootDepth + 1
+          && abs(bestValue - lastBestValue) < Tempo * 4
+          && abs(bestValue) < 2 * PawnValueEg
+         )
+          tempoAvg = (7 * tempoAvg + 16 * (bestValue - lastBestValue)) / 8;
+
+      lastBestValue = bestValue;
+      lastRootDepth = rootDepth;
 
       if (!mainThread)
           continue;
@@ -834,7 +833,7 @@ namespace {
             ss->staticEval = eval = evaluate(pos) + bonus;
         }
         else
-            ss->staticEval = eval = -(ss-1)->staticEval + 2 * Tempo;
+            ss->staticEval = eval = -(ss-1)->staticEval + 2 * Tempo + thisThread->tempoAvg / 16;
 
         tte->save(posKey, VALUE_NONE, ttPv, BOUND_NONE, DEPTH_NONE, MOVE_NONE, eval);
     }
@@ -1466,7 +1465,7 @@ moves_loop: // When in check, search starts from here
         else
             ss->staticEval = bestValue =
             (ss-1)->currentMove != MOVE_NULL ? evaluate(pos)
-                                             : -(ss-1)->staticEval + 2 * Tempo;
+                                             : -(ss-1)->staticEval + 2 * Tempo + thisThread->tempoAvg / 16;
 
         // Stand pat. Return immediately if static value is at least beta
         if (bestValue >= beta)

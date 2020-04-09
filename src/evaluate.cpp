@@ -23,12 +23,14 @@
 #include <cstring>   // For std::memset
 #include <iomanip>
 #include <sstream>
+//#include <iostream>
 
 #include "bitboard.h"
 #include "evaluate.h"
 #include "material.h"
 #include "pawns.h"
 #include "thread.h"
+//#include "uci.h"
 
 namespace Trace {
 
@@ -127,6 +129,7 @@ namespace {
   };
 
   // Assorted bonuses and penalties
+  constexpr Score BadKnight           = S( 30, 30);
   constexpr Score BishopPawns         = S(  3,  7);
   constexpr Score CorneredBishop      = S( 50, 50);
   constexpr Score FlankAttacks        = S(  8,  0);
@@ -332,6 +335,12 @@ namespace {
                                                                                   : CorneredBishop;
                 }
             }
+            else if (b && !(b & ~attackedBy[Them][BISHOP]))
+//          {
+                score -= BadKnight;
+//sync_cout << "info string pos\n" << pos << " badn: us " << Us << " sq " << UCI::square(s)
+//          << " b " << Bitboards::pretty(~attackedBy[Them][BISHOP]) << sync_endl;
+//            }
         }
 
         if (Pt == ROOK)

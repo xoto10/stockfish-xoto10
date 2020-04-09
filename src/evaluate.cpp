@@ -815,9 +815,6 @@ namespace {
 
     v /= PHASE_MIDGAME;
 
-    // Prefer high 50mr if losing
-    v += (v < -2 * PawnValueEg) * 3 * pos.rule50_count();
-
     // In case of tracing add all remaining individual evaluation terms
     if (T)
     {
@@ -828,7 +825,13 @@ namespace {
         Trace::add(TOTAL, score);
     }
 
-    return  (pos.side_to_move() == WHITE ? v : -v) + Tempo; // Side to move point of view
+    // Side to move point of view
+    v = (pos.side_to_move() == WHITE ? v : -v);
+
+    // Prefer high 50mr if losing
+    v += (v < -2 * PawnValueEg) * 3 * pos.rule50_count();
+
+    return v + Tempo;
   }
 
 } // namespace

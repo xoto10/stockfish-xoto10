@@ -710,7 +710,7 @@ namespace {
     Value eg = eg_value(score);
 
     int badPawns =  (eg > 0) * pe->noMovePawns[WHITE]
-                  - (eg < 0) * pe->noMovePawns[BLACK];
+                  + (eg < 0) * pe->noMovePawns[BLACK];
 
     // Compute the initiative bonus for the attacking side
     int complexity =   9 * pe->passed_count()

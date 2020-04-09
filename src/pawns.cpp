@@ -20,11 +20,13 @@
 
 #include <algorithm>
 #include <cassert>
+#include <iostream>
 
 #include "bitboard.h"
 #include "pawns.h"
 #include "position.h"
 #include "thread.h"
+#include "uci.h"
 
 namespace {
 
@@ -126,7 +128,12 @@ namespace {
 
         passed &= !(forward_file_bb(Us, s) & ourPawns);
 
-        e->noMovePawns[Us] += blocked || (popcount(leverPush) > popcount(phalanx));
+        if (blocked
+                             || (popcount(leverPush) > popcount(neighbours & forward_ranks_bb(Them, s + Up))))
+        {
+            e->noMovePawns[Us] ++;
+sync_cout << "info string pos\n" << pos << " npm: us " << Us << " sq " << UCI::square(s) << sync_endl;
+        }
 
         // Passed pawns will be properly scored later in evaluation when we have
         // full attack info.

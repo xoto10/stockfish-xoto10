@@ -815,6 +815,9 @@ namespace {
 
     v /= PHASE_MIDGAME;
 
+    // Prefer high 50mr if losing
+    v += (v < -2 * PawnValueEg) * 3 * pos.rule50_count();
+
     // In case of tracing add all remaining individual evaluation terms
     if (T)
     {

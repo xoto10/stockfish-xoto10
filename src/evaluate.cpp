@@ -23,12 +23,14 @@
 #include <cstring>   // For std::memset
 #include <iomanip>
 #include <sstream>
+//#include <iostream>
 
 #include "bitboard.h"
 #include "evaluate.h"
 #include "material.h"
 #include "pawns.h"
 #include "thread.h"
+//#include "uci.h"
 
 namespace Trace {
 
@@ -749,6 +751,13 @@ namespace {
             sf = 22 ;
         else
             sf = std::min(sf, 36 + (pos.opposite_bishops() ? 2 : 7) * pos.count<PAWN>(strongSide));
+
+        int badPawns = std::max(0, pe->noMovePawns[strongSide] - 5);
+        sf *= (3 - badPawns) / 3;
+//if (badPawns)
+//sync_cout << "info string us " << (eg>0 ? "w" : "b") << " badp " << badPawns
+//          << " pos\n" << pos
+//          << sync_endl;
 
         sf = std::max(0, sf - (pos.rule50_count() - 12) / 4);
     }

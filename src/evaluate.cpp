@@ -753,6 +753,8 @@ namespace {
         sf = std::max(0, sf - (pos.rule50_count() - 12) / 4);
     }
 
+    sf *= (abs(eg) > 2 * PawnValueEg) * (50 - std::max(0, pos.rule50_count() - 50)) / 50;
+
     return ScaleFactor(sf);
   }
 

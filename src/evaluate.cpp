@@ -23,6 +23,7 @@
 #include <cstring>   // For std::memset
 #include <iomanip>
 #include <sstream>
+#include <iostream>
 
 #include "bitboard.h"
 #include "evaluate.h"
@@ -586,6 +587,7 @@ namespace {
     Bitboard b, bb, squaresToQueen, unsafeSquares;
     Score score = SCORE_ZERO;
 
+    int n = 0;
     b = pe->passed_pawns(Us);
 
     while (b)
@@ -639,7 +641,11 @@ namespace {
         } // r > RANK_3
 
         score += bonus - PassedFile * edge_distance(file_of(s));
+        ++n;
     }
+
+    while (--n > 0)
+        score += score / 4;
 
     if (T)
         Trace::add(PASSED, Us, score);

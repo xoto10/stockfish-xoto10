@@ -126,7 +126,7 @@ namespace {
 
         passed &= !(forward_file_bb(Us, s) & ourPawns);
 
-        e->noMovePawns[Us] +=   (blocked && !lever)
+        e->noMovePawns[Us] +=   blocked
                              || popcount(leverPush) > 1 + popcount(phalanx);
 
         // Passed pawns will be properly scored later in evaluation when we have

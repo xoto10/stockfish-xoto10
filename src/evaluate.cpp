@@ -829,7 +829,7 @@ namespace {
     v = (pos.side_to_move() == WHITE ? v : -v);
 
     // Prefer high 50mr if losing
-    v += (v < -2 * PawnValueEg) * 3 * pos.rule50_count();
+    v += (v < -PawnValueEg) * 2 * pos.rule50_count();
 
     return v + Tempo;
   }

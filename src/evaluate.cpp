@@ -23,7 +23,6 @@
 #include <cstring>   // For std::memset
 #include <iomanip>
 #include <sstream>
-#include <iostream>
 
 #include "bitboard.h"
 #include "evaluate.h"
@@ -712,9 +711,6 @@ namespace {
 
     int badPawns =  (eg > 0) * pe->noMovePawns[WHITE]
                   + (eg < 0) * pe->noMovePawns[BLACK];
-if (pe->noMovePawns[WHITE])
-sync_cout << "info string pos\n" << pos
-          << " nmp" << pe->noMovePawns[WHITE] << sync_endl;
 
     // Compute the initiative bonus for the attacking side
     int complexity =   9 * pe->passed_count()
@@ -725,7 +721,7 @@ sync_cout << "info string pos\n" << pos
                     + 51 * !pos.non_pawn_material()
                     -  9 * badPawns
                     - 43 * almostUnwinnable
-                    -101 ;
+                    -105 ;
 
     Value mg = mg_value(score);
 

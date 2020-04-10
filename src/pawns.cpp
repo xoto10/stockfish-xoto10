@@ -32,23 +32,23 @@ namespace {
   #define S(mg, eg) make_score(mg, eg)
 
   // Pawn penalties
-  constexpr Score Backward      = S(12, 27);
-  constexpr Score BlockedStorm  = S(81, 81);
-  constexpr Score Doubled       = S(10, 53);
-  constexpr Score Isolated      = S( 6, 13);
-  constexpr Score WeakLever     = S(-1, 55);
-  constexpr Score WeakUnopposed = S(18, 29);
+  constexpr Score Backward      = S( 8, 24);
+  constexpr Score BlockedStorm  = S(99, 79);
+  constexpr Score Doubled       = S(16, 60);
+  constexpr Score Isolated      = S( 0, 14);
+  constexpr Score WeakLever     = S( 0, 63);
+  constexpr Score WeakUnopposed = S(18, 28);
 
   // Connected pawn bonus
-  constexpr int Connected[RANK_NB] = { 0, 4, 4, 10, 25, 50, 87 };
+  constexpr int Connected[RANK_NB] = { 0, 6, 10, 12, 24, 51, 88 };
 
   // Strength of pawn shelter for our king by [distance from edge][rank].
   // RANK_1 = 0 is used for files where we have no pawn, or pawn is behind our king.
   constexpr Value ShelterStrength[int(FILE_NB) / 2][RANK_NB] = {
-    { V( -1), V( 76), V( 91), V( 62), V( 39), V( 18), V(  24) },
-    { V(-44), V( 66), V( 38), V(-50), V(-27), V(-12), V( -63) },
-    { V(-10), V( 75), V( 31), V( -2), V( 37), V(  4), V( -45) },
-    { V(-39), V(-16), V(-35), V(-52), V(-45), V(-68), V(-162) }
+    { V( -4), V( 79), V(115), V( 46), V( 39), V( 18), V(  22) },
+    { V(-86), V( 71), V( 33), V(  0), V(-58), V(-10), V(   0) },
+    { V( -8), V( 71), V( 29), V( -7), V( 36), V(  4), V( -90) },
+    { V(  0), V(-12), V(  0), V(  0), V(-96), V(-134),V(   0) }
   };
 
   // Danger of enemy pawns moving toward our king by [distance from edge][rank].
@@ -56,10 +56,10 @@ namespace {
   // is behind our king. Note that UnblockedStorm[0][1-2] accommodate opponent pawn
   // on edge, likely blocked by our king.
   constexpr Value UnblockedStorm[int(FILE_NB) / 2][RANK_NB] = {
-    { V( 86), V(-284), V(-164), V(91), V(51), V( 42), V( 51) },
-    { V( 48), V( -27), V( 120), V(47), V(41), V(-10), V( 20) },
-    { V( -5), V(  45), V( 171), V(29), V( 2), V(-20), V(-11) },
-    { V(-14), V( -13), V(  96), V( 4), V(14), V(-14), V(-30) }
+    { V( 77), V(   0), V(-332), V(113),V(49), V( 53), V( 49) },
+    { V( 56), V(   0), V( 125), V(52), V(43), V(-11), V( 16) },
+    { V(  0), V(  47), V( 168), V(33), V(-1), V(-44), V(-13) },
+    { V(-18), V( -15), V( 112), V( 4), V( 7), V(-12), V(-58) }
   };
 
   #undef S
@@ -247,7 +247,7 @@ Score Entry::do_king_safety(const Position& pos) {
   else while (pawns)
       minPawnDist = std::min(minPawnDist, distance(ksq, pop_lsb(&pawns)));
 
-  return shelter - make_score(0, 14 * minPawnDist);
+  return shelter - make_score(0, 12 * minPawnDist);
 }
 
 // Explicit template instantiation

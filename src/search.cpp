@@ -551,7 +551,7 @@ void Thread::search() {
               totBestMoveChanges += th->bestMoveChanges;
               th->bestMoveChanges = 0;
           }
-          double bestMoveInstability = 1 + totBestMoveChanges / Threads.size();
+          double bestMoveInstability = (2 + totBestMoveChanges / Threads.size());
 
           // Stop the search if we have only one legal move, or if available time elapsed
           if (   rootMoves.size() == 1

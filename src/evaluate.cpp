@@ -701,7 +701,7 @@ namespace {
     bool pawnsOnBothFlanks =   (pos.pieces(PAWN) & QueenSide)
                             && (pos.pieces(PAWN) & KingSide);
 
-    bool almostUnwinnable =   outflanking < 0
+    bool almostUnwinnable =   outflanking < -1
                            && !pawnsOnBothFlanks;
 
     bool infiltration = rank_of(pos.square<KING>(WHITE)) > RANK_4
@@ -709,13 +709,13 @@ namespace {
 
     // Compute the initiative bonus for the attacking side
     int complexity =   9 * pe->passed_count()
-                    + 11 * pos.count<PAWN>()
-                    +  9 * outflanking
-                    + 20 * pawnsOnBothFlanks
+                    + 13 * pos.count<PAWN>()
+                    + 12 * outflanking
+                    + 22 * pawnsOnBothFlanks
                     + 23 * infiltration
-                    + 50 * !pos.non_pawn_material()
-                    - 40 * almostUnwinnable
-                    -116 ;
+                    + 49 * !pos.non_pawn_material()
+                    - 50 * almostUnwinnable
+                    - 87 ;
 
     Value mg = mg_value(score);
     Value eg = eg_value(score);
@@ -723,7 +723,7 @@ namespace {
     // Now apply the bonus: note that we find the attacking side by extracting the
     // sign of the midgame or endgame values, and that we carefully cap the bonus
     // so that the midgame and endgame scores do not change sign after the bonus.
-    int u = ((mg > 0) - (mg < 0)) * std::max(std::min(complexity + 50, 0), -abs(mg));
+    int u = ((mg > 0) - (mg < 0)) * std::max(std::min(complexity + 47, 0), -abs(mg));
     int v = ((eg > 0) - (eg < 0)) * std::max(complexity, -abs(eg));
 
     if (T)

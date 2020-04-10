@@ -78,7 +78,7 @@ namespace {
   constexpr Value SpaceThreshold = Value(12222);
 
   // KingAttackWeights[PieceType] contains king attack weights by piece type
-  constexpr int KingAttackWeights[PIECE_TYPE_NB] = { 0, 0, 86, 48, 49, 10 };
+  constexpr int KingAttackWeights[PIECE_TYPE_NB] = { 0, 0, 81, 52, 44, 10 };
 
   // Penalties for enemy's safe checks
   constexpr int QueenSafeCheck  = 780;
@@ -114,11 +114,11 @@ namespace {
   // which piece type attacks which one. Attacks on lesser pieces which are
   // pawn-defended are not considered.
   constexpr Score ThreatByMinor[PIECE_TYPE_NB] = {
-    S(0, 0), S(4, 36), S(65, 39), S(82, 51), S(93, 121), S(93, 153)
+    S(0, 0), S(10, 31), S(47, 37), S(63, 68), S(77, 123), S(87, 140)
   };
 
   constexpr Score ThreatByRook[PIECE_TYPE_NB] = {
-    S(0, 0), S(2, 48), S(38, 66), S(36, 70), S(0, 33), S(59, 37)
+    S(0, 0), S(1, 47), S(26, 80), S(37, 64), S(-2, 37), S(64, 42)
   };
 
   // PassedRank[Rank] contains a bonus according to the rank of a passed pawn
@@ -130,23 +130,23 @@ namespace {
   constexpr Score BishopPawns         = S(  3,  7);
   constexpr Score CorneredBishop      = S( 50, 50);
   constexpr Score FlankAttacks        = S(  8,  0);
-  constexpr Score Hanging             = S( 64, 32);
+  constexpr Score Hanging             = S( 69, 34);
   constexpr Score KingProtector       = S(  7,  8);
-  constexpr Score KnightOnQueen       = S( 16, 13);
+  constexpr Score KnightOnQueen       = S( 19, 11);
   constexpr Score LongDiagonalBishop  = S( 45,  0);
   constexpr Score MinorBehindPawn     = S( 18,  3);
   constexpr Score Outpost             = S( 30, 21);
   constexpr Score PassedFile          = S( 11,  8);
   constexpr Score PawnlessFlank       = S( 17, 95);
-  constexpr Score RestrictedPiece     = S(  6,  7);
+  constexpr Score RestrictedPiece     = S(  9,  7);
   constexpr Score RookOnQueenFile     = S(  7,  6);
-  constexpr Score SliderOnQueen       = S( 61, 19);
-  constexpr Score ThreatByKing        = S( 23, 92);
-  constexpr Score ThreatByPawnPush    = S( 42, 43);
-  constexpr Score ThreatBySafePawn    = S(159, 95);
+  constexpr Score SliderOnQueen       = S( 57, 14);
+  constexpr Score ThreatByKing        = S( 22, 66);
+  constexpr Score ThreatByPawnPush    = S( 52, 36);
+  constexpr Score ThreatBySafePawn    = S(109,115);
   constexpr Score TrappedRook         = S( 52, 10);
   constexpr Score WeakQueen           = S( 49, 15);
-  constexpr Score WeakQueenProtection = S( 16,  0);
+  constexpr Score WeakQueenProtection = S( 14,  4);
 
 #undef S
 

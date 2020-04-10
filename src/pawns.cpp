@@ -36,6 +36,7 @@ namespace {
   constexpr Score BlockedStorm  = S(82, 82);
   constexpr Score Doubled       = S(11, 56);
   constexpr Score Isolated      = S( 5, 15);
+  constexpr Score PushSpread    = S(10, 10);
   constexpr Score WeakLever     = S( 0, 56);
   constexpr Score WeakUnopposed = S(13, 27);
 
@@ -70,6 +71,8 @@ namespace {
 
     constexpr Color     Them = ~Us;
     constexpr Direction Up   = pawn_push(Us);
+    constexpr Bitboard  TheirCamp = Us == WHITE ? AllSquares ^ Rank1BB ^ Rank2BB ^ Rank3BB
+                                                : AllSquares ^ Rank6BB ^ Rank7BB ^ Rank8BB;
 
     Bitboard neighbours, stoppers, support, phalanx, opposed;
     Bitboard lever, leverPush, blocked;
@@ -152,6 +155,10 @@ namespace {
             score -=   Doubled * doubled
                      + WeakLever * more_than_one(lever);
     }
+
+    score += PushSpread * (   (ourPawns & TheirCamp & QueenSide)
+                           && (ourPawns & TheirCamp & (FileDBB | FileEBB))
+                           && (ourPawns & TheirCamp & KingSide));
 
     return score;
   }

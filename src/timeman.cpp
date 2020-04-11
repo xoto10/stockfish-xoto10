@@ -132,5 +132,5 @@ void TimeManagement::init(Search::LimitsType& limits, Color us, int ply) {
       optimumTime += optimumTime / 4;
 
   // temp compensation for saerch.cpp changes
-  optimumTime *= 0.6;
+  optimumTime *= 0.54;
 }

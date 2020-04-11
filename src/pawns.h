@@ -40,13 +40,23 @@ struct Entry {
   int passed_count() const { return popcount(passedPawns[WHITE] | passedPawns[BLACK]); }
 
   template<Color Us>
-  Score king_safety(const Position& pos) {
-    return  kingSquares[Us] == pos.square<KING>(Us) && castlingRights[Us] == pos.castling_rights(Us)
-          ? kingSafety[Us] : (kingSafety[Us] = do_king_safety<Us>(pos));
+  Score king_safety(const Position& pos, Square& castleSq) {
+    if (   kingSquares[Us] == pos.square<KING>(Us)
+        && castlingRights[Us] == pos.castling_rights(Us))
+    {
+        castleSq = castleSquares[Us];
+        return kingSafety[Us];
+    }
+    else
+    {
+        kingSafety[Us] = do_king_safety<Us>(pos, castleSquares[Us]);
+        castleSq = castleSquares[Us];
+        return kingSafety[Us];
+    }
   }
 
   template<Color Us>
-  Score do_king_safety(const Position& pos);
+  Score do_king_safety(const Position& pos, Square& castleSq);
 
   template<Color Us>
   Score evaluate_shelter(const Position& pos, Square ksq);
@@ -57,6 +67,7 @@ struct Entry {
   Bitboard pawnAttacks[COLOR_NB];
   Bitboard pawnAttacksSpan[COLOR_NB];
   Square kingSquares[COLOR_NB];
+  Square castleSquares[COLOR_NB];
   Score kingSafety[COLOR_NB];
   int castlingRights[COLOR_NB];
 };

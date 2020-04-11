@@ -23,12 +23,14 @@
 #include <cstring>   // For std::memset
 #include <iomanip>
 #include <sstream>
+#include <iostream>
 
 #include "bitboard.h"
 #include "evaluate.h"
 #include "material.h"
 #include "pawns.h"
 #include "thread.h"
+#include "uci.h"
 
 namespace Trace {
 
@@ -379,10 +381,15 @@ namespace {
     Bitboard weak, b1, b2, b3, safe, unsafeChecks = 0;
     Bitboard rookChecks, queenChecks, bishopChecks, knightChecks;
     int kingDanger = 0;
-    const Square ksq = pos.square<KING>(Us);
+    Square ksq;
 
     // Init the score with king shelter and enemy pawns storm
-    Score score = pe->king_safety<Us>(pos);
+    Score score = pe->king_safety<Us>(pos, ksq);
+//if (ksq != pos.square<KING>(Us))
+//sync_cout << "info string kd: us " << Us
+//          << " pos\n" << pos
+//          << " sq " << UCI::square(ksq)
+//          << sync_endl;
 
     // Attacked squares defended at most once by our queen or king
     weak =  attackedBy[Them][ALL_PIECES]

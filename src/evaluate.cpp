@@ -817,7 +817,7 @@ namespace {
     v = (pos.side_to_move() == WHITE ? v : -v); // Side to move point of view
     if (v < -PawnValueEg)
         v += (pos.non_pawn_material() + pos.count<PAWN>() * PawnValueEg)
-             / Utility::clamp(15850 + v * 36, 500, 8000);
+             / Utility::clamp(15850 + v * 34, 1000, 8000);
 
     // In case of tracing add all remaining individual evaluation terms
     if (T)

@@ -362,7 +362,7 @@ namespace {
         }
     }
 
-    mobility[Us] = mobility[Us] * (17 - pe->blocked[Us]) / 16;
+    mobility[Us] = mobility[Us] * (15 + pe->blocked[Us]) / 16;
 
     if (T)
         Trace::add(Pt, Us, score);

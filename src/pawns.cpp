@@ -223,6 +223,8 @@ Score Entry::evaluate_shelter(const Position& pos, Square ksq) {
 template<Color Us>
 Score Entry::do_king_safety(const Position& pos, Square& castleSq) {
 
+  constexpr Direction Down = pawn_push(~Us);
+
   Square ksq = pos.square<KING>(Us);
   kingSquares[Us] = ksq;
   castlingRights[Us] = pos.castling_rights(Us);
@@ -245,6 +247,11 @@ Score Entry::do_king_safety(const Position& pos, Square& castleSq) {
       if (mg_value(newShelter) > mg_value(shelter))
           shelter = newShelter, castleSq = relative_square(Us, SQ_C1);
   }
+
+  // Only return castled square if center is blocked
+  if (   castleSq != ksq
+      && !more_than_one(pos.pieces(Us, PAWN) & shift<Down>(pos.pieces(~Us, PAWN)) & (FileDBB | FileEBB)) )
+      castleSq = ksq;
 
   // In endgame we like to bring our king near our closest pawn
   Bitboard pawns = pos.pieces(Us, PAWN);

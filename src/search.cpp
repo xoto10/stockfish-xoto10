@@ -525,13 +525,6 @@ void Thread::search() {
           && VALUE_MATE - bestValue <= 2 * Limits.mate)
           Threads.stop = true;
 
-      // Penalise moves stopping 50mr if drawing / losing
-      if (   rootPos.rule50_count() >= 80
-          && bestValue < Value(2)
-          && (   rootPos.capture_or_promotion(lastBestMove)
-              || type_of(rootPos.moved_piece(lastBestMove)) == PAWN))
-          lowPlyHistory[0][from_to(lastBestMove)] << -3000;
-
       if (!mainThread)
           continue;
 
@@ -1274,6 +1267,12 @@ moves_loop: // When in check, search starts from here
       pos.undo_move(move);
 
       assert(value > -VALUE_INFINITE && value < VALUE_INFINITE);
+
+      // Penalise moves stopping 50mr if drawing / losing
+      if (   pos.rule50_count() >= 80
+          && bestValue < Value(2)
+          && (captureOrPromotion || type_of(movedPiece) == PAWN))
+          thisThread->mainHistory[us][from_to(move)] << -3000;
 
       // Step 19. Check for a new best move
       // Finished searching the move. If a stop occurred, the return value of

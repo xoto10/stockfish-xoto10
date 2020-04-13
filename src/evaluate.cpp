@@ -816,8 +816,7 @@ namespace {
     v /= PHASE_MIDGAME;
     v = (pos.side_to_move() == WHITE ? v : -v); // Side to move point of view
     if (v < -PawnValueEg)
-        v += (pos.non_pawn_material() + pos.count<PAWN>() * PawnValueEg)
-             / Utility::clamp(15850 + v * 34, 1000, 8000);
+        v += std::min(pos.count<ALL_PIECES>(pos.side_to_move()), int(-PawnValueEg - v) / 6);
 
     // In case of tracing add all remaining individual evaluation terms
     if (T)

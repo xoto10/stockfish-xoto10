@@ -718,7 +718,7 @@ namespace {
     bool pawnsOnBothFlanks =   (pos.pieces(PAWN) & QueenSide)
                             && (pos.pieces(PAWN) & KingSide);
 
-    bool almostUnwinnable =   outflanking < 4
+    bool almostUnwinnable =   outflanking < 1
                            && !pawnsOnBothFlanks;
 
     bool infiltration = rank_of(pos.square<KING>(WHITE)) > RANK_4
@@ -732,7 +732,7 @@ namespace {
                     + 24 * infiltration
                     + 51 * !pos.non_pawn_material()
                     - 43 * almostUnwinnable
-                    -110 ;
+                    -118 ;
 
     Value mg = mg_value(score);
     Value eg = eg_value(score);

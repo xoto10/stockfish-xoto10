@@ -156,8 +156,8 @@ namespace {
                                && (   !(shift<EAST>(file_bb(s)) & pos.pieces(PAWN))
                                    || !(shift<WEST>(file_bb(s)) & pos.pieces(PAWN)));
                                     
-            score -=   Backward * (1 + adjacentOpen)
-                     + WeakUnopposed * !opposed;
+            score -=   Backward
+                     + WeakUnopposed * (adjacentOpen || !opposed);
         }
 
         if (!support)

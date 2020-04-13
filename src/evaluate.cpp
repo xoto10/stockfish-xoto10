@@ -809,9 +809,11 @@ namespace {
     score += initiative(score);
 
     // Interpolate between a middlegame and a (scaled by 'sf') endgame score
-    ScaleFactor sf = scale_factor(eg_value(score));
-    v =  mg_value(score) * int(me->game_phase())
-       + eg_value(score) * int(PHASE_MIDGAME - me->game_phase()) * sf / SCALE_FACTOR_NORMAL;
+    ScaleFactor sfMg = ScaleFactor(SCALE_FACTOR_NORMAL - (pos.rule50_count() - 12) / 4);
+    ScaleFactor sfEg = scale_factor(eg_value(score));
+
+    v =  mg_value(score) * int(me->game_phase()) * sfMg / SCALE_FACTOR_NORMAL
+       + eg_value(score) * int(PHASE_MIDGAME - me->game_phase()) * sfEg / SCALE_FACTOR_NORMAL;
 
     v /= PHASE_MIDGAME;
 

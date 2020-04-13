@@ -58,8 +58,9 @@ using namespace Search;
 
 namespace {
 
-int R1=80, R2=150, M=101, F=30;
-TUNE(R1, R2, M, F);
+int R1=76, R2=146, M= 99, F=32;
+TUNE(R2, M);
+TUNE(SetRange(-40,200), R1, SetRange(-15,75), F);
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV };

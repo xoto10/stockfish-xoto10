@@ -30,8 +30,8 @@
 
 ThreadPool Threads; // Global object
 
-int PTR=127;
-TUNE(SetRange(60, 190), PTR);
+int PTR=108;
+TUNE(SetRange(68, 198), PTR);
 
 /// Thread constructor launches the thread and waits until it goes to sleep
 /// in idle_loop(). Note that 'searching' and 'exit' should be already set.

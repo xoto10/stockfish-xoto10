@@ -20,13 +20,11 @@
 
 #include <algorithm>
 #include <cassert>
-#include <iostream>
 
 #include "bitboard.h"
 #include "pawns.h"
 #include "position.h"
 #include "thread.h"
-#include "uci.h"
 
 namespace {
 
@@ -152,12 +150,16 @@ namespace {
 
         else if (backward)
         {
-            bool adjacentOpen =   (FilesB_G & s)
-                               && (   !(shift<EAST>(file_bb(s)) & pos.pieces(PAWN))
-                                   || !(shift<WEST>(file_bb(s)) & pos.pieces(PAWN)));
-                                    
-            score -=   Backward
-                     + WeakUnopposed * (adjacentOpen || !opposed);
+            if (opposed)
+            {
+                bool adjacentOpen =   (FilesB_G & s)
+                                   && (   !(shift<EAST>(file_bb(s)) & pos.pieces(PAWN))
+                                       || !(shift<WEST>(file_bb(s)) & pos.pieces(PAWN)));
+
+                score -= Backward * (1 + adjacentOpen);
+            }
+            else
+                score -= Backward + WeakUnopposed;
         }
 
         if (!support)

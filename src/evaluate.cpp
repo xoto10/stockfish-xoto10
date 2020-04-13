@@ -316,8 +316,21 @@ namespace {
                         * (2 + pos.pawns_on_same_color_squares(Us, s))
                         * (2 + pos.pawns_on_same_color_squares(Us, s))
                         * (!(attackedBy[Us][PAWN] & s) + popcount(blocked & CenterFiles))
-                        / 8;
-
+                        / 9;
+//dbg_mean_of( 100*3
+//                        * (pos.pawns_on_same_color_squares(Us, s))
+//                        * (!(attackedBy[Us][PAWN] & s) + popcount(blocked & CenterFiles))
+//                        ); //1532
+//dbg_mean_of( 100*3
+//                        * (2 + pos.pawns_on_same_color_squares(Us, s))
+//                        * (2 + pos.pawns_on_same_color_squares(Us, s))
+//                        * (!(attackedBy[Us][PAWN] & s) + popcount(blocked & CenterFiles))
+//                        / 8); // 1692
+//dbg_mean_of( 100*3
+//                        * (2 + pos.pawns_on_same_color_squares(Us, s))
+//                        * (2 + pos.pawns_on_same_color_squares(Us, s))
+//                        * (!(attackedBy[Us][PAWN] & s) + popcount(blocked & CenterFiles))
+//                        / 9); // 1504
                 // Bonus for bishop on a long diagonal which can "see" both center squares
                 if (more_than_one(attacks_bb<BISHOP>(s, pos.pieces(PAWN)) & Center))
                     score += LongDiagonalBishop;

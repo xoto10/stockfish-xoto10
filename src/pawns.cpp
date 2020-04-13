@@ -148,8 +148,12 @@ namespace {
                      + WeakUnopposed * !opposed;
 
         else if (backward)
-            score -=   Backward
+        {
+            bool adjacentOpen =   !(shift<EAST>(file_bb(s)) & pos.pieces(PAWN))
+                               || !(shift<WEST>(file_bb(s)) & pos.pieces(PAWN));
+            score -=   Backward * (1 + adjacentOpen)
                      + WeakUnopposed * !opposed;
+        }
 
         if (!support)
             score -=   Doubled * doubled

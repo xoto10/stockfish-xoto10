@@ -356,7 +356,7 @@ namespace {
                     bool blocked = more_than_one(  pos.pieces(Us, PAWN)
                                                  & shift<Down>(pos.pieces(Them, PAWN))
                                                  & (FileDBB | FileEBB));
-                    score -= TrappedRook * (1 + !pos.castling_rights(Us) + blocked);
+                    score -= TrappedRook * (1 + !pos.castling_rights(Us) + more_than_one(blocked));
                 }
             }
         }

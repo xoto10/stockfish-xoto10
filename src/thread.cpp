@@ -30,6 +30,8 @@
 
 ThreadPool Threads; // Global object
 
+int PTR=127;
+TUNE(SetRange(60, 190), PTR);
 
 /// Thread constructor launches the thread and waits until it goes to sleep
 /// in idle_loop(). Note that 'searching' and 'exit' should be already set.
@@ -167,7 +169,7 @@ void ThreadPool::clear() {
 
   main()->callsCnt = 0;
   main()->bestPreviousScore = VALUE_INFINITE;
-  main()->previousTimeReduction = 1.0;
+  main()->previousTimeReduction = PTR / 100;
 }
 
 /// ThreadPool::start_thinking() wakes up main thread waiting in idle_loop() and

@@ -20,11 +20,13 @@
 
 #include <algorithm>
 #include <cassert>
+#include <iostream>
 
 #include "bitboard.h"
 #include "pawns.h"
 #include "position.h"
 #include "thread.h"
+#include "uci.h"
 
 namespace {
 
@@ -70,6 +72,7 @@ namespace {
 
     constexpr Color     Them = ~Us;
     constexpr Direction Up   = pawn_push(Us);
+    constexpr Bitboard  FilesB_G = AllSquares ^ FileABB ^ FileHBB;
 
     Bitboard neighbours, stoppers, support, phalanx, opposed;
     Bitboard lever, leverPush, blocked;
@@ -149,8 +152,10 @@ namespace {
 
         else if (backward)
         {
-            bool adjacentOpen =   !(shift<EAST>(file_bb(s)) & pos.pieces(PAWN))
-                               || !(shift<WEST>(file_bb(s)) & pos.pieces(PAWN));
+            bool adjacentOpen =   (FilesB_G & s)
+                               && (   !(shift<EAST>(file_bb(s)) & pos.pieces(PAWN))
+                                   || !(shift<WEST>(file_bb(s)) & pos.pieces(PAWN)));
+                                    
             score -=   Backward * (1 + adjacentOpen)
                      + WeakUnopposed * !opposed;
         }

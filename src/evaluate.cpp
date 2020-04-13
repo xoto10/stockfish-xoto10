@@ -257,8 +257,6 @@ namespace {
 
     constexpr Color     Them = ~Us;
     constexpr Direction Down = -pawn_push(Us);
-    constexpr Bitboard  Near = (Us == WHITE ? Rank1BB | Rank2BB | Rank3BB
-                                            : Rank6BB | Rank7BB | Rank8BB);
     constexpr Bitboard OutpostRanks = (Us == WHITE ? Rank4BB | Rank5BB | Rank6BB
                                                    : Rank5BB | Rank4BB | Rank3BB);
     const Square* pl = pos.squares<Pt>(Us);
@@ -355,10 +353,9 @@ namespace {
                 File kf = file_of(pos.square<KING>(Us));
                 if ((kf < FILE_E) == (file_of(s) < kf))
                 {
-                    bool blocked =  pos.pieces(Us, PAWN)
-                                  & shift<Down>(pos.pieces(Them, PAWN))
-                                  & KingFlank[file_of(s)]
-                                  & Near;
+                    bool blocked = more_than_one(  pos.pieces(Us, PAWN)
+                                                 & shift<Down>(pos.pieces(Them, PAWN))
+                                                 & (FileDBB | FileEBB));
                     score -= TrappedRook * (1 + !pos.castling_rights(Us) + blocked);
                 }
             }

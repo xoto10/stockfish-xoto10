@@ -718,7 +718,7 @@ namespace {
     bool pawnsOnBothFlanks =   (pos.pieces(PAWN) & QueenSide)
                             && (pos.pieces(PAWN) & KingSide);
 
-    bool almostUnwinnable =   outflanking < 2
+    bool almostUnwinnable =   outflanking < -1
                            && !pawnsOnBothFlanks;
 
     bool infiltration = rank_of(pos.square<KING>(WHITE)) > RANK_4

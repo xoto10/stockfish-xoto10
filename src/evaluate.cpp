@@ -444,6 +444,17 @@ namespace {
     int kingFlankAttack = popcount(b1) + popcount(b2);
     int kingFlankDefense = popcount(b3);
 
+    // Is long diagonal open
+    int longDiagonal = 0;
+    if (edge_distance(file_of(ksq)) < 3)
+    {
+        Bitboard sqs = abs(rank_of(ksq) - file_of(ksq)) < 3 ? DarkSquares : ~DarkSquares;
+        if ( !(sqs & Center & pos.pieces(PAWN)) )
+            longDiagonal =  20
+                          + 30 * bool(pos.pieces(Them, BISHOP) & sqs)
+                          + 40 * !(pos.pieces(Us, BISHOP) & sqs);
+    }
+
     kingDanger +=        kingAttackersCount[Them] * kingAttackersWeight[Them]
                  + 185 * popcount(kingRing[Us] & weak)
                  + 148 * popcount(unsafeChecks)
@@ -451,6 +462,7 @@ namespace {
                  +  69 * kingAttacksCount[Them]
                  +   3 * kingFlankAttack * kingFlankAttack / 8
                  +       mg_value(mobility[Them] - mobility[Us])
+                 +       longDiagonal
                  - 873 * !pos.count<QUEEN>(Them)
                  - 100 * bool(attackedBy[Us][KNIGHT] & attackedBy[Us][KING])
                  -   6 * mg_value(score) / 8

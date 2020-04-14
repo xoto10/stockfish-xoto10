@@ -38,6 +38,7 @@ namespace {
   constexpr Score Isolated      = S( 5, 15);
   constexpr Score WeakLever     = S( 0, 56);
   constexpr Score WeakUnopposed = S(13, 27);
+  constexpr Score WeakUnopposed2 = S(17, 31);
 
   // Connected pawn bonus
   constexpr int Connected[RANK_NB] = { 0, 7, 8, 12, 29, 48, 86 };
@@ -150,16 +151,12 @@ namespace {
 
         else if (backward)
         {
-            if (opposed)
-            {
-                bool adjacentOpen =   (FilesB_G & s)
-                                   && (   !(shift<EAST>(file_bb(s)) & pos.pieces(PAWN))
-                                       || !(shift<WEST>(file_bb(s)) & pos.pieces(PAWN)));
+            bool adjacentOpen =   (FilesB_G & s)
+                               && (   !(shift<EAST>(file_bb(s)) & pos.pieces(PAWN))
+                                   || !(shift<WEST>(file_bb(s)) & pos.pieces(PAWN)));
 
-                score -= Backward * (1 + adjacentOpen);
-            }
-            else
-                score -= Backward + WeakUnopposed;
+            score -=   Backward
+                     + WeakUnopposed2 * (adjacentOpen || !opposed);
         }
 
         if (!support)

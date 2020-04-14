@@ -408,7 +408,8 @@ void Thread::search() {
       // Save the last iteration's scores before first PV line is searched and
       // all the move scores except the (new) PV are set to -VALUE_INFINITE.
       for (RootMove& rm : rootMoves)
-          rm.previousScore = rm.score;
+          if (abs(rm.score) > 1 || rm.previousScore == -VALUE_INFINITE)
+              rm.previousScore = rm.score;
 
       size_t pvFirst = 0;
       pvLast = 0;
@@ -1270,7 +1271,7 @@ moves_loop: // When in check, search starts from here
 
       // Penalise moves stopping 50mr if drawing / losing
       if (   pos.rule50_count() >= 80
-          && bestValue < Value(2)
+          && thisThread->rootMoves[thisThread->pvIdx].previousScore < VALUE_ZERO
           && (captureOrPromotion || type_of(movedPiece) == PAWN))
           thisThread->mainHistory[us][from_to(move)] << -3000;
 

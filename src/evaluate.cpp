@@ -375,6 +375,7 @@ namespace {
     constexpr Color    Them = ~Us;
     constexpr Bitboard Camp = (Us == WHITE ? AllSquares ^ Rank6BB ^ Rank7BB ^ Rank8BB
                                            : AllSquares ^ Rank1BB ^ Rank2BB ^ Rank3BB);
+    constexpr Bitboard OuterFiles = FileABB | FileBBB | FileCBB | FileFBB | FileGBB | FileHBB;
 
     Bitboard weak, b1, b2, b3, safe, unsafeChecks = 0;
     Bitboard rookChecks, queenChecks, bishopChecks, knightChecks;
@@ -446,13 +447,14 @@ namespace {
 
     // Is long diagonal open
     int longDiagonal = 0;
-    if (edge_distance(file_of(ksq)) < 3)
+    if (OuterFiles & ksq) //) && pos.non_pawn_material() > 12000 )
     {
         Bitboard sqs = abs(rank_of(ksq) - file_of(ksq)) < 3 ? DarkSquares : ~DarkSquares;
         if ( !(sqs & Center & pos.pieces(PAWN)) )
-            longDiagonal =  20
-                          + 30 * bool(pos.pieces(Them, BISHOP) & sqs)
-                          + 40 * !(pos.pieces(Us, BISHOP) & sqs);
+            longDiagonal = (pos.pieces(Them, BISHOP) & sqs)
+                           ? (pos.pieces(Us, BISHOP) & sqs) ? 50
+                                                            : 90
+                           : 10;
     }
 
     kingDanger +=        kingAttackersCount[Them] * kingAttackersWeight[Them]

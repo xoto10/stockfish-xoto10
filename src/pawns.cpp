@@ -202,9 +202,9 @@ Score Entry::evaluate_shelter(const Position& pos, Square ksq) {
 
   Score bonus = make_score(5, 5);
 
-  bool storming = popcount(  pos.pieces(Them, PAWN)
-                           & OurHalf
-                           & (file_of(ksq) > FILE_D ? KingSide : QueenSide)) > 1;
+  bool storming = more_than_one(  pos.pieces(Them, PAWN)
+                                & OurHalf
+                                & (file_of(ksq) > FILE_D ? KingSide : QueenSide));
   File center = Utility::clamp(file_of(ksq), FILE_B, FILE_G);
   for (File f = File(center - 1); f <= File(center + 1); ++f)
   {

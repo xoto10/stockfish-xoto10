@@ -88,8 +88,16 @@ namespace {
   }
 
   // Add a small random component to draw evaluations to avoid 3fold-blindness
-  Value value_draw(Thread* thisThread) {
+  Value value_drawx(Thread* thisThread) {
     return VALUE_DRAW + Value(2 * (thisThread->nodes & 1) - 1);
+  }
+  Value value_draw(Value v) {
+    return v / 2;
+  }
+  Value value_draw(Value a, Value b) {
+    return a > 0 ? a / 2
+                     : b < 0 ? b / 2
+                                : (a + b) / 2;
   }
 
   // Skill structure is used to implement strength limit
@@ -605,9 +613,10 @@ namespace {
         && !rootNode
         && pos.has_game_cycle(ss->ply))
     {
-        alpha = value_draw(pos.this_thread());
+        alpha = value_drawx(pos.this_thread());
         if (alpha >= beta)
-            return alpha;
+            return value_draw(beta);
+//          return value_draw(pos.this_thread());
     }
 
     // Dive into quiescence search when the depth reaches zero
@@ -655,7 +664,8 @@ namespace {
             || pos.is_draw(ss->ply)
             || ss->ply >= MAX_PLY)
             return (ss->ply >= MAX_PLY && !inCheck) ? evaluate(pos)
-                                                    : value_draw(pos.this_thread());
+                                                    : value_draw(alpha, beta);
+//                                                  : value_draw(pos.this_thread());
 
         // Step 3. Mate distance pruning. Even if we mate at the next move our score
         // would be at best mate_in(ss->ply+1), but if alpha is already bigger because
@@ -807,7 +817,7 @@ namespace {
             ss->staticEval = eval = evaluate(pos);
 
         if (eval == VALUE_DRAW)
-            eval = value_draw(thisThread);
+            eval = value_draw(alpha, beta);
 
         // Can ttValue be used as a better position evaluation?
         if (    ttValue != VALUE_NONE

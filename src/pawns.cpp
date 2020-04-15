@@ -35,6 +35,7 @@ namespace {
   constexpr Score Backward      = S( 9, 24);
   constexpr Score BlockedStorm  = S(82, 82);
   constexpr Score Doubled       = S(11, 56);
+  constexpr Score Storm         = S(20, 20);
   constexpr Score Isolated      = S( 5, 15);
   constexpr Score WeakLever     = S( 0, 56);
   constexpr Score WeakUnopposed = S(13, 27);
@@ -192,6 +193,8 @@ template<Color Us>
 Score Entry::evaluate_shelter(const Position& pos, Square ksq) {
 
   constexpr Color Them = ~Us;
+  constexpr Bitboard OurHalf = Us == WHITE ? Rank1BB | Rank2BB | Rank3BB | Rank4BB
+                                           : Rank5BB | Rank6BB | Rank7BB | Rank8BB;
 
   Bitboard b = pos.pieces(PAWN) & ~forward_ranks_bb(Them, ksq);
   Bitboard ourPawns = b & pos.pieces(Us);
@@ -199,6 +202,9 @@ Score Entry::evaluate_shelter(const Position& pos, Square ksq) {
 
   Score bonus = make_score(5, 5);
 
+  bool storming = popcount(  pos.pieces(Them, PAWN)
+                           & OurHalf
+                           & (file_of(ksq) > FILE_D ? KingSide : QueenSide)) > 1;
   File center = Utility::clamp(file_of(ksq), FILE_B, FILE_G);
   for (File f = File(center - 1); f <= File(center + 1); ++f)
   {
@@ -212,9 +218,11 @@ Score Entry::evaluate_shelter(const Position& pos, Square ksq) {
       bonus += make_score(ShelterStrength[d][ourRank], 0);
 
       if (ourRank && (ourRank == theirRank - 1))
-          bonus -= BlockedStorm * int(theirRank == RANK_3);
+          bonus -=  BlockedStorm * int(theirRank == RANK_3)
+                  + Storm * (storming && theirRank <= RANK_5);
       else
-          bonus -= make_score(UnblockedStorm[d][theirRank], 0);
+          bonus -=  make_score(UnblockedStorm[d][theirRank], 0)
+                  + Storm * (storming && theirRank <= RANK_5);
   }
 
   return bonus;

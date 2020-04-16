@@ -768,7 +768,7 @@ namespace {
                 sf = 22;
             else
 //              sf = 36 + 2 * pos.count<PAWN>(strongSide); 57.3
-                sf = 32 + pos.count<ALL_PIECES>(strongSide) + pos.count<PAWN>(strongSide);
+                sf = 31 + 2 * pos.count<ALL_PIECES>(strongSide);
         }
         else
             sf = std::min(sf, 36 + 7 * pos.count<PAWN>(strongSide));

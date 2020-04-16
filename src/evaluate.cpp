@@ -762,7 +762,7 @@ namespace {
     if (sf == SCALE_FACTOR_NORMAL)
     {
         if (pos.opposite_bishops())
-            sf = 6 + 3 * pos.count<ALL_PIECES>(strongSide);
+            sf = 14 + 3 * pos.count<ALL_PIECES>(strongSide);
         else
             sf = std::min(sf, 36 + 7 * pos.count<PAWN>(strongSide));
 

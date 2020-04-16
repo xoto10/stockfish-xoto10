@@ -763,10 +763,11 @@ namespace {
     {
         if (pos.opposite_bishops())
         {
-//              sf = (  (7 - np) * 22
-//                    + (np - 2) * (22 + 3 * pos.count<ALL_PIECES>(strongSide))) / 5;
-            int np = pos.count<ALL_PIECES>(strongSide) - pos.count<PAWN>(strongSide);
-            sf = (110 + (np - 2) * 3 * pos.count<ALL_PIECES>(strongSide)) / 5 ;
+            if (   pos.non_pawn_material(WHITE) == BishopValueMg
+                && pos.non_pawn_material(BLACK) == BishopValueMg)
+                sf = 22;
+            else
+                sf = 18 + 3 * pos.count<ALL_PIECES>(strongSide);
         }
         else
             sf = std::min(sf, 36 + 7 * pos.count<PAWN>(strongSide));

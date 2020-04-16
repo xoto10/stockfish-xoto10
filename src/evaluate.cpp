@@ -767,11 +767,11 @@ namespace {
                 && pos.non_pawn_material(BLACK) == BishopValueMg)
                 sf = 22;
             else
-                sf = 30 + 3 * (pos.count<KNIGHT>(strongSide) + pos.count<BISHOP>(strongSide));
+                sf = 33 + 4 * (pos.count<KNIGHT>(strongSide) + pos.count<BISHOP>(strongSide));
         }
         else
             sf = std::min(sf, 36 + 7 * pos.count<PAWN>(strongSide));
-
+dbg_mean_of(sf);
         sf = std::max(0, sf - (pos.rule50_count() - 12) / 4);
     }
 

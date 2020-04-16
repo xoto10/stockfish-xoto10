@@ -92,12 +92,12 @@ namespace {
     return VALUE_DRAW + Value(2 * (thisThread->nodes & 1) - 1);
   }
   Value value_draw(Value v) {
-    return v / 2;
+    return v / 4;
   }
   Value value_draw(Value a, Value b) {
-    return a > 0 ? a / 2
-                     : b < 0 ? b / 2
-                                : (a + b) / 2;
+    return a > 0 ? a / 4
+                     : b < 0 ? b / 4
+                                : (a + b) / 4;
   }
 
   // Skill structure is used to implement strength limit

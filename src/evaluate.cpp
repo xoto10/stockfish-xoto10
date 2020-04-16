@@ -469,6 +469,11 @@ namespace {
     // Penalty if king flank is under attack, potentially moving toward the king
     score -= FlankAttacks * kingFlankAttack;
 
+    // Penalty for our undefended pieces
+    b1 =  ~attackedBy[Us][ALL_PIECES]
+        &  pos.pieces(Us);
+    score -= UndefendedPiece * popcount(b1);
+
     if (T)
         Trace::add(KING, Us, score);
 
@@ -523,11 +528,6 @@ namespace {
         // Additional bonus if weak piece is only protected by a queen
         score += WeakQueenProtection * popcount(weak & attackedBy[Them][QUEEN]);
     }
-
-    // Bonus for their undefended pieces
-    b =  ~attackedBy[Them][ALL_PIECES]
-       &  pos.pieces(Them);
-    score += UndefendedPiece * popcount(b);
 
     // Bonus for restricting their piece moves
     b =   attackedBy[Them][ALL_PIECES]

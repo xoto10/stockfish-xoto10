@@ -769,10 +769,11 @@ namespace {
             else
                 sf = 22 + 3 * pos.count<ALL_PIECES>(strongSide);
         }
+        else if (   pos.non_pawn_material(WHITE) == pos.non_pawn_material(BLACK)
+                 && pe->symmetrical)
+            sf = 48 + pos.count<ALL_PIECES>(strongSide);
         else
-            sf =  std::min(sf, 36 + 7 * pos.count<PAWN>(strongSide))
-                - 12 * (   pos.non_pawn_material(WHITE) == pos.non_pawn_material(BLACK)
-                       && pe->symmetrical);
+            sf =  std::min(sf, 36 + 7 * pos.count<PAWN>(strongSide));
 
         sf = std::max(0, sf - (pos.rule50_count() - 12) / 4);
     }

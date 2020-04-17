@@ -772,7 +772,7 @@ namespace {
         else
         {
             sf =  std::min(sf, 36 + 7 * pos.count<PAWN>(strongSide))
-                - 5 * (   pos.non_pawn_material(WHITE) == pos.non_pawn_material(BLACK)
+                - 2 * (   pos.non_pawn_material(WHITE) == pos.non_pawn_material(BLACK)
                        && pe->passed_count() == 0);
         }
 

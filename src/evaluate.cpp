@@ -766,9 +766,10 @@ namespace {
             if (   pos.non_pawn_material(WHITE) == BishopValueMg
                 && pos.non_pawn_material(BLACK) == BishopValueMg)
                 sf = 22;
+            else if (pos.count<ROOK>(strongSide) == 2)
+                sf = SCALE_FACTOR_NORMAL;
             else
-                sf = 22 + 3 * pos.count<ALL_PIECES>(strongSide)
-                        + 2 * bool(pos.pieces(strongSide, ROOK, QUEEN));
+                sf = 22 + 3 * pos.count<ALL_PIECES>(strongSide);
         }
         else
             sf = std::min(sf, 36 + 7 * pos.count<PAWN>(strongSide));

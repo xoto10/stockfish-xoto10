@@ -770,7 +770,7 @@ namespace {
                 sf = 22 + 3 * pos.count<ALL_PIECES>(strongSide);
         }
         else if (pe->symmetrical)
-            sf = 56;
+            sf = 48;
         else
             sf =  std::min(sf, 36 + 7 * pos.count<PAWN>(strongSide));
 

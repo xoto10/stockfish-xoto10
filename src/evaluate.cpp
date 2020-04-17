@@ -769,7 +769,9 @@ namespace {
             else if (pos.count<ROOK>(strongSide) > 1 && pos.count<QUEEN>(strongSide) > 0)
                 sf = 68;
             else
-                sf = 22 + 3 * (pos.count<ALL_PIECES>(strongSide) + pos.count<QUEEN>(strongSide));
+                sf = 22 + 3 * (  pos.count<ALL_PIECES>(strongSide)
+                               + pos.count<QUEEN>(strongSide)
+                               + pos.count<ROOK>(strongSide));
         }
         else
             sf = std::min(sf, 36 + 7 * pos.count<PAWN>(strongSide));

@@ -23,14 +23,12 @@
 #include <cstring>   // For std::memset
 #include <iomanip>
 #include <sstream>
-#include <iostream>
 
 #include "bitboard.h"
 #include "evaluate.h"
 #include "material.h"
 #include "pawns.h"
 #include "thread.h"
-#include "uci.h"
 
 namespace Trace {
 
@@ -334,17 +332,7 @@ namespace {
                     int n = 0;
                     while (b)
                         if (attacks_bb<BISHOP>(atksq = pop_lsb(&b), pos.pieces(PAWN)) & OurRanks123)
-    {
                             score += AttackingBishop * (++n > 1) * (1 + !(pos.pieces(Them, BISHOP) & bb));
-    sync_cout << "info string bish: us " << Us
-              << " pos\n" << pos
-              << " bb\n" << Bitboards::pretty(attacks_bb<BISHOP>(atksq, pos.pieces(PAWN)))
-              << " sq " << UCI::square(s)
-              << " atksq " << UCI::square(atksq)
-              << " theirbish " << bool(pos.pieces(Them, BISHOP) & bb)
-              << " sc* " << (n > 1) * (1 + !(pos.pieces(Them, BISHOP) & bb))
-              << sync_endl;
-    }
                 }
 
                 // An important Chess960 pattern: a cornered bishop blocked by a friendly

@@ -107,6 +107,7 @@ namespace {
         support    = neighbours & rank_bb(s - Up);
 
         e->blockedCount[Us] += blocked || more_than_one(leverPush);
+        e->symmetrical = e->symmetrical && opposed;
 
         // A pawn is backward when it is behind all pawns of the same color on
         // the adjacent files and cannot safely advance.
@@ -178,6 +179,7 @@ Entry* probe(const Position& pos) {
       return e;
 
   e->key = key;
+  e->symmetrical = true;
   e->scores[WHITE] = evaluate<WHITE>(pos, e);
   e->scores[BLACK] = evaluate<BLACK>(pos, e);
 

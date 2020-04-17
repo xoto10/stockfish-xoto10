@@ -127,6 +127,7 @@ namespace {
   };
 
   // Assorted bonuses and penalties
+  constexpr Score AttackingBishop     = S( 20, 20);
   constexpr Score BishopPawns         = S(  3,  7);
   constexpr Score CorneredBishop      = S( 50, 50);
   constexpr Score FlankAttacks        = S(  8,  0);
@@ -256,6 +257,8 @@ namespace {
     constexpr Direction Down = -pawn_push(Us);
     constexpr Bitboard OutpostRanks = (Us == WHITE ? Rank4BB | Rank5BB | Rank6BB
                                                    : Rank5BB | Rank4BB | Rank3BB);
+    constexpr Bitboard OurHalf = (Us == WHITE ? Rank5BB | Rank6BB | Rank7BB | Rank8BB
+                                              : Rank1BB | Rank2BB | Rank3BB | Rank4BB);
     const Square* pl = pos.squares<Pt>(Us);
 
     Bitboard b, bb;
@@ -318,6 +321,13 @@ namespace {
                 // Bonus for bishop on a long diagonal which can "see" both center squares
                 if (more_than_one(attacks_bb<BISHOP>(s, pos.pieces(PAWN)) & Center))
                     score += LongDiagonalBishop;
+
+                // Bonus for kingring squares possibly accessible
+                bb = s & DarkSquares ? DarkSquares : ~DarkSquares;
+                b = kingRing[Them] & ~pos.pieces() & bb;
+                while (b)
+                    if (pos.attacks_from<BISHOP>(pop_lsb(&b)) & OurHalf)
+                        score += AttackingBishop * (1 + !(pos.pieces(Them, BISHOP) & bb));
 
                 // An important Chess960 pattern: a cornered bishop blocked by a friendly
                 // pawn diagonally in front of it is a very serious problem, especially

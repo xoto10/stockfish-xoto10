@@ -771,7 +771,7 @@ namespace {
         }
         else if (   pos.non_pawn_material(WHITE) == pos.non_pawn_material(BLACK)
                  && pe->symmetrical)
-            sf = 48 + pos.count<ALL_PIECES>(strongSide);
+            sf = 48 + 2 * pos.count<PAWN>(strongSide);
         else
             sf =  std::min(sf, 36 + 7 * pos.count<PAWN>(strongSide));
 

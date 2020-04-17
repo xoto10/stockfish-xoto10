@@ -615,7 +615,12 @@ namespace {
     {
         alpha = value_drawx(pos.this_thread());
         if (alpha >= beta)
-            return value_draw(beta);
+        {
+    Value   ret = value_draw(beta);
+if (PvNode && ss->ply > 8)
+  sync_cout << "info string sret1 a " << alpha << " b " << beta << " ret " << ret << sync_endl;
+            return ret;
+        }
 //          return value_draw(pos.this_thread());
     }
 
@@ -663,8 +668,13 @@ namespace {
         if (   Threads.stop.load(std::memory_order_relaxed)
             || pos.is_draw(ss->ply)
             || ss->ply >= MAX_PLY)
-            return (ss->ply >= MAX_PLY && !inCheck) ? evaluate(pos)
+{
+     Value  ret =  (ss->ply >= MAX_PLY && !inCheck) ? evaluate(pos)
                                                     : value_draw(alpha, beta);
+if (PvNode && ss->ply > 8)
+  sync_cout << "info string sret2 a " << alpha << " b " << beta << " ret " << ret << sync_endl;
+            return ret;
+}
 //                                                  : value_draw(pos.this_thread());
 
         // Step 3. Mate distance pruning. Even if we mate at the next move our score
@@ -745,7 +755,11 @@ namespace {
         }
 
         if (pos.rule50_count() < 90)
+{
+if (PvNode && ss->ply > 8)
+  sync_cout << "info string sret3 a " << alpha << " b " << beta << " ret " << ttValue << sync_endl;
             return ttValue;
+}
     }
 
     // Step 5. Tablebases probe
@@ -886,7 +900,11 @@ namespace {
                 nullValue = beta;
 
             if (thisThread->nmpMinPly || (abs(beta) < VALUE_KNOWN_WIN && depth < 13))
+{
+if (PvNode && ss->ply > 8)
+  sync_cout << "info string sret4 a " << alpha << " b " << beta << " ret " << nullValue << sync_endl;
                 return nullValue;
+}
 
             assert(!thisThread->nmpMinPly); // Recursive verification is not allowed
 
@@ -900,7 +918,11 @@ namespace {
             thisThread->nmpMinPly = 0;
 
             if (v >= beta)
+{
+if (PvNode && ss->ply > 8)
+  sync_cout << "info string sret5 a " << alpha << " b " << beta << " ret " << nullValue << sync_endl;
                 return nullValue;
+}
         }
     }
 
@@ -947,7 +969,11 @@ namespace {
                 pos.undo_move(move);
 
                 if (value >= raisedBeta)
-                    return value;
+{
+if (PvNode && ss->ply > 8)
+  sync_cout << "info string sret6 a " << alpha << " b " << beta << " ret " << value << sync_endl;
+            return value;
+}
             }
     }
 
@@ -1003,10 +1029,11 @@ moves_loop: // When in check, search starts from here
 
       ss->moveCount = ++moveCount;
 
-      if (rootNode && thisThread == Threads.main() && Time.elapsed() > 3000)
+      if (   (rootNode && thisThread == Threads.main() && Time.elapsed() > 3000)
+          || ss->ply == 7)
           sync_cout << "info depth " << depth
                     << " currmove " << UCI::move(move, pos.is_chess960())
-                    << " currmovenumber " << moveCount + thisThread->pvIdx << sync_endl;
+                    << " currmovenumber " << moveCount + thisThread->pvIdx << " ply " << ss->ply << sync_endl;
       if (PvNode)
           (ss+1)->pv = nullptr;
 
@@ -1100,7 +1127,11 @@ moves_loop: // When in check, search starts from here
           // that multiple moves fail high, and we can prune the whole subtree by returning
           // a soft bound.
           else if (singularBeta >= beta)
+{
+if (PvNode && ss->ply > 8)
+  sync_cout << "info string sret9 a " << alpha << " b " << beta << " ret " << singularBeta << sync_endl;
               return singularBeta;
+}
 
           // If the eval of ttMove is greater than beta we try also if there is an other move that
           // pushes it over beta, if so also produce a cutoff
@@ -1298,7 +1329,19 @@ moves_loop: // When in check, search starts from here
       // the search cannot be trusted, and we return immediately without
       // updating best move, PV and TT.
       if (Threads.stop.load(std::memory_order_relaxed))
+{
+if (PvNode && ss->ply > 8)
+  sync_cout << "info string sret7 a " << alpha << " b " << beta << " ret " << VALUE_ZERO << sync_endl;
           return VALUE_ZERO;
+}
+
+// 5r1k/5p2/4p3/1p1pPP1P/p1qN4/P1P5/1P1Q1K2/8 b - - 0 56 
+if (PvNode && ss->ply == 7)
+  sync_cout << "info string srch d " << depth << " ply " << ss->ply << " a " << alpha << " b " << beta
+            << " mv " << UCI::move(move,false)
+            << " value " << value << sync_endl;
+if (PvNode && ss->ply == 7 && value == 1)
+  sync_cout << "info string srch2 bv " << bestValue << " pos\n" << pos << sync_endl;
 
       if (rootNode)
       {
@@ -1401,6 +1444,10 @@ moves_loop: // When in check, search starts from here
 
     assert(bestValue > -VALUE_INFINITE && bestValue < VALUE_INFINITE);
 
+if (PvNode && ss->ply > 6)
+  sync_cout << "info string sret8 d " << depth << " ply " << ss->ply << " a " << alpha << " b " << beta
+            << " ret " << bestValue << sync_endl;
+
     return bestValue;
   }
 
@@ -1442,7 +1489,13 @@ moves_loop: // When in check, search starts from here
     // Check for an immediate draw or maximum ply reached
     if (   pos.is_draw(ss->ply)
         || ss->ply >= MAX_PLY)
-        return (ss->ply >= MAX_PLY && !inCheck) ? evaluate(pos) : value_draw(alpha, beta);
+    {
+        Value ret =
+               (ss->ply >= MAX_PLY && !inCheck) ? evaluate(pos) : value_draw(alpha, beta);
+if (PvNode && ss->ply > 9)
+  sync_cout << "info string qsret1 a " << alpha << " b " << beta << " ret " << ret << sync_endl;
+        return ret;
+    }
 
     assert(0 <= ss->ply && ss->ply < MAX_PLY);
 
@@ -1464,7 +1517,11 @@ moves_loop: // When in check, search starts from here
         && ttValue != VALUE_NONE // Only in case of TT access race
         && (ttValue >= beta ? (tte->bound() & BOUND_LOWER)
                             : (tte->bound() & BOUND_UPPER)))
+{
+if (PvNode && ss->ply > 9)
+  sync_cout << "info string qsret2 a " << alpha << " b " << beta << " ret " << ttValue << sync_endl;
         return ttValue;
+}
 
     // Evaluate the position statically
     if (inCheck)
@@ -1610,6 +1667,9 @@ moves_loop: // When in check, search starts from here
               ttDepth, bestMove, ss->staticEval);
 
     assert(bestValue > -VALUE_INFINITE && bestValue < VALUE_INFINITE);
+if (PvNode && ss->ply > 9)
+  sync_cout << "info string qsret3 ply " << ss->ply << " a " << alpha << " b " << beta
+            << " ret " << bestValue << sync_endl;
 
     return bestValue;
   }

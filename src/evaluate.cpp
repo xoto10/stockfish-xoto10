@@ -165,7 +165,7 @@ namespace {
     template<Color Us, PieceType Pt> Score pieces();
     template<Color Us> Score king() const;
     template<Color Us> Score threats() const;
-    template<Color Us> Score passed() const;
+    template<Color Us> Score passed();
     template<Color Us> Score space() const;
     ScaleFactor scale_factor(Value eg) const;
     Score initiative(Score score) const;
@@ -205,6 +205,8 @@ namespace {
     // a white knight on g5 and black's king is on g8, this white knight adds 2
     // to kingAttacksCount[WHITE].
     int kingAttacksCount[COLOR_NB];
+
+    Bitboard passers[COLOR_NB];
   };
 
 
@@ -574,7 +576,7 @@ namespace {
   // pawns of the given color.
 
   template<Tracing T> template<Color Us>
-  Score Evaluation<T>::passed() const {
+  Score Evaluation<T>::passed() {
 
     constexpr Color     Them = ~Us;
     constexpr Direction Up   = pawn_push(Us);
@@ -604,6 +606,8 @@ namespace {
             | shift<WEST>(leverable)
             | shift<EAST>(leverable);
     }
+
+    passers[Us] = b;
 
     while (b)
     {
@@ -756,6 +760,8 @@ namespace {
   ScaleFactor Evaluation<T>::scale_factor(Value eg) const {
 
     Color strongSide = eg > VALUE_DRAW ? WHITE : BLACK;
+    Bitboard Far3 = strongSide == WHITE ? Rank6BB | Rank7BB | Rank8BB
+                                        : Rank1BB | Rank2BB | Rank3BB;
     int sf = me->scale_factor(pos, strongSide);
 
     // If scale is not already specific, scale down the endgame via general heuristics
@@ -763,8 +769,10 @@ namespace {
     {
         if (pos.opposite_bishops())
         {
-            if (   pos.non_pawn_material(WHITE) == BishopValueMg
-                && pos.non_pawn_material(BLACK) == BishopValueMg)
+            if (more_than_one(passers[strongSide] & Far3))
+                sf = 64;
+            else if (   pos.non_pawn_material(WHITE) == BishopValueMg
+                     && pos.non_pawn_material(BLACK) == BishopValueMg)
                 sf = 22;
             else
                 sf = 22 + 3 * pos.count<ALL_PIECES>(strongSide);

@@ -767,7 +767,7 @@ namespace {
                 && pos.non_pawn_material(BLACK) == BishopValueMg)
                 sf = 22;
             else if (pos.count<ROOK>(strongSide) > 1 && pos.count<QUEEN>(strongSide) > 0)
-                sf = 68;
+                sf = 72;
             else
                 sf = 22 + 3 * pos.count<ALL_PIECES>(strongSide);
         }

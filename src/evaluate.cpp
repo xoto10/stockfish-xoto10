@@ -715,14 +715,17 @@ namespace {
     int outflanking =  distance<File>(pos.square<KING>(WHITE), pos.square<KING>(BLACK))
                      - distance<Rank>(pos.square<KING>(WHITE), pos.square<KING>(BLACK));
 
-    bool pawnsOnBothFlanks =   (pos.pieces(PAWN) & QueenSide)
-                            && (pos.pieces(PAWN) & KingSide);
+    bool infiltration = rank_of(pos.square<KING>(WHITE)) > RANK_4
+                     || rank_of(pos.square<KING>(BLACK)) < RANK_5;
+
+    Value eg = eg_value(score);
+
+    Color strongSide = eg > 0 ? WHITE : BLACK;
+    bool pawnsOnBothFlanks =   (pos.pieces(strongSide, PAWN) & QueenSide)
+                            && (pos.pieces(strongSide, PAWN) & KingSide);
 
     bool almostUnwinnable =   outflanking < 0
                            && !pawnsOnBothFlanks;
-
-    bool infiltration = rank_of(pos.square<KING>(WHITE)) > RANK_4
-                     || rank_of(pos.square<KING>(BLACK)) < RANK_5;
 
     // Compute the initiative bonus for the attacking side
     int complexity =   9 * pe->passed_count()
@@ -735,7 +738,6 @@ namespace {
                     -110 ;
 
     Value mg = mg_value(score);
-    Value eg = eg_value(score);
 
     // Now apply the bonus: note that we find the attacking side by extracting the
     // sign of the midgame or endgame values, and that we carefully cap the bonus

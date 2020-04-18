@@ -23,12 +23,14 @@
 #include <cstring>   // For std::memset
 #include <iomanip>
 #include <sstream>
+#include <iostream>
 
 #include "bitboard.h"
 #include "evaluate.h"
 #include "material.h"
 #include "pawns.h"
 #include "thread.h"
+#include "uci.h"
 
 namespace Trace {
 
@@ -316,8 +318,19 @@ namespace {
                                      * (!(attackedBy[Us][PAWN] & s) + popcount(blocked & CenterFiles));
 
                 // Bonus for bishop on a long diagonal which can "see" both center squares
-                if (more_than_one(attacks_bb<BISHOP>(s, pos.pieces(PAWN)) & Center))
-                    score += LongDiagonalBishop;
+                if (   more_than_one(attacks_bb<BISHOP>(s, pos.pieces(PAWN)) & Center) )
+                {
+                    Bitboard supp = file_of(s) > FILE_D
+                                        ? (Us == WHITE ? shift<SOUTH_EAST>(pos.pieces(Them, PAWN))
+                                                       : shift<NORTH_EAST>(pos.pieces(Them, PAWN)))
+                                        : (Us == WHITE ? shift<SOUTH_WEST>(pos.pieces(Them, PAWN))
+                                                       : shift<NORTH_WEST>(pos.pieces(Them, PAWN)));
+                    if ( !(  attacks_bb<BISHOP>(s, pos.pieces(Them, PAWN))
+                           & Center
+                           & pos.pieces(Them, PAWN)
+                           & supp) )
+                        score += LongDiagonalBishop;
+                }
 
                 // An important Chess960 pattern: a cornered bishop blocked by a friendly
                 // pawn diagonally in front of it is a very serious problem, especially

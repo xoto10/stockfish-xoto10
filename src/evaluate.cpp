@@ -731,8 +731,9 @@ namespace {
                     + 21 * pawnsOnBothFlanks
                     + 24 * infiltration
                     + 51 * !pos.non_pawn_material()
+                    +  4 * pe->pawn_span()
                     - 43 * almostUnwinnable
-                    -110 ;
+                    -134 ;
 
     Value mg = mg_value(score);
     Value eg = eg_value(score);
@@ -772,7 +773,7 @@ namespace {
         else
             sf = std::min(sf, 36 + 7 * pos.count<PAWN>(strongSide));
 
-        sf = std::max(0, sf + (pe->pawn_span() - pos.rule50_count() + 6) / 4);
+        sf = std::max(0, sf - (pos.rule50_count() - 12) / 4);
     }
 
     return ScaleFactor(sf);

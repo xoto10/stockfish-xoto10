@@ -771,7 +771,8 @@ namespace {
         }
         else
             sf =  std::min(sf, 36 + 7 * pos.count<PAWN>(strongSide))
-                - (pos.non_pawn_material(strongSide) - pos.non_pawn_material(~strongSide) == BishopValueMg);
+                + 2 * (pos.non_pawn_material(strongSide) - pos.non_pawn_material(~strongSide)
+                          == BishopValueMg);
 
         sf = std::max(0, sf - (pos.rule50_count() - 12) / 4);
     }

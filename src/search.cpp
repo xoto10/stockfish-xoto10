@@ -444,8 +444,8 @@ void Thread::search() {
               if (PawnValueEg < bestValue && bestValue < 2 * PawnValueEg)
                   dceg -=  std::min(Value(40), std::min(bestValue - PawnValueEg, PawnValueEg * 2 - bestValue))
                          * dceg / 40;
-              contempt = (us == WHITE ?  make_score(dct, dct * dceg)
-                                      : -make_score(dct, dct * dceg));
+              contempt = (us == WHITE ?  make_score(dct, dceg)
+                                      : -make_score(dct, dceg));
           }
 
           // Start with a small aspiration window and, in the case of a fail

@@ -442,7 +442,7 @@ void Thread::search() {
               int dct = ct + (102 - ct / 2) * prev / (abs(prev) + 157);
               int dceg = dct / 2;
               if (PawnValueEg < bestValue && bestValue < 2 * PawnValueEg)
-                  dceg -=  std::min(Value(40), std::min(bestValue - PawnValueEg, PawnValueEg * 2 - bestValue))
+                  dceg +=  std::min(Value(40), std::min(bestValue - PawnValueEg, PawnValueEg * 2 - bestValue))
                          * dceg / 40;
               contempt = (us == WHITE ?  make_score(dct, dceg)
                                       : -make_score(dct, dceg));

@@ -770,8 +770,7 @@ namespace {
                 sf = 22 + 3 * pos.count<ALL_PIECES>(strongSide);
         }
         else if (   pos.non_pawn_material(WHITE) == 2 * RookValueMg
-                 && pos.non_pawn_material(BLACK) == 2 * RookValueMg
-                 && pe->passed_count() == 0)
+                 && pos.non_pawn_material(BLACK) == 2 * RookValueMg)
             sf = 60;
         else
             sf = std::min(sf, 36 + 7 * pos.count<PAWN>(strongSide));

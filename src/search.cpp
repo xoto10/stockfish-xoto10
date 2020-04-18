@@ -88,10 +88,12 @@ namespace {
   }
 
   // Add a small random component to draw evaluations to avoid 3fold-blindness
-  Value value_draw(Thread* thisThread, Value v) {
-    return v > 0 ? Value(2 + (thisThread->nodes & 1))
-                 : v < 0 ? - Value(2 + (thisThread->nodes & 1))
-                         : VALUE_DRAW + Value(2 * (thisThread->nodes & 1) - 1);
+  Value value_draw(MainThread* main, Value v) {
+    return main->bestPreviousScore > 0
+                   ? Value(2 + (main->nodes & 1))
+                   : main->bestPreviousScore < 0
+                             ? - Value(2 + (main->nodes & 1))
+                             : VALUE_DRAW + Value(2 * (main->nodes & 1) - 1);
   }
 
   // Skill structure is used to implement strength limit
@@ -607,7 +609,7 @@ namespace {
         && !rootNode
         && pos.has_game_cycle(ss->ply))
     {
-        alpha = value_draw(pos.this_thread(), alpha);
+        alpha = value_draw(Threads.main(), alpha);
         if (alpha >= beta)
             return alpha;
     }
@@ -657,7 +659,7 @@ namespace {
             || pos.is_draw(ss->ply)
             || ss->ply >= MAX_PLY)
             return (ss->ply >= MAX_PLY && !inCheck) ? evaluate(pos)
-                                                    : value_draw(pos.this_thread(), alpha);
+                                                    : value_draw(Threads.main(), alpha);
 
         // Step 3. Mate distance pruning. Even if we mate at the next move our score
         // would be at best mate_in(ss->ply+1), but if alpha is already bigger because
@@ -809,7 +811,7 @@ namespace {
             ss->staticEval = eval = evaluate(pos);
 
         if (eval == VALUE_DRAW)
-            eval = value_draw(pos.this_thread(), VALUE_DRAW);
+            eval = value_draw(Threads.main(), VALUE_DRAW);
 
         // Can ttValue be used as a better position evaluation?
         if (    ttValue != VALUE_NONE
@@ -1434,7 +1436,7 @@ moves_loop: // When in check, search starts from here
     // Check for an immediate draw or maximum ply reached
     if (   pos.is_draw(ss->ply)
         || ss->ply >= MAX_PLY)
-        return (ss->ply >= MAX_PLY && !inCheck) ? evaluate(pos) : value_draw(pos.this_thread(), alpha);
+        return (ss->ply >= MAX_PLY && !inCheck) ? evaluate(pos) : value_draw(Threads.main(), alpha);
 
     assert(0 <= ss->ply && ss->ply < MAX_PLY);
 

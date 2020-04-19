@@ -858,8 +858,7 @@ namespace {
 
 Value Eval::evaluate(const Position& pos) {
   Value v = Evaluation<NO_TRACE>(pos).value();
-  return v >= 0 && v < VALUE_TB_WIN_IN_MAX_PLY - 4 ? v + 4
-             : v < 0 && v > VALUE_TB_LOSS_IN_MAX_PLY + 3 ? v - 3 : v;
+  return v >= 0 ? std::max(Value(4), v) : std::min(v, Value(-4));
 }
 
 

@@ -857,7 +857,9 @@ namespace {
 /// evaluation of the position from the point of view of the side to move.
 
 Value Eval::evaluate(const Position& pos) {
-  return Evaluation<NO_TRACE>(pos).value();
+  Value v = Evaluation<NO_TRACE>(pos).value();
+  return v >= 0 && v < VALUE_TB_WIN_IN_MAX_PLY - 4 ? v + 4
+             : v < 0 && v > VALUE_TB_LOSS_IN_MAX_PLY + 3 ? v - 3 : v;
 }
 
 

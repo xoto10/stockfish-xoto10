@@ -292,9 +292,9 @@ void MainThread::search() {
       // Vote according to score and depth, and select the best thread
       for (Thread* th : Threads)
       {
-          // Normalise depth from range found into range 20-30
-          int normDepth = maxDepth == minDepth ? 25
-                          : 20 + 10 * (int(th->completedDepth) - minDepth) / (maxDepth - minDepth);
+          // Normalise depth from range found into range 100-200
+          int normDepth = maxDepth == minDepth ? 150
+                          : 100 + 100 * (int(th->completedDepth) - minDepth) / (maxDepth - minDepth);
           votes[th->rootMoves[0].pv[0]] +=
               (th->rootMoves[0].score - minScore + 14) * normDepth;
 

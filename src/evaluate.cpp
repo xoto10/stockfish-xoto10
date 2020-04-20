@@ -692,7 +692,7 @@ namespace {
     int bl;
     Bitboard blocked = pos.pieces(Us, PAWN) & shift<Down>(pos.pieces());
 
-    if (popcount(blocked & CenterFiles) > 3)
+    if (popcount(blocked & CenterFiles) > 4)
         safe = SpaceMaskBl, bl = 3;
     else
         safe = SpaceMask,   bl = 4;

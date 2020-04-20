@@ -842,7 +842,7 @@ namespace {
 
     // Prefer high 50mr if losing
     if (v < -320)
-        v += std::min(-320 - v, pos.rule50_count());
+        v += std::min(-320 - v, pos.rule50_count() / 4);
 
     // In case of tracing add all remaining individual evaluation terms
     if (T)

@@ -683,11 +683,14 @@ namespace {
     constexpr Bitboard SpaceMask =
       Us == WHITE ? CenterFiles & (Rank2BB | Rank3BB | Rank4BB)
                   : CenterFiles & (Rank7BB | Rank6BB | Rank5BB);
+    constexpr Bitboard SpaceMaskBl =
+      Us == WHITE ? Rank2BB | Rank3BB | Rank4BB
+                  : Rank7BB | Rank6BB | Rank5BB;
 
     // Find the available squares for our pieces inside the area defined by SpaceMask
-    Bitboard safe =   SpaceMask
-                   & ~pos.pieces(Us, PAWN)
-                   & ~attackedBy[Them][PAWN];
+    Bitboard safe = pe->blocked_count() > 3 ? SpaceMaskBl : SpaceMask;
+    safe &=  ~pos.pieces(Us, PAWN)
+           & ~attackedBy[Them][PAWN];
 
     // Find all squares which are at most three squares behind some friendly pawn
     Bitboard behind = pos.pieces(Us, PAWN);
@@ -697,7 +700,8 @@ namespace {
     int bonus = popcount(safe) + popcount(behind & safe & ~attackedBy[Them][ALL_PIECES]);
     int weight = pos.count<ALL_PIECES>(Us) - 3 + std::min(pe->blocked_count(), 9);
     Score score = make_score(bonus * weight * weight / 16, 0);
-
+//dbg_mean_of(bonus); 9.7
+//dbg_mean_of(bonus); 11.7
     if (T)
         Trace::add(SPACE, Us, score);
 

@@ -350,8 +350,11 @@ namespace {
                 File kf = file_of(pos.square<KING>(Us));
                 if ((kf < FILE_E) == (file_of(s) < kf))
                     score -= TrappedRook * (1 + !pos.castling_rights(Us)
-                                              + bool(  pos.pieces(Us, KNIGHT, BISHOP)
-                                                     & LineBB[pos.square<KING>(Us)][s]));
+                                              + (
+//                                                  pos.square<KING>(Us) == relative_square(Us, SQ_E1) &&
+                                                    bool(  pos.pieces(Us, KNIGHT, BISHOP)
+                                                         & b
+                                                         & rank_bb(s))));
             }
         }
 

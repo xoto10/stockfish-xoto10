@@ -837,6 +837,13 @@ namespace {
 
     v /= PHASE_MIDGAME;
 
+    // Side to move point of view
+    v = (pos.side_to_move() == WHITE ? v : -v);
+
+    // Prefer high 50mr if losing
+    if (v < -320)
+        v += std::min(-320 - v, pos.rule50_count());
+
     // In case of tracing add all remaining individual evaluation terms
     if (T)
     {
@@ -847,7 +854,7 @@ namespace {
         Trace::add(TOTAL, score);
     }
 
-    return  (pos.side_to_move() == WHITE ? v : -v) + Tempo; // Side to move point of view
+    return v + Tempo;
   }
 
 } // namespace

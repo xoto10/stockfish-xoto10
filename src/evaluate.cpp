@@ -841,8 +841,8 @@ namespace {
     v = (pos.side_to_move() == WHITE ? v : -v);
 
     // Prefer high 50mr if losing
-    if (v < -240)
-        v += std::min(-240 - v, pos.rule50_count() / 8);
+    if (v < -360)
+        v += std::min(-360 - v, pos.rule50_count() / 8);
 
     // In case of tracing add all remaining individual evaluation terms
     if (T)

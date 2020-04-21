@@ -821,8 +821,10 @@ namespace {
             + pieces<WHITE, ROOK  >() - pieces<BLACK, ROOK  >()
             + pieces<WHITE, QUEEN >() - pieces<BLACK, QUEEN >();
 
+    int mobDiff = abs(mg_value(mobility[WHITE] - mobility[BLACK]));
     score +=  (mobility[WHITE] - mobility[BLACK])
-            * (abs(mg_value(mobility[WHITE] - mobility[BLACK])) > 100 ? 5 : 4) / 4;
+            * (mobDiff > 50 ? 256 + (mobDiff - 50)
+                            : 256                 ) / 256;
 
     score +=  king<   WHITE>() - king<   BLACK>()
             + threats<WHITE>() - threats<BLACK>()

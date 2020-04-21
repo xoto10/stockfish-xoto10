@@ -23,7 +23,6 @@
 #include <cstring>   // For std::memset
 #include <iomanip>
 #include <sstream>
-//#include <iostream>
 
 #include "bitboard.h"
 #include "evaluate.h"
@@ -824,14 +823,8 @@ namespace {
 
     int mobDiff = abs(mg_value(mobility[WHITE] - mobility[BLACK]));
     score +=  (mobility[WHITE] - mobility[BLACK])
-            * (mobDiff > 80 ? 16 + (mobDiff - 80) / 16
-                            : 16                     ) / 16;
-//if (mobDiff > 80)
-//sync_cout << "info string md " << mobDiff << " sgn " << mg_value(mobility[WHITE] - mobility[BLACK])
-//          << " m " << (mobDiff > 80 ? 16 + (mobDiff - 80) / 16
-//                                    : 16                  )
-//          << " mg2 " << mg_value(sc2) << sync_endl;
-//score += sc2;
+            * (mobDiff > 128 ? 16 + (mobDiff - 128) / 16
+                             : 16                       ) / 16;
 
     score +=  king<   WHITE>() - king<   BLACK>()
             + threats<WHITE>() - threats<BLACK>()

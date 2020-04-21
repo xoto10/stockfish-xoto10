@@ -138,6 +138,7 @@ namespace {
   constexpr Score Outpost             = S( 30, 21);
   constexpr Score PassedFile          = S( 11,  8);
   constexpr Score PawnlessFlank       = S( 17, 95);
+  constexpr Score PawnLevers          = S( 10, 10);
   constexpr Score RestrictedPiece     = S(  7,  7);
   constexpr Score RookOnQueenFile     = S(  5,  9);
   constexpr Score SliderOnQueen       = S( 59, 18);
@@ -541,8 +542,12 @@ namespace {
     b  = shift<Up>(pos.pieces(Us, PAWN)) & ~pos.pieces();
     b |= shift<Up>(b & TRank3BB) & ~pos.pieces();
 
-    // Keep only the squares which are relatively safe
-    b &= ~attackedBy[Them][PAWN] & safe;
+    // Bonus for possible pawn pushes
+    Bitboard b2 =  (~attackedBy[Them][PAWN] & safe)
+                 | ( attackedBy[Them][PAWN] & ~attackedBy2[Them] & attackedBy[Us][ALL_PIECES])
+                 | ( attackedBy2[Them] & attackedBy[Us][PAWN] & attackedBy2[Us])
+                 | ( attackedBy2[Them] & ~attackedBy[Them][PAWN] & attackedBy2[Us]);
+    score += PawnLevers * popcount(b2);
 
     // Bonus for safe pawn threats on the next move
     b = pawn_attacks_bb<Us>(b) & nonPawnEnemies;

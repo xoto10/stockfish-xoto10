@@ -475,7 +475,7 @@ namespace {
     score -= FlankAttacks * kingFlankAttack;
 
     // Bonus if king not on original square and no trapped rook
-    if (ksq != relative_square(Us, SQ_E1) && !trappedRook[Us])
+    if (!pos.castling_rights(Us) && !trappedRook[Us])
         score += KingRook;
 
     if (T)

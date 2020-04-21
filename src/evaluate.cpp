@@ -133,7 +133,7 @@ namespace {
   constexpr Score Hanging             = S( 69, 36);
   constexpr Score KingProtector       = S(  7,  8);
   constexpr Score KnightOnQueen       = S( 16, 11);
-  constexpr Score LongDiagonalBishop  = S( 45,  0);
+  constexpr Score LongDiagonalBishop  = S( 49, -4);
   constexpr Score MinorBehindPawn     = S( 18,  3);
   constexpr Score Outpost             = S( 30, 21);
   constexpr Score PassedFile          = S( 11,  8);
@@ -146,7 +146,7 @@ namespace {
   constexpr Score ThreatBySafePawn    = S(173, 94);
   constexpr Score TrappedRook         = S( 55, 13);
   constexpr Score WeakQueen           = S( 51, 14);
-  constexpr Score WeakQueenProtection = S( 17, -2);
+  constexpr Score WeakQueenProtection = S( 15,  0);
 
 #undef S
 

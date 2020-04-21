@@ -443,7 +443,7 @@ namespace {
 
     int kingFlankAttack = popcount(b1) + popcount(b2);
     int kingFlankDefense = popcount(b3);
-    int mgMobility = mg_value(mobility[Them] - mobility[Us]);
+    int mgMobilityDiff = std::max(0, int(mg_value(mobility[Them] - mobility[Us])));
 
     kingDanger +=        kingAttackersCount[Them] * kingAttackersWeight[Them]
                  + 185 * popcount(kingRing[Us] & weak)
@@ -451,7 +451,7 @@ namespace {
                  +  98 * popcount(pos.blockers_for_king(Us))
                  +  69 * kingAttacksCount[Them]
                  +   3 * kingFlankAttack * kingFlankAttack / 8
-                 +       std::max(mgMobility, mgMobility * abs(mgMobility) / 100)
+                 +       mgMobilityDiff
                  - 873 * !pos.count<QUEEN>(Them)
                  - 100 * bool(attackedBy[Us][KNIGHT] & attackedBy[Us][KING])
                  -   6 * mg_value(score) / 8

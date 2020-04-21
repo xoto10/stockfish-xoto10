@@ -249,6 +249,8 @@ namespace {
 
     // Remove from kingRing[] the squares defended by two pawns
     kingRing[Us] &= ~dblAttackByPawn;
+
+    trappedRook[Us] = false;
   }
 
 

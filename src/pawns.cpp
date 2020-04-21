@@ -36,6 +36,7 @@ namespace {
   constexpr Score BlockedStorm  = S(82, 82);
   constexpr Score Doubled       = S(11, 56);
   constexpr Score Isolated      = S( 5, 15);
+  constexpr Score SuppPassed    = S(10, 10);
   constexpr Score WeakLever     = S( 0, 56);
   constexpr Score WeakUnopposed = S(13, 27);
 
@@ -74,7 +75,7 @@ namespace {
     Bitboard neighbours, stoppers, support, phalanx, opposed;
     Bitboard lever, leverPush, blocked;
     Square s;
-    bool backward, passed, doubled;
+    bool backward, passed, doubled, supporting;
     Score score = SCORE_ZERO;
     const Square* pl = pos.squares<PAWN>(Us);
 
@@ -105,6 +106,7 @@ namespace {
         neighbours = ourPawns   & adjacent_files_bb(s);
         phalanx    = neighbours & rank_bb(s);
         support    = neighbours & rank_bb(s - Up);
+        supporting = neighbours & rank_bb(s + Up);
 
         e->blockedCount[Us] += blocked || more_than_one(leverPush);
 
@@ -133,7 +135,11 @@ namespace {
         // Passed pawns will be properly scored later in evaluation when we have
         // full attack info.
         if (passed)
+        {
             e->passedPawns[Us] |= s;
+            if (support | supporting | phalanx)
+                score += SuppPassed;
+        }
 
         // Score this pawn
         if (support | phalanx)

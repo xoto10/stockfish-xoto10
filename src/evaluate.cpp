@@ -823,7 +823,7 @@ namespace {
 
     int mobDiff = abs(mg_value(mobility[WHITE] - mobility[BLACK]));
     score +=  (mobility[WHITE] - mobility[BLACK])
-            * (mobDiff > 128 ? 16 + (mobDiff - 128) / 16
+            * (mobDiff > 128 ? 16 + (mobDiff - 128) / 32
                              : 16                       ) / 16;
 
     score +=  king<   WHITE>() - king<   BLACK>()

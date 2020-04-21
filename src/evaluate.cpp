@@ -132,6 +132,7 @@ namespace {
   constexpr Score FlankAttacks        = S(  8,  0);
   constexpr Score Hanging             = S( 69, 36);
   constexpr Score KingProtector       = S(  7,  8);
+  constexpr Score KingRook            = S( 20, 20);
   constexpr Score KnightOnQueen       = S( 16, 11);
   constexpr Score LongDiagonalBishop  = S( 45,  0);
   constexpr Score MinorBehindPawn     = S( 18,  3);
@@ -205,6 +206,9 @@ namespace {
     // a white knight on g5 and black's king is on g8, this white knight adds 2
     // to kingAttacksCount[WHITE].
     int kingAttacksCount[COLOR_NB];
+
+    // trappedRook[COLOR_NB]
+    bool trappedRook[COLOR_NB];
   };
 
 
@@ -349,7 +353,7 @@ namespace {
             {
                 File kf = file_of(pos.square<KING>(Us));
                 if ((kf < FILE_E) == (file_of(s) < kf))
-                    score -= TrappedRook * (1 + !pos.castling_rights(Us));
+                    score -= TrappedRook * (1 + !pos.castling_rights(Us)), trappedRook[Us] = true;
             }
         }
 
@@ -467,6 +471,10 @@ namespace {
 
     // Penalty if king flank is under attack, potentially moving toward the king
     score -= FlankAttacks * kingFlankAttack;
+
+    // Bonus if king not on original square and no trapped rook
+    if (ksq != relative_square(Us, SQ_E1) && !trappedRook[Us])
+        score += KingRook;
 
     if (T)
         Trace::add(KING, Us, score);

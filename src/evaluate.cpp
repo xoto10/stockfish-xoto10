@@ -131,6 +131,7 @@ namespace {
   constexpr Score CorneredBishop      = S( 50, 50);
   constexpr Score FlankAttacks        = S(  8,  0);
   constexpr Score Hanging             = S( 69, 36);
+  constexpr Score HoldDefender        = S(  3,  3);
   constexpr Score KingProtector       = S(  7,  8);
   constexpr Score KnightOnQueen       = S( 16, 11);
   constexpr Score LongDiagonalBishop  = S( 45,  0);
@@ -528,6 +529,10 @@ namespace {
        & ~stronglyProtected
        &  attackedBy[Us][ALL_PIECES];
     score += RestrictedPiece * popcount(b);
+
+    // Bonus for their pieces attacked by us, and not defended by them twice or with a pawn
+    b &= pos.pieces(Them);
+    score += HoldDefender * popcount(b);
 
     // Protected or unattacked squares
     safe = ~attackedBy[Them][ALL_PIECES] | attackedBy[Us][ALL_PIECES];

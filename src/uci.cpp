@@ -43,6 +43,49 @@ namespace {
   const char* StartFEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
 
+  // position_blocked() is called when engine receives the "posnblocked" non-UCI command.
+  // The function sets up the position described in the given FEN string ("fen")
+  // or the starting position ("startpos") and then makes the moves given in the
+  // following move list ("moves").
+  // The position is then tested to see if counts as a "blocked" position. If so,
+  // a bitboard showing the pawns is returned (for possible use as a key).
+
+  void position_blocked(Position& pos, istringstream& is, StateListPtr& states) {
+
+    Move m;
+    string token, fen;
+
+    is >> token;
+
+    if (token == "startpos")
+    {
+        fen = StartFEN;
+        is >> token; // Consume "moves" token if any
+    }
+    else if (token == "fen")
+        while (is >> token && token != "moves")
+            fen += token + " ";
+    else
+        return;
+
+    states = StateListPtr(new std::deque<StateInfo>(1)); // Drop old and create a new one
+    pos.set(fen, Options["UCI_Chess960"], &states->back(), Threads.main());
+
+    // Parse move list (if any)
+    while (is >> token && (m = UCI::to_move(pos, token)) != MOVE_NONE)
+    {
+        states->emplace_back();
+        pos.do_move(m, states->back());
+    }
+
+    Pawns::Entry* pe = Pawns::probe(pos);
+    if (   pe->blocked_count() >= 4
+        && pos.count<ALL_PIECES>() >= 26)
+        sync_cout << fen << " " << pos.pieces(PAWN) << " " << pos.non_pawn_material() << sync_endl;
+    else
+        sync_cout << fen << sync_endl;
+  }
+
   // position() is called when engine receives the "position" UCI command.
   // The function sets up the position described in the given FEN string ("fen")
   // or the starting position ("startpos") and then makes the moves given in the
@@ -230,6 +273,7 @@ void UCI::loop(int argc, char* argv[]) {
       else if (token == "setoption")  setoption(is);
       else if (token == "go")         go(pos, is, states);
       else if (token == "position")   position(pos, is, states);
+      else if (token == "posnblocked") position_blocked(pos, is, states);
       else if (token == "ucinewgame") Search::clear();
       else if (token == "isready")    sync_cout << "readyok" << sync_endl;
 

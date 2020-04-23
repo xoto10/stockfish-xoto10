@@ -319,7 +319,7 @@ namespace {
                 if (more_than_one(attacks_bb<BISHOP>(s, pos.pieces(PAWN)) & Center))
                     score +=  LongDiagonalBishop
                             * (  popcount(attacks_bb<BISHOP>(s, pos.pieces(PAWN)))
-                               + 5 * (   (  attacks_bb<BISHOP>(s, pos.pieces(PAWN))
+                               + 2 * (   (  attacks_bb<BISHOP>(s, pos.pieces(PAWN))
                                           & attackedBy[Them][KING])
                                       && relative_rank(Us, s) < RANK_5)
                                - bool(  attacks_bb<BISHOP>(s, pos.pieces(PAWN))

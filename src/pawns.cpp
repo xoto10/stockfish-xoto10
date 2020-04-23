@@ -145,8 +145,11 @@ namespace {
         }
 
         else if (!neighbours)
-            score -=   Isolated
-                     + WeakUnopposed * !opposed;
+        {
+            if (!lever)
+                score -=   Isolated
+                         + WeakUnopposed * !opposed;
+        }
 
         else if (backward)
             score -=   Backward

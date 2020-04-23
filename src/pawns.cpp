@@ -145,20 +145,14 @@ namespace {
         }
 
         else if (!neighbours)
-        {
             score -=   Isolated
-                     + WeakUnopposed * !opposed;
-            if (!lever)
-                e->weakPawns[Us] |= s;
-        }
+                     + WeakUnopposed * !opposed,
+            e->weakPawns[Us] |= s;
 
         else if (backward)
-        {
             score -=   Backward
-                     + WeakUnopposed * !opposed;
-            if (!lever)
-                e->weakPawns[Us] |= s;
-        }
+                     + WeakUnopposed * !opposed,
+            e->weakPawns[Us] |= s;
 
         if (!support)
             score -=   Doubled * doubled

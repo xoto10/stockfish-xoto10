@@ -138,7 +138,7 @@ namespace {
             Score LDB                 = S(  0,  0);
             Score LDR                 = S(  5,  0);
             Score LDK                 = S( 25,  0);
-            Score LDP                 = S( 14,  0);
+            Score LDP                 = S(  6,  0);
   constexpr Score MinorBehindPawn     = S( 18,  3);
   constexpr Score Outpost             = S( 30, 21);
   constexpr Score PassedFile          = S( 11,  8);
@@ -334,16 +334,18 @@ TUNE(SetRange(vary20), LDB, LDR, LDK, LDP);
                             - LDP                 * bool(  attacks_bb<BISHOP>(s, pos.pieces(PAWN))
                                                          & pos.pieces(Them, PAWN)
                                                          & attackedBy[Them][PAWN]);
-//sync_cout << "info string ldb " << mg_value(LongDiagonalBishop)
-//          << "+" << mg_value(LongDiagonalBishopR) * popcount(attacks_bb<BISHOP>(s, pos.pieces(PAWN)))
-//          << "+" << mg_value(LongDiagonalBishopK)*(   (attacks_bb<BISHOP>(s, pos.pieces(PAWN))
+//sync_cout << "info string ldb " << mg_value(LDB)
+//          << "+" << mg_value(LDR) * popcount(attacks_bb<BISHOP>(s, pos.pieces(PAWN)))
+//          << "+" << mg_value(LDK)*(   (attacks_bb<BISHOP>(s, pos.pieces(PAWN))
 //                                                       & attackedBy[Them][KING])
 //                                                   && relative_rank(Us, s) < RANK_5)
-//          << "-" << mg_value(LongDiagonalBishopP) * bool(  attacks_bb<BISHOP>(s, pos.pieces(PAWN))
+//          << "-" << mg_value(LDP) * bool(  attacks_bb<BISHOP>(s, pos.pieces(PAWN))
 //                                                         & pos.pieces(Them, PAWN)
 //                                                         & attackedBy[Them][PAWN])
 //          << " pos\n" << pos
-////        << " bb\n" << Bitboards::pretty(b)
+//          << " bb\n" << Bitboards::pretty(                 attacks_bb<BISHOP>(s, pos.pieces(PAWN))
+//                                                         & pos.pieces(Them, PAWN)
+//                                                         & attackedBy[Them][PAWN])
 //          << " sq " << UCI::square(s)
 //          << sync_endl;
 //}

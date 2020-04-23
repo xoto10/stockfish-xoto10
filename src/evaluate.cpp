@@ -135,10 +135,10 @@ namespace {
   constexpr Score Hanging             = S( 69, 36);
   constexpr Score KingProtector       = S(  7,  8);
   constexpr Score KnightOnQueen       = S( 16, 11);
-  constexpr Score LongDiagonalBishop  = S( 45,  0);
-  volatile  Score LongDiagonalBishopR = S(  0,  0);
-  volatile  Score LongDiagonalBishopK = S(  0,  0);
-  volatile  Score LongDiagonalBishopP = S(  0,  0);
+  volatile  Score LongDiagonalBishop  = S(  0,  0);
+  volatile  Score LongDiagonalBishopR = S(  5,  0);
+  volatile  Score LongDiagonalBishopK = S( 25,  0);
+  volatile  Score LongDiagonalBishopP = S( 22,  0);
   constexpr Score MinorBehindPawn     = S( 18,  3);
   constexpr Score Outpost             = S( 30, 21);
   constexpr Score PassedFile          = S( 11,  8);
@@ -331,12 +331,14 @@ namespace {
                             - LongDiagonalBishopP * bool(  attacks_bb<BISHOP>(s, pos.pieces(PAWN))
                                                          & pos.pieces(Them, PAWN)
                                                          & attackedBy[Them][PAWN]);
-//sync_cout << "info string ldb 33"
-//          << "+" << 6 * popcount(attacks_bb<BISHOP>(s, pos.pieces(PAWN)))
-//          << "+" << 25*(   (attacks_bb<BISHOP>(s, pos.pieces(PAWN)) & attackedBy[Them][KING])
-//                        && relative_rank(Us, s) < RANK_5)
-//          << "-" << 11 * bool(attacks_bb<BISHOP>(s, pos.pieces(PAWN)) & pos.pieces(Them, PAWN)
-//                              & attackedBy[Them][PAWN])
+//sync_cout << "info string ldb " << mg_value(LongDiagonalBishop)
+//          << "+" << mg_value(LongDiagonalBishopR) * popcount(attacks_bb<BISHOP>(s, pos.pieces(PAWN)))
+//          << "+" << mg_value(LongDiagonalBishopK)*(   (attacks_bb<BISHOP>(s, pos.pieces(PAWN))
+//                                                       & attackedBy[Them][KING])
+//                                                   && relative_rank(Us, s) < RANK_5)
+//          << "-" << mg_value(LongDiagonalBishopP) * bool(  attacks_bb<BISHOP>(s, pos.pieces(PAWN))
+//                                                         & pos.pieces(Them, PAWN)
+//                                                         & attackedBy[Them][PAWN])
 //          << " pos\n" << pos
 ////        << " bb\n" << Bitboards::pretty(b)
 //          << " sq " << UCI::square(s)

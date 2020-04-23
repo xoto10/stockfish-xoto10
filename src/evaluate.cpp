@@ -135,10 +135,10 @@ namespace {
   constexpr Score Hanging             = S( 69, 36);
   constexpr Score KingProtector       = S(  7,  8);
   constexpr Score KnightOnQueen       = S( 16, 11);
-  volatile  Score LongDiagonalBishop  = S(  0,  0);
-  volatile  Score LongDiagonalBishopR = S(  5,  0);
-  volatile  Score LongDiagonalBishopK = S( 25,  0);
-  volatile  Score LongDiagonalBishopP = S( 14,  0);
+            Score LDB                 = S(  0,  0);
+            Score LDR                 = S(  5,  0);
+            Score LDK                 = S( 25,  0);
+            Score LDP                 = S( 14,  0);
   constexpr Score MinorBehindPawn     = S( 18,  3);
   constexpr Score Outpost             = S( 30, 21);
   constexpr Score PassedFile          = S( 11,  8);
@@ -152,6 +152,9 @@ namespace {
   constexpr Score TrappedRook         = S( 55, 13);
   constexpr Score WeakQueen           = S( 51, 14);
   constexpr Score WeakQueenProtection = S( 15,  0);
+
+inline Range vary(int c) { return Range(c-20, c+20); }
+TUNE(SetRange(vary), LDB, LDR, LDK, LDP);
 
 #undef S
 
@@ -323,12 +326,12 @@ namespace {
                 // Bonus for bishop on a long diagonal which can "see" both center squares
                 if (more_than_one(attacks_bb<BISHOP>(s, pos.pieces(PAWN)) & Center))
 //{
-                    score +=  LongDiagonalBishop
-                            + LongDiagonalBishopR * popcount(attacks_bb<BISHOP>(s, pos.pieces(PAWN)))
-                            + LongDiagonalBishopK * (   (  attacks_bb<BISHOP>(s, pos.pieces(PAWN))
+                    score +=  LDB
+                            + LDR                 * popcount(attacks_bb<BISHOP>(s, pos.pieces(PAWN)))
+                            + LDK                 * (   (  attacks_bb<BISHOP>(s, pos.pieces(PAWN))
                                                          & attackedBy[Them][KING])
                                                      && relative_rank(Us, s) < RANK_5)
-                            - LongDiagonalBishopP * bool(  attacks_bb<BISHOP>(s, pos.pieces(PAWN))
+                            - LDP                 * bool(  attacks_bb<BISHOP>(s, pos.pieces(PAWN))
                                                          & pos.pieces(Them, PAWN)
                                                          & attackedBy[Them][PAWN]);
 //sync_cout << "info string ldb " << mg_value(LongDiagonalBishop)

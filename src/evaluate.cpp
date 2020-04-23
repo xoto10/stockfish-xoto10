@@ -153,8 +153,8 @@ namespace {
   constexpr Score WeakQueen           = S( 51, 14);
   constexpr Score WeakQueenProtection = S( 15,  0);
 
-inline Range vary(int c) { return Range(c-20, c+20); }
-TUNE(SetRange(vary), LDB, LDR, LDK, LDP);
+inline Range vary20(int c) { return Range(c-20, c+20); }
+TUNE(SetRange(vary20), LDB, LDR, LDK, LDP);
 
 #undef S
 

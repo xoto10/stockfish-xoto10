@@ -23,14 +23,12 @@
 #include <cstring>   // For std::memset
 #include <iomanip>
 #include <sstream>
-//#include <iostream>
 
 #include "bitboard.h"
 #include "evaluate.h"
 #include "material.h"
 #include "pawns.h"
 #include "thread.h"
-//#include "uci.h"
 
 namespace Trace {
 
@@ -135,10 +133,9 @@ namespace {
   constexpr Score Hanging             = S( 69, 36);
   constexpr Score KingProtector       = S(  7,  8);
   constexpr Score KnightOnQueen       = S( 16, 11);
-  volatile  int   LongDiagonalBishop  =     0     ;
-  volatile  int   LongDiagonalBishopR =     5     ;
-  volatile  int   LongDiagonalBishopK =    10     ;
-  volatile  int   LongDiagonalBishopP =     6     ;
+  constexpr Score LongDiagonalBishopR = S(  5,  0);
+  constexpr Score LongDiagonalBishopK = S( 25,  0);
+  constexpr Score LongDiagonalBishopP = S(  6,  0);
   constexpr Score MinorBehindPawn     = S( 18,  3);
   constexpr Score Outpost             = S( 30, 21);
   constexpr Score PassedFile          = S( 11,  8);
@@ -322,29 +319,13 @@ namespace {
 
                 // Bonus for bishop on a long diagonal which can "see" both center squares
                 if (more_than_one(attacks_bb<BISHOP>(s, pos.pieces(PAWN)) & Center))
-//{
-                    score +=  make_score(LongDiagonalBishop
-                            + LongDiagonalBishopR * popcount(attacks_bb<BISHOP>(s, pos.pieces(PAWN)))
+                    score +=  LongDiagonalBishopR * popcount(attacks_bb<BISHOP>(s, pos.pieces(PAWN)))
                             + LongDiagonalBishopK * (   (  attacks_bb<BISHOP>(s, pos.pieces(PAWN))
                                                          & attackedBy[Them][KING])
                                                      && relative_rank(Us, s) < RANK_5)
                             - LongDiagonalBishopP * bool(  attacks_bb<BISHOP>(s, pos.pieces(PAWN))
                                                          & pos.pieces(Them, PAWN)
-                                                         & attackedBy[Them][PAWN]),
-                                         0);
-//sync_cout << "info string ldb " << mg_value(LongDiagonalBishop)
-//          << "+" << mg_value(LongDiagonalBishopR) * popcount(attacks_bb<BISHOP>(s, pos.pieces(PAWN)))
-//          << "+" << mg_value(LongDiagonalBishopK)*(   (attacks_bb<BISHOP>(s, pos.pieces(PAWN))
-//                                                       & attackedBy[Them][KING])
-//                                                   && relative_rank(Us, s) < RANK_5)
-//          << "-" << mg_value(LongDiagonalBishopP) * bool(  attacks_bb<BISHOP>(s, pos.pieces(PAWN))
-//                                                         & pos.pieces(Them, PAWN)
-//                                                         & attackedBy[Them][PAWN])
-//          << " pos\n" << pos
-////        << " bb\n" << Bitboards::pretty(b)
-//          << " sq " << UCI::square(s)
-//          << sync_endl;
-//}
+                                                         & attackedBy[Them][PAWN]);
 
                 // An important Chess960 pattern: a cornered bishop blocked by a friendly
                 // pawn diagonally in front of it is a very serious problem, especially

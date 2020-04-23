@@ -321,9 +321,8 @@ namespace {
                     score +=  LongDiagonalBishop
                                   * popcount(attacks_bb<BISHOP>(s, pos.pieces(PAWN)))
                             + LongDiagonalBishopK
-                                  * (   (  attacks_bb<BISHOP>(s, pos.pieces(PAWN))
-                                         & attackedBy[Them][KING])
-                                     && relative_rank(Us, s) < RANK_5);
+                                  * bool(  attacks_bb<BISHOP>(s, pos.pieces(PAWN))
+                                         & attackedBy[Them][KING]);
 
                 // An important Chess960 pattern: a cornered bishop blocked by a friendly
                 // pawn diagonally in front of it is a very serious problem, especially

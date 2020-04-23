@@ -138,7 +138,7 @@ namespace {
   volatile  Score LongDiagonalBishop  = S(  0,  0);
   volatile  Score LongDiagonalBishopR = S(  5,  0);
   volatile  Score LongDiagonalBishopK = S( 25,  0);
-  volatile  Score LongDiagonalBishopP = S( 18,  0);
+  volatile  Score LongDiagonalBishopP = S( 10,  0);
   constexpr Score MinorBehindPawn     = S( 18,  3);
   constexpr Score Outpost             = S( 30, 21);
   constexpr Score PassedFile          = S( 11,  8);

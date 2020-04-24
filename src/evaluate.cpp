@@ -133,9 +133,10 @@ namespace {
   constexpr Score Hanging             = S( 69, 36);
   constexpr Score KingProtector       = S(  7,  8);
   constexpr Score KnightOnQueen       = S( 16, 11);
-  constexpr Score LongDiagonalBishopR = S(  5,  0);
-  constexpr Score LongDiagonalBishopK = S( 25,  0);
-  constexpr Score LongDiagonalBishopP = S(  6,  0);
+  constexpr Score LongDiagonalBishop  = S(  0,  1);
+  constexpr Score LongDiagonalBishopR = S(  6, -1);
+  constexpr Score LongDiagonalBishopK = S( 25, -1);
+  constexpr Score LongDiagonalBishopP = S(  6,  1);
   constexpr Score MinorBehindPawn     = S( 18,  3);
   constexpr Score Outpost             = S( 30, 21);
   constexpr Score PassedFile          = S( 11,  8);
@@ -319,7 +320,8 @@ namespace {
 
                 // Bonus for bishop on a long diagonal which can "see" both center squares
                 if (more_than_one(attacks_bb<BISHOP>(s, pos.pieces(PAWN)) & Center))
-                    score +=  LongDiagonalBishopR * popcount(attacks_bb<BISHOP>(s, pos.pieces(PAWN)))
+                    score +=  LongDiagonalBishop
+                            + LongDiagonalBishopR * popcount(attacks_bb<BISHOP>(s, pos.pieces(PAWN)))
                             + LongDiagonalBishopK * (   (  attacks_bb<BISHOP>(s, pos.pieces(PAWN))
                                                          & attackedBy[Them][KING])
                                                      && relative_rank(Us, s) < RANK_5)

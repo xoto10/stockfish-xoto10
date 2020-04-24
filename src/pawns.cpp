@@ -110,11 +110,10 @@ namespace {
 
         // A pawn is backward when it is behind all pawns of the same color on
         // the adjacent files and cannot safely advance.
-        backward =  !(neighbours & forward_ranks_bb(Them, s + Up))
-                  && (leverPush | blocked);
+        backward =  !(neighbours & forward_ranks_bb(Them, s + Up));
 
         // Compute additional span if pawn is not backward nor blocked
-        if (!backward && !blocked)
+        if (!backward && leverPush && !blocked)
             e->pawnAttacksSpan[Us] |= pawn_attack_span(Us, s);
 
         // A pawn is passed if one of the three following conditions is true:
@@ -149,8 +148,8 @@ namespace {
                      + WeakUnopposed * !opposed;
 
         else if (backward)
-            score -=   Backward
-                     + WeakUnopposed * !opposed;
+            score -= (  Backward
+                      + WeakUnopposed * !opposed) / (leverPush | blocked ? 1 : 2);
 
         if (!support)
             score -=   Doubled * doubled

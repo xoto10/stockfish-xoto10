@@ -145,8 +145,7 @@ namespace {
         }
 
         else if (!neighbours)
-            score -=   Isolated
-                     + Doubled * more_than_one(ourPawns & file_bb(s)) / 2
+            score -=   Isolated * (1 + more_than_one(ourPawns & file_bb(s)))
                      + WeakUnopposed * !opposed;
 
         else if (backward)

@@ -146,7 +146,7 @@ namespace {
 
         else if (!neighbours)
             score -=   Isolated
-                     + Doubled * doubled
+                     + Doubled * doubled / 2
                      + WeakUnopposed * !opposed;
 
         else if (backward)

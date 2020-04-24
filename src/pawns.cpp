@@ -36,6 +36,7 @@ namespace {
   constexpr Score BlockedStorm  = S(82, 82);
   constexpr Score Doubled       = S(11, 56);
   constexpr Score Isolated      = S( 5, 15);
+  constexpr Score IsoDouble     = S( 8,  8);
   constexpr Score WeakLever     = S( 0, 56);
   constexpr Score WeakUnopposed = S(13, 27);
 
@@ -145,7 +146,8 @@ namespace {
         }
 
         else if (!neighbours)
-            score -=   Isolated * (1 + more_than_one(ourPawns & file_bb(s)))
+            score -=   Isolated
+                     + IsoDouble * more_than_one(ourPawns & file_bb(s))
                      + WeakUnopposed * !opposed;
 
         else if (backward)

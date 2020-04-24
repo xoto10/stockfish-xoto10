@@ -144,20 +144,18 @@ namespace {
             score += make_score(v, v * (r - 2) / 4);
         }
 
-        else if (!neighbours)
+        else
         {
-            score -=   Isolated
-                     + WeakUnopposed * !opposed;
             if (!lever)
                 e->weakPawns[Us] |= s;
-        }
 
-        else if (backward)
-        {
-            score -=   Backward
-                     + WeakUnopposed * !opposed;
-            if (!lever)
-                e->weakPawns[Us] |= s;
+            if (!neighbours)
+                score -=   Isolated
+                         + WeakUnopposed * !opposed;
+
+            else if (backward)
+                score -=   Backward
+                         + WeakUnopposed * !opposed;
         }
 
         if (!support)

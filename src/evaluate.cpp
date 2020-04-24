@@ -526,7 +526,7 @@ namespace {
 
     // Bonus for pieces in front of their weak pawns
     b =  pe->weak_pawns(Them)
-       & shift<Up>(pos.pieces(Us) | attackedBy2[Us]);
+       & shift<Up>(pos.pieces(Us));
     score += WeakBlockers * popcount(b);
 
     // Bonus for restricting their piece moves

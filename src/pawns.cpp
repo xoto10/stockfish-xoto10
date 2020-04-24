@@ -156,8 +156,8 @@ namespace {
         {
             score -=   Backward
                      + WeakUnopposed * !opposed;
-//          if (!lever)
-            e->weakPawns[Us] |= s;
+            if (!lever)
+                e->weakPawns[Us] |= s;
         }
 
         if (!support)

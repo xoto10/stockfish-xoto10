@@ -490,7 +490,7 @@ namespace {
 
     // Adjust bishop pair for number of (blocked) pawns
     if (pos.count<BISHOP>(Us) > 1)
-        score -= BPairBlocked * (4 - pe->blocked_count());
+        score -= BPairBlocked * (pe->blocked_count() - 4);
 
     // Non-pawn enemies
     nonPawnEnemies = pos.pieces(Them) & ~pos.pieces(PAWN);

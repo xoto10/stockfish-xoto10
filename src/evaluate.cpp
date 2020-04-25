@@ -128,7 +128,7 @@ namespace {
 
   // Assorted bonuses and penalties
   constexpr Score BishopPawns         = S(  3,  7);
-  constexpr Score BPairBlocked        = S(  8,  8);
+  constexpr Score BPairBlocked        = S(  4,  4);
   constexpr Score CorneredBishop      = S( 50, 50);
   constexpr Score FlankAttacks        = S(  8,  0);
   constexpr Score Hanging             = S( 69, 36);
@@ -320,6 +320,10 @@ namespace {
                 if (more_than_one(attacks_bb<BISHOP>(s, pos.pieces(PAWN)) & Center))
                     score += LongDiagonalBishop;
 
+                // Adjust bishop pair for number of (blocked) pawns
+                if (pos.count<BISHOP>(Us) > 1)
+                    score -= BPairBlocked * (pe->blocked_count() - 4);
+
                 // An important Chess960 pattern: a cornered bishop blocked by a friendly
                 // pawn diagonally in front of it is a very serious problem, especially
                 // when that pawn is also blocked.
@@ -487,10 +491,6 @@ namespace {
 
     Bitboard b, weak, defended, nonPawnEnemies, stronglyProtected, safe;
     Score score = SCORE_ZERO;
-
-    // Adjust bishop pair for number of (blocked) pawns
-    if (pos.count<BISHOP>(Us) > 1)
-        score -= BPairBlocked * (pe->blocked_count() - 4);
 
     // Non-pawn enemies
     nonPawnEnemies = pos.pieces(Them) & ~pos.pieces(PAWN);

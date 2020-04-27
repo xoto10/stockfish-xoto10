@@ -375,9 +375,10 @@ namespace {
     constexpr Color    Them = ~Us;
     constexpr Bitboard Camp = (Us == WHITE ? AllSquares ^ Rank6BB ^ Rank7BB ^ Rank8BB
                                            : AllSquares ^ Rank1BB ^ Rank2BB ^ Rank3BB);
+//  constexpr Bitboard TRank4BB = (Us == WHITE ? Rank4BB : Rank5BB);
 
     Bitboard weak, b1, b2, b3, safe, unsafeChecks = 0;
-    Bitboard rookChecks, queenChecks, bishopChecks, knightChecks;
+    Bitboard rookChecks, queenChecks, bishopChecks, knightChecks/*, pawnAttacks*/;
     int kingDanger = 0;
     const Square ksq = pos.square<KING>(Us);
 
@@ -435,9 +436,15 @@ namespace {
     else
         unsafeChecks |= knightChecks;
 
+    // Enemy pawns attacking king
+//  pawnAttacks =  (  pawn_double_attacks_bb<Them>(pos.pieces(Them, PAWN))
+//                  | (pos.pieces(Them, PAWN) & attackedBy[Them][PAWN]))
+//               & (file_of(ksq) > FILE_D ? KingSide : QueenSide)
+//               & TRank4BB;
+
     // Find the squares that opponent attacks in our king flank, the squares
     // which they attack twice in that flank, and the squares that we defend.
-    b1 = attackedBy[Them][ALL_PIECES] & KingFlank[file_of(ksq)] & Camp;
+    b1 = (pos.pieces(Them, PAWN) | attackedBy[Them][ALL_PIECES]) & KingFlank[file_of(ksq)] & Camp;
     b2 = b1 & attackedBy2[Them];
     b3 = attackedBy[Us][ALL_PIECES] & KingFlank[file_of(ksq)] & Camp;
 

@@ -70,7 +70,7 @@ namespace {
 
     constexpr Color     Them = ~Us;
     constexpr Direction Up   = pawn_push(Us);
-    constexpr Bitboard  DE5  = CenterFiles & (Us == WHITE ? Rank5BB : Rank4BB);
+    constexpr Bitboard  CDEF5 = CenterFiles & (Us == WHITE ? Rank5BB : Rank4BB);
 
     Bitboard neighbours, stoppers, support, phalanx, opposed;
     Bitboard lever, leverPush, blocked;
@@ -145,7 +145,7 @@ namespace {
             score += make_score(v, v * (r - 2) / 4);
 
             if (blocked)
-                e->attackPawns[Us] |= (DE5 & s);
+                e->attackPawns[Us] |= (CDEF5 & s);
         }
 
         else if (!neighbours)

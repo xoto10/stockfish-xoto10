@@ -294,10 +294,12 @@ namespace {
             // Bonus if piece is on an outpost square or can reach one
             bb = OutpostRanks & attackedBy[Us][PAWN] & ~pe->pawn_attacks_span(Them);
             if (bb & s)
-                score += Outpost * (Pt == KNIGHT ? 2 : 1);
+                score +=  Outpost * (Pt == KNIGHT ? 2 : 1)
+                        + WeakBlockers * bool(pe->weak_pawns(Them) & (s - Down));
 
             else if (Pt == KNIGHT && bb & b & ~pos.pieces(Us))
-                score += Outpost;
+                score +=  Outpost
+                        + WeakBlockers * bool(pe->weak_pawns(Them) & (s - Down));
 
             // Bonus for a knight or bishop shielded by pawn
             if (shift<Down>(pos.pieces(PAWN)) & s)
@@ -523,11 +525,6 @@ namespace {
         // Additional bonus if weak piece is only protected by a queen
         score += WeakQueenProtection * popcount(weak & attackedBy[Them][QUEEN]);
     }
-
-    // Bonus for pieces in front of or attacks on their weak pawns
-    b =  pe->weak_pawns(Them)
-       & (shift<Up>(pos.pieces(Us)) | attackedBy[Us][ALL_PIECES]);
-    score += WeakBlockers * popcount(b);
 
     // Bonus for restricting their piece moves
     b =   attackedBy[Them][ALL_PIECES]

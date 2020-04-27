@@ -106,8 +106,7 @@ namespace {
         phalanx    = neighbours & rank_bb(s);
         support    = neighbours & rank_bb(s - Up);
 
-        e->blockedCount[Us] +=      (blocked || more_than_one(leverPush))  // 1.27
-                              + 2 * ((CenterFiles & s) && (blocked || more_than_one(leverPush))); //2.83
+        e->blockedCount[Us] += (CenterFiles & s) && (blocked || more_than_one(leverPush));
 
         // A pawn is backward when it is behind all pawns of the same color on
         // the adjacent files and cannot safely advance.

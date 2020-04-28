@@ -55,11 +55,18 @@ namespace {
   // RANK_1 = 0 is used for files where the enemy has no pawn, or their pawn
   // is behind our king. Note that UnblockedStorm[0][1-2] accommodate opponent pawn
   // on edge, likely blocked by our king.
-  constexpr Value UnblockedStorm[int(FILE_NB) / 2][RANK_NB] = {
-    { V( 85), V(-289), V(-166), V(97), V(50), V( 45), V( 50) },
-    { V( 46), V( -25), V( 122), V(45), V(37), V(-10), V( 20) },
-    { V( -6), V(  51), V( 168), V(34), V(-2), V(-22), V(-14) },
-    { V(-15), V( -11), V( 101), V( 4), V(11), V(-15), V(-29) }
+  // Add dimension for centerBlocked
+  constexpr Value UB         [2][int(FILE_NB) / 2][RANK_NB] = {
+    { { V( 85), V(-289), V(-166), V(97), V(50), V( 45), V( 50) },
+      { V( 46), V( -25), V( 122), V(45), V(37), V(-10), V( 20) },
+      { V( -6), V(  51), V( 168), V(34), V(-2), V(-22), V(-14) },
+      { V(-15), V( -11), V( 101), V( 4), V(11), V(-15), V(-29) }
+    },
+    { { V( 85), V(-289), V(-166), V(97), V(50), V( 45), V( 50) },
+      { V( 46), V( -25), V( 122), V(45), V(37), V(-10), V( 20) },
+      { V( -6), V(  51), V( 168), V(34), V(-2), V(-22), V(-14) },
+      { V(-15), V( -11), V( 101), V( 4), V(11), V(-15), V(-29) }
+    }
   };
 
   #undef S
@@ -189,15 +196,17 @@ Entry* probe(const Position& pos) {
 /// penalty for a king, looking at the king file and the two closest files.
 
 template<Color Us>
-Score Entry::evaluate_shelter(const Position& pos, Square ksq) {
+Score Entry::evaluate_shelter(const Position& pos, Square ksq, bool centerBlocked) {
 
   constexpr Color Them = ~Us;
+  constexpr Bitboard FilesDE = FileDBB | FileEBB;
 
   Bitboard b = pos.pieces(PAWN) & ~forward_ranks_bb(Them, ksq);
   Bitboard ourPawns = b & pos.pieces(Us);
   Bitboard theirPawns = b & pos.pieces(Them);
 
   Score bonus = make_score(5, 5);
+  centerBlocked = centerBlocked && !(ksq & FilesDE);
 
   File center = Utility::clamp(file_of(ksq), FILE_B, FILE_G);
   for (File f = File(center - 1); f <= File(center + 1); ++f)
@@ -214,7 +223,7 @@ Score Entry::evaluate_shelter(const Position& pos, Square ksq) {
       if (ourRank && (ourRank == theirRank - 1))
           bonus -= BlockedStorm * int(theirRank == RANK_3);
       else
-          bonus -= make_score(UnblockedStorm[d][theirRank], 0);
+          bonus -= make_score(UB[centerBlocked][d][theirRank], 0);
   }
 
   return bonus;
@@ -227,20 +236,23 @@ Score Entry::evaluate_shelter(const Position& pos, Square ksq) {
 template<Color Us>
 Score Entry::do_king_safety(const Position& pos) {
 
+  constexpr Direction Up = Us == WHITE ? NORTH : SOUTH;
+
+  bool centerBlocked = popcount(shift<Up>(pos.pieces(Us, PAWN)) & pos.pieces(~Us, PAWN) & CenterFiles) > 1;
   Square ksq = pos.square<KING>(Us);
   kingSquares[Us] = ksq;
   castlingRights[Us] = pos.castling_rights(Us);
   auto compare = [](Score a, Score b) { return mg_value(a) < mg_value(b); };
 
-  Score shelter = evaluate_shelter<Us>(pos, ksq);
+  Score shelter = evaluate_shelter<Us>(pos, ksq, centerBlocked);
 
   // If we can castle use the bonus after castling if it is bigger
 
   if (pos.can_castle(Us & KING_SIDE))
-      shelter = std::max(shelter, evaluate_shelter<Us>(pos, relative_square(Us, SQ_G1)), compare);
+      shelter = std::max(shelter, evaluate_shelter<Us>(pos, relative_square(Us, SQ_G1), centerBlocked), compare);
 
   if (pos.can_castle(Us & QUEEN_SIDE))
-      shelter = std::max(shelter, evaluate_shelter<Us>(pos, relative_square(Us, SQ_C1)), compare);
+      shelter = std::max(shelter, evaluate_shelter<Us>(pos, relative_square(Us, SQ_C1), centerBlocked), compare);
 
   // In endgame we like to bring our king near our closest pawn
   Bitboard pawns = pos.pieces(Us, PAWN);

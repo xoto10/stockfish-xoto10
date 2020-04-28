@@ -738,7 +738,7 @@ namespace {
                     + 21 * pawnsOnBothFlanks
                     + 24 * infiltration
                     + 51 * !pos.non_pawn_material()
-                    + 10 * pawnAttack
+                    +  8 * pawnAttack
                     - 43 * almostUnwinnable
                     -110 ;
 
@@ -747,7 +747,7 @@ namespace {
     // Now apply the bonus: note that we find the attacking side by extracting the
     // sign of the midgame or endgame values, and that we carefully cap the bonus
     // so that the midgame and endgame scores do not change sign after the bonus.
-    int u = ((mg > 0) - (mg < 0)) * std::max(std::min(complexity + 50, 0) + 10 * pawnAttack, -abs(mg));
+    int u = ((mg > 0) - (mg < 0)) * std::max(std::min(complexity + 50, 0) + 8 * pawnAttack, -abs(mg));
     int v = ((eg > 0) - (eg < 0)) * std::max(complexity, -abs(eg));
 
     if (T)

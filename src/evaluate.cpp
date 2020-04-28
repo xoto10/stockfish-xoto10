@@ -296,7 +296,7 @@ namespace {
                 score += Outpost * (Pt == KNIGHT ? 2 : 1) * (32 + pe->blocked_count()) / 32;
 
             else if (Pt == KNIGHT && bb & b & ~pos.pieces(Us))
-                score += Outpost * (32 + pe->blocked_count()) / 32;
+                score += Outpost; // * (32 + pe->blocked_count()) / 32;
 
             // Bonus for a knight or bishop shielded by pawn
             if (shift<Down>(pos.pieces(PAWN)) & s)

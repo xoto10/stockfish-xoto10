@@ -1005,6 +1005,10 @@ moves_loop: // When in check, search starts from here
       movedPiece = pos.moved_piece(move);
       givesCheck = pos.gives_check(move);
 
+      // Encourage further push of same pawn
+      if (type_of(movedPiece) == PAWN && from_sq(move) == to_sq((ss-2)->currentMove))
+          thisThread->mainHistory[us][from_to(move)] << 1000;
+
       // Calculate new depth for this move
       newDepth = depth - 1;
 

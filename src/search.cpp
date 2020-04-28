@@ -1005,10 +1005,6 @@ moves_loop: // When in check, search starts from here
       movedPiece = pos.moved_piece(move);
       givesCheck = pos.gives_check(move);
 
-      // Encourage further push of same pawn
-      if (type_of(movedPiece) == PAWN && from_sq(move) == to_sq((ss-2)->currentMove))
-          thisThread->mainHistory[us][from_to(move)] << 500;
-
       // Calculate new depth for this move
       newDepth = depth - 1;
 
@@ -1123,6 +1119,10 @@ moves_loop: // When in check, search starts from here
       // Last captures extension
       else if (   PieceValue[EG][pos.captured_piece()] > PawnValueEg
                && pos.non_pawn_material() <= 2 * RookValueMg)
+          extension = 1;
+
+      // Encourage further push of same pawn
+      else if (type_of(movedPiece) == PAWN && from_sq(move) == to_sq((ss-2)->currentMove))
           extension = 1;
 
       // Castling extension

@@ -297,9 +297,9 @@ namespace {
                 score +=  Outpost * (Pt == KNIGHT ? 2 : 1)
                         + WeakBlockers * bool(pe->weak_pawns(Them) & (s - Down));
 
-            else if (Pt == KNIGHT && bb & b & ~pos.pieces(Us))
+            else if (Pt == KNIGHT && (bb & b & ~pos.pieces(Us)))
                 score +=  Outpost
-                        + WeakBlockers * bool(pe->weak_pawns(Them) & (s - Down));
+                        + WeakBlockers * bool(pe->weak_pawns(Them) & shift<-Down>(bb & b & ~pos.pieces(Us)));
 
             // Bonus for a knight or bishop shielded by pawn
             if (shift<Down>(pos.pieces(PAWN)) & s)

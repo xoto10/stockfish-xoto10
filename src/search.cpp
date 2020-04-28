@@ -903,7 +903,7 @@ namespace {
     {
         Value raisedBeta = beta + 189 - 45 * improving;
         assert(raisedBeta < VALUE_INFINITE);
-        MovePicker mp(pos, ttMove, raisedBeta - ss->staticEval, &captureHistory);
+        MovePicker mp(pos, ttMove, raisedBeta - ss->staticEval, &captureHistory, to_sq((ss-2)->currentMove));
         int probCutCount = 0;
 
         while (   (move = mp.next_move()) != MOVE_NONE
@@ -965,7 +965,8 @@ moves_loop: // When in check, search starts from here
                                       contHist,
                                       countermove,
                                       ss->killers,
-                                      depth > 12 ? ss->ply : MAX_PLY);
+                                      depth > 12 ? ss->ply : MAX_PLY,
+                                      to_sq((ss-2)->currentMove));
 
     value = bestValue;
     singularLMR = moveCountPruning = false;
@@ -1507,7 +1508,8 @@ moves_loop: // When in check, search starts from here
     MovePicker mp(pos, ttMove, depth, &thisThread->mainHistory,
                                       &thisThread->captureHistory,
                                       contHist,
-                                      to_sq((ss-1)->currentMove));
+                                      to_sq((ss-1)->currentMove),
+                                      to_sq((ss-2)->currentMove));
 
     // Loop through the moves until no moves remain or a beta cutoff occurs
     while ((move = mp.next_move()) != MOVE_NONE)

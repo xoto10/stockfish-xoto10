@@ -23,14 +23,12 @@
 #include <cstring>   // For std::memset
 #include <iomanip>
 #include <sstream>
-//#include <iostream>
 
 #include "bitboard.h"
 #include "evaluate.h"
 #include "material.h"
 #include "pawns.h"
 #include "thread.h"
-//#include "uci.h"
 
 namespace Trace {
 
@@ -667,15 +665,8 @@ namespace {
     // Bonus for passers further apart
     if (minFile < FILE_NB && pos.opposite_bishops())
     {
-        int width = maxFile - minFile;
+        int width = maxFile - minFile - 2;
         score += make_score(6 * width, 6 * width);
-//sync_cout << "info string xxx: us " << Us
-//          << " pos\n" << pos
-//          << " bb\n" << Bitboards::pretty(b)
-//          << " sq " << UCI::square(s)
-//          << " xxx: mv " << UCI::move(move,false)
-//          << " w " << width
-//          << sync_endl;
     }
 
     if (T)

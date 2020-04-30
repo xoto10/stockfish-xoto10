@@ -665,8 +665,8 @@ namespace {
     // Bonus for passers further apart
     if (pos.opposite_bishops())
     {
-        int width = maxFile - minFile - 4;
-        score += make_score(6 * width, 6 * width);
+        int width = maxFile - minFile;
+        score += make_score(4 * width, 4 * width);
     }
 
     if (T)

@@ -663,8 +663,11 @@ namespace {
     }
 
     // Bonus for passers further apart
-    int width = maxFile - minFile;
-    score += make_score(6 * width, 6 * width);
+    if (pos.opposite_bishops())
+    {
+        int width = maxFile - minFile;
+        score += make_score(6 * width, 6 * width);
+    }
 
     if (T)
         Trace::add(PASSED, Us, score);

@@ -33,7 +33,7 @@ namespace {
 
   // Pawn penalties
   constexpr Score Backward      = S( 9, 24);
-  constexpr Score BlockedKFlank = S(12, 12);
+  constexpr Score BlockedKFlank = S(24, 24);
   constexpr Score BlockedStorm  = S(82, 82);
   constexpr Score Doubled       = S(11, 56);
   constexpr Score Isolated      = S( 5, 15);

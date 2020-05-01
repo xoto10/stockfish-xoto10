@@ -128,6 +128,7 @@ namespace {
 
   // Assorted bonuses and penalties
   constexpr Score BishopPawns         = S(  3,  7);
+  constexpr Score Controlling         = S(  6,  6);
   constexpr Score CorneredBishop      = S( 50, 50);
   constexpr Score FlankAttacks        = S(  8,  0);
   constexpr Score Hanging             = S( 69, 36);
@@ -483,6 +484,8 @@ namespace {
     constexpr Color     Them     = ~Us;
     constexpr Direction Up       = pawn_push(Us);
     constexpr Bitboard  TRank3BB = (Us == WHITE ? Rank3BB : Rank6BB);
+    constexpr Bitboard  TheirCamp = (Us == WHITE ? AllSquares ^ Rank1BB ^ Rank2BB ^ Rank3BB
+                                                 : AllSquares ^ Rank6BB ^ Rank7BB ^ Rank8BB);
 
     Bitboard b, weak, defended, nonPawnEnemies, stronglyProtected, safe;
     Score score = SCORE_ZERO;
@@ -528,6 +531,12 @@ namespace {
        & ~stronglyProtected
        &  attackedBy[Us][ALL_PIECES];
     score += RestrictedPiece * popcount(b);
+
+    // Bonus for controlling squares in their camp
+    b =   TheirCamp
+       & (  (~stronglyProtected & attackedBy2[Us])
+          | (~attackedBy[Them][ALL_PIECES] & attackedBy[Us][ALL_PIECES]) );
+    score += Controlling * popcount(b);
 
     // Protected or unattacked squares
     safe = ~attackedBy[Them][ALL_PIECES] | attackedBy[Us][ALL_PIECES];

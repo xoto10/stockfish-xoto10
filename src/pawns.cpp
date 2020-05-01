@@ -33,7 +33,6 @@ namespace {
 
   // Pawn penalties
   constexpr Score Backward      = S( 9, 24);
-  constexpr Score BlockedStorm  = S(82, 82);
   constexpr Score Doubled       = S(11, 56);
   constexpr Score Isolated      = S( 5, 15);
   constexpr Score WeakLever     = S( 0, 56);
@@ -51,21 +50,24 @@ namespace {
     { V(-39), V(-13), V(-29), V(-52), V(-48), V(-67), V(-166) }
   };
 
+  // Danger of enemy pawns moving towards our king but blocked by our pawns
+  constexpr Score BlockedStorm[2] = { S(83, 83), S(87, 77) };
+
   // Danger of enemy pawns moving toward our king by [distance from edge][rank].
   // RANK_1 = 0 is used for files where the enemy has no pawn, or their pawn
   // is behind our king. Note that UnblockedStorm[0][1-2] accommodate opponent pawn
   // on edge, likely blocked by our king.
   // Add dimension for centerBlocked
-  constexpr Value UB         [2][int(FILE_NB) / 2][RANK_NB] = {
-    { { V( 85), V(-289), V(-166), V(97), V(50), V( 45), V( 50) },
-      { V( 46), V( -25), V( 122), V(45), V(37), V(-10), V( 20) },
-      { V( -6), V(  51), V( 168), V(34), V(-2), V(-22), V(-14) },
-      { V(-15), V( -11), V( 101), V( 4), V(11), V(-15), V(-29) }
+  constexpr Value UnblockedStorm[2][int(FILE_NB) / 2][RANK_NB] = {
+    { { V( 86), V(-299), V(-162), V(97), V(51), V( 47), V( 47) },
+      { V( 45), V( -28), V( 123), V(44), V(35), V( -9), V( 20) },
+      { V( -6), V(  59), V( 177), V(35), V(-3), V(-22), V(-12) },
+      { V(-14), V( -13), V(  94), V( 5), V(11), V(-13), V(-33) }
     },
-    { { V( 85), V(-289), V(-166), V(97), V(50), V( 45), V( 50) },
-      { V( 46), V( -25), V( 122), V(45), V(37), V(-10), V( 20) },
-      { V( -6), V(  51), V( 168), V(34), V(-2), V(-22), V(-14) },
-      { V(-15), V( -11), V( 101), V( 4), V(11), V(-15), V(-29) }
+    { { V( 84), V(-284), V(-176), V(95), V(48), V( 46), V( 53) },
+      { V( 44), V( -22), V( 125), V(49), V(38), V(-11), V( 21) },
+      { V( -5), V(  56), V( 146), V(34), V( 0), V(-20), V(-15) },
+      { V(-15), V(  -9), V( 117), V( 4), V(12), V(-14), V(-28) }
     }
   };
 
@@ -221,9 +223,9 @@ Score Entry::evaluate_shelter(const Position& pos, Square ksq, bool centerBlocke
       bonus += make_score(ShelterStrength[d][ourRank], 0);
 
       if (ourRank && (ourRank == theirRank - 1))
-          bonus -= BlockedStorm * int(theirRank == RANK_3);
+          bonus -= BlockedStorm[centerBlocked] * int(theirRank == RANK_3);
       else
-          bonus -= make_score(UB[centerBlocked][d][theirRank], 0);
+          bonus -= make_score(UnblockedStorm[centerBlocked][d][theirRank], 0);
   }
 
   return bonus;

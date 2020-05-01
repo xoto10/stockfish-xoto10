@@ -70,7 +70,7 @@ namespace {
 
     constexpr Color     Them = ~Us;
     constexpr Direction Up   = pawn_push(Us);
-    constexpr Bitboard  BtoG = AllSquares ^ FileABB ^ FileHBB;
+    constexpr Bitboard  AorH = FileABB | FileHBB;
 
     Bitboard neighbours, stoppers, support, phalanx, opposed;
     Bitboard lever, leverPush, blocked;
@@ -111,8 +111,7 @@ namespace {
         // A pawn is backward when it is behind all pawns of the same color on
         // the adjacent files and cannot safely advance.
         backward =  !(neighbours & forward_ranks_bb(Them, s + Up))
-                  && (leverPush | blocked)
-                  && (BtoG & s);
+                  && (leverPush | blocked);
 
         // Compute additional span if pawn is not backward nor blocked
         if (!backward && !blocked)
@@ -150,7 +149,7 @@ namespace {
                      + WeakUnopposed * !opposed;
 
         else if (backward)
-            score -=   Backward
+            score -=   (AorH & s ? Backward / 2 : Backward)
                      + WeakUnopposed * !opposed;
 
         if (!support)

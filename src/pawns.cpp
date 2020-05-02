@@ -70,7 +70,7 @@ namespace {
 
     constexpr Color     Them = ~Us;
     constexpr Direction Up   = pawn_push(Us);
-    constexpr Bitboard  AorH = FileABB | FileHBB;
+    constexpr Bitboard  BtoG = AllSquares ^ FileABB ^ FileHBB;
 
     Bitboard neighbours, stoppers, support, phalanx, opposed;
     Bitboard lever, leverPush, blocked;
@@ -148,8 +148,8 @@ namespace {
             score -=   Isolated
                      + WeakUnopposed * !opposed;
 
-        else if (backward)
-            score -=   (AorH & s ? Backward / 2 : Backward)
+        else if (backward && (BtoG & s))
+            score -=   Backward
                      + WeakUnopposed * !opposed;
 
         if (!support)

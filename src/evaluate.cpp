@@ -698,7 +698,7 @@ namespace {
     behind |= shift<Down+Down>(behind);
 
     int bonus = popcount(safe) + popcount(behind & safe & ~attackedBy[Them][ALL_PIECES]);
-    if (mg_value(mobDiff) * (Us == WHITE ? 1 : -1) > 70)
+    if (mg_value(mobDiff) * (Us == WHITE ? 1 : -1) > 100)
         bonus += popcount(pos.pieces(Us, PAWN) & TheirHalf);
     int weight = pos.count<ALL_PIECES>(Us) - 3 + std::min(pe->blocked_count(), 9);
     Score score = make_score(bonus * weight * weight / 16, 0);

@@ -1742,8 +1742,8 @@ moves_loop: // When in check, search starts from here
     if (type_of(pos.moved_piece(move)) == PAWN)
     {
         int r50c = pos.rule50_count();
-        if (r50c > 50 && v < 0)
-            bonus = bonus * (100 - r50c) / 50;
+        if (r50c > 30 && v < 0 && bonus > 0)
+            bonus = bonus * (100 - r50c) / 70;
     }
 
     thisThread->mainHistory[us][from_to(move)] << bonus;

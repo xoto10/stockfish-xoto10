@@ -166,7 +166,7 @@ namespace {
     template<Color Us> Score king() const;
     template<Color Us> Score threats() const;
     template<Color Us> Score passed() const;
-    template<Color Us> Score space() const;
+    template<Color Us> Score space(Score mobDiff) const;
     ScaleFactor scale_factor(Value eg) const;
     Score initiative(Score score) const;
 
@@ -673,7 +673,7 @@ namespace {
   // improve play on game opening.
 
   template<Tracing T> template<Color Us>
-  Score Evaluation<T>::space() const {
+  Score Evaluation<T>::space(Score mobDiff) const {
 
     if (pos.non_pawn_material() < SpaceThreshold)
         return SCORE_ZERO;
@@ -683,6 +683,9 @@ namespace {
     constexpr Bitboard SpaceMask =
       Us == WHITE ? CenterFiles & (Rank2BB | Rank3BB | Rank4BB)
                   : CenterFiles & (Rank7BB | Rank6BB | Rank5BB);
+    constexpr Bitboard TheirHalf =
+      Us == WHITE ? (Rank5BB | Rank6BB | Rank7BB | Rank8BB)
+                  : (Rank1BB | Rank2BB | Rank3BB | Rank4BB);
 
     // Find the available squares for our pieces inside the area defined by SpaceMask
     Bitboard safe =   SpaceMask
@@ -695,6 +698,8 @@ namespace {
     behind |= shift<Down+Down>(behind);
 
     int bonus = popcount(safe) + popcount(behind & safe & ~attackedBy[Them][ALL_PIECES]);
+    if (mg_value(mobDiff) * (Us == WHITE ? 1 : -1) > 70)
+        bonus += popcount(pos.pieces(Us, PAWN) & TheirHalf);
     int weight = pos.count<ALL_PIECES>(Us) - 3 + std::min(pe->blocked_count(), 9);
     Score score = make_score(bonus * weight * weight / 16, 0);
 
@@ -822,13 +827,14 @@ namespace {
             + pieces<WHITE, ROOK  >() - pieces<BLACK, ROOK  >()
             + pieces<WHITE, QUEEN >() - pieces<BLACK, QUEEN >();
 
-    score += mobility[WHITE] - mobility[BLACK];
+    Score mobDiff = mobility[WHITE] - mobility[BLACK];
+    score += mobDiff;
 
     // More complex interactions that require fully populated attack bitboards
     score +=  king<   WHITE>() - king<   BLACK>()
             + threats<WHITE>() - threats<BLACK>()
             + passed< WHITE>() - passed< BLACK>()
-            + space<  WHITE>() - space<  BLACK>();
+            + space<WHITE>(mobDiff) - space<BLACK>(mobDiff);
 
     score += initiative(score);
 

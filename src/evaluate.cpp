@@ -770,7 +770,7 @@ namespace {
                 sf = 22 + 3 * pos.count<ALL_PIECES>(strongSide);
         }
         else
-            sf = std::min(sf, 37 + 7 * pos.count<PAWN>(strongSide) - pe->blocked_count());
+            sf = std::min(sf, 39 + 7 * pos.count<PAWN>(strongSide) - 2 * pe->blocked_count());
 
         sf = std::max(0, sf - (pos.rule50_count() - 12) / 4);
     }

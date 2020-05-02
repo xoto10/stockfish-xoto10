@@ -827,8 +827,16 @@ namespace {
     // More complex interactions that require fully populated attack bitboards
     score +=  king<   WHITE>() - king<   BLACK>()
             + threats<WHITE>() - threats<BLACK>()
-            + passed< WHITE>() - passed< BLACK>()
-            + space<  WHITE>() - space<  BLACK>();
+            + passed< WHITE>() - passed< BLACK>();
+
+    Score spaceDiff = space<WHITE>() - space<BLACK>();
+    score += spaceDiff;
+
+    // If strong space advantage give extra bonus for pawns in their half
+    if (mg_value(spaceDiff) > 70)
+        score += make_score(10 * popcount(pos.pieces(WHITE, PAWN) & (Rank5BB | Rank6BB | Rank7BB)), 0);
+    else if (mg_value(spaceDiff) < -70)
+        score += make_score(10 * popcount(pos.pieces(BLACK, PAWN) & (Rank2BB | Rank3BB | Rank4BB)), 0);
 
     score += initiative(score);
 

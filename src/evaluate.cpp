@@ -140,6 +140,7 @@ namespace {
   constexpr Score KnightOutpost       = S( 56, 36);
   constexpr Score BishopOutpost       = S( 30, 23);
   constexpr Score ReachableOutpost    = S( 31, 22);
+  constexpr Score OutpostAttackedBy2  = S( 16, 13);
   constexpr Score PassedFile          = S( 11,  8);
   constexpr Score PawnlessFlank       = S( 17, 95);
   constexpr Score RestrictedPiece     = S(  7,  7);
@@ -209,6 +210,8 @@ namespace {
     // a white knight on g5 and black's king is on g8, this white knight adds 2
     // to kingAttacksCount[WHITE].
     int kingAttacksCount[COLOR_NB];
+
+    Bitboard outposts[COLOR_NB];
   };
 
 
@@ -249,6 +252,8 @@ namespace {
 
     // Remove from kingRing[] the squares defended by two pawns
     kingRing[Us] &= ~dblAttackByPawn;
+
+    outposts[Us] = 0;
   }
 
 
@@ -297,7 +302,10 @@ namespace {
             // Bonus if piece is on an outpost square or can reach one
             bb = OutpostRanks & attackedBy[Us][PAWN] & ~pe->pawn_attacks_span(Them);
             if (bb & s)
+            {
                 score += (Pt == KNIGHT) ? KnightOutpost : BishopOutpost;
+                outposts[Us] |= s;
+            }
             else if (Pt == KNIGHT && bb & b & ~pos.pieces(Us))
                 score += ReachableOutpost;
 
@@ -554,6 +562,10 @@ namespace {
     // Bonus for safe pawn threats on the next move
     b = pawn_attacks_bb<Us>(b) & nonPawnEnemies;
     score += ThreatByPawnPush * popcount(b);
+
+    // Bonus for threats on the next moves against enemy queen
+    b = outposts[Us] & attackedBy2[Us];
+    score += OutpostAttackedBy2 * popcount(b);
 
     // Bonus for threats on the next moves against enemy queen
     if (pos.count<QUEEN>(Them) == 1)

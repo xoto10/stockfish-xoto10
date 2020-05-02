@@ -152,7 +152,7 @@ namespace {
                      + WeakUnopposed * !opposed;
 
         if (!support)
-            score -=   Doubled * doubled * (4 + !neighbours) / 4
+            score -=   Doubled * doubled * (1 + !phalanx) / 2
                      + WeakLever * more_than_one(lever);
     }
 

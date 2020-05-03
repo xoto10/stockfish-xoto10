@@ -1742,8 +1742,18 @@ moves_loop: // When in check, search starts from here
     thisThread->mainHistory[us][from_to(move)] << bonus;
     update_continuation_histories(ss, pos.moved_piece(move), to_sq(move), bonus);
 
-    if (type_of(pos.moved_piece(move)) != PAWN && v >= -1)
+    if (depth > 4 && type_of(pos.moved_piece(move)) != PAWN && v >= -1)
+{
         thisThread->mainHistory[us][from_to(reverse_move(move))] << -bonus;
+sync_cout << "info string rev: us " << us
+          << " pos\n" << pos
+//          << " bb\n" << Bitboards::pretty(b)
+//          << " sq " << UCI::square(s)
+          << " mv " << UCI::move(move,false)
+          << " d " << depth
+          << " v " << v
+          << sync_endl;
+}
 
     if (is_ok((ss-1)->currentMove))
     {

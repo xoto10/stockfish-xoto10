@@ -32,7 +32,7 @@ namespace {
   #define S(mg, eg) make_score(mg, eg)
 
   // Pawn penalties
-  constexpr Score Backward      = S( 8, 20);
+  constexpr Score Backward      = S( 7, 16);
   constexpr Score BlockedStorm  = S(82, 82);
   constexpr Score Doubled       = S(11, 56);
   constexpr Score Isolated      = S( 5, 15);
@@ -148,7 +148,7 @@ namespace {
                      + WeakUnopposed * !opposed;
 
         else if (backward)
-            score -=   Backward * std::min(2, edge_distance(file_of(s)))
+            score -=   Backward * edge_distance(file_of(s))
                      + WeakUnopposed * !opposed;
 
         if (!support)

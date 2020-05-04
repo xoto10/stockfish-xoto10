@@ -148,7 +148,7 @@ namespace {
                      + WeakUnopposed * !opposed;
 
         else if (backward)
-            score -=   Backward * edge_distance(file_of(s))
+            score -=   Backward * std::min(2, edge_distance(file_of(s)))
                      + WeakUnopposed * !opposed;
 
         if (!support)

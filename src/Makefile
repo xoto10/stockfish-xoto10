@@ -40,6 +40,10 @@ OBJS = benchmark.o bitbase.o bitboard.o endgame.o evaluate.o main.o \
 	material.o misc.o movegen.o movepick.o pawns.o position.o psqt.o \
 	search.o thread.o timeman.o tt.o uci.o ucioption.o tune.o syzygy/tbprobe.o
 
+### tbprobe.o
+TBPROBE = syzygy/tbprobe.o
+TBPROBEDEPS = bitboard.h movegen.h position.h search.h types.h uci.h
+
 ### Establish the operating system name
 KERNEL = $(shell uname -s)
 ifeq ($(KERNEL),Linux)
@@ -498,6 +502,8 @@ config-sanity:
 
 $(EXE): $(OBJS)
 	$(CXX) -o $@ $(OBJS) $(LDFLAGS)
+
+$(TBPROBE): $(TBPROBEDEPS)
 
 clang-profile-make:
 	$(MAKE) ARCH=$(ARCH) COMP=$(COMP) \

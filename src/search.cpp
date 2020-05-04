@@ -84,7 +84,7 @@ namespace {
 
   // History and stats update bonus, based on depth
   int stat_bonus(Depth d) {
-    return d > 15 ? -8 : 19 * d * d + 155 * d - 132;
+    return d > 15 ? 0 : 19 * d * d + 155 * d - 132;
   }
 
   // Add a small random component to draw evaluations to avoid 3fold-blindness
@@ -1742,18 +1742,8 @@ moves_loop: // When in check, search starts from here
     thisThread->mainHistory[us][from_to(move)] << bonus;
     update_continuation_histories(ss, pos.moved_piece(move), to_sq(move), bonus);
 
-    if (depth > 4 && type_of(pos.moved_piece(move)) != PAWN && v >= -1)
-{
+    if (type_of(pos.moved_piece(move)) != PAWN && v >= -1)
         thisThread->mainHistory[us][from_to(reverse_move(move))] << -bonus;
-sync_cout << "info string rev: us " << us
-          << " pos\n" << pos
-//          << " bb\n" << Bitboards::pretty(b)
-//          << " sq " << UCI::square(s)
-          << " mv " << UCI::move(move,false)
-          << " d " << depth
-          << " v " << v
-          << sync_endl;
-}
 
     if (is_ok((ss-1)->currentMove))
     {

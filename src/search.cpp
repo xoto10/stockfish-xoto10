@@ -1742,8 +1742,9 @@ moves_loop: // When in check, search starts from here
     thisThread->mainHistory[us][from_to(move)] << bonus;
     update_continuation_histories(ss, pos.moved_piece(move), to_sq(move), bonus);
 
-    if (type_of(pos.moved_piece(move)) != PAWN && v >= -1 && bonus > 0)
-        thisThread->mainHistory[us][from_to(reverse_move(move))] << -bonus;
+    if (type_of(pos.moved_piece(move)) != PAWN)
+        thisThread->mainHistory[us][from_to(reverse_move(move))] << -bonus * (v >= -1 ? 1 : -1)
+                                                                           * (bonus > 0 ? 1 : -1);
 
     if (is_ok((ss-1)->currentMove))
     {

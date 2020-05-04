@@ -1672,7 +1672,6 @@ moves_loop: // When in check, search starts from here
                         Move* quietsSearched, int quietCount, Move* capturesSearched, int captureCount, Depth depth) {
 
     int bonus1, bonus2;
-    Color us = pos.side_to_move();
     Thread* thisThread = pos.this_thread();
     CapturePieceToHistory& captureHistory = thisThread->captureHistory;
     Piece moved_piece = pos.moved_piece(bestMove);
@@ -1688,10 +1687,7 @@ moves_loop: // When in check, search starts from here
 
         // Decrease all the non-best quiet moves
         for (int i = 0; i < quietCount; ++i)
-        {
-            thisThread->mainHistory[us][from_to(quietsSearched[i])] << -bonus2;
-            update_continuation_histories(ss, pos.moved_piece(quietsSearched[i]), to_sq(quietsSearched[i]), -bonus2 * 3 / 2);
-        }
+            update_continuation_histories(ss, pos.moved_piece(quietsSearched[i]), to_sq(quietsSearched[i]), -bonus2);
     }
     else
         captureHistory[moved_piece][to_sq(bestMove)][captured] << bonus1;

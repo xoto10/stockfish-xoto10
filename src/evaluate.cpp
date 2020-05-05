@@ -527,10 +527,10 @@ namespace {
         score += WeakQueenProtection * popcount(weak & attackedBy[Them][QUEEN]);
     }
 
-    // Bonus for pieces in front of their weak pawns
-    b =  pe->weak_pawns(Them)
-       & attackedBy[Us][ALL_PIECES];
-    score += WeakAttackers * popcount(b);
+    // Bonus for pieces on same side of board as weak pawns
+    int n =  bool(pe->weak_pawns(Them) & QueenSide) * popcount(pos.pieces(Us) & QueenSide)
+           + bool(pe->weak_pawns(Them) & KingSide ) * popcount(pos.pieces(Us) & KingSide);
+    score += WeakAttackers * n;
 
     // Bonus for restricting their piece moves
     b =   attackedBy[Them][ALL_PIECES]

@@ -106,6 +106,10 @@ namespace {
       S(110,182), S(114,182), S(114,192), S(116,219) }
   };
 
+  // RookOnFile[semiopen/open] contains bonuses for each rook when there is
+  // no (friendly) pawn on the rook file.
+  constexpr Score RookOnFile[] = { S(19, 7), S(48, 29) };
+
   // ThreatByMinor/ByRook[attacked PieceType] contains bonuses according to
   // which piece type attacks which one. Attacks on lesser pieces which are
   // pawn-defended are not considered.
@@ -343,7 +347,9 @@ namespace {
                 score += RookOnQueenFile;
 
             // Bonus for rook on an open or semi-open file
-            if (attacks_bb<ROOK>(s, pos.pieces(PAWN)) & TRank8)
+            if (pos.is_on_semiopen_file(Us, s))
+                score += RookOnFile[pos.is_on_semiopen_file(Them, s)];
+            else if (attacks_bb<ROOK>(s, pos.pieces(PAWN)) & TRank8)
                 score += RookSeesLastRank;
             else if (b & pos.pieces(Them, PAWN))
                 score += RookAttacksPawn;

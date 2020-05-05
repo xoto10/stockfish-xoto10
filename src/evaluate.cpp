@@ -487,6 +487,8 @@ namespace {
     constexpr Color     Them     = ~Us;
     constexpr Direction Up       = pawn_push(Us);
     constexpr Bitboard  TRank3BB = (Us == WHITE ? Rank3BB : Rank6BB);
+    constexpr Bitboard  FilesBCD = FileBBB | FileCBB | FileDBB;
+    constexpr Bitboard  FilesEFG = FileEBB | FileFBB | FileGBB;
 
     Bitboard b, weak, defended, nonPawnEnemies, stronglyProtected, safe;
     Score score = SCORE_ZERO;
@@ -527,9 +529,9 @@ namespace {
         score += WeakQueenProtection * popcount(weak & attackedBy[Them][QUEEN]);
     }
 
-    // Bonus for pieces on same side of board as weak pawns
-    int n =  bool(pe->weak_pawns(Them) & QueenSide) * popcount(pos.pieces(Us) & QueenSide)
-           + bool(pe->weak_pawns(Them) & KingSide ) * popcount(pos.pieces(Us) & KingSide);
+    // Bonus for pieces on same side of board as weak pawnsKingFlank
+    int n =  bool(pe->weak_pawns(Them) & FilesBCD) * popcount(pos.pieces(Us) & QueenSide)
+           + bool(pe->weak_pawns(Them) & FilesEFG) * popcount(pos.pieces(Us) & KingSide);
     score += WeakAttackers * n;
 
     // Bonus for restricting their piece moves

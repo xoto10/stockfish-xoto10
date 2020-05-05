@@ -106,10 +106,6 @@ namespace {
       S(110,182), S(114,182), S(114,192), S(116,219) }
   };
 
-  // RookOnFile[semiopen/open] contains bonuses for each rook when there is
-  // no (friendly) pawn on the rook file.
-  constexpr Score RookOnFile[] = { S(19, 7), S(48, 29) };
-
   // ThreatByMinor/ByRook[attacked PieceType] contains bonuses according to
   // which piece type attacks which one. Attacks on lesser pieces which are
   // pawn-defended are not considered.
@@ -143,6 +139,8 @@ namespace {
   constexpr Score PawnlessFlank       = S( 17, 95);
   constexpr Score RestrictedPiece     = S(  7,  7);
   constexpr Score RookOnQueenFile     = S(  5,  9);
+  constexpr Score RookAttacksPawn     = S( 19,  7);
+  constexpr Score RookSeesLastRank    = S( 48, 29);
   constexpr Score SliderOnQueen       = S( 59, 18);
   constexpr Score ThreatByKing        = S( 24, 89);
   constexpr Score ThreatByPawnPush    = S( 48, 39);
@@ -259,6 +257,7 @@ namespace {
     constexpr Direction Down = -pawn_push(Us);
     constexpr Bitboard OutpostRanks = (Us == WHITE ? Rank4BB | Rank5BB | Rank6BB
                                                    : Rank5BB | Rank4BB | Rank3BB);
+    constexpr Bitboard TRank8 = (Us == WHITE ? Rank8BB : Rank1BB);
     const Square* pl = pos.squares<Pt>(Us);
 
     Bitboard b, bb;
@@ -344,8 +343,10 @@ namespace {
                 score += RookOnQueenFile;
 
             // Bonus for rook on an open or semi-open file
-            if (pos.is_on_semiopen_file(Us, s))
-                score += RookOnFile[pos.is_on_semiopen_file(Them, s)];
+            if (attacks_bb<ROOK>(s, pos.pieces(PAWN)) & TRank8)
+                score += RookSeesLastRank;
+            else if (b & pos.pieces(Them, PAWN))
+                score += RookAttacksPawn;
 
             // Penalty when trapped by the king, even more if the king cannot castle
             else if (mob <= 3)

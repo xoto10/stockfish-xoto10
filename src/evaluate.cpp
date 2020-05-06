@@ -258,8 +258,10 @@ namespace {
 
     constexpr Color     Them = ~Us;
     constexpr Direction Down = -pawn_push(Us);
+    constexpr Bitboard FilesDE = FileDBB | FileEBB;
     constexpr Bitboard OutpostRanks = (Us == WHITE ? Rank4BB | Rank5BB | Rank6BB
                                                    : Rank5BB | Rank4BB | Rank3BB);
+    constexpr Score ScoreLow = make_score(-200, -200);
     const Square* pl = pos.squares<Pt>(Us);
 
     Bitboard b, bb;
@@ -290,10 +292,10 @@ namespace {
 
         int mob = popcount(b & mobilityArea[Us]);
 
-        mobility[Us] += MobilityBonus[Pt - 2][mob];
-
         if (Pt == BISHOP || Pt == KNIGHT)
         {
+            mobility[Us] += MobilityBonus[Pt - 2][mob];
+
             // Bonus if piece is on an outpost square or can reach one
             bb = OutpostRanks & attackedBy[Us][PAWN] & ~pe->pawn_attacks_span(Them);
             if (bb & s)
@@ -343,6 +345,8 @@ namespace {
 
         if (Pt == ROOK)
         {
+            mobility[Us] += std::max(MobilityBonus[Pt - 2][mob], FilesDE & s ? SCORE_ZERO : ScoreLow);
+
             // Bonus for rook on the same file as a queen
             if (file_bb(s) & pos.pieces(QUEEN))
                 score += RookOnQueenFile;
@@ -362,6 +366,8 @@ namespace {
 
         if (Pt == QUEEN)
         {
+            mobility[Us] += MobilityBonus[Pt - 2][mob];
+
             // Penalty if any relative pin or discovered attack against the queen
             Bitboard queenPinners;
             if (pos.slider_blockers(pos.pieces(Them, ROOK, BISHOP), s, queenPinners))

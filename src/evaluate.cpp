@@ -159,7 +159,7 @@ inline Range vary20(int c) {
     return (abs(c) < 20) ? Range(c-20, c+20) : c < 0 ? Range(c * 2, 0) : Range(0, c * 2);
 }
 
-TUNE(BX, LD, WLD, A, B);
+TUNE(SetRange(vary20), BX, LD, WLD, A, B);
 
 #undef S
 

@@ -221,7 +221,8 @@ namespace {
     constexpr Direction Up   = pawn_push(Us);
     constexpr Direction Down = -Up;
     constexpr Bitboard LowRanks = (Us == WHITE ? Rank2BB | Rank3BB : Rank7BB | Rank6BB);
-    constexpr Bitboard A2H2 = (Us == WHITE ? Rank2BB : Rank7BB) & (FileABB | FileHBB);
+//    // Only KS at the moment while experimenting:
+//    constexpr Bitboard A2H2 = (Us == WHITE ? Rank2BB : Rank7BB) & (FileHBB);
 
     const Square ksq = pos.square<KING>(Us);
 
@@ -233,7 +234,8 @@ namespace {
     // Squares occupied by those pawns, by our king or queen, by blockers to attacks on our king
     // or controlled by enemy pawns are excluded from the mobility area.
     mobilityArea[Us] = ~(b | pos.pieces(Us, KING, QUEEN) | pos.blockers_for_king(Us) | pe->pawn_attacks(Them)
-                           | (shift<Down>(pos.pieces(Us, PAWN)) & A2H2 & shift<OUT>(pos.pieces(Us, PAWN))) );
+                           | FileABB | FileHBB);
+//                           | (shift<Down>(pos.pieces(Us, PAWN)) & A2H2 & shift<EAST>(pos.pieces(Us, PAWN))) );
 
     // Initialize attackedBy[] for king and pawns
     attackedBy[Us][KING] = pos.attacks_from<KING>(ksq);

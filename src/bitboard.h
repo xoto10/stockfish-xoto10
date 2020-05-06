@@ -163,7 +163,6 @@ constexpr Bitboard shift(Bitboard b) {
         : D == EAST       ? (b & ~FileHBB) << 1 : D == WEST       ? (b & ~FileABB) >> 1
         : D == NORTH_EAST ? (b & ~FileHBB) << 9 : D == NORTH_WEST ? (b & ~FileABB) << 7
         : D == SOUTH_EAST ? (b & ~FileHBB) >> 7 : D == SOUTH_WEST ? (b & ~FileABB) >> 9
-        : D == OUT        ? ((b & (FileBBB | FileCBB | FileDBB)) >> 1) | ((b & (FileEBB | FileFBB | FileGBB)) << 1)
         : 0;
 }
 

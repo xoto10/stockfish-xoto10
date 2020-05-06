@@ -246,9 +246,7 @@ enum Direction : int {
   NORTH_EAST = NORTH + EAST,
   SOUTH_EAST = SOUTH + EAST,
   SOUTH_WEST = SOUTH + WEST,
-  NORTH_WEST = NORTH + WEST,
-
-  OUT = 4
+  NORTH_WEST = NORTH + WEST
 };
 
 enum File : int {

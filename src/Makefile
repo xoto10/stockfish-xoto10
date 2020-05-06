@@ -39,7 +39,6 @@ PGOBENCH = ./$(EXE) bench
 OBJS = benchmark.o bitbase.o bitboard.o endgame.o evaluate.o main.o \
 	material.o misc.o movegen.o movepick.o pawns.o position.o psqt.o \
 	search.o thread.o timeman.o tt.o uci.o ucioption.o tune.o syzygy/tbprobe.o
-SUBOBJS = syzygy/tbprobe.o
 
 ### Establish the operating system name
 KERNEL = $(shell uname -s)
@@ -536,13 +535,16 @@ icc-profile-use:
 	EXTRACXXFLAGS='-prof_use -prof_dir ./profdir' \
 	all
 
-# g++ -MM outputs "file.o: ..." instead of "subdir/file.o: ..." so use for loop and sed to do it
+# g++ -MM outputs "file.o: ..." instead of "subdir/file.o: ..." for the rule target so use
+# a for loop and sed to create what we want
 .depend:
 	-@$(CXX) $(DEPENDFLAGS) -MM $(OBJS:.o=.cpp) > $@ 2> /dev/null; \
-        for so in $(SUBOBJS) ; \
+        for so in $(OBJS) ; \
         do \
-             $(CXX) $(DEPENDFLAGS) -MM $${so%.o}.cpp | sed "s!^\([^     ]*:\)!$$(dirname $$so)/\1!" >> $@ 2> /dev/null ; \
-        done >d.out 2>&1
+          if [ "$$(echo $$so | grep -F /)" ] ; then \
+            $(CXX) $(DEPENDFLAGS) -MM $${so%.o}.cpp | sed "s!^\([^     ]*:\)!$$(dirname $$so)/\1!" >> $@ 2> /dev/null ; \
+          fi ; \
+        done
 
 
 -include .depend

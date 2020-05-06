@@ -144,7 +144,6 @@ namespace {
   constexpr Score RestrictedPiece     = S(  7,  7);
   constexpr Score RookOnQueenFile     = S(  5,  9);
   constexpr Score RookAttacksPawn     = S( 19,  7);
-  constexpr Score RookSeesLastRank    = S( 52, 31);
   constexpr Score SliderOnQueen       = S( 59, 18);
   constexpr Score ThreatByKing        = S( 24, 89);
   constexpr Score ThreatByPawnPush    = S( 48, 39);
@@ -261,7 +260,6 @@ namespace {
     constexpr Direction Down = -pawn_push(Us);
     constexpr Bitboard OutpostRanks = (Us == WHITE ? Rank4BB | Rank5BB | Rank6BB
                                                    : Rank5BB | Rank4BB | Rank3BB);
-    constexpr Bitboard TRank8 = (Us == WHITE ? Rank8BB : Rank1BB);
     const Square* pl = pos.squares<Pt>(Us);
 
     Bitboard b, bb;
@@ -349,8 +347,6 @@ namespace {
             // Bonus for rook on an open or semi-open file
             if (pos.is_on_semiopen_file(Us, s))
                 score += RookOnFile[pos.is_on_semiopen_file(Them, s)];
-            else if (attacks_bb<ROOK>(s, pos.pieces(PAWN)) & TRank8)
-                score += RookSeesLastRank;
             else if (b & pos.pieces(Them, PAWN))
                 score += RookAttacksPawn;
 

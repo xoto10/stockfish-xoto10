@@ -261,7 +261,6 @@ namespace {
     constexpr Bitboard FilesDE = FileDBB | FileEBB;
     constexpr Bitboard OutpostRanks = (Us == WHITE ? Rank4BB | Rank5BB | Rank6BB
                                                    : Rank5BB | Rank4BB | Rank3BB);
-    constexpr Score ScoreLow = make_score(-200, -200);
     const Square* pl = pos.squares<Pt>(Us);
 
     Bitboard b, bb;
@@ -345,7 +344,8 @@ namespace {
 
         if (Pt == ROOK)
         {
-            mobility[Us] += std::max(MobilityBonus[Pt - 2][mob], FilesDE & s ? SCORE_ZERO : ScoreLow);
+            Score m = MobilityBonus[Pt - 2][mob];
+            mobility[Us] += mg_value(m) < 0 && (FilesDE & s) ? m / 2 : m;
 
             // Bonus for rook on the same file as a queen
             if (file_bb(s) & pos.pieces(QUEEN))

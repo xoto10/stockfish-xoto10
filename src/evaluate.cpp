@@ -128,14 +128,14 @@ namespace {
 
   // Assorted bonuses and penalties
   constexpr Score BishopPawns         = S(  3,  7);
-            Score BX                  = S(  4,  5);
+  constexpr Score BX                  = S(  4,  7);
   constexpr Score CorneredBishop      = S( 50, 50);
   constexpr Score FlankAttacks        = S(  8,  0);
   constexpr Score Hanging             = S( 69, 36);
   constexpr Score BishopKingProtector = S(  6,  9);
   constexpr Score KnightKingProtector = S(  8,  9);
   constexpr Score KnightOnQueen       = S( 16, 11);
-            Score LD                  = S( 55,  0);
+  constexpr Score LD                  = S( 58,  0);
   constexpr Score MinorBehindPawn     = S( 18,  3);
   constexpr Score KnightOutpost       = S( 56, 36);
   constexpr Score BishopOutpost       = S( 30, 23);
@@ -149,17 +149,17 @@ namespace {
   constexpr Score ThreatByPawnPush    = S( 48, 39);
   constexpr Score ThreatBySafePawn    = S(173, 94);
   constexpr Score TrappedRook         = S( 55, 13);
-            Score WLD                 = S( 10,  0);
+  constexpr Score WLD                 = S(  8, -1);
   constexpr Score WeakQueen           = S( 51, 14);
   constexpr Score WeakQueenProtection = S( 15,  0);
 
-int A = 1, B = 1;
+//int A = 1, B = 1;
 
-inline Range vary20(int c) {
-    return (abs(c) < 20) ? Range(c-20, c+20) : c < 0 ? Range(c * 2, 0) : Range(0, c * 2);
-}
+//inline Range vary20(int c) {
+//    return (abs(c) < 20) ? Range(c-20, c+20) : c < 0 ? Range(c * 2, 0) : Range(0, c * 2);
+//}
 
-TUNE(SetRange(vary20), BX, LD, WLD, A, B);
+//TUNE(SetRange(vary20), BX, LD, WLD, A, B);
 
 #undef S
 
@@ -330,11 +330,11 @@ TUNE(SetRange(vary20), BX, LD, WLD, A, B);
 
                 // Penalty for all enemy pawns x-rayed
                 int n = popcount(PseudoAttacks[BISHOP][s] & pos.pieces(Them, PAWN));
-                score -= BX * std::max(0, n - A);
+                score -= BX * n;
 
                 // Bonus for bishop on a long diagonal which can "see" both center squares
                 if (more_than_one(attacks_bb<BISHOP>(s, pos.pieces(PAWN)) & Center))
-                    score += LD - WLD * std::max(0, n - B);
+                    score += LD - WLD * n;
 
                 // An important Chess960 pattern: a cornered bishop blocked by a friendly
                 // pawn diagonally in front of it is a very serious problem, especially

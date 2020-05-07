@@ -345,7 +345,7 @@ namespace {
         if (Pt == ROOK)
         {
             Score m = MobilityBonus[Pt - 2][mob];
-            mobility[Us] += mg_value(m) < 0 && (FilesDE & s) ? m / 2 : m;
+            mobility[Us] += mg_value(m) < 0 && (FilesDE & s) ? SCORE_ZERO : m;
 
             // Bonus for rook on the same file as a queen
             if (file_bb(s) & pos.pieces(QUEEN))

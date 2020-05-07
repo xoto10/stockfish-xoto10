@@ -128,14 +128,14 @@ namespace {
 
   // Assorted bonuses and penalties
   constexpr Score BishopPawns         = S(  3,  7);
-  constexpr Score BishopXRayPawns     = S(  4,  5);
+  constexpr Score BishopXRayPawns     = S(  7,  8);
   constexpr Score CorneredBishop      = S( 50, 50);
   constexpr Score FlankAttacks        = S(  8,  0);
   constexpr Score Hanging             = S( 69, 36);
   constexpr Score BishopKingProtector = S(  6,  9);
   constexpr Score KnightKingProtector = S(  8,  9);
   constexpr Score KnightOnQueen       = S( 16, 11);
-  constexpr Score LongDiagonalBishop  = S( 55,  0);
+  constexpr Score LongDiagonalBishop  = S( 45,  0);
   constexpr Score MinorBehindPawn     = S( 18,  3);
   constexpr Score KnightOutpost       = S( 56, 36);
   constexpr Score BishopOutpost       = S( 30, 23);
@@ -149,7 +149,6 @@ namespace {
   constexpr Score ThreatByPawnPush    = S( 48, 39);
   constexpr Score ThreatBySafePawn    = S(173, 94);
   constexpr Score TrappedRook         = S( 55, 13);
-  constexpr Score WeakLDBishop        = S( 10,  0);
   constexpr Score WeakQueen           = S( 51, 14);
   constexpr Score WeakQueenProtection = S( 15,  0);
 
@@ -321,12 +320,11 @@ namespace {
                                      * (!(attackedBy[Us][PAWN] & s) + popcount(blocked & CenterFiles));
 
                 // Penalty for all enemy pawns x-rayed
-                int n = popcount(PseudoAttacks[BISHOP][s] & pos.pieces(Them, PAWN));
-                score -= BishopXRayPawns * n;
+                score -= BishopXRayPawns * popcount(PseudoAttacks[BISHOP][s] & pos.pieces(Them, PAWN));
 
                 // Bonus for bishop on a long diagonal which can "see" both center squares
                 if (more_than_one(attacks_bb<BISHOP>(s, pos.pieces(PAWN)) & Center))
-                    score += LongDiagonalBishop - WeakLDBishop * n;
+                    score += LongDiagonalBishop;
 
                 // An important Chess960 pattern: a cornered bishop blocked by a friendly
                 // pawn diagonally in front of it is a very serious problem, especially

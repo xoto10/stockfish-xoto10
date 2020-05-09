@@ -153,8 +153,8 @@ namespace {
                      + WeakUnopposed * !opposed;
 
         else
-            score -=   Unsupported
-                     + WeakUnopposed * !opposed;
+            score +=   Unsupported
+                     - WeakUnopposed * !opposed;
 
         if (!support)
             score -=   Doubled * doubled

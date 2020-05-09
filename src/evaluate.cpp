@@ -128,14 +128,14 @@ namespace {
 
   // Assorted bonuses and penalties
   constexpr Score BishopPawns         = S(  3,  7);
-  constexpr Score BX                  = S(  2,  7);
+  constexpr Score BishopXrayPawns     = S(  2,  7);
   constexpr Score CorneredBishop      = S( 50, 50);
   constexpr Score FlankAttacks        = S(  8,  0);
   constexpr Score Hanging             = S( 69, 36);
   constexpr Score BishopKingProtector = S(  6,  9);
   constexpr Score KnightKingProtector = S(  8,  9);
   constexpr Score KnightOnQueen       = S( 16, 11);
-  constexpr Score LD                  = S( 48, -1);
+  constexpr Score LongDiagonalBishop  = S( 48,  0);
   constexpr Score MinorBehindPawn     = S( 18,  3);
   constexpr Score KnightOutpost       = S( 56, 36);
   constexpr Score BishopOutpost       = S( 30, 23);
@@ -149,17 +149,9 @@ namespace {
   constexpr Score ThreatByPawnPush    = S( 48, 39);
   constexpr Score ThreatBySafePawn    = S(173, 94);
   constexpr Score TrappedRook         = S( 55, 13);
-  constexpr Score WLD                 = S(  8,  1);
+  constexpr Score WeakLDBishop        = S(  9,  0);
   constexpr Score WeakQueen           = S( 51, 14);
   constexpr Score WeakQueenProtection = S( 15,  0);
-
-//int A = 1, B = 1;
-
-//inline Range vary20(int c) {
-//    return (abs(c) < 20) ? Range(c-20, c+20) : c < 0 ? Range(c * 2, 0) : Range(0, c * 2);
-//}
-
-//TUNE(SetRange(vary20), BX, LD, WLD, A, B);
 
 #undef S
 
@@ -330,11 +322,11 @@ namespace {
 
                 // Penalty for all enemy pawns x-rayed
                 int n = popcount(PseudoAttacks[BISHOP][s] & pos.pieces(Them, PAWN));
-                score -= BX * n;
+                score -= BishopXrayPawns * n;
 
                 // Bonus for bishop on a long diagonal which can "see" both center squares
                 if (more_than_one(attacks_bb<BISHOP>(s, pos.pieces(PAWN)) & Center))
-                    score += LD - WLD * n;
+                    score += LongDiagonalBishop - WeakLDBishop * n;
 
                 // An important Chess960 pattern: a cornered bishop blocked by a friendly
                 // pawn diagonally in front of it is a very serious problem, especially

@@ -31,7 +31,7 @@ namespace Eval {
 
 std::string trace(const Position& pos);
 
-Value evaluate(const Position& pos);
+Value evaluate(const Position& pos, const int ply);
 }
 
 #endif // #ifndef EVALUATE_H_INCLUDED

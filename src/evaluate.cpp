@@ -808,8 +808,8 @@ namespace {
     // imbalance. Score is computed internally from the white point of view.
     Score score = pos.psq_score() + me->imbalance() + pos.this_thread()->contempt;
 
-    // Randomise eval slightly
-    int rndEval = (pos.this_thread()->nodes & 31) - 15;
+    // Randomise contempt slope
+    int rndEval = 2 * (pos.this_thread()->nodes & 15) - 15;
     score += make_score(rndEval, -rndEval);
 
     // Probe the pawn hash table

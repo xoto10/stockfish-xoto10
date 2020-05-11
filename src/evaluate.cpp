@@ -518,7 +518,7 @@ namespace {
         while (b)
         {
             score += ThreatByMinor[type_of(pos.piece_on(s = pop_lsb(&b)))];
-            if ((weak & s) && relative_rank(Us, s) == RANK_7)
+            if ((weak & s) && relative_rank(Us, s) >= RANK_7)
                 score += WeakOnRank7;
         }
 
@@ -526,7 +526,7 @@ namespace {
         while (b)
         {
             score += ThreatByRook[type_of(pos.piece_on(s = pop_lsb(&b)))];
-            if ((weak & s) && relative_rank(Us, s) == RANK_7)
+            if ((weak & s) && relative_rank(Us, s) >= RANK_7)
                 score += WeakOnRank7;
         }
 

@@ -390,8 +390,8 @@ namespace {
 
     // Init the score with king shelter and enemy pawns storm
     Score score;
-    if (   //pos.can_castle(Us) &&
-           mg_value(mobDiff) < -40
+    if (   pos.can_castle(Us & ANY_CASTLING)
+        && mg_value(mobDiff) < -40
 //        && mg_value(threatsDiff) < -20  // mean(<0) -86
         && mg_value(spaceDiff) < -30)
         score = pe->do_king_safety<Us>(pos, mobDiff/*, threatsDiff, spaceDiff*/);

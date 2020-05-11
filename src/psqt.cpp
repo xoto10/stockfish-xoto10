@@ -123,7 +123,7 @@ void init() {
 // pawn_init() initializes only the pawn piece-square tables
 void pawn_init() {
 
-  for (Piece pc: { W_PAWN, B_PAWN } )
+  for (Piece pc: { W_PAWN } )
   {
       Score score = make_score(PieceValue[MG][pc], PieceValue[EG][pc]);
 

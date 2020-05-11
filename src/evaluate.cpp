@@ -772,7 +772,7 @@ namespace {
         {
             if (   pos.non_pawn_material(WHITE) == BishopValueMg
                 && pos.non_pawn_material(BLACK) == BishopValueMg)
-                sf = 18 + 4 * popcount(pe->passed_pawns(strongSide));
+                sf = 22;
             else
                 sf = 22 + 3 * pos.count<ALL_PIECES>(strongSide);
         }
@@ -807,6 +807,10 @@ namespace {
     // the position object (material + piece square tables) and the material
     // imbalance. Score is computed internally from the white point of view.
     Score score = pos.psq_score() + me->imbalance() + pos.this_thread()->contempt;
+
+    // Randomise contempt slope
+    int rndEval = (pos.this_thread()->nodes & 511) - 256;
+    score += make_score(rndEval, 0);
 
     // Probe the pawn hash table
     pe = Pawns::probe(pos);

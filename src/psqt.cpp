@@ -120,4 +120,19 @@ void init() {
   }
 }
 
+// pinit() initializes only the pawn piece-square tables
+void pawn_init() {
+
+  for (Piece pc: { W_PAWN, B_PAWN } )
+  {
+      Score score = make_score(PieceValue[MG][pc], PieceValue[EG][pc]);
+
+      for (Square s = SQ_A1; s <= SQ_H8; ++s)
+      {
+          psq[ pc][ s] = score + PBonus[rank_of(s)][file_of(s)];
+          psq[~pc][flip_rank(s)] = -psq[pc][s];
+      }
+  }
+}
+
 } // namespace PSQT

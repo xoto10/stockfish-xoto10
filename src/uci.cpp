@@ -37,11 +37,14 @@ using namespace std;
 
 extern vector<string> setup_bench(const Position&, istream&);
 
+namespace PSQT {
+  void pawn_init();
+}
+
 namespace {
 
   // FEN string of the initial position, normal chess
   const char* StartFEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-
 
   // position() is called when engine receives the "position" UCI command.
   // The function sets up the position described in the given FEN string ("fen")
@@ -77,7 +80,7 @@ namespace {
     }
 
     Pawns::Entry* pe = Pawns::probe(pos);
-    if (pe->blocked_count() >= 4)
+    if (pe->blocked_count() >= 4 && PawnValueMg != Value(124))
     {
       PawnValueMg = Value(124);
       PawnValueEg = Value(206);
@@ -85,8 +88,10 @@ namespace {
       PieceValue[MG][B_PAWN] = Value(124);
       PieceValue[EG][W_PAWN] = Value(206);
       PieceValue[EG][B_PAWN] = Value(206);
+      PSQT::pawn_init();
+//      Threads.pawnPsqOffset = make_score(-4, -7) * (pos.count<PAWN>(WHITE) - pos.count<PAWN>(BLACK));
     }
-    else
+    else if (PawnValueMg != Value(128))
     {
       PawnValueMg = Value(128);
       PawnValueEg = Value(213);
@@ -94,7 +99,11 @@ namespace {
       PieceValue[MG][B_PAWN] = Value(128);
       PieceValue[EG][W_PAWN] = Value(213);
       PieceValue[EG][B_PAWN] = Value(213);
+      PSQT::pawn_init();
+//      Threads.pawnPsqOffset = make_score(4, 7) * (pos.count<PAWN>(WHITE) - pos.count<PAWN>(BLACK));
     }
+//    else
+//      Threads.pawnPsqOffset = SCORE_ZERO;
   }
 
 

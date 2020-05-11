@@ -80,7 +80,7 @@ namespace {
     }
 
     Pawns::Entry* pe = Pawns::probe(pos);
-    if (pe->blocked_count() >= 4 && PawnValueMg != Value(124))
+    if (pe->blocked_count() >= 4)
     {
       PawnValueMg = Value(124);
       PawnValueEg = Value(206);
@@ -89,9 +89,8 @@ namespace {
       PieceValue[EG][W_PAWN] = Value(206);
       PieceValue[EG][B_PAWN] = Value(206);
       PSQT::pawn_init();
-//      Threads.pawnPsqOffset = make_score(-4, -7) * (pos.count<PAWN>(WHITE) - pos.count<PAWN>(BLACK));
     }
-    else if (PawnValueMg != Value(128))
+    else
     {
       PawnValueMg = Value(128);
       PawnValueEg = Value(213);
@@ -100,10 +99,7 @@ namespace {
       PieceValue[EG][W_PAWN] = Value(213);
       PieceValue[EG][B_PAWN] = Value(213);
       PSQT::pawn_init();
-//      Threads.pawnPsqOffset = make_score(4, 7) * (pos.count<PAWN>(WHITE) - pos.count<PAWN>(BLACK));
     }
-//    else
-//      Threads.pawnPsqOffset = SCORE_ZERO;
   }
 
 

@@ -120,7 +120,7 @@ void init() {
   }
 }
 
-// pinit() initializes only the pawn piece-square tables
+// pawn_init() initializes only the pawn piece-square tables
 void pawn_init() {
 
   for (Piece pc: { W_PAWN, B_PAWN } )

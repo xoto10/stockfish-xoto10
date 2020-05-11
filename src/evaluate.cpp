@@ -167,7 +167,7 @@ namespace {
   private:
     template<Color Us> void initialize();
     template<Color Us, PieceType Pt> Score pieces();
-    template<Color Us> Score king() const;
+    template<Color Us> Score king(Score mobDiff, Score threatsDiff, Score spaceDiff) const;
     template<Color Us> Score threats() const;
     template<Color Us> Score passed() const;
     template<Color Us> Score space() const;
@@ -377,7 +377,7 @@ namespace {
 
   // Evaluation::king() assigns bonuses and penalties to a king of a given color
   template<Tracing T> template<Color Us>
-  Score Evaluation<T>::king() const {
+  Score Evaluation<T>::king(Score mobDiff, Score threatsDiff, Score spaceDiff) const {
 
     constexpr Color    Them = ~Us;
     constexpr Bitboard Camp = (Us == WHITE ? AllSquares ^ Rank6BB ^ Rank7BB ^ Rank8BB
@@ -389,7 +389,14 @@ namespace {
     const Square ksq = pos.square<KING>(Us);
 
     // Init the score with king shelter and enemy pawns storm
-    Score score = pe->king_safety<Us>(pos);
+    Score score;
+    if (   //pos.can_castle(Us) &&
+           mg_value(mobDiff) < -40
+//        && mg_value(threatsDiff) < -20  // mean(<0) -86
+        && mg_value(spaceDiff) < -30)
+        score = pe->do_king_safety<Us>(pos, mobDiff, threatsDiff, spaceDiff);
+    else
+        score = pe->king_safety<Us>(pos);
 
     // Attacked squares defended at most once by our queen or king
     weak =  attackedBy[Them][ALL_PIECES]
@@ -829,13 +836,17 @@ namespace {
             + pieces<WHITE, ROOK  >() - pieces<BLACK, ROOK  >()
             + pieces<WHITE, QUEEN >() - pieces<BLACK, QUEEN >();
 
-    score += mobility[WHITE] - mobility[BLACK];
+    Score mobDiff = mobility[WHITE] - mobility[BLACK];
+    score += mobDiff;
 
     // More complex interactions that require fully populated attack bitboards
-    score +=  king<   WHITE>() - king<   BLACK>()
-            + threats<WHITE>() - threats<BLACK>()
-            + passed< WHITE>() - passed< BLACK>()
-            + space<  WHITE>() - space<  BLACK>();
+    score +=  passed< WHITE>() - passed< BLACK>();
+    Score threatsDiff = threats<WHITE>() - threats<BLACK>();
+    Score spaceDiff   = space<  WHITE>() - space<  BLACK>();
+    score +=  threatsDiff
+            + spaceDiff
+            + king<WHITE>(mobDiff, threatsDiff, spaceDiff)
+            - king<BLACK>(-mobDiff, -threatsDiff, -spaceDiff);
 
     score += initiative(score);
 

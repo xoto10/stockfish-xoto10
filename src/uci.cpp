@@ -86,6 +86,15 @@ namespace {
       PieceValue[EG][W_PAWN] = Value(206);
       PieceValue[EG][B_PAWN] = Value(206);
     }
+    else
+    {
+      PawnValueMg = Value(128);
+      PawnValueEg = Value(213);
+      PieceValue[MG][W_PAWN] = Value(128);
+      PieceValue[MG][B_PAWN] = Value(128);
+      PieceValue[EG][W_PAWN] = Value(213);
+      PieceValue[EG][B_PAWN] = Value(213);
+    }
   }
 
 

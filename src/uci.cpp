@@ -75,6 +75,17 @@ namespace {
         states->emplace_back();
         pos.do_move(m, states->back());
     }
+
+    Pawns::Entry* pe = Pawns::probe(pos);
+    if (pe->blocked_count() >= 4)
+    {
+      PawnValueMg = Value(124);
+      PawnValueEg = Value(206);
+      PieceValue[MG][W_PAWN] = Value(124);
+      PieceValue[MG][B_PAWN] = Value(124);
+      PieceValue[EG][W_PAWN] = Value(206);
+      PieceValue[EG][B_PAWN] = Value(206);
+    }
   }
 
 

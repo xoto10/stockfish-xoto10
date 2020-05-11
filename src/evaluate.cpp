@@ -809,8 +809,8 @@ namespace {
     Score score = pos.psq_score() + me->imbalance() + pos.this_thread()->contempt;
 
     // Randomise contempt slope
-    int rndEval = 4 * (pos.this_thread()->nodes & 7) - 14;
-    score += make_score(rndEval, -rndEval);
+    int r = 2 * ((pos.key() + pos.this_thread()->nodes) & 7) - 7;
+    score += make_score(r, -r);
 
     // Probe the pawn hash table
     pe = Pawns::probe(pos);

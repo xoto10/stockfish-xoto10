@@ -167,7 +167,7 @@ namespace {
   private:
     template<Color Us> void initialize();
     template<Color Us, PieceType Pt> Score pieces();
-    template<Color Us> Score king(Score mobDiff, Score threatsDiff, Score spaceDiff) const;
+    template<Color Us> Score king(Score mobDiff, /*Score threatsDiff,*/ Score spaceDiff) const;
     template<Color Us> Score threats() const;
     template<Color Us> Score passed() const;
     template<Color Us> Score space() const;
@@ -377,7 +377,7 @@ namespace {
 
   // Evaluation::king() assigns bonuses and penalties to a king of a given color
   template<Tracing T> template<Color Us>
-  Score Evaluation<T>::king(Score mobDiff, Score threatsDiff, Score spaceDiff) const {
+  Score Evaluation<T>::king(Score mobDiff, /*Score threatsDiff,*/ Score spaceDiff) const {
 
     constexpr Color    Them = ~Us;
     constexpr Bitboard Camp = (Us == WHITE ? AllSquares ^ Rank6BB ^ Rank7BB ^ Rank8BB
@@ -394,7 +394,7 @@ namespace {
            mg_value(mobDiff) < -40
 //        && mg_value(threatsDiff) < -20  // mean(<0) -86
         && mg_value(spaceDiff) < -30)
-        score = pe->do_king_safety<Us>(pos, mobDiff, threatsDiff, spaceDiff);
+        score = pe->do_king_safety<Us>(pos, mobDiff/*, threatsDiff, spaceDiff*/);
     else
         score = pe->king_safety<Us>(pos);
 
@@ -845,8 +845,8 @@ namespace {
     Score spaceDiff   = space<  WHITE>() - space<  BLACK>();
     score +=  threatsDiff
             + spaceDiff
-            + king<WHITE>(mobDiff, threatsDiff, spaceDiff)
-            - king<BLACK>(-mobDiff, -threatsDiff, -spaceDiff);
+            + king<WHITE>(mobDiff, /*threatsDiff,*/ spaceDiff)
+            - king<BLACK>(-mobDiff, /*-threatsDiff,*/ -spaceDiff);
 
     score += initiative(score);
 

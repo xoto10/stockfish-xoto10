@@ -149,7 +149,7 @@ namespace {
   constexpr Score ThreatByPawnPush    = S( 48, 39);
   constexpr Score ThreatBySafePawn    = S(173, 94);
   constexpr Score TrappedRook         = S( 55, 13);
-  constexpr Score WeakOnRank7         = S( 20,  0);
+  constexpr Score WeakOnRank7         = S( 16,  0);
   constexpr Score WeakQueen           = S( 51, 14);
   constexpr Score WeakQueenProtection = S( 15,  0);
 
@@ -518,7 +518,7 @@ namespace {
         while (b)
         {
             score += ThreatByMinor[type_of(pos.piece_on(s = pop_lsb(&b)))];
-            if (relative_rank(Us, s) >= RANK_7)
+            if (relative_rank(Us, s) == RANK_7)
                 score += WeakOnRank7;
         }
 
@@ -526,7 +526,7 @@ namespace {
         while (b)
         {
             score += ThreatByRook[type_of(pos.piece_on(s = pop_lsb(&b)))];
-            if (relative_rank(Us, s) >= RANK_7)
+            if (relative_rank(Us, s) == RANK_7)
                 score += WeakOnRank7;
         }
 

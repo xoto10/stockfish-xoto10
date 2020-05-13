@@ -140,7 +140,7 @@ namespace {
   constexpr Score KnightOutpost       = S( 56, 36);
   constexpr Score BishopOutpost       = S( 30, 23);
   constexpr Score ReachableOutpost    = S( 31, 22);
-  constexpr Score OutpostAttackedBy2  = S( 14, 11);
+  constexpr Score OutpostAttackedBy2  = S( 18, 18);
   constexpr Score PassedFile          = S( 11,  8);
   constexpr Score PawnlessFlank       = S( 17, 95);
   constexpr Score RestrictedPiece     = S(  7,  7);

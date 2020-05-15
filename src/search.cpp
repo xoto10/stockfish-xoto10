@@ -555,7 +555,8 @@ void Thread::search() {
 
           // Stop the search if we have only one legal move, or if available time elapsed
           if (   rootMoves.size() == 1
-              || Time.elapsed() > Time.optimum() * fallingEval * reduction * bestMoveInstability)
+              || (   Time.elapsed() > Time.minimum()
+                  && Time.elapsed() > Time.optimum() * fallingEval * reduction * bestMoveInstability))
           {
               // If we are allowed to ponder do not stop the search now but
               // keep pondering until the GUI sends "ponderhit" or "stop".
@@ -566,6 +567,7 @@ void Thread::search() {
           }
           else if (   Threads.increaseDepth
                    && !mainThread->ponder
+                   && Time.elapsed() > Time.minimum() * 0.6
                    && Time.elapsed() > Time.optimum() * fallingEval * reduction * bestMoveInstability * 0.6)
                    Threads.increaseDepth = false;
           else

@@ -32,6 +32,7 @@ class TimeManagement {
 public:
   void init(Search::LimitsType& limits, Color us, int ply);
   TimePoint optimum() const { return optimumTime; }
+  TimePoint minimum() const { return minimumTime; }
   TimePoint maximum() const { return maximumTime; }
   TimePoint elapsed() const { return Search::Limits.npmsec ?
                                      TimePoint(Threads.nodes_searched()) : now() - startTime; }
@@ -40,6 +41,7 @@ public:
 
 private:
   TimePoint startTime;
+  TimePoint minimumTime;
   TimePoint optimumTime;
   TimePoint maximumTime;
 };

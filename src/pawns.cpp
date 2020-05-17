@@ -33,8 +33,7 @@ namespace {
 
   // Pawn penalties
   constexpr Score Backward      = S( 9, 24);
-  constexpr Score BlockedStorm3 = S(82, 82);
-  constexpr Score BlockedStorm5 = S(20, 20);
+  constexpr Score BlockedStorm  = S(82, 82);
   constexpr Score Doubled       = S(11, 56);
   constexpr Score Isolated      = S( 5, 15);
   constexpr Score WeakLever     = S( 0, 56);
@@ -57,7 +56,7 @@ namespace {
   // is behind our king. Note that UnblockedStorm[0][1-2] accommodate opponent pawn
   // on edge, likely blocked by our king.
   constexpr Value UnblockedStorm[int(FILE_NB) / 2][RANK_NB] = {
-    { V( 85), V(-289), V(-166), V(97), V(50), V( 45), V( 50) },
+    { V( 85), V(-289), V(-166), V(97), V(70), V( 45), V( 50) },
     { V( 46), V( -25), V( 122), V(45), V(37), V(-10), V( 20) },
     { V( -6), V(  51), V( 168), V(34), V(-2), V(-22), V(-14) },
     { V(-15), V( -11), V( 101), V( 4), V(11), V(-15), V(-29) }
@@ -213,8 +212,7 @@ Score Entry::evaluate_shelter(const Position& pos, Square ksq) {
       bonus += make_score(ShelterStrength[d][ourRank], 0);
 
       if (ourRank && (ourRank == theirRank - 1))
-          bonus -=  BlockedStorm3 * int(theirRank == RANK_3)
-                  - BlockedStorm5 * int(theirRank == RANK_5 && d == 0);
+          bonus -= BlockedStorm * int(theirRank == RANK_3);
       else
           bonus -= make_score(UnblockedStorm[d][theirRank], 0);
   }

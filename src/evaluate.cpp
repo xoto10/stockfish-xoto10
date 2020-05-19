@@ -130,6 +130,7 @@ namespace {
   constexpr Score BishopPawns         = S(  3,  7);
   constexpr Score BishopXRayPawns     = S(  4,  5);
   constexpr Score CorneredBishop      = S( 50, 50);
+  constexpr Score DoubleFianchetto    = S( 20, 20);
   constexpr Score FlankAttacks        = S(  8,  0);
   constexpr Score Hanging             = S( 69, 36);
   constexpr Score BishopKingProtector = S(  6,  9);
@@ -260,6 +261,7 @@ namespace {
     constexpr Direction Down = -pawn_push(Us);
     constexpr Bitboard OutpostRanks = (Us == WHITE ? Rank4BB | Rank5BB | Rank6BB
                                                    : Rank5BB | Rank4BB | Rank3BB);
+    constexpr Piece    OurBishop = (Us == WHITE ? W_BISHOP : B_BISHOP);
     const Square* pl = pos.squares<Pt>(Us);
 
     Bitboard b, bb;
@@ -368,6 +370,12 @@ namespace {
                 score -= WeakQueen;
         }
     }
+
+    if (   pos.count<BISHOP>(Us) == 2
+        && pos.piece_on(relative_square(Us, SQ_B2)) == OurBishop
+        && pos.piece_on(relative_square(Us, SQ_G2)) == OurBishop)
+        score -= DoubleFianchetto;
+
     if (T)
         Trace::add(Pt, Us, score);
 

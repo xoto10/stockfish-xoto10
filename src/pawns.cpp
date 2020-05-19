@@ -83,7 +83,7 @@ namespace {
 
     Bitboard doubleAttackThem = pawn_double_attacks_bb<Them>(theirPawns);
 
-    e->passedPawns[Us] = 0;
+    e->passedPawns[Us] = e->sumRank[Us] = 0;
     e->kingSquares[Us] = SQ_NONE;
     e->pawnAttacks[Us] = e->pawnAttacksSpan[Us] = pawn_attacks_bb<Us>(ourPawns);
 
@@ -106,6 +106,8 @@ namespace {
         support    = neighbours & rank_bb(s - Up);
 
         e->blockedCount += blocked || more_than_one(leverPush);
+        if (QueenSide & s)
+            e->sumRank[Us] += r;
 
         // A pawn is backward when it is behind all pawns of the same color on
         // the adjacent files and cannot safely advance.
@@ -216,6 +218,10 @@ Score Entry::evaluate_shelter(const Position& pos, Square ksq) {
       else
           bonus -= make_score(UnblockedStorm[d][theirRank], 0);
   }
+
+  if (   more_than_one(pos.pieces(KING) & KingSide)
+      && popcount(pos.pieces(Us, PAWN) & QueenSide) != popcount(pos.pieces(Them, PAWN) & QueenSide))
+      bonus += make_score(sumRank[Us] - 4, sumRank[Us] - 4);
 
   return bonus;
 }

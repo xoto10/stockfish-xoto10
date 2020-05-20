@@ -219,10 +219,6 @@ Score Entry::evaluate_shelter(const Position& pos, Square ksq) {
           bonus -= make_score(UnblockedStorm[d][theirRank], 0);
   }
 
-  if (   more_than_one(pos.pieces(KING) & KingSide)
-      && popcount(pos.pieces(Us, PAWN) & QueenSide) != popcount(pos.pieces(Them, PAWN) & QueenSide))
-      bonus += make_score(sumRank[Us] - 4, sumRank[Us] - 4);
-
   return bonus;
 }
 

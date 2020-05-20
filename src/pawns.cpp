@@ -34,6 +34,7 @@ namespace {
   // Pawn penalties
   constexpr Score Backward      = S( 9, 24);
   constexpr Score BlockedStorm  = S(82, 82);
+  constexpr Score CenterPawn    = S(20, 20);
   constexpr Score Doubled       = S(11, 56);
   constexpr Score Isolated      = S( 5, 15);
   constexpr Score WeakLever     = S( 0, 56);
@@ -192,6 +193,7 @@ template<Color Us>
 Score Entry::evaluate_shelter(const Position& pos, Square ksq) {
 
   constexpr Color Them = ~Us;
+  constexpr Bitboard Ranks345 = Us == WHITE ? Rank3BB | Rank4BB | Rank5BB : Rank6BB | Rank5BB | Rank4BB;
 
   Bitboard b = pos.pieces(PAWN) & ~forward_ranks_bb(Them, ksq);
   Bitboard ourPawns = b & pos.pieces(Us);
@@ -215,6 +217,18 @@ Score Entry::evaluate_shelter(const Position& pos, Square ksq) {
           bonus -= BlockedStorm * int(theirRank == RANK_3);
       else
           bonus -= make_score(UnblockedStorm[d][theirRank], 0);
+  }
+
+  if (edge_distance(file_of(ksq)) < 2)
+  {
+      if (file_of(ksq) > FILE_D)
+      {
+          if (theirPawns & FileEBB & Ranks345)
+              bonus -= CenterPawn;
+      }
+      else
+          if (theirPawns & FileDBB & Ranks345)
+              bonus -= CenterPawn;
   }
 
   return bonus;

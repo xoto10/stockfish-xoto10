@@ -558,7 +558,7 @@ namespace {
     // Bonus for pushing pawns on opposite side to kings
     if (   more_than_one(pos.pieces(KING) & KingSide)
         && popcount(pos.pieces(Us, PAWN) & QueenSide) != popcount(pos.pieces(Them, PAWN) & QueenSide))
-        score += make_score(pe->sumRank[Us] - 4, 0);
+        score += make_score(0, pe->sumRank[Us] - 4);
 
     // Bonus for threats on the next moves against enemy queen
     if (pos.count<QUEEN>(Them) == 1)

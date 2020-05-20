@@ -34,6 +34,7 @@ namespace {
   // Pawn penalties
   constexpr Score Backward      = S( 9, 24);
   constexpr Score BlockedStorm  = S(82, 82);
+  constexpr Score Blocker       = S(15, 15);
   constexpr Score Doubled       = S(11, 56);
   constexpr Score Isolated      = S( 5, 15);
   constexpr Score WeakLever     = S( 0, 56);
@@ -138,8 +139,7 @@ namespace {
         // Score this pawn
         if (support | phalanx)
         {
-            bool r45 = Ranks45 & s;
-            int v =  Connected[r] * (4 + 2 * bool(phalanx) - 2 * (bool(opposed) && !r45) - bool(blocked)) / 2
+            int v =  Connected[r] * (4 + 2 * bool(phalanx) - 2 * bool(opposed) - bool(blocked)) / 2
                    + 21 * popcount(support);
 
             score += make_score(v, v * (r - 2) / 4);
@@ -156,6 +156,9 @@ namespace {
         if (!support)
             score -=   Doubled * doubled
                      + WeakLever * more_than_one(lever);
+
+        if ((Ranks45 & s) && blocked)
+            score += Blocker;
     }
 
     return score;

@@ -189,9 +189,13 @@ Entry* probe(const Position& pos) {
 /// penalty for a king, looking at the king file and the two closest files.
 
 template<Color Us>
-Score Entry::evaluate_shelter(const Position& pos, Square ksq) {
+Score Entry::evaluate_shelter(const Position& pos, const Square ksq) {
 
   constexpr Color Them = ~Us;
+
+  File center = Utility::clamp(file_of(ksq), FILE_B, FILE_G);
+  int l = Us == WHITE ? 1 : (center > FILE_F ? 2 : 1);
+  int r = Us == WHITE ? 1 : (center < FILE_C ? 2 : 1);
 
   Bitboard b = pos.pieces(PAWN) & ~forward_ranks_bb(Them, ksq);
   Bitboard ourPawns = b & pos.pieces(Us);
@@ -199,8 +203,7 @@ Score Entry::evaluate_shelter(const Position& pos, Square ksq) {
 
   Score bonus = make_score(5, 5);
 
-  File center = Utility::clamp(file_of(ksq), FILE_B, FILE_G);
-  for (File f = File(center - 1); f <= File(center + 1); ++f)
+  for (File f = File(center - l); f <= File(center + r); ++f)
   {
       b = ourPawns & file_bb(f);
       int ourRank = b ? relative_rank(Us, frontmost_sq(Them, b)) : 0;

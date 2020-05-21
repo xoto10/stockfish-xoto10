@@ -194,8 +194,8 @@ Score Entry::evaluate_shelter(const Position& pos, const Square ksq) {
   constexpr Color Them = ~Us;
 
   File center = Utility::clamp(file_of(ksq), FILE_B, FILE_G);
-  int l = Us == WHITE ? 1 : (center > FILE_F ? 2 : 1);
-  int r = Us == WHITE ? 1 : (center < FILE_C ? 2 : 1);
+  int l = center > FILE_F ? 2 : 1;
+  int r = center < FILE_C ? 2 : 1;
 
   Bitboard b = pos.pieces(PAWN) & ~forward_ranks_bb(Them, ksq);
   Bitboard ourPawns = b & pos.pieces(Us);

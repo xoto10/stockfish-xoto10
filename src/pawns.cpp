@@ -33,6 +33,7 @@ namespace {
 
   // Pawn penalties
   constexpr Score Backward        = S( 9, 24);
+  constexpr Score BlockedRank3    = S(15, 15);
   constexpr Score BlockedStorm    = S(82, 82);
   constexpr Score Doubled         = S(11, 56);
   constexpr Score DoubledIsolated = S(15, 57);
@@ -161,6 +162,9 @@ namespace {
         if (!support)
             score -=   Doubled * doubled
                      + WeakLever * more_than_one(lever);
+
+        if (blocked && r == RANK_3)
+            score -= BlockedRank3;
     }
 
     return score;

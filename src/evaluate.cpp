@@ -167,7 +167,7 @@ namespace {
   private:
     template<Color Us> void initialize();
     template<Color Us, PieceType Pt> Score pieces();
-    template<Color Us> Score king() const;
+    template<Color Us> Score king(const Score sc) const;
     template<Color Us> Score threats() const;
     template<Color Us> Score passed() const;
     template<Color Us> Score space() const;
@@ -377,7 +377,7 @@ namespace {
 
   // Evaluation::king() assigns bonuses and penalties to a king of a given color
   template<Tracing T> template<Color Us>
-  Score Evaluation<T>::king() const {
+  Score Evaluation<T>::king(const Score sc) const {
 
     constexpr Color    Them = ~Us;
     constexpr Bitboard Camp = (Us == WHITE ? AllSquares ^ Rank6BB ^ Rank7BB ^ Rank8BB
@@ -476,7 +476,7 @@ namespace {
     score -= FlankAttacks * kingFlankAttack;
 
     // Adjust edgeStrength if kd <= 0
-    if (kingDanger <= 0 && pe->edgeStrength[Us] != VALUE_ZERO)
+    if (kingDanger <= 0 && pe->edgeStrength[Us] != VALUE_ZERO && mg_value(sc) > VALUE_ZERO)
         score += make_score(93 - pe->edgeStrength[Us], 0);
 
     if (T)
@@ -832,10 +832,11 @@ namespace {
     score += mobility[WHITE] - mobility[BLACK];
 
     // More complex interactions that require fully populated attack bitboards
-    score +=  king<   WHITE>() - king<   BLACK>()
-            + threats<WHITE>() - threats<BLACK>()
+    score +=  threats<WHITE>() - threats<BLACK>()
             + passed< WHITE>() - passed< BLACK>()
             + space<  WHITE>() - space<  BLACK>();
+
+    score += king<WHITE>(score) - king<BLACK>(-score);
 
     score += initiative(score);
 

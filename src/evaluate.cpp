@@ -475,6 +475,10 @@ namespace {
     // Penalty if king flank is under attack, potentially moving toward the king
     score -= FlankAttacks * kingFlankAttack;
 
+    // Adjust edgeStrength if kd <= 0
+    if (kingDanger <= 0 && pe->edgeStrength[Us] != VALUE_ZERO)
+        score += make_score(93 - pe->edgeStrength[Us], 0);
+
     if (T)
         Trace::add(KING, Us, score);
 

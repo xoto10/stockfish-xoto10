@@ -196,7 +196,7 @@ Entry* probe(const Position& pos) {
 /// penalty for a king, looking at the king file and the two closest files.
 
 template<Color Us>
-Score Entry::evaluate_shelter(const Position& pos, Square ksq) {
+Score Entry::evaluate_shelter(const Position& pos, Square ksq, Value& es) {
 
   constexpr Color Them = ~Us;
 
@@ -205,6 +205,7 @@ Score Entry::evaluate_shelter(const Position& pos, Square ksq) {
   Bitboard theirPawns = b & pos.pieces(Them);
 
   Score bonus = make_score(5, 5);
+  es = VALUE_ZERO;
 
   File center = Utility::clamp(file_of(ksq), FILE_B, FILE_G);
   for (File f = File(center - 1); f <= File(center + 1); ++f)
@@ -217,6 +218,8 @@ Score Entry::evaluate_shelter(const Position& pos, Square ksq) {
 
       int d = edge_distance(f);
       bonus += make_score(ShelterStrength[d][ourRank], 0);
+      if (d == 0)
+          es = ShelterStrength[d][ourRank];
 
       if (ourRank && (ourRank == theirRank - 1))
           bonus -= BlockedStorm * int(theirRank == RANK_3);
@@ -232,22 +235,30 @@ Score Entry::evaluate_shelter(const Position& pos, Square ksq) {
 /// when king square changes, which is about 20% of total king_safety() calls.
 
 template<Color Us>
-Score Entry::do_king_safety(const Position& pos) {
+Score Entry::do_king_safety(const Position& pos, Value& es) {
 
   Square ksq = pos.square<KING>(Us);
   kingSquares[Us] = ksq;
   castlingRights[Us] = pos.castling_rights(Us);
-  auto compare = [](Score a, Score b) { return mg_value(a) < mg_value(b); };
 
-  Score shelter = evaluate_shelter<Us>(pos, ksq);
+  Value es2;
+  Score shelter = evaluate_shelter<Us>(pos, ksq, es);
 
   // If we can castle use the bonus after castling if it is bigger
 
   if (pos.can_castle(Us & KING_SIDE))
-      shelter = std::max(shelter, evaluate_shelter<Us>(pos, relative_square(Us, SQ_G1)), compare);
+  {
+      Score sc = evaluate_shelter<Us>(pos, relative_square(Us, SQ_G1), es2);
+      if (mg_value(sc) > mg_value(shelter))
+          shelter = sc, es = es2;
+  }
 
   if (pos.can_castle(Us & QUEEN_SIDE))
-      shelter = std::max(shelter, evaluate_shelter<Us>(pos, relative_square(Us, SQ_C1)), compare);
+  {
+      Score sc = evaluate_shelter<Us>(pos, relative_square(Us, SQ_C1), es2);
+      if (mg_value(sc) > mg_value(shelter))
+          shelter = sc, es = es2;
+  }
 
   // In endgame we like to bring our king near our closest pawn
   Bitboard pawns = pos.pieces(Us, PAWN);
@@ -262,7 +273,7 @@ Score Entry::do_king_safety(const Position& pos) {
 }
 
 // Explicit template instantiation
-template Score Entry::do_king_safety<WHITE>(const Position& pos);
-template Score Entry::do_king_safety<BLACK>(const Position& pos);
+template Score Entry::do_king_safety<WHITE>(const Position& pos, Value& es);
+template Score Entry::do_king_safety<BLACK>(const Position& pos, Value& es);
 
 } // namespace Pawns

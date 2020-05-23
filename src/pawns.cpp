@@ -37,6 +37,7 @@ namespace {
   constexpr Score Doubled         = S(11, 56);
   constexpr Score DoubledIsolated = S(15, 57);
   constexpr Score Isolated        = S( 5, 15);
+  constexpr Score PawnAttack      = S(20, 20);
   constexpr Score WeakLever       = S( 0, 56);
   constexpr Score WeakUnopposed   = S(13, 27);
 
@@ -199,6 +200,8 @@ template<Color Us>
 Score Entry::evaluate_shelter(const Position& pos, Square ksq) {
 
   constexpr Color Them = ~Us;
+  constexpr Bitboard Camp = (Us == WHITE ? AllSquares ^ Rank6BB ^ Rank7BB ^ Rank8BB
+                                         : AllSquares ^ Rank1BB ^ Rank2BB ^ Rank3BB);
 
   Bitboard b = pos.pieces(PAWN) & ~forward_ranks_bb(Them, ksq);
   Bitboard ourPawns = b & pos.pieces(Us);
@@ -223,6 +226,9 @@ Score Entry::evaluate_shelter(const Position& pos, Square ksq) {
       else
           bonus -= make_score(UnblockedStorm[d][theirRank], 0);
   }
+
+  if (more_than_one(theirPawns & Camp))
+      bonus -= PawnAttack;
 
   return bonus;
 }

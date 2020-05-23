@@ -227,7 +227,7 @@ Score Entry::evaluate_shelter(const Position& pos, Square ksq) {
           bonus -= make_score(UnblockedStorm[d][theirRank], 0);
   }
 
-  if (more_than_one(theirPawns & Camp))
+  if (more_than_one(theirPawns & Camp & (file_of(ksq) > FILE_D ? KingSide : QueenSide)))
       bonus -= PawnAttack;
 
   return bonus;

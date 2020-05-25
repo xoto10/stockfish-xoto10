@@ -1322,12 +1322,20 @@ moves_loop: // When in check, search starts from here
               // the best move changes frequently, we allocate some more time.
               if (moveCount > 1)
                   ++thisThread->bestMoveChanges;
+
+              thisThread->equalEvals = 0;
           }
           else
+          {
               // All other moves but the PV are set to the lowest value: this
               // is not a problem when sorting because the sort is stable and the
               // move position in the list is preserved - just the PV is pushed up.
               rm.score = -VALUE_INFINITE;
+
+              // Record if value matched alpha
+              if (value == alpha)
+                  ++thisThread->equalEvals;
+          }
       }
 
       if (value > bestValue)
@@ -1400,6 +1408,10 @@ moves_loop: // When in check, search starts from here
                   depth, bestMove, ss->staticEval);
 
     assert(bestValue > -VALUE_INFINITE && bestValue < VALUE_INFINITE);
+
+    if (thisThread->equalEvals > 10 && abs(bestValue) > 20)
+        bestValue -=  ((bestValue > 0) - (bestValue < 0))
+                    * (abs(bestValue) - 20) * (thisThread->equalEvals - 10) / 32;
 
     return bestValue;
   }

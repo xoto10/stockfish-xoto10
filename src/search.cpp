@@ -1409,9 +1409,8 @@ moves_loop: // When in check, search starts from here
 
     assert(bestValue > -VALUE_INFINITE && bestValue < VALUE_INFINITE);
 
-    if (thisThread->equalEvals > 10 && abs(bestValue) > 20)
-        bestValue -=  ((bestValue > 0) - (bestValue < 0))
-                    * (abs(bestValue) - 20) * (thisThread->equalEvals - 10) / 32;
+    if (thisThread->equalEvals > 10)
+        bestValue += ((bestValue > 0) - (bestValue < 0)) * (thisThread->equalEvals - 10);
 
     return bestValue;
   }

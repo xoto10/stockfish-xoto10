@@ -749,12 +749,14 @@ namespace {
     int v = ((eg > 0) - (eg < 0)) * std::max(complexity, -abs(eg));
 
     // Bonus for more advanced pawns
-    int av = pe->pawnAdvance[WHITE] - pe->pawnAdvance[BLACK];
+    int av = 0;
+    if (pos.count<PAWN>() > 11)
+        av = pe->pawnAdvance[WHITE] - pe->pawnAdvance[BLACK];
 
     if (T)
         Trace::add(INITIATIVE, make_score(u, v));
 
-    return make_score(u + 3 * av * abs(av), v);
+    return make_score(u + av, v);
   }
 
 

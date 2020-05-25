@@ -754,7 +754,7 @@ namespace {
     if (T)
         Trace::add(INITIATIVE, make_score(u, v));
 
-    return make_score(u + av * abs(av), v);
+    return make_score(u + 3 * av * abs(av), v);
   }
 
 

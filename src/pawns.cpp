@@ -160,6 +160,8 @@ namespace {
         if (!support)
             score -=   Doubled * doubled
                      + WeakLever * more_than_one(lever);
+
+        score += make_score(bool(ourPawns & Center) + more_than_one(ourPawns & Center), 0);
     }
 
     return score;

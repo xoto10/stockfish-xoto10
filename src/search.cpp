@@ -1445,7 +1445,7 @@ moves_loop: // When in check, search starts from here
         return (ss->ply >= MAX_PLY && !ss->inCheck)
                ? evaluate(pos) :  VALUE_DRAW
                                 + (abs(thisThread->rootMoves[0].score) <= 40
-                                   ? 0 : (thisThread->rootMoves[0].score < 0 ? 2 : -2));
+                                   ? 0 : (thisThread->rootMoves[0].score < 0 ? 1 : -1));
 
     assert(0 <= ss->ply && ss->ply < MAX_PLY);
 

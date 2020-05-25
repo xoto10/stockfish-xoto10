@@ -113,6 +113,7 @@ namespace {
     bool ponderMode = false;
 
     limits.startTime = now(); // As early as possible!
+    limits.firstSide = pos.side_to_move();
 
     while (is >> token)
         if (token == "searchmoves") // Needs to be the last command on the line

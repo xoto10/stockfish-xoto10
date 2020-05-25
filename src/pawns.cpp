@@ -33,6 +33,7 @@ namespace {
 
   // Pawn penalties
   constexpr Score Backward      = S( 9, 24);
+  constexpr Score CenterPawns   = S(10,  0);
   constexpr Score BlockedStorm  = S(82, 82);
   constexpr Score Doubled       = S(11, 56);
   constexpr Score Isolated      = S( 5, 15);
@@ -161,7 +162,7 @@ namespace {
             score -=   Doubled * doubled
                      + WeakLever * more_than_one(lever);
 
-        score += make_score(bool(ourPawns & Center) + more_than_one(ourPawns & Center), 0);
+        score += CenterPawns * (bool(ourPawns & Center) + more_than_one(ourPawns & Center));
     }
 
     return score;

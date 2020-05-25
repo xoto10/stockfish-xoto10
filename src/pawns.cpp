@@ -94,6 +94,7 @@ namespace {
         assert(pos.piece_on(s) == make_piece(Us, PAWN));
 
         Rank r = relative_rank(Us, s);
+        e->pawnAdvance[Us] += r;
 
         // Flag the pawn
         opposed    = theirPawns & forward_file_bb(Us, s);

@@ -778,7 +778,7 @@ namespace {
                 sf = 22 + 3 * pos.count<ALL_PIECES>(strongSide);
         }
         else if (pos.count<BISHOP>(strongSide) == 1 && pos.count<BISHOP>(~strongSide) == 2)
-            sf = 60 + pos.count<ALL_PIECES>(strongSide) / 4;
+            sf = std::min(sf, 32 + 7 * pos.count<PAWN>(strongSide));
         else
             sf = std::min(sf, 36 + 7 * pos.count<PAWN>(strongSide));
     }

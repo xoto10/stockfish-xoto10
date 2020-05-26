@@ -600,14 +600,17 @@ namespace {
 
     constexpr bool PvNode = NT == PV;
     const bool rootNode = PvNode && ss->ply == 0;
+    Thread* thisThread = pos.this_thread();
 
     // Check if we have an upcoming move which draws by repetition, or
     // if the opponent had an alternative move earlier to this position.
     if (   pos.rule50_count() >= 3
         && alpha < VALUE_DRAW
+                  - (ss->ply % 2 == 1 ? 20 + thisThread->contempt : 0)
         && !rootNode
         && pos.has_game_cycle(ss->ply))
     {
+//sync_cout << "info string 3fs1 " << sync_endl;
         alpha = value_draw(pos.this_thread());
         if (alpha >= beta)
             return alpha;
@@ -635,7 +638,6 @@ namespace {
     int moveCount, captureCount, quietCount;
 
     // Step 1. Initialize node
-    Thread* thisThread = pos.this_thread();
     ss->inCheck = pos.checkers();
     priorCapture = pos.captured_piece();
     Color us = pos.side_to_move();
@@ -810,7 +812,10 @@ namespace {
             ss->staticEval = eval = evaluate(pos);
 
         if (eval == VALUE_DRAW)
+{
+//sync_cout << "info string 3ftt " << sync_endl;
             eval = value_draw(thisThread);
+}
 
         // Can ttValue be used as a better position evaluation?
         if (    ttValue != VALUE_NONE
@@ -1442,7 +1447,11 @@ moves_loop: // When in check, search starts from here
     // Check for an immediate draw or maximum ply reached
     if (   pos.is_draw(ss->ply)
         || ss->ply >= MAX_PLY)
-        return (ss->ply >= MAX_PLY && !ss->inCheck) ? evaluate(pos) : VALUE_DRAW;
+{
+//sync_cout << "info string 3fqs1 " << sync_endl;
+        return (ss->ply >= MAX_PLY && !ss->inCheck)
+               ? evaluate(pos) : VALUE_DRAW;
+}
 
     assert(0 <= ss->ply && ss->ply < MAX_PLY);
 

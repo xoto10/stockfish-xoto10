@@ -605,12 +605,10 @@ namespace {
     // Check if we have an upcoming move which draws by repetition, or
     // if the opponent had an alternative move earlier to this position.
     if (   pos.rule50_count() >= 3
-        && alpha < VALUE_DRAW
-                  - (ss->ply % 2 == 1 ? 20 + thisThread->contempt : 0)
+        && alpha < VALUE_DRAW - (ss->ply % 2 == 1 ? 20 : 0)
         && !rootNode
         && pos.has_game_cycle(ss->ply))
     {
-//sync_cout << "info string 3fs1 " << sync_endl;
         alpha = value_draw(pos.this_thread());
         if (alpha >= beta)
             return alpha;
@@ -812,10 +810,7 @@ namespace {
             ss->staticEval = eval = evaluate(pos);
 
         if (eval == VALUE_DRAW)
-{
-//sync_cout << "info string 3ftt " << sync_endl;
             eval = value_draw(thisThread);
-}
 
         // Can ttValue be used as a better position evaluation?
         if (    ttValue != VALUE_NONE
@@ -1447,11 +1442,7 @@ moves_loop: // When in check, search starts from here
     // Check for an immediate draw or maximum ply reached
     if (   pos.is_draw(ss->ply)
         || ss->ply >= MAX_PLY)
-{
-//sync_cout << "info string 3fqs1 " << sync_endl;
-        return (ss->ply >= MAX_PLY && !ss->inCheck)
-               ? evaluate(pos) : VALUE_DRAW;
-}
+        return (ss->ply >= MAX_PLY && !ss->inCheck) ? evaluate(pos) : VALUE_DRAW;
 
     assert(0 <= ss->ply && ss->ply < MAX_PLY);
 

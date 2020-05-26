@@ -605,11 +605,11 @@ namespace {
     // Check if we have an upcoming move which draws by repetition, or
     // if the opponent had an alternative move earlier to this position.
     if (   pos.rule50_count() >= 3
-        && alpha < VALUE_DRAW - 20
+        && alpha < VALUE_DRAW
         && !rootNode
         && pos.has_game_cycle(ss->ply))
     {
-        alpha = value_draw(pos.this_thread());
+        alpha = value_draw(pos.this_thread()) - (ss->ply % 2 == 1 ? 40 : 0);
         if (alpha >= beta)
             return alpha;
     }

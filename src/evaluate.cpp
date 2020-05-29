@@ -23,6 +23,7 @@
 #include <cstring>   // For std::memset
 #include <iomanip>
 #include <sstream>
+#include <iostream>
 
 #include "bitboard.h"
 #include "evaluate.h"
@@ -844,6 +845,15 @@ namespace {
        + eg_value(score) * int(PHASE_MIDGAME + pos.this_thread()->phaseInc - me->game_phase()) * sf / SCALE_FACTOR_NORMAL;
 
     v /= PHASE_MIDGAME + pos.this_thread()->phaseInc;
+
+if (pos.this_thread()->phaseInc > 0 && mg_value(score) * int(eg_value(score)) < 0)
+{
+    Value v2 =  mg_value(score) * int(me->game_phase())
+       + eg_value(score) * int(PHASE_MIDGAME - me->game_phase()) * sf / SCALE_FACTOR_NORMAL;
+    v2 /= PHASE_MIDGAME;
+sync_cout << "info string v0: " << v2 << " v4: " << v << " mg " << mg_value(score)
+          << " eg " << eg_value(score) << (v*int(v2)<0 ? " *******" : "") << sync_endl;
+}
 
     // In case of tracing add all remaining individual evaluation terms
     if (T)

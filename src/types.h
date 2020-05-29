@@ -186,9 +186,10 @@ enum Value : int {
   BishopValueMg = 825,   BishopValueEg = 915,
   RookValueMg   = 1276,  RookValueEg   = 1380,
   QueenValueMg  = 2538,  QueenValueEg  = 2682,
-  Tempo = 28,
+  Tempo = 28, //  8302 16604 12689 794
 
-  MidgameLimit  = 15258, EndgameLimit  = 3915
+//  MidgameLimit  = 15258, EndgameLimit  = 3915
+  MidgameLimit  = 16052, EndgameLimit  = 3915
 };
 
 enum PieceType {

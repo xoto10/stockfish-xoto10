@@ -446,7 +446,7 @@ void Thread::search() {
               int dct = ct + (102 - ct / 2) * prev / (abs(prev) + 157);
 
               if (   rootDepth > 10
-                  && abs(rootMoves[0].score) < 10
+                  && abs(rootMoves[0].score) < 2
                   && rootPos.count<ALL_PIECES>() > 27)
                   phaseInc = Phase(4);
 

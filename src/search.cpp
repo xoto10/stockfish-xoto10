@@ -434,6 +434,7 @@ void Thread::search() {
           selDepth = 0;
 
           // Reset aspiration window starting size
+          phaseInc = Phase(0);
           if (rootDepth >= 4)
           {
               Value prev = rootMoves[pvIdx].previousScore;
@@ -443,6 +444,11 @@ void Thread::search() {
 
               // Adjust contempt based on root move's previousScore (dynamic contempt)
               int dct = ct + (102 - ct / 2) * prev / (abs(prev) + 157);
+
+              if (   rootDepth > 10
+                  && rootMoves[0].score < 5
+                  && rootPos.count<ALL_PIECES>() > 27)
+                  phaseInc = Phase(4);
 
               contempt = (us == WHITE ?  make_score(dct, dct / 2)
                                       : -make_score(dct, dct / 2));

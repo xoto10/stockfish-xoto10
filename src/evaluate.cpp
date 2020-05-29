@@ -841,9 +841,9 @@ namespace {
     // Interpolate between a middlegame and a (scaled by 'sf') endgame score
     ScaleFactor sf = scale_factor(eg_value(score));
     v =  mg_value(score) * int(me->game_phase())
-       + eg_value(score) * int(PHASE_MIDGAME - me->game_phase()) * sf / SCALE_FACTOR_NORMAL;
+       + eg_value(score) * int(PHASE_MIDGAME + pos.this_thread()->phaseInc - me->game_phase()) * sf / SCALE_FACTOR_NORMAL;
 
-    v /= PHASE_MIDGAME;
+    v /= PHASE_MIDGAME + pos.this_thread()->phaseInc;
 
     // In case of tracing add all remaining individual evaluation terms
     if (T)

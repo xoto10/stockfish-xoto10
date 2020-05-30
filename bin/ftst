@@ -13,5 +13,9 @@ echo -n "$(date +%Y-%m-%d_%H:%M)  " >>$LOG
 (time wget -nd -q http://tests.stockfishchess.org/tests) 2>&1 |
     grep real >>$LOG
 
+if [[ "$1" ]] ; then
+    grep -F -A 20 "$1</a" tests
+fi
+
 \rm -f $PAGE $PAGE2 2>/dev/null
 

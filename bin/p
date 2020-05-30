@@ -10,3 +10,8 @@ if [[ "$ans" = y ]] ; then
    git push origin "$br"
 fi
 
+if [[ "$ans" = "+" ]] ; then
+   echo "git push origin +$br"
+   git push origin "+$br"
+fi
+

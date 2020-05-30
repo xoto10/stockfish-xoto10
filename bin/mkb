@@ -10,6 +10,7 @@ esac
 
 ps -f
 
+chmod -x stockfish
 #make build ARCH=x86-64-modern -j ${2:-4}
 nice make build ARCH=x86-64-bmi2 -j ${2:-4}
 
@@ -17,7 +18,7 @@ if [[ -x stockfish ]] ;  then
    dest=stockfish_new
    br="$(git branch --no-color | grep '^*' | cut -c3-)"
 
-   if [[ "$(git branch --no-color | grep '^*' | cut -c3-)" = master ]] ; then
+   if [[ "$br" = master ]] ; then
       dest=stockfish_main
    fi
 
@@ -27,5 +28,10 @@ if [[ -x stockfish ]] ;  then
    \ls -lt | head -10
 fi
 
-b
+
+git log | head -7
+
+if [[ -x stockfish ]] ; then
+    nice b
+fi
 

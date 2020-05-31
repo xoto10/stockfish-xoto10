@@ -467,8 +467,8 @@ void Thread::search() {
                   && (Threads.main()->pvV < -100 || Threads.main()->pvEg > 220 + ct)
                  )
               {
-                  contempt = (us == WHITE ?  make_score(dct, dct)
-                                          : -make_score(dct, dct));
+                  contempt = (us == WHITE ?  make_score(0, dct)
+                                          : -make_score(0, dct));
               }
               else
               {

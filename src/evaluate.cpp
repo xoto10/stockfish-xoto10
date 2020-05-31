@@ -784,8 +784,8 @@ namespace {
         }
         else
         {
-            Bitboard theirHalf = (strongSide == WHITE ? Rank5BB ^ Rank6BB ^ Rank7BB ^ Rank8BB
-                                                      : Rank1BB ^ Rank2BB ^ Rank3BB ^ Rank4BB);
+            Bitboard theirHalf = (strongSide == WHITE ? Rank5BB | Rank6BB | Rank7BB | Rank8BB
+                                                      : Rank1BB | Rank2BB | Rank3BB | Rank4BB);
             sf = std::min(sf, 36
                              + 7 * pos.count<PAWN>(strongSide)
                              +     bool(pos.pieces(strongSide, PAWN) & ~attackedBy[~strongSide][PAWN] & theirHalf));

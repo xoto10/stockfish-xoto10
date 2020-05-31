@@ -778,7 +778,7 @@ namespace {
                 sf = 22 + 3 * pos.count<ALL_PIECES>(strongSide);
         }
         else
-            sf = std::min(sf, 36 + 7 * pos.count<PAWN>(strongSide));
+            sf = std::min(sf, 37 + 7 * pos.count<PAWN>(strongSide));
     }
 
     return ScaleFactor(sf);

@@ -783,7 +783,14 @@ namespace {
                 sf = 22 + 3 * pos.count<ALL_PIECES>(strongSide);
         }
         else
-            sf = std::min(sf, 36 + 7 * pos.count<PAWN>(strongSide));
+        {
+            Bitboard Half = (strongSide == WHITE ? Rank5BB ^ Rank6BB ^ Rank7BB ^ Rank8BB
+                                                 : Rank1BB ^ Rank2BB ^ Rank3BB ^ Rank4BB);
+            sf = std::min(sf, 36
+                             + 7 * pos.count<PAWN>(strongSide)
+                             +     bool(pos.pieces(strongSide, PAWN) & Half)
+                             +     more_than_one(pos.pieces(strongSide, PAWN) & Half));
+        }
     }
 
     return ScaleFactor(sf);

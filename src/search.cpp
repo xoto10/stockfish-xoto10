@@ -464,9 +464,9 @@ void Thread::search() {
               if (   Threads.main()->pvEg
                   && rootDepth > 10
                   && Threads.main()->pvEg > Threads.main()->pvV
+                  && (Threads.main()->pvV < -100 || Threads.main()->pvEg > 220 + ct)
                  )
               {
-                  dct *= 3 / 4;
                   contempt = (us == WHITE ?  make_score(dct, dct)
                                           : -make_score(dct, dct));
               }

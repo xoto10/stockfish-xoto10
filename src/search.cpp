@@ -227,6 +227,7 @@ void MainThread::search() {
   Color us = rootPos.side_to_move();
   Time.init(Limits, us, rootPos.game_ply());
   TT.new_search();
+  Threads.main()->pvV = Threads.main()->pvEg = 0;
 
   if (rootMoves.empty())
   {

@@ -875,10 +875,7 @@ namespace {
         if (nullValue >= beta)
         {
             // Do not return unproven mate or TB scores
-            if (nullValue >= VALUE_TB_WIN_IN_MAX_PLY)
-                nullValue = beta;
-
-            return nullValue;
+            return nullValue >= VALUE_TB_WIN_IN_MAX_PLY ? beta : nullValue;
         }
     }
 

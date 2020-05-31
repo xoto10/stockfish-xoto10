@@ -54,6 +54,7 @@ namespace TB = Tablebases;
 
 using std::string;
 using Eval::evaluate;
+using Eval::evaluateEg;
 using namespace Search;
 
 namespace {
@@ -315,6 +316,21 @@ void MainThread::search() {
       std::cout << " ponder " << UCI::move(bestThread->rootMoves[0].pv[1], rootPos.is_chess960());
 
   std::cout << sync_endl;
+
+  StateListPtr states = StateListPtr(new std::deque<StateInfo>(1));
+  for (Move m : bestThread->rootMoves[0].pv)
+  {
+      states->emplace_back();
+      rootPos.do_move(m, states->back());
+  }
+  Value eg;
+  pvV = int(evaluateEg(us, rootPos, eg));
+  pvEg = int(eg);
+//sync_cout << "info string fin: us " << us
+//          << " pos\n" << rootPos
+//          << " v " << pvV
+//          << " eg " << pvEg
+//          << sync_endl;
 }
 
 
@@ -444,8 +460,20 @@ void Thread::search() {
               // Adjust contempt based on root move's previousScore (dynamic contempt)
               int dct = ct + (102 - ct / 2) * prev / (abs(prev) + 157);
 
-              contempt = (us == WHITE ?  make_score(dct, dct / 2)
-                                      : -make_score(dct, dct / 2));
+              if (   Threads.main()->pvEg
+                  && rootDepth > 10
+                  && Threads.main()->pvEg > Threads.main()->pvV
+                  && (Threads.main()->pvV < -100 || Threads.main()->pvEg > 220 + ct)
+                 )
+              {
+                  contempt = (us == WHITE ?  make_score(dct / 2, dct)
+                                          : -make_score(dct / 2, dct));
+              }
+              else
+              {
+                  contempt = (us == WHITE ?  make_score(dct, dct / 2)
+                                          : -make_score(dct, dct / 2));
+              }
           }
 
           // Start with a small aspiration window and, in the case of a fail

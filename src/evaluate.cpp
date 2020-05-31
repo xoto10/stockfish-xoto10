@@ -164,6 +164,7 @@ namespace {
     explicit Evaluation(const Position& p) : pos(p) {}
     Evaluation& operator=(const Evaluation&) = delete;
     Value value();
+    Value valueEg(const Color Us, Value& eg);
 
   private:
     template<Color Us> void initialize();
@@ -180,6 +181,7 @@ namespace {
     Pawns::Entry* pe;
     Bitboard mobilityArea[COLOR_NB];
     Score mobility[COLOR_NB] = { SCORE_ZERO, SCORE_ZERO };
+    Value egVal;
 
     // attackedBy[color][piece type] is a bitboard representing all squares
     // attacked by a given color and piece type. Special "piece types" which
@@ -856,7 +858,20 @@ namespace {
     }
 
     // Side to move point of view
-    return (pos.side_to_move() == WHITE ? v : -v) + Tempo;
+    if (pos.side_to_move() == WHITE)
+        return egVal = eg_value(score) * sf / SCALE_FACTOR_NORMAL + Tempo, v + Tempo;
+    else
+        return egVal = -eg_value(score) * sf / SCALE_FACTOR_NORMAL + Tempo, -v + Tempo;
+  }
+
+  template<Tracing T>
+  Value Evaluation<T>::valueEg(const Color Us, Value& eg) {
+    Value v = value();
+    if (Us != pos.side_to_move())
+        eg = -egVal, v = -v;
+    else
+        eg = egVal;
+    return v;
   }
 
 } // namespace
@@ -867,6 +882,16 @@ namespace {
 
 Value Eval::evaluate(const Position& pos) {
   return Evaluation<NO_TRACE>(pos).value();
+}
+
+
+/// evaluateEg() is the evaluator for the outer world that also returns the
+/// eg value. It sets the eg param to the eg value and returns a static
+/// evaluation of the position from the point of view of the side to move.
+
+Value Eval::evaluateEg(const Color Us, const Position& pos, Value& eg) {
+  Value v = Evaluation<NO_TRACE>(pos).valueEg(Us, eg);
+  return v;
 }
 
 

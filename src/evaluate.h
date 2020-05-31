@@ -32,6 +32,7 @@ namespace Eval {
 std::string trace(const Position& pos);
 
 Value evaluate(const Position& pos);
+Value evaluateEg(const Color Us, const Position& pos, Value& eg);
 }
 
 #endif // #ifndef EVALUATE_H_INCLUDED

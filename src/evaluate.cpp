@@ -787,8 +787,8 @@ namespace {
             Bitboard theirHalf = (strongSide == WHITE ? Rank5BB | Rank6BB | Rank7BB | Rank8BB
                                                       : Rank1BB | Rank2BB | Rank3BB | Rank4BB);
             sf =  std::min(sf, 36 + 7 * pos.count<PAWN>(strongSide))
-                + bool(pos.pieces(strongSide, PAWN) & theirHalf);
-//                +     more_than_one(pos.pieces(strongSide, PAWN) & theirHalf));
+//                + bool(pos.pieces(strongSide, PAWN) & theirHalf);
+                + more_than_one(pos.pieces(strongSide, PAWN) & theirHalf);
         }
     }
 

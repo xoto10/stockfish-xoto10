@@ -67,9 +67,7 @@ namespace {
   // Razor and futility margins
   constexpr int RazorMargin = 531;
   Value futility_margin(Position& pos, Depth d, bool improving, bool drawEval) {
-    int rnd = (pos.this_thread()->nodes + pos.key()) & 511;
-    rnd = rnd * rnd / 512;
-    return Value(217 * (d - improving) + drawEval * rnd);
+    return Value(217 * (d - improving) + drawEval * (pos.this_thread()->nodes & 511));
   }
 
   // Reductions lookup table, initialized at startup

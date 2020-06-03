@@ -865,9 +865,14 @@ namespace {
     v = (pos.side_to_move() == WHITE ? v : -v) + Tempo;
 
     // Adjust for flat eval
-//sync_cout << "info string v " << v << " fec " << pos.flat_eval_count()
-//          << " ret " << v - ((v > 0) - (v < 0)) * std::min(pos.flat_eval_count(), abs(v)) << sync_endl;
-    return v - ((v > 0) - (v < 0)) * std::min(int(Threads.main()->flatEvalCount), abs(v));
+    int f = Threads.main()->flatEvalCount;
+//if (f > 6)
+//sync_cout << "info string v " << v << " fec " << f
+//          << " ret " << v - ((v > 0) - (v < 0)) * std::min(f-10, abs(v))/2 << sync_endl;
+    if (f > 11)
+        v -= ((v > 0) - (v < 0)) * std::min(f - 10, abs(v)) / 2;
+
+    return v;
   }
 
 } // namespace

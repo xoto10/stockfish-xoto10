@@ -23,6 +23,7 @@
 #include <cstring>   // For std::memset
 #include <iomanip>
 #include <sstream>
+//#include <iostream>
 
 #include "bitboard.h"
 #include "evaluate.h"
@@ -861,7 +862,12 @@ namespace {
     }
 
     // Side to move point of view
-    return (pos.side_to_move() == WHITE ? v : -v) + Tempo;
+    v = (pos.side_to_move() == WHITE ? v : -v) + Tempo;
+
+    // Adjust for flat eval
+//sync_cout << "info string v " << v << " fec " << pos.flat_eval_count()
+//          << " ret " << v - ((v > 0) - (v < 0)) * std::min(pos.flat_eval_count(), abs(v)) << sync_endl;
+    return v - ((v > 0) - (v < 0)) * std::min(int(Threads.main()->flatEvalCount), abs(v));
   }
 
 } // namespace

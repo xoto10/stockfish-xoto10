@@ -96,6 +96,7 @@ public:
   template<PieceType Pt> const Square* squares(Color c) const;
   template<PieceType Pt> Square square(Color c) const;
   bool is_on_semiopen_file(Color c, Square s) const;
+  bool is_closed() const;
 
   // Castling
   CastlingRights castling_rights(Color c) const;
@@ -259,6 +260,16 @@ inline Square Position::ep_square() const {
 
 inline bool Position::is_on_semiopen_file(Color c, Square s) const {
   return !(pieces(c, PAWN) & file_bb(s));
+}
+
+inline bool Position::is_closed() const {
+  Bitboard doubleAttack = pawn_double_attacks_bb<BLACK>(pieces(BLACK, PAWN));
+  Bitboard blockedPawns = shift<NORTH>(pieces(WHITE, PAWN)) & (pieces(BLACK, PAWN) | doubleAttack);
+
+  doubleAttack = pawn_double_attacks_bb<WHITE>(pieces(WHITE, PAWN));
+  blockedPawns |= shift<SOUTH>(pieces(BLACK, PAWN)) & (pieces(WHITE, PAWN) | doubleAttack);
+
+  return count<ALL_PIECES>() > 25 && more_than_one(blockedPawns & CenterFiles);
 }
 
 inline bool Position::can_castle(CastlingRights cr) const {

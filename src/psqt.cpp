@@ -97,9 +97,35 @@ constexpr Score PBonus[RANK_NB][FILE_NB] =
    { S( -7,  0), S(  7,-11), S( -3, 12), S(-13, 21), S(  5, 25), S(-16, 19), S( 10,  4), S( -8,  7) }
   };
 
-#undef S
-
 Score psq[PIECE_NB][SQUARE_NB];
+
+/// set_closed() adjusts some psqt values if the position is closed
+void set_closed(bool closed) {
+  constexpr Square sqs[] = { SQ_H4,    SQ_H6 };
+  constexpr Score  adj[] = { S( 4, 0), S(10, 0) };
+
+  Score score = make_score(PieceValue[MG][W_PAWN], PieceValue[EG][W_PAWN]);
+
+  if (closed)
+  {
+    for (auto i=0; i<2; ++i)
+    {
+      psq[W_PAWN][sqs[i]] = score + PBonus[rank_of(sqs[i])][file_of(sqs[i])] + adj[i];
+      psq[B_PAWN][flip_rank(sqs[i])] = -psq[W_PAWN][sqs[i]];
+    }
+  }
+
+  else
+  {
+    for (auto i=0; i<2; ++i)
+    {
+      psq[W_PAWN][sqs[i]] = score + PBonus[rank_of(sqs[i])][file_of(sqs[i])];
+      psq[B_PAWN][flip_rank(sqs[i])] = -psq[W_PAWN][sqs[i]];
+    }
+  }
+}
+
+#undef S
 
 // init() initializes piece-square tables: the white halves of the tables are
 // copied from Bonus[] adding the piece value, then the black halves of the

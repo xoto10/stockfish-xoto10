@@ -33,6 +33,8 @@ namespace {
 
   // Pawn penalties
   constexpr Score Backward      = S( 9, 24);
+  constexpr Score ClosedH4      = S( 4,  0);
+  constexpr Score ClosedH6      = S(10,  0);
   constexpr Score Doubled       = S(11, 56);
   constexpr Score Isolated      = S( 5, 15);
   constexpr Score WeakLever     = S( 0, 56);
@@ -87,7 +89,7 @@ namespace {
     e->passedPawns[Us] = 0;
     e->kingSquares[Us] = SQ_NONE;
     e->pawnAttacks[Us] = e->pawnAttacksSpan[Us] = pawn_attacks_bb<Us>(ourPawns);
-    e->blockedCount += popcount(shift<Up>(ourPawns) & (theirPawns | doubleAttackThem));
+    e->blockedPawns |= shift<Up>(ourPawns) & (theirPawns | doubleAttackThem);
 
     // Loop through all pawns of the current color and score each pawn
     while ((s = *pl++) != SQ_NONE)
@@ -184,7 +186,7 @@ Entry* probe(const Position& pos) {
       return e;
 
   e->key = key;
-  e->blockedCount = 0;
+  e->blockedPawns = 0;
   e->scores[WHITE] = evaluate<WHITE>(pos, e);
   e->scores[BLACK] = evaluate<BLACK>(pos, e);
 
@@ -234,6 +236,9 @@ Score Entry::evaluate_shelter(const Position& pos, Square ksq) {
 template<Color Us>
 Score Entry::do_king_safety(const Position& pos) {
 
+  constexpr Bitboard OurH4 = FileHBB & (Us == WHITE ? Rank4BB : Rank5BB);
+  constexpr Bitboard OurH6 = FileHBB & (Us == WHITE ? Rank6BB : Rank3BB);
+
   Square ksq = pos.square<KING>(Us);
   kingSquares[Us] = ksq;
   castlingRights[Us] = pos.castling_rights(Us);
@@ -248,6 +253,11 @@ Score Entry::do_king_safety(const Position& pos) {
 
   if (pos.can_castle(Us & QUEEN_SIDE))
       shelter = std::max(shelter, evaluate_shelter<Us>(pos, relative_square(Us, SQ_C1)), compare);
+
+  // Bonus for H4 or H6 pawn in closed positions
+  if (popcount(blockedPawns & CenterFiles) > 3)
+      shelter +=  ClosedH4 * bool(pos.pieces(Us, PAWN) & OurH4)
+                + ClosedH6 * bool(pos.pieces(Us, PAWN) & OurH6);
 
   // In endgame we like to bring our king near our closest pawn
   Bitboard pawns = pos.pieces(Us, PAWN);

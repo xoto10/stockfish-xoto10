@@ -865,9 +865,9 @@ namespace {
     v = (pos.side_to_move() == WHITE ? v : -v) + Tempo;
 
     // Adjust for flat eval
-    int f = Threads.main()->flatEvalCount;
-//if (f > 6)
-//sync_cout << "info string v " << v << " fec " << f
+    int f = pos.this_thread()->flatEvalCount;
+//if (f > 11)
+//sync_cout << "info string th " << pos.this_thread()->index() << " v " << v << " fec " << f
 //          << " ret " << v - ((v > 0) - (v < 0)) * std::min(f-10, abs(v))/2 << sync_endl;
     if (f > 11)
         v -= ((v > 0) - (v < 0)) * std::min(f - 10, abs(v)) / 2;

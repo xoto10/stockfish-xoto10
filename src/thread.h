@@ -57,12 +57,13 @@ public:
   void start_searching();
   void wait_for_search_finished();
   int best_move_count(Move move) const;
+//int index() { return idx; }
 
   Pawns::Table pawnsTable;
   Material::Table materialTable;
   size_t pvIdx, pvLast;
   uint64_t ttHitAverage;
-  int selDepth, nmpMinPly;
+  int selDepth, nmpMinPly, flatEvalCount;
   Color nmpColor;
   std::atomic<uint64_t> nodes, tbHits, bestMoveChanges;
 
@@ -91,9 +92,9 @@ struct MainThread : public Thread {
   Value bestPreviousScore;
   Value iterValue[4];
   int callsCnt;
+  int mainFlatEvalCount;
   bool stopOnPonderhit;
   std::atomic_bool ponder;
-  std::atomic_int flatEvalCount;
 };
 
 

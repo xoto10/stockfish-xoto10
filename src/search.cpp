@@ -576,9 +576,13 @@ void Thread::search() {
       }
 
       mainThread->iterValue[iterIdx] = bestValue;
-//sync_cout << "info string bv " << bestValue << " last iv " << mainThread->iterValue[(iterIdx + 3) & 3] << sync_endl;
-      mainThread->flatEvalCount = abs(bestValue - mainThread->iterValue[(iterIdx + 3) & 3]) < 2
-                                  ? mainThread->flatEvalCount + 1 : 0;
+      mainThread->mainFlatEvalCount = abs(bestValue - mainThread->iterValue[(iterIdx + 3) & 3]) < 2
+                                      ? mainThread->mainFlatEvalCount + 1 : 0;
+
+      if (mainThread->mainFlatEvalCount > 11)
+          for (Thread* th : Threads)
+              th->flatEvalCount = mainThread->mainFlatEvalCount;
+
       iterIdx = (iterIdx + 1) & 3;
   }
 

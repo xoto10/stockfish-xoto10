@@ -130,6 +130,8 @@ namespace {
   constexpr Score BishopPawns         = S(  3,  7);
   constexpr Score BishopOnKingRing    = S( 24,  0);
   constexpr Score BishopXRayPawns     = S(  4,  5);
+  constexpr Score ClosedH4            = S(  4,  0);
+  constexpr Score ClosedH6            = S( 10,  0);
   constexpr Score CorneredBishop      = S( 50, 50);
   constexpr Score FlankAttacks        = S(  8,  0);
   constexpr Score Hanging             = S( 69, 36);
@@ -498,6 +500,8 @@ namespace {
     constexpr Color     Them     = ~Us;
     constexpr Direction Up       = pawn_push(Us);
     constexpr Bitboard  TRank3BB = (Us == WHITE ? Rank3BB : Rank6BB);
+    constexpr Bitboard  OurH4 = FileHBB & (Us == WHITE ? Rank4BB : Rank5BB);
+    constexpr Bitboard  OurH6 = FileHBB & (Us == WHITE ? Rank6BB : Rank3BB);
 
     Bitboard b, weak, defended, nonPawnEnemies, stronglyProtected, safe;
     Score score = SCORE_ZERO;
@@ -562,6 +566,14 @@ namespace {
     // Bonus for safe pawn threats on the next move
     b = pawn_attacks_bb<Us>(b) & nonPawnEnemies;
     score += ThreatByPawnPush * popcount(b);
+
+    // Bonus for H4 or H6 pawn in closed positions
+    if (   pos.count<ALL_PIECES>() > 25
+        && popcount(  shift<Up>(pos.pieces(Us, PAWN))
+                    & CenterFiles
+                    & (pos.pieces(Them, PAWN) | pawn_double_attacks_bb<Them>(pos.pieces(Them, PAWN)))) > 3)
+        score +=  ClosedH4 * bool(pos.pieces(Us, PAWN) & OurH4)
+                + ClosedH6 * bool(pos.pieces(Us, PAWN) & OurH6);
 
     // Bonus for threats on the next moves against enemy queen
     if (pos.count<QUEEN>(Them) == 1)

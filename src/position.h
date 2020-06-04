@@ -269,7 +269,7 @@ inline bool Position::is_closed() const {
   doubleAttack = pawn_double_attacks_bb<WHITE>(pieces(WHITE, PAWN));
   blockedPawns |= shift<SOUTH>(pieces(BLACK, PAWN)) & (pieces(WHITE, PAWN) | doubleAttack);
 
-  return count<ALL_PIECES>() > 25 && more_than_one(blockedPawns & CenterFiles);
+  return count<ALL_PIECES>() > 25 && popcount(blockedPawns & CenterFiles) > 3;
 }
 
 inline bool Position::can_castle(CastlingRights cr) const {

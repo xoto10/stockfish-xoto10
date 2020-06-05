@@ -23,6 +23,7 @@
 #include <cstring>   // For std::memset
 #include <iomanip>
 #include <sstream>
+//#include <iostream>
 
 #include "bitboard.h"
 #include "evaluate.h"
@@ -750,10 +751,29 @@ namespace {
     Value mg = mg_value(score);
     Value eg = eg_value(score);
 
+    int bln = 0;
+    if (pos.count<ALL_PIECES>() > 25)
+    {
+        Bitboard weakCenter, bl;
+        if (eg > 0)
+        {
+            weakCenter = (FileDBB | FileEBB) & (Rank6BB | Rank7BB);
+            bl = pos.pieces(BLACK, PAWN) & weakCenter & (shift<NORTH>(pos.pieces()));
+        }
+        else
+        {
+            weakCenter = (FileDBB | FileEBB) & (Rank2BB | Rank3BB);
+            bl = pos.pieces(WHITE, PAWN) & weakCenter & shift<SOUTH>(pos.pieces());
+        }
+        bln = bool(bl) + more_than_one(bl);
+//if (bln)
+//sync_cout << "info string blcp: eg " << eg << " bln " << bln << " pos\n" << pos << sync_endl;
+    }
+
     // Now apply the bonus: note that we find the attacking side by extracting the
     // sign of the midgame or endgame values, and that we carefully cap the bonus
     // so that the midgame and endgame scores do not change sign after the bonus.
-    int u = ((mg > 0) - (mg < 0)) * Utility::clamp(complexity + 50, -abs(mg), 0);
+    int u = ((mg > 0) - (mg < 0)) * std::max(std::min(complexity + 50, 0) + 10 * bln, -abs(mg));
     int v = ((eg > 0) - (eg < 0)) * std::max(complexity, -abs(eg));
 
     if (T)

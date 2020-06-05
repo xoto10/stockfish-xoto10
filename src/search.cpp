@@ -270,6 +270,7 @@ void MainThread::search() {
       Time.availableNodes += Limits.inc[us] - Threads.nodes_searched();
 
   Thread* bestThread = this;
+  Thread* worstThread = this;
 
   // Check if there are threads with a better score than main thread
   if (    int(Options["MultiPV"]) == 1
@@ -300,10 +301,16 @@ void MainThread::search() {
                    || (   th->rootMoves[0].score > VALUE_TB_LOSS_IN_MAX_PLY
                        && votes[th->rootMoves[0].pv[0]] > votes[bestThread->rootMoves[0].pv[0]]))
               bestThread = th;
+
+          if (votes[th->rootMoves[0].pv[0]] < votes[worstThread->rootMoves[0].pv[0]])
+              worstThread = th;
       }
   }
 
   bestPreviousScore = bestThread->rootMoves[0].score;
+
+  if (Threads.size() > 1 && worstThread->rootMoves[0].pv[0] != bestThread->rootMoves[0].pv[0])
+      std::copy(bestThread->counterMoves.begin(), bestThread->counterMoves.end(), worstThread->counterMoves.begin());
 
   // Send again PV info if we have a new best thread
   if (bestThread != this)

@@ -99,6 +99,9 @@ constexpr Score PBonus[RANK_NB][FILE_NB] =
 
 Score psq[PIECE_NB][SQUARE_NB];
 
+bool closedPosition = false;
+
+
 /// set_closed() adjusts some psqt values if the position is closed
 void set_closed(bool closed) {
   constexpr Square sqs[] = { SQ_H4,    SQ_H6 };
@@ -108,19 +111,27 @@ void set_closed(bool closed) {
 
   if (closed)
   {
-    for (auto i=0; i<2; ++i)
+    if (!closedPosition)
     {
-      psq[W_PAWN][sqs[i]] = score + PBonus[rank_of(sqs[i])][file_of(sqs[i])] + adj[i];
-      psq[B_PAWN][flip_rank(sqs[i])] = -psq[W_PAWN][sqs[i]];
+      for (auto i=0; i<2; ++i)
+      {
+        psq[W_PAWN][sqs[i]] = score + PBonus[rank_of(sqs[i])][file_of(sqs[i])] + adj[i];
+        psq[B_PAWN][flip_rank(sqs[i])] = -psq[W_PAWN][sqs[i]];
+      }
+      closedPosition = true;
     }
   }
 
   else
   {
-    for (auto i=0; i<2; ++i)
+    if (closedPosition)
     {
-      psq[W_PAWN][sqs[i]] = score + PBonus[rank_of(sqs[i])][file_of(sqs[i])];
-      psq[B_PAWN][flip_rank(sqs[i])] = -psq[W_PAWN][sqs[i]];
+      for (auto i=0; i<2; ++i)
+      {
+        psq[W_PAWN][sqs[i]] = score + PBonus[rank_of(sqs[i])][file_of(sqs[i])];
+        psq[B_PAWN][flip_rank(sqs[i])] = -psq[W_PAWN][sqs[i]];
+      }
+      closedPosition = false;
     }
   }
 }

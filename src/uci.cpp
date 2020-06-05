@@ -35,6 +35,7 @@
 
 namespace PSQT {
   void set_closed(bool closed);
+  bool positionClosed;
 }
 
 using namespace std;
@@ -73,7 +74,6 @@ namespace {
     states = StateListPtr(new std::deque<StateInfo>(1)); // Drop old and create a new one
 
     bool again = false;
-    PSQT::set_closed(false);
     do
     {
         pos.set(fen, Options["UCI_Chess960"], &states->back(), Threads.main());
@@ -87,11 +87,15 @@ namespace {
             s += s.length() ? " " + token : token;
         }
 
-        if (!again && pos.is_closed())
+        if (!again)
         {
-            PSQT::set_closed(true);
-            again = true;
-            is = istringstream(s);
+            bool cl = pos.is_closed();
+            if (cl != PSQT::positionClosed)
+            {
+                PSQT::set_closed(cl);
+                is = istringstream(s);
+                again = true;
+            }
         }
         else
             again = false;

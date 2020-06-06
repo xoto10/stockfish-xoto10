@@ -1016,9 +1016,10 @@ moves_loop: // When in check, search starts from here
       if (   Threads.earlyMove
           && ss->ply < 2
           && type_of(movedPiece) == PAWN
+          && (CenterFiles & to_sq(move))
           && relative_rank(us, to_sq(move)) == RANK_3
           && !(pos.attackers_to(to_sq(move) + pawn_push(us)) & pos.pieces(~us, PAWN)))
-          vinc = Value(-10);
+          vinc = Value(-6);
 
       // Calculate new depth for this move
       newDepth = depth - 1;
@@ -1098,7 +1099,7 @@ moves_loop: // When in check, search starts from here
           Value singularBeta = ttValue - ((formerPv + 4) * depth) / 2;
           Depth singularDepth = (depth - 1 + 3 * formerPv) / 2;
           ss->excludedMove = move;
-          value = search<NonPV>(pos, ss, singularBeta - 1, singularBeta, singularDepth, cutNode) + vinc;
+          value = search<NonPV>(pos, ss, singularBeta - 1, singularBeta, singularDepth, cutNode);
           ss->excludedMove = MOVE_NONE;
 
           if (value < singularBeta)
@@ -1120,7 +1121,7 @@ moves_loop: // When in check, search starts from here
           else if (ttValue >= beta)
           {
               ss->excludedMove = move;
-              value = search<NonPV>(pos, ss, beta - 1, beta, (depth + 3) / 2, cutNode) + vinc;
+              value = search<NonPV>(pos, ss, beta - 1, beta, (depth + 3) / 2, cutNode);
               ss->excludedMove = MOVE_NONE;
 
               if (value >= beta)

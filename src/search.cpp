@@ -1019,7 +1019,7 @@ moves_loop: // When in check, search starts from here
           && (CenterFiles & to_sq(move))
           && relative_rank(us, to_sq(move)) == RANK_3
           && !(pos.attackers_to(to_sq(move) + pawn_push(us)) & pos.pieces(~us, PAWN)))
-          vinc = Value(-6);
+          vinc = Value(-3);
 
       // Calculate new depth for this move
       newDepth = depth - 1;

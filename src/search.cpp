@@ -1016,16 +1016,9 @@ moves_loop: // When in check, search starts from here
       if (   Threads.earlyMove
           && ss->ply < 2
           && type_of(movedPiece) == PAWN
-          && (CenterFiles & to_sq(move))
           && relative_rank(us, to_sq(move)) == RANK_3
           && !(pos.attackers_to(to_sq(move) + pawn_push(us)) & pos.pieces(~us, PAWN)))
-      {
-//sync_cout << "info string xxx: us " << us
-//          << " pos\n" << pos
-//          << " mv " << UCI::move(move,false)
-//          << sync_endl;
           vinc = Value(-10);
-      }
 
       // Calculate new depth for this move
       newDepth = depth - 1;

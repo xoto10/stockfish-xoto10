@@ -78,7 +78,7 @@ namespace {
 
     // Early move
     Threads.earlyMove =   pos.count<ALL_PIECES>() == 32
-                       && popcount(pos.pieces(PAWN) & (Rank2BB | Rank7BB)) >= 12;
+                       && popcount(pos.pieces(PAWN) & (Rank2BB | Rank7BB)) >= 14;
   }
 
 

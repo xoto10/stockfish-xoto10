@@ -813,7 +813,7 @@ namespace {
     Score score = pos.psq_score() + me->imbalance() + pos.this_thread()->contempt;
 
     // Randomise mg value slightly
-    int rnd = ((pos.key() + pos.this_thread()->nodes) & 8) - 4;
+    int rnd = ((pos.key() + pos.this_thread()->nodes) & 4) - 2;
     score += make_score(rnd, 0);
 
     // Probe the pawn hash table

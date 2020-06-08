@@ -821,6 +821,10 @@ namespace {
     if (abs(v) > LazyThreshold + pos.non_pawn_material() / 64)
        return pos.side_to_move() == WHITE ? v : -v;
 
+    // Randomise mg value slightly
+    int rnd = ((pos.key() + pos.this_thread()->nodes) & 8) - 4;
+    score += make_score(rnd, 0);
+
     // Main evaluation begins here
 
     initialize<WHITE>();

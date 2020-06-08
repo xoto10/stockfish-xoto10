@@ -812,10 +812,6 @@ namespace {
     // imbalance. Score is computed internally from the white point of view.
     Score score = pos.psq_score() + me->imbalance() + pos.this_thread()->contempt;
 
-    // Randomise mg value slightly
-    int rnd = ((pos.key() + pos.this_thread()->nodes) & 4) - 2;
-    score += make_score(rnd, 0);
-
     // Probe the pawn hash table
     pe = Pawns::probe(pos);
     score += pe->pawn_score(WHITE) - pe->pawn_score(BLACK);
@@ -824,6 +820,10 @@ namespace {
     Value v = (mg_value(score) + eg_value(score)) / 2;
     if (abs(v) > LazyThreshold + pos.non_pawn_material() / 64)
        return pos.side_to_move() == WHITE ? v : -v;
+
+    // Randomise mg value slightly
+    int rnd = ((pos.key() + pos.this_thread()->nodes) & 4) - 2;
+    score += make_score(rnd, 0);
 
     // Main evaluation begins here
 

@@ -183,7 +183,7 @@ namespace {
 
     // Small penalty for more pawn islands
     ourPawns |= ourPawns >> 8; ourPawns |= ourPawns >> 16; ourPawns |= ourPawns >> 32;
-    score -= make_score(IslandCount[ourPawns & 0xFF], 2 * IslandCount[ourPawns & 0xFF]);
+    score -= make_score(4 * IslandCount[ourPawns & 0xFF], 8 * IslandCount[ourPawns & 0xFF]);
 
     return score;
   }

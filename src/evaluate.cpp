@@ -742,7 +742,7 @@ namespace {
                     + 21 * pawnsOnBothFlanks
                     + 24 * infiltration
                     + 51 * !pos.non_pawn_material()
-                    - 43 * almostUnwinnable
+                    - 23 * almostUnwinnable
                     -110 ;
 
     Value mg = mg_value(score);
@@ -774,7 +774,8 @@ namespace {
                 sf = 22 + 3 * pos.count<ALL_PIECES>(strongSide);
         }
         else
-            sf = std::min(sf, 36 + 7 * pos.count<PAWN>(strongSide));
+            sf =  std::min(sf, 36 + 7 * pos.count<PAWN>(strongSide))
+                - 16 * almostUnwinnable;
     }
 
     // Interpolate between the middlegame and (scaled by 'sf') endgame score

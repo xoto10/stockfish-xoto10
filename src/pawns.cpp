@@ -43,6 +43,24 @@ namespace {
   // Connected pawn bonus
   constexpr int Connected[RANK_NB] = { 0, 7, 8, 12, 29, 48, 86 };
 
+  // Lookup for pawn island count
+  constexpr uint8_t IslandCount[] = { 0, 1, 1, 1, 1, 2, 1, 1, 1, 2, 2, 2, 1, 2, 1, 1, 
+                                      1, 2, 2, 2, 2, 3, 2, 2, 1, 2, 2, 2, 1, 2, 1, 1, 
+                                      1, 2, 2, 2, 2, 3, 2, 2, 2, 3, 3, 3, 2, 3, 2, 2, 
+                                      1, 2, 2, 2, 2, 3, 2, 2, 1, 2, 2, 2, 1, 2, 1, 1, 
+                                      1, 2, 2, 2, 2, 3, 2, 2, 2, 3, 3, 3, 2, 3, 2, 2, 
+                                      2, 3, 3, 3, 3, 4, 3, 3, 2, 3, 3, 3, 2, 3, 2, 2, 
+                                      1, 2, 2, 2, 2, 3, 2, 2, 2, 3, 3, 3, 2, 3, 2, 2, 
+                                      1, 2, 2, 2, 2, 3, 2, 2, 1, 2, 2, 2, 1, 2, 1, 1, 
+                                      1, 2, 2, 2, 2, 3, 2, 2, 2, 3, 3, 3, 2, 3, 2, 2, 
+                                      2, 3, 3, 3, 3, 4, 3, 3, 2, 3, 3, 3, 2, 3, 2, 2, 
+                                      2, 3, 3, 3, 3, 4, 3, 3, 3, 4, 4, 4, 3, 4, 3, 3, 
+                                      2, 3, 3, 3, 3, 4, 3, 3, 2, 3, 3, 3, 2, 3, 2, 2, 
+                                      1, 2, 2, 2, 2, 3, 2, 2, 2, 3, 3, 3, 2, 3, 2, 2, 
+                                      2, 3, 3, 3, 3, 4, 3, 3, 2, 3, 3, 3, 2, 3, 2, 2, 
+                                      1, 2, 2, 2, 2, 3, 2, 2, 2, 3, 3, 3, 2, 3, 2, 2, 
+                                      1, 2, 2, 2, 2, 3, 2, 2, 1, 2, 2, 2, 1, 2, 1, 1 };
+
   // Strength of pawn shelter for our king by [distance from edge][rank].
   // RANK_1 = 0 is used for files where we have no pawn, or pawn is behind our king.
   constexpr Value ShelterStrength[int(FILE_NB) / 2][RANK_NB] = {
@@ -162,6 +180,10 @@ namespace {
             score -=   Doubled * doubled
                      + WeakLever * more_than_one(lever);
     }
+
+    // Small penalty for more pawn islands
+    ourPawns |= ourPawns >> 8; ourPawns |= ourPawns >> 16; ourPawns |= ourPawns >> 32;
+    score -= make_score(IslandCount[ourPawns & 0xFF], 2 * IslandCount[ourPawns & 0xFF]);
 
     return score;
   }

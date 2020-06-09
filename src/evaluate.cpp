@@ -817,8 +817,8 @@ namespace {
     score += pe->pawn_score(WHITE) - pe->pawn_score(BLACK);
 
     // Randomise mg value slightly
-    int rnd = ((pos.key() + pos.this_thread()->nodes) & 8) - 4;
-    score += make_score(rnd, rnd);
+    int rnd = ((pos.key() + pos.this_thread()->nodes) & 16) - 8;
+    score += make_score(rnd, 0);
 
     // Early exit if score is high
     Value v = (mg_value(score) + eg_value(score)) / 2;

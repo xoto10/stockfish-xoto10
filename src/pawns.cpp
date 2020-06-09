@@ -20,11 +20,13 @@
 
 #include <algorithm>
 #include <cassert>
+#include <iostream>
 
 #include "bitboard.h"
 #include "pawns.h"
 #include "position.h"
 #include "thread.h"
+#include "uci.h"
 
 namespace {
 
@@ -184,6 +186,11 @@ namespace {
     // Small penalty for more pawn islands
     ourPawns |= ourPawns >> 8; ourPawns |= ourPawns >> 16; ourPawns |= ourPawns >> 32;
     score -= make_score(4 * IslandCount[ourPawns & 0xFF], 8 * IslandCount[ourPawns & 0xFF]);
+if (IslandCount[ourPawns & 0xFF])
+sync_cout << "info string xxx: us " << Us
+          << " pos\n" << pos
+          << " ic " << int(IslandCount[ourPawns & 0xFF])
+          << sync_endl;
 
     return score;
   }

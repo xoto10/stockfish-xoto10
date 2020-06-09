@@ -174,7 +174,7 @@ namespace {
     template<Color Us> Score passed() const;
     template<Color Us> Score space() const;
     ScaleFactor scale_factor(Value eg) const;
-    Score initiative(Score score) const;
+    Score initiative(Score score);
 
     const Position& pos;
     Material::Entry* me;
@@ -211,6 +211,9 @@ namespace {
     // a white knight on g5 and black's king is on g8, this white knight adds 2
     // to kingAttacksCount[WHITE].
     int kingAttacksCount[COLOR_NB];
+
+    // almostUnwinnable is used in initiative() and scale_factor()
+    bool almostUnwinnable;
   };
 
 
@@ -722,7 +725,7 @@ namespace {
   // known attacking/defending status of the players.
 
   template<Tracing T>
-  Score Evaluation<T>::initiative(Score score) const {
+  Score Evaluation<T>::initiative(Score score) {
 
     int outflanking =  distance<File>(pos.square<KING>(WHITE), pos.square<KING>(BLACK))
                      - distance<Rank>(pos.square<KING>(WHITE), pos.square<KING>(BLACK));
@@ -730,11 +733,11 @@ namespace {
     bool pawnsOnBothFlanks =   (pos.pieces(PAWN) & QueenSide)
                             && (pos.pieces(PAWN) & KingSide);
 
-    bool almostUnwinnable =   outflanking < 0
-                           && !pawnsOnBothFlanks;
-
     bool infiltration = rank_of(pos.square<KING>(WHITE)) > RANK_4
                      || rank_of(pos.square<KING>(BLACK)) < RANK_5;
+
+    almostUnwinnable =   outflanking < 0
+                      && !pawnsOnBothFlanks;
 
     // Compute the initiative bonus for the attacking side
     int complexity =   9 * pe->passed_count()
@@ -778,7 +781,8 @@ namespace {
         {
             if (   pos.non_pawn_material(WHITE) == BishopValueMg
                 && pos.non_pawn_material(BLACK) == BishopValueMg)
-                sf = 18 + 4 * popcount(pe->passed_pawns(strongSide));
+                sf = 18 + 4 * popcount(pe->passed_pawns(strongSide))
+                        - 4 * almostUnwinnable;
             else
                 sf = 22 + 3 * pos.count<ALL_PIECES>(strongSide);
         }

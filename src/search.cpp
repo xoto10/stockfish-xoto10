@@ -1188,8 +1188,8 @@ moves_loop: // When in check, search starts from here
                        && !pos.see_ge(reverse_move(move)))
                   r -= 2 + ttPv;
 
-              // Decrease reduction if alpha < 0
-              else if (alpha < -100)
+              // Decrease reduction if alpha == -1
+              else if (alpha == -1)
                   r--;
 
               ss->statScore =  thisThread->mainHistory[us][from_to(move)]

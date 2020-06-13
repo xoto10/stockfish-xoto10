@@ -39,10 +39,16 @@ namespace {
   constexpr Score WeakUnopposed = S(13, 27);
 
   // BlockedStorm[Supported][Rank] gives penalty for enemy pawns blocked by ours
-  constexpr Score BlockedStorm[2][RANK_NB] = {
+            Score B           [2][RANK_NB] = {
     { S( 0, 0), S( 0, 0), S( 74, 82), S(-10, 16), S(-7,  9), S(-5, 7), S( 0, 1) },
-    { S( 0, 0), S( 0, 0), S( 84, 87), S(  9, 25), S( 3,  9), S(-4, 7), S(-2, 1) }
+    { S( 0, 0), S( 0, 0), S( 82, 87), S(  9, 24), S( 3,  9), S(-4, 7), S(-2, 1) }
   };
+
+inline Range vary30(int c) {
+  return (abs(c) < 30) ? Range(c-30, c+30) : c < 0 ? Range(c*3, 0) : Range(0, c*3);
+}
+
+TUNE(SetRange(vary30), B);
 
   // Connected pawn bonus
   constexpr int Connected[RANK_NB] = { 0, 7, 8, 12, 29, 48, 86 };
@@ -224,7 +230,7 @@ Score Entry::evaluate_shelter(const Position& pos, Square ksq) {
       bonus += make_score(ShelterStrength[d][ourRank], 0);
 
       if (ourRank && (ourRank == theirRank - 1))
-          bonus -= BlockedStorm[bool(pawnAttacks[Them] & s)][theirRank];
+          bonus -= B           [bool(pawnAttacks[Them] & s)][theirRank];
       else
           bonus -= make_score(UnblockedStorm[d][theirRank], 0);
   }

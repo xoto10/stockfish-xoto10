@@ -1171,6 +1171,10 @@ moves_loop: // When in check, search starts from here
           if (singularQuietLMR)
               r -= 1 + formerPv;
 
+          // Decrease reduction if alpha < 0
+          if (alpha < -100)
+              r--;
+
           if (!captureOrPromotion)
           {
               // Increase reduction if ttMove is a capture (~5 Elo)

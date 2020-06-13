@@ -858,10 +858,13 @@ namespace {
     v = (v / 16) * 16;
 
     // Side to move point of view
-    v = (pos.side_to_move() == WHITE ? v : -v) + Tempo;
+    Color us = pos.side_to_move();
+    v = (us == WHITE ? v : -v) + Tempo;
 
     // Damp down the evaluation linearly when shuffling
     v = v * (100 - pos.rule50_count()) / 100;
+
+    v += pos.count<PAWN>(us) - pos.count<PAWN>(~us);
 
     return v;
   }

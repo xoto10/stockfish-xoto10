@@ -41,7 +41,7 @@ namespace {
   // BlockedStorm[Supported][Rank] gives penalty for enemy pawns blocked by ours
   constexpr Score BlockedStorm[2][RANK_NB] = {
     { S( 0, 0), S( 0, 0), S( 76, 78), S(-10, 15), S(-7, 10), S(-4, 6), S(-1, 2) },
-    { S( 0, 0), S( 0, 0), S( 86, 88), S( 10, 25), S( 3, 10), S(-4, 6), S(-1, 2) }
+    { S( 0, 0), S( 0, 0), S( 91, 93), S( 20, 30), S( 8, 15), S(-4, 6), S(-1, 2) }
   };
 
   // Connected pawn bonus

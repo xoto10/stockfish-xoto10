@@ -138,7 +138,7 @@ namespace {
         if (support | phalanx)
         {
             int v =  Connected[r] * (4 + 2 * bool(phalanx) - 2 * bool(opposed) - bool(blocked)) / 2
-                   + (21 + (r > RANK_4)) * popcount(support);
+                   + (21 + (r > RANK_4 && bool(blocked))) * popcount(support);
 
             score += make_score(v, v * (r - 2) / 4);
         }

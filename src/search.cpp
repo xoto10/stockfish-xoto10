@@ -811,7 +811,7 @@ namespace {
 
     // Step 8. Futility pruning: child node (~50 Elo)
     if (   !PvNode
-        &&  depth < 11
+        &&  depth < 6
         &&  eval - futility_margin(depth, improving) >= beta
         &&  eval < VALUE_KNOWN_WIN) // Do not return unproven wins
         return eval;
@@ -914,9 +914,9 @@ namespace {
     }
 
     // Step 11. Internal iterative deepening (~1 Elo)
-    if (depth >= 11 && !ttMove)
+    if (depth >= 7 && !ttMove)
     {
-        search<NT>(pos, ss, alpha, beta, depth - 9, cutNode);
+        search<NT>(pos, ss, alpha, beta, depth - 7, cutNode);
 
         tte = TT.probe(posKey, ttHit);
         ttValue = ttHit ? value_from_tt(tte->value(), ss->ply, pos.rule50_count()) : VALUE_NONE;
@@ -1137,19 +1137,19 @@ moves_loop: // When in check, search starts from here
 
       // Step 16. Reduced depth search (LMR, ~200 Elo). If the move fails high it will be
       // re-searched at full depth.
-      if (    depth >= -5
-          &&  moveCount > -3 + 1 * rootNode
+      if (    depth >= 3
+          &&  moveCount > 1 + 2 * rootNode
           && (!rootNode || thisThread->best_move_count(move) == 0)
           && (  !captureOrPromotion
               || moveCountPruning
               || ss->staticEval + PieceValue[EG][pos.captured_piece()] <= alpha
               || cutNode
-              || thisThread->ttHitAverage < 400 * TtHitAverageResolution * TtHitAverageWindow / 1024))
+              || thisThread->ttHitAverage < 399 * TtHitAverageResolution * TtHitAverageWindow / 1024))
       {
           Depth r = reduction(improving, depth, moveCount);
 
           // Decrease reduction if the ttHit running average is large
-          if (thisThread->ttHitAverage > 431 * TtHitAverageResolution * TtHitAverageWindow / 1024)
+          if (thisThread->ttHitAverage > 492 * TtHitAverageResolution * TtHitAverageWindow / 1024)
               r--;
 
           // Reduction if other threads are searching this position.

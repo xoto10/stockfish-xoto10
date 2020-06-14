@@ -774,7 +774,8 @@ namespace {
             {
 //                sf = 22 + 3 * pos.count<ALL_PIECES>(strongSide);  5/10/15 : 37/52/67
                 int c = pos.count<ALL_PIECES>(strongSide);
-                sf = 15 + 5 * c - c * c / 10;                     //          37/55/67
+//                sf = 15 + 5 * c - c * c / 10;                   //          37/55/67
+                sf = -5 + 10 * c - c * c / 3;                     //          37/62/70
             }
         }
         else

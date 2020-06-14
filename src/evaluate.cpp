@@ -774,7 +774,7 @@ namespace {
                 sf = 22 + 3 * pos.count<ALL_PIECES>(strongSide);
         }
         else
-            sf = std::min(sf, 36 + 7 * pos.count<PAWN>(strongSide)) + 8 * infiltration;
+            sf = std::min(sf, 36 + 7 * pos.count<PAWN>(strongSide)) + 2 * infiltration;
     }
 
     // Interpolate between the middlegame and (scaled by 'sf') endgame score

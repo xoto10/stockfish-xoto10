@@ -772,7 +772,7 @@ namespace {
                 sf = 18 + 4 * popcount(pe->passed_pawns(strongSide));
             else
                 sf = 21 + 3 * pos.count<ALL_PIECES>(strongSide)
-                        + 2 * popcount(pe->passed_pawns(strongSide));
+                        + 2 * bool(pe->passed_pawns(strongSide));
         }
         else
             sf = std::min(sf, 36 + 7 * pos.count<PAWN>(strongSide));

@@ -773,7 +773,7 @@ namespace {
                 bool passersOnBothFlanks =   (pe->passed_pawns(strongSide) & QueenSide)
                                           && (pe->passed_pawns(strongSide) & KingSide);
 
-                sf = 18 + 4 * popcount(pe->passed_pawns(strongSide)) + 16 * passersOnBothFlanks;
+                sf = 18 + 4 * popcount(pe->passed_pawns(strongSide)) + 12 * passersOnBothFlanks;
             }
             else
                 sf = 22 + 3 * pos.count<ALL_PIECES>(strongSide);

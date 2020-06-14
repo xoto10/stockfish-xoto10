@@ -773,7 +773,9 @@ namespace {
                 bool passersOnBothFlanks =   (pe->passed_pawns(strongSide) & QueenSide)
                                           && (pe->passed_pawns(strongSide) & KingSide);
 
-                if (!passersOnBothFlanks)
+                if (passersOnBothFlanks)
+                    sf = 68;
+                else
                     sf = 18 + 4 * popcount(pe->passed_pawns(strongSide));
             }
             else

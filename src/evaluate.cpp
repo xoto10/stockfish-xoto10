@@ -326,6 +326,9 @@ namespace {
                 score -= BishopPawns * pos.pawns_on_same_color_squares(Us, s)
                                      * (!(attackedBy[Us][PAWN] & s) + popcount(blocked & CenterFiles));
 
+                if (pos.count<BISHOP>(Us) == 1 && pos.count<BISHOP>(Them) == 2)
+                    score -= BishopPawns * pos.knights_on_same_color_squares(Us, s);
+
                 // Penalty for all enemy pawns x-rayed
                 score -= BishopXRayPawns * popcount(attacks_bb<BISHOP>(s) & pos.pieces(Them, PAWN));
 

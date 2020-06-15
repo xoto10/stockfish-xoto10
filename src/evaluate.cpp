@@ -210,6 +210,8 @@ namespace {
     // a white knight on g5 and black's king is on g8, this white knight adds 2
     // to kingAttacksCount[WHITE].
     int kingAttacksCount[COLOR_NB];
+
+    Score knightOnBishopSqs = SCORE_ZERO;
   };
 
 
@@ -327,10 +329,9 @@ namespace {
                                      * (!(attackedBy[Us][PAWN] & s) + popcount(blocked & CenterFiles));
 
                 if (pos.count<BISHOP>(Us) == 1 && pos.count<BISHOP>(Them) == 2)
-                {
-                    int rmsc = pos.this_thread()->rootMoves[0].score;
-                    score -= BishopPawns * ((rmsc>0) - (rmsc<0)) * pos.knights_on_same_color_squares(Us, s);
-                }
+                    knightOnBishopSqs =  Us == WHITE
+                                       ? -BishopPawns * pos.knights_on_same_color_squares(Us, s)
+                                       :  BishopPawns * pos.knights_on_same_color_squares(Us, s);
 
                 // Penalty for all enemy pawns x-rayed
                 score -= BishopXRayPawns * popcount(attacks_bb<BISHOP>(s) & pos.pieces(Them, PAWN));
@@ -848,6 +849,13 @@ namespace {
             + threats<WHITE>() - threats<BLACK>()
             + passed< WHITE>() - passed< BLACK>()
             + space<  WHITE>() - space<  BLACK>();
+
+    // KnightOnBishopSqs is currently -ve for W/+ve for B, but needs to flip if
+    // relevant side is losing
+    if (eg_value(knightOnBishopSqs) * int(eg_value(score)) > 0)
+        score -= knightOnBishopSqs;
+    else
+        score += knightOnBishopSqs;
 
     // Derive single value from mg and eg parts of score
     v = winnable(score);

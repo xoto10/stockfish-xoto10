@@ -700,10 +700,11 @@ namespace {
                    & ~pos.pieces(Us, PAWN)
                    & ~attackedBy[Them][PAWN];
 
-    // Find all squares which are at most three squares behind some friendly pawn
+    // Find all squares which are at most four squares behind some friendly pawn
     Bitboard behind = pos.pieces(Us, PAWN);
     behind |= shift<Down>(behind);
     behind |= shift<Down+Down>(behind);
+    behind |= shift<Down>(behind);
 
     int bonus = popcount(safe) + popcount(behind & safe & ~attackedBy[Them][ALL_PIECES]);
     int weight = pos.count<ALL_PIECES>(Us) - 3 + std::min(pe->blocked_count(), 9);

@@ -760,32 +760,34 @@ namespace {
     // Compute the scale factor for the winning side
 
     Color strongSide = eg > VALUE_DRAW ? WHITE : BLACK;
-    int sf = me->scale_factor(pos, strongSide);
+    int sfmg = SCALE_FACTOR_NORMAL, sfeg = me->scale_factor(pos, strongSide);
 
     // If scale is not already specific, scale down the endgame via general heuristics
-    if (sf == SCALE_FACTOR_NORMAL)
+    if (sfeg == SCALE_FACTOR_NORMAL)
     {
         if (pos.opposite_bishops())
         {
             if (   pos.non_pawn_material(WHITE) == BishopValueMg
                 && pos.non_pawn_material(BLACK) == BishopValueMg)
-                sf = 18 + 4 * popcount(pe->passed_pawns(strongSide));
+                sfmg = 39 + 2 * popcount(pe->passed_pawns(strongSide)),
+                sfeg = 18 + 4 * popcount(pe->passed_pawns(strongSide));
             else
-                sf = 22 + 3 * pos.count<ALL_PIECES>(strongSide);
+                sfmg = 50 +     pos.count<ALL_PIECES>(strongSide),
+                sfeg = 22 + 3 * pos.count<ALL_PIECES>(strongSide);
         }
         else
-            sf = std::min(sf, 36 + 7 * pos.count<PAWN>(strongSide));
+            sfeg = std::min(sfeg, 36 + 7 * pos.count<PAWN>(strongSide));
     }
 
-    // Interpolate between the middlegame and (scaled by 'sf') endgame score
-    v =  mg * int(me->game_phase())
-       + eg * int(PHASE_MIDGAME - me->game_phase()) * ScaleFactor(sf) / SCALE_FACTOR_NORMAL;
+    // Interpolate between the middlegame and (scaled by 'sfeg') endgame score
+    v =  mg * int(me->game_phase()) * ScaleFactor(sfmg) / SCALE_FACTOR_NORMAL
+       + eg * int(PHASE_MIDGAME - me->game_phase()) * ScaleFactor(sfeg) / SCALE_FACTOR_NORMAL;
     v /= PHASE_MIDGAME;
 
     if (T)
     {
-        Trace::add(WINNABLE, make_score(u, eg * ScaleFactor(sf) / SCALE_FACTOR_NORMAL - eg_value(score)));
-        Trace::add(TOTAL, make_score(mg, eg * ScaleFactor(sf) / SCALE_FACTOR_NORMAL));
+        Trace::add(WINNABLE, make_score(u, eg * ScaleFactor(sfeg) / SCALE_FACTOR_NORMAL - eg_value(score)));
+        Trace::add(TOTAL, make_score(mg, eg * ScaleFactor(sfeg) / SCALE_FACTOR_NORMAL));
     }
 
     return Value(v);

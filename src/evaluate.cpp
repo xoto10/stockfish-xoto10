@@ -772,14 +772,15 @@ namespace {
                 sf = 18 + 4 * popcount(pe->passed_pawns(strongSide));
             else
             {
-//                sf = 22 + 3 * pos.count<ALL_PIECES>(strongSide);  5/10/15 : 37/52/67
+//                sf = 22 + 3 * pos.count<ALL_PIECES>(strongSide);  6/10/14 : 40/52/64
                 int c = pos.count<ALL_PIECES>(strongSide);
-//                sf = 15 + 5 * c - c * c / 10;                   //          37/55/67
-//                sf = 15 + 5 * c - c * c / 8;                    //          37/53/62
-//                sf = 13 + 6 * c - c * c / 6;                    //          39/57/65
-                sf = 11 + 6 * c - c * c / 6;                    //          37/55/63
-//                sf = 7 + 7 * c - c * c / 5;                     //          37/57/67
-//                sf = -5 + 10 * c - c * c / 3;                   //          37/62/70
+//                sf = 15 + 5 * c - c * c / 10;                   //          42/55/66
+//                sf = 15 + 5 * c - c * c / 8;                    //          41/53/61
+//                sf = 13 + 6 * c - c * c / 6;                    //          43/57/65
+//                sf = 11 + 6 * c - c * c / 6;                    //          41/55/63
+                sf = 15 + 6 * c - c * c / 6;                    //          45/59/67
+//                sf = 7 + 7 * c - c * c / 5;                     //          42/57/67
+//                sf = -5 + 10 * c - c * c / 3;                   //          43/62/70
             }
         }
         else

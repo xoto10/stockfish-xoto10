@@ -748,10 +748,19 @@ namespace {
     Value mg = mg_value(score);
     Value eg = eg_value(score);
 
+    // Derive pawn count bonus/penalty from white's point of view
+    Value rmsc = pos.this_thread()->rootMoves[0].score == -VALUE_INFINITE
+                 ? VALUE_ZERO
+                 : pos.this_thread()->rootColor == WHITE ? pos.this_thread()->rootMoves[0].score
+                                                         : -pos.this_thread()->rootMoves[0].score;
+    int p = rmsc > 0 ? -pos.count<PAWN>()
+                     : rmsc < 0 ? pos.count<PAWN>()
+                                : 0;
+
     // Now apply the bonus: note that we find the attacking side by extracting the
     // sign of the midgame or endgame values, and that we carefully cap the bonus
     // so that the midgame and endgame scores do not change sign after the bonus.
-    int u = ((mg > 0) - (mg < 0)) * std::max(std::min(complexity + 50, 0) - pos.count<PAWN>(), -abs(mg));
+    int u = ((mg > 0) - (mg < 0)) * Utility::clamp(complexity + 50, -abs(mg), 0) + p;
     int v = ((eg > 0) - (eg < 0)) * std::max(complexity, -abs(eg));
 
     mg += u;

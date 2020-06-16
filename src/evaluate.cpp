@@ -172,7 +172,7 @@ namespace {
     template<Color Us> Score king() const;
     template<Color Us> Score threats() const;
     template<Color Us> Score passed() const;
-    template<Color Us> Score space(Score sc) const;
+    template<Color Us> Score space() const;
     Value winnable(Score score) const;
 
     const Position& pos;
@@ -684,16 +684,17 @@ namespace {
   // improve play on game opening.
 
   template<Tracing T> template<Color Us>
-  Score Evaluation<T>::space(Score sc) const {
+  Score Evaluation<T>::space() const {
 
     if (pos.non_pawn_material() < SpaceThreshold)
         return SCORE_ZERO;
 
     constexpr Color Them     = ~Us;
     constexpr Direction Down = -pawn_push(Us);
-    constexpr Bitboard SpaceMask =
-      Us == WHITE ? CenterFiles & (Rank2BB | Rank3BB | Rank4BB)
-                  : CenterFiles & (Rank7BB | Rank6BB | Rank5BB);
+
+    Bitboard SpaceMask =
+      Us == WHITE ? (CenterFiles & (Rank2BB | Rank3BB | Rank4BB)) | SQ_D1 | SQ_E1
+                  : (CenterFiles & (Rank7BB | Rank6BB | Rank5BB)) | SQ_D8 | SQ_E8;
 
     // Find the available squares for our pieces inside the area defined by SpaceMask
     Bitboard safe =   SpaceMask
@@ -704,9 +705,7 @@ namespace {
     Bitboard behind = pos.pieces(Us, PAWN);
     behind |= shift<Down>(behind);
     behind |= shift<Down+Down>(behind);
-
-    if (mg_value(sc) > 40)
-        behind |= shift<Down>(behind);
+    behind |= shift<Down>(behind);
 
     int bonus = popcount(safe) + popcount(behind & safe & ~attackedBy[Them][ALL_PIECES]);
     int weight = pos.count<ALL_PIECES>(Us) - 3 + std::min(pe->blocked_count(), 9);
@@ -843,9 +842,8 @@ namespace {
     // More complex interactions that require fully populated attack bitboards
     score +=  king<   WHITE>() - king<   BLACK>()
             + threats<WHITE>() - threats<BLACK>()
-            + passed< WHITE>() - passed< BLACK>();
-
-    score += space<WHITE>(score) - space<BLACK>(score);
+            + passed< WHITE>() - passed< BLACK>()
+            + space<  WHITE>() - space<  BLACK>();
 
     // Derive single value from mg and eg parts of score
     v = winnable(score);

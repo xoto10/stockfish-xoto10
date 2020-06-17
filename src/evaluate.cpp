@@ -773,6 +773,8 @@ namespace {
             else
                 sf = 22 + 3 * pos.count<ALL_PIECES>(strongSide);
         }
+        else if (pos.non_pawn_material(strongSide) == 2 * RookValueMg)
+            sf = 60;
         else
             sf = std::min(sf, 36 + 7 * pos.count<PAWN>(strongSide));
     }

@@ -773,10 +773,9 @@ namespace {
             else
                 sf = 22 + 3 * pos.count<ALL_PIECES>(strongSide);
         }
-        else if (pos.non_pawn_material(strongSide) == 2 * RookValueMg)
-            sf = 58;
         else
-            sf = std::min(sf, 36 + 7 * pos.count<PAWN>(strongSide));
+            sf = std::min(sf, 36 + 7 * pos.count<PAWN>(strongSide))
+                                 - 4 * (pos.non_pawn_material(strongSide) == 2 * RookValueMg);
     }
 
     // Interpolate between the middlegame and (scaled by 'sf') endgame score

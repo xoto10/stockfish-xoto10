@@ -776,6 +776,7 @@ namespace {
                 sfeg = 22 + 3 * pos.count<ALL_PIECES>(strongSide);
         }
         else
+            sfeg = std::min(sfmg, 36 + 7 * pos.count<PAWN>(strongSide)),
             sfeg = std::min(sfeg, 36 + 7 * pos.count<PAWN>(strongSide));
     }
 

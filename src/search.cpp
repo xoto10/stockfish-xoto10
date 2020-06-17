@@ -381,7 +381,7 @@ void Thread::search() {
 
       size_t pvFirst = 0;
       pvLast = 0;
-      tempo = Value( Utility::clamp(34 - rootDepth / 6, 28, 32) );
+      tempo = Value( Utility::clamp(33 - rootDepth / 6, 28, 32) );
 
       if (!Threads.increaseDepth)
          searchAgainCounter++;

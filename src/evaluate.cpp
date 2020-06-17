@@ -769,12 +769,12 @@ namespace {
         {
             if (   pos.non_pawn_material(WHITE) == BishopValueMg
                 && pos.non_pawn_material(BLACK) == BishopValueMg)
-                sfmg = 18 + 4 * popcount(pe->passed_pawns(strongSide)),
                 sfeg = 18 + 4 * popcount(pe->passed_pawns(strongSide));
             else
                 sfeg = 22 + 3 * pos.count<ALL_PIECES>(strongSide);
         }
         else
+            sfmg = std::min(sfmg, 36 + 7 * pos.count<PAWN>(strongSide)),
             sfeg = std::min(sfeg, 36 + 7 * pos.count<PAWN>(strongSide));
     }
 
@@ -785,8 +785,10 @@ namespace {
 
     if (T)
     {
-        Trace::add(WINNABLE, make_score(u, eg * ScaleFactor(sfeg) / SCALE_FACTOR_NORMAL - eg_value(score)));
-        Trace::add(TOTAL, make_score(mg, eg * ScaleFactor(sfeg) / SCALE_FACTOR_NORMAL));
+        Trace::add(WINNABLE, make_score(mg * ScaleFactor(sfmg) / SCALE_FACTOR_NORMAL - mg_value(score),
+                                        eg * ScaleFactor(sfeg) / SCALE_FACTOR_NORMAL - eg_value(score)));
+        Trace::add(TOTAL, make_score(mg * ScaleFactor(sfmg) / SCALE_FACTOR_NORMAL,
+                                     eg * ScaleFactor(sfeg) / SCALE_FACTOR_NORMAL));
     }
 
     return Value(v);

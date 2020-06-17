@@ -103,10 +103,14 @@ Score H[] = { S(0,0), S(-5,-19), S(-22, -4), S(-8,-9), S( 5, 8), S(-8,13), S(-8,
 
 inline Range vary30(int c) { return Range(c-30, c+30); }
 
+void init();
+
 void ahcopy() {
   for (auto i=1; i<7; ++i)
       PBonus[i][0] = A[i],
       PBonus[i][7] = H[i];
+
+  init();
 }
 
 TUNE(SetRange(vary30), A, H, ahcopy);

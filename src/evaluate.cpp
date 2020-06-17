@@ -772,7 +772,6 @@ namespace {
                 sfmg = 18 + 4 * popcount(pe->passed_pawns(strongSide)),
                 sfeg = 18 + 4 * popcount(pe->passed_pawns(strongSide));
             else
-                sfmg = 50 +     pos.count<ALL_PIECES>(strongSide),
                 sfeg = 22 + 3 * pos.count<ALL_PIECES>(strongSide);
         }
         else

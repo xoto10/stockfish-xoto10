@@ -381,6 +381,7 @@ void Thread::search() {
 
       size_t pvFirst = 0;
       pvLast = 0;
+      tempo = Value( Utility::clamp(40 - rootDepth / 2, 20, 32) );
 
       if (!Threads.increaseDepth)
          searchAgainCounter++;
@@ -795,7 +796,7 @@ namespace {
             ss->staticEval = eval = evaluate(pos) + bonus;
         }
         else
-            ss->staticEval = eval = -(ss-1)->staticEval + 2 * Tempo;
+            ss->staticEval = eval = -(ss-1)->staticEval + 2 * thisThread->tempo;
 
         tte->save(posKey, VALUE_NONE, ttPv, BOUND_NONE, DEPTH_NONE, MOVE_NONE, eval);
     }
@@ -1459,7 +1460,7 @@ moves_loop: // When in check, search starts from here
         else
             ss->staticEval = bestValue =
             (ss-1)->currentMove != MOVE_NULL ? evaluate(pos)
-                                             : -(ss-1)->staticEval + 2 * Tempo;
+                                             : -(ss-1)->staticEval + 2 * thisThread->tempo;
 
         // Stand pat. Return immediately if static value is at least beta
         if (bestValue >= beta)

@@ -86,7 +86,7 @@ constexpr Score Bonus[][RANK_NB][int(FILE_NB) / 2] = {
   }
 };
 
-constexpr Score PBonus[RANK_NB][FILE_NB] =
+          Score PBonus[RANK_NB][FILE_NB] =
   { // Pawn (asymmetric distribution)
    { },
    { S(  3,-10), S(  3, -6), S( 10, 10), S( 19,  0), S( 16, 14), S( 19,  7), S(  7, -5), S( -5,-19) },
@@ -97,9 +97,25 @@ constexpr Score PBonus[RANK_NB][FILE_NB] =
    { S( -7,  0), S(  7,-11), S( -3, 12), S(-13, 21), S(  5, 25), S(-16, 19), S( 10,  4), S( -8,  7) }
   };
 
+
+Score A[] = { S(0,0), S( 3,-10), S( -9,-10), S(-4, 6), S(13, 9), S( 5,28), S(-7, 0) };
+Score H[] = { S(0,0), S(-5,-19), S(-22, -4), S(-8,-9), S( 5, 8), S(-8,13), S(-8, 7) };
+
+inline Range vary30(int c) { return Range(c-30, c+30); }
+
+void ahcopy() {
+  for (auto i=1; i<7; ++i)
+      PBonus[i][0] = A[i],
+      PBonus[i][7] = H[i];
+}
+
+TUNE(SetRange(vary30), A, H, ahcopy);
+
+
 #undef S
 
 Score psq[PIECE_NB][SQUARE_NB];
+
 
 // init() initializes piece-square tables: the white halves of the tables are
 // copied from Bonus[] adding the piece value, then the black halves of the

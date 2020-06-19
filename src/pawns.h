@@ -63,6 +63,8 @@ struct Entry {
   int blockedCount;
 };
 
+typedef HashTable<Val, 32> EMHTable;
+
 typedef HashTable<Entry, 131072> Table;
 
 Entry* probe(const Position& pos);

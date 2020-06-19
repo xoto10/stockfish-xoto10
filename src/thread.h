@@ -59,6 +59,7 @@ public:
   int best_move_count(Move move) const;
 
   Pawns::Table pawnsTable;
+  Pawns::EMHTable emhTable;
   Material::Table materialTable;
   size_t pvIdx, pvLast;
   uint64_t ttHitAverage;
@@ -113,7 +114,7 @@ struct ThreadPool : public std::vector<Thread*> {
   void start_searching();
   void wait_for_search_finished() const;
 
-  std::atomic_bool stop, increaseDepth;
+  std::atomic_bool stop, increaseDepth, earlyMoveHelp;
 
 private:
   StateListPtr setupStates;

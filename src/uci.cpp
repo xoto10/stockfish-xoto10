@@ -75,6 +75,10 @@ namespace {
         states->emplace_back();
         pos.do_move(m, states->back());
     }
+
+    // Early move help
+    Threads.earlyMoveHelp =   pos.count<ALL_PIECES>() == 32
+                           && popcount(pos.pieces(PAWN) & (Rank2BB | Rank7BB)) >= 12;
   }
 
 

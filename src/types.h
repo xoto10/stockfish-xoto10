@@ -98,6 +98,7 @@ constexpr bool Is64Bit = true;
 constexpr bool Is64Bit = false;
 #endif
 
+typedef int_fast8_t Val;
 typedef uint64_t Key;
 typedef uint64_t Bitboard;
 

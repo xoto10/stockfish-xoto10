@@ -977,6 +977,19 @@ moves_loop: // When in check, search starts from here
       movedPiece = pos.moved_piece(move);
       givesCheck = pos.gives_check(move);
 
+      // Early move help
+      Value vinc = VALUE_ZERO;
+      if (Threads.earlyMoveHelp && ss->ply < 2)
+      {
+          Key pkey = pos.pieces(PAWN) ^ move;
+          vinc = Value(*(thisThread->emhTable[pkey]));
+//sync_cout << "info string pkey " << pkey << " vinc " << int(vinc) << sync_endl;
+//sync_cout << "info string ply " << ss->ply << " pk " << pkey << " vinc " << int(vinc)
+//          << " pos\n" << pos
+//          << " mv0 " << (ss->ply==0 ? "" : UCI::move((ss-1)->currentMove,false))
+//          << " mv " << UCI::move(move,false) << sync_endl;
+      }
+
       // Calculate new depth for this move
       newDepth = depth - 1;
 
@@ -1056,7 +1069,7 @@ moves_loop: // When in check, search starts from here
           Value singularBeta = ttValue - ((formerPv + 4) * depth) / 2;
           Depth singularDepth = (depth - 1 + 3 * formerPv) / 2;
           ss->excludedMove = move;
-          value = search<NonPV>(pos, ss, singularBeta - 1, singularBeta, singularDepth, cutNode);
+          value = search<NonPV>(pos, ss, singularBeta - 1, singularBeta, singularDepth, cutNode) + vinc;
           ss->excludedMove = MOVE_NONE;
 
           if (value < singularBeta)
@@ -1078,7 +1091,7 @@ moves_loop: // When in check, search starts from here
           else if (ttValue >= beta)
           {
               ss->excludedMove = move;
-              value = search<NonPV>(pos, ss, beta - 1, beta, (depth + 3) / 2, cutNode);
+              value = search<NonPV>(pos, ss, beta - 1, beta, (depth + 3) / 2, cutNode) + vinc;
               ss->excludedMove = MOVE_NONE;
 
               if (value >= beta)
@@ -1218,7 +1231,7 @@ moves_loop: // When in check, search starts from here
 
           Depth d = Utility::clamp(newDepth - r, 1, newDepth);
 
-          value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, d, true);
+          value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, d, true) + vinc;
 
           doFullDepthSearch = value > alpha && d != newDepth;
 
@@ -1234,7 +1247,7 @@ moves_loop: // When in check, search starts from here
       // Step 17. Full depth search when LMR is skipped or fails high
       if (doFullDepthSearch)
       {
-          value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, newDepth, !cutNode);
+          value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, newDepth, !cutNode) + vinc;
 
           if (didLMR && !captureOrPromotion)
           {
@@ -1256,7 +1269,7 @@ moves_loop: // When in check, search starts from here
           (ss+1)->pv = pv;
           (ss+1)->pv[0] = MOVE_NONE;
 
-          value = -search<PV>(pos, ss+1, -beta, -alpha, newDepth, false);
+          value = -search<PV>(pos, ss+1, -beta, -alpha, newDepth, false) + vinc;
       }
 
       // Step 18. Undo move

@@ -983,11 +983,6 @@ moves_loop: // When in check, search starts from here
       {
           Key pkey = pos.pieces(PAWN) ^ move;
           vinc = Value(*(thisThread->emhTable[pkey]));
-//sync_cout << "info string pkey " << pkey << " vinc " << int(vinc) << sync_endl;
-//sync_cout << "info string ply " << ss->ply << " pk " << pkey << " vinc " << int(vinc)
-//          << " pos\n" << pos
-//          << " mv0 " << (ss->ply==0 ? "" : UCI::move((ss-1)->currentMove,false))
-//          << " mv " << UCI::move(move,false) << sync_endl;
       }
 
       // Calculate new depth for this move

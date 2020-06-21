@@ -19,7 +19,6 @@
 */
 
 #include <cassert>
-//#include <iostream>
 
 #include <algorithm> // For std::count
 #include "movegen.h"
@@ -32,12 +31,8 @@
 ThreadPool Threads; // Global object
 
 
-int EMH[] = { -5, -4,  0, -3, -3, -3, -3, -3, -4, -3, -3,  0, -1, -1, -5, -3,
-              -3, -3, -3, -6,  0, -2, -3, -2, -3, -3, -1,  0, -3, -4, -5, -2, -99};
-
-inline Range vary30(int c) { return Range(c-30, c+30); }
-
-TUNE(SetRange(vary30), EMH);
+constexpr int EMH[] = { -5, -4,  0, -3, -3, -3, -3, -3, -4, -3, -3,  0, -1, -1, -5, -3,
+                        -3, -3, -3, -6,  0, -2, -3, -2, -3, -3, -1,  0, -3, -4, -5, -2, -99};
 
 
 /// Thread constructor launches the thread and waits until it goes to sleep
@@ -92,7 +87,6 @@ void Thread::clear() {
   Val* v;
   for (auto i=0; EMH[i]!=-99; ++i)
       v = emhTable[i+1], *v = EMH[i];
-//sync_cout << "info string init i " << i << " v " << uint64_t(v) << " val " << EMH[i] << sync_endl;
 }
 
 /// Thread::start_searching() wakes up the thread that will start the search

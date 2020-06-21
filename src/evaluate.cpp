@@ -763,11 +763,7 @@ namespace {
     int sfmg = SCALE_FACTOR_NORMAL, sfeg = me->scale_factor(pos, strongSide);
 
     // If scale is not already specific, scale down the endgame via general heuristics
-    if (mg * int(eg) < -8000)
-    {
-        sfmg = sfeg = SCALE_FACTOR_NORMAL * -8000 / (mg * int(eg));
-    }
-    else if (sfeg == SCALE_FACTOR_NORMAL)
+    if (sfeg == SCALE_FACTOR_NORMAL)
     {
         if (pos.opposite_bishops())
         {
@@ -779,6 +775,9 @@ namespace {
         }
         else
             sfeg = std::min(sfeg, 36 + 7 * pos.count<PAWN>(strongSide));
+
+        if (mg * int(eg) < -8000)
+            sfmg = SCALE_FACTOR_NORMAL * -8000 / (mg * int(eg));
     }
 
     // Interpolate between the middlegame and (scaled by 'sfeg') endgame score

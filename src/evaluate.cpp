@@ -773,11 +773,10 @@ namespace {
             else
                 sfeg = 34 + 2 * pos.count<ALL_PIECES>(strongSide);
         }
+        else if (mg * int(eg) < -8000)
+            sfmg = SCALE_FACTOR_NORMAL * -8000 / (mg * int(eg));
         else
             sfeg = std::min(sfeg, 36 + 7 * pos.count<PAWN>(strongSide));
-
-        if (mg * int(eg) < -8000)
-            sfmg = SCALE_FACTOR_NORMAL * -8000 / (mg * int(eg));
     }
 
     // Interpolate between the middlegame and (scaled by 'sfeg') endgame score

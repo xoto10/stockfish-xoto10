@@ -774,7 +774,7 @@ namespace {
                 sfeg = 34 + 2 * pos.count<ALL_PIECES>(strongSide);
 
             if (mg * int(eg) < -8000)
-                sfmg = SCALE_FACTOR_NORMAL * -8000 / (mg * int(eg));
+                sfmg = 0;
         }
         else
             sfeg = std::min(sfeg, 36 + 7 * pos.count<PAWN>(strongSide));

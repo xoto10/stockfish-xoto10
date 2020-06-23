@@ -776,7 +776,7 @@ namespace {
                 sfeg = 18 + 4 * popcount(pe->passed_pawns(strongSide));
             else
                 sfmg = 50 +     pos.count<ALL_PIECES>(strongSide),
-                sfeg = 34 + 2 * pos.count<ALL_PIECES>(strongSide);
+                sfeg = 46 +     pos.count<ALL_PIECES>(strongSide);
         }
         else
             sfeg = std::min(sfeg, 36 + 7 * pos.count<PAWN>(strongSide));

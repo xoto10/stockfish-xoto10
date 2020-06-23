@@ -225,7 +225,8 @@ namespace {
     constexpr Direction Up   = pawn_push(Us);
     constexpr Direction Down = -Up;
     constexpr Bitboard LowRanks = (Us == WHITE ? Rank2BB | Rank3BB : Rank7BB | Rank6BB);
-    constexpr Bitboard ThreeRanks = (Us == WHITE ? Rank1BB | Rank2BB | Rank3BB : Rank8BB | Rank7BB | Rank6BB);
+    constexpr Bitboard OurHalf = (Us == WHITE ? Rank1BB | Rank2BB | Rank3BB | Rank4BB
+                                              : Rank8BB | Rank7BB | Rank6BB | Rank5BB);
 
     const Square ksq = pos.square<KING>(Us);
 
@@ -250,8 +251,8 @@ namespace {
     kingRing[Us] = attacks_bb<KING>(s) | s;
 
     kingAttackersCount[Them] = popcount(  (file_of(ksq) > FILE_D ? KingSide : QueenSide)
-                                        & ThreeRanks
-                                        & pe->pawn_attacks(Them));
+                                        & OurHalf
+                                        & pos.pieces(Them, PAWN));
     kingAttacksCount[Them] = kingAttackersWeight[Them] = 0;
 
     // Remove from kingRing[] the squares defended by two pawns

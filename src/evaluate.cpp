@@ -225,8 +225,6 @@ namespace {
     constexpr Direction Up   = pawn_push(Us);
     constexpr Direction Down = -Up;
     constexpr Bitboard LowRanks = (Us == WHITE ? Rank2BB | Rank3BB : Rank7BB | Rank6BB);
-    constexpr Bitboard OurHalf = (Us == WHITE ? Rank1BB | Rank2BB | Rank3BB | Rank4BB
-                                              : Rank8BB | Rank7BB | Rank6BB | Rank5BB);
 
     const Square ksq = pos.square<KING>(Us);
 
@@ -250,8 +248,7 @@ namespace {
                            Utility::clamp(rank_of(ksq), RANK_2, RANK_7));
     kingRing[Us] = attacks_bb<KING>(s) | s;
 
-    kingAttackersCount[Them] = popcount(  (file_of(ksq) > FILE_D ? KingSide | FileDBB : QueenSide | FileEBB)
-                                        & OurHalf
+    kingAttackersCount[Them] = popcount(  (shift<Up+EAST>(kingRing[Us]) | shift<Up+WEST>(kingRing[Us]))
                                         & pos.pieces(Them, PAWN));
     kingAttacksCount[Them] = kingAttackersWeight[Them] = 0;
 

@@ -109,8 +109,7 @@ namespace {
         bonus += pieceCount[Us][pt1] * v;
     }
 
-    if (pcCount[Us] > pcCount[Them] + 1)
-        bonus += 40;
+    bonus += 10 * (pcCount[Us] - pcCount[Them]);
 
     return bonus;
   }

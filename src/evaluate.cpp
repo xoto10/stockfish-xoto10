@@ -198,7 +198,9 @@ namespace {
 
     // kingAttackersCount[color] is the number of pieces of the given color
     // which attack a square in the kingRing of the enemy king.
+    // kingPawnAttackers[color] remembers how many pawns do this
     int kingAttackersCount[COLOR_NB];
+    int kingPawnAttackers[COLOR_NB];
 
     // kingAttackersWeight[color] is the sum of the "weights" of the pieces of
     // the given color which attack a square in the kingRing of the enemy king.
@@ -250,6 +252,7 @@ namespace {
 
     kingAttackersCount[Them] = popcount(  (shift<Up+EAST>(kingRing[Us]) | shift<Up+WEST>(kingRing[Us]))
                                         & pos.pieces(Them, PAWN));
+    kingPawnAttackers[Them] = kingAttackersCount[Them];
     kingAttacksCount[Them] = kingAttackersWeight[Them] = 0;
 
     // Remove from kingRing[] the squares defended by two pawns
@@ -469,6 +472,7 @@ namespace {
     int kingFlankDefense = popcount(b3);
 
     kingDanger +=        kingAttackersCount[Them] * kingAttackersWeight[Them]
+                                                  * (4 + kingPawnAttackers[Them]) / 4
                  + 185 * popcount(kingRing[Us] & weak)
                  + 148 * popcount(unsafeChecks)
                  +  98 * popcount(pos.blockers_for_king(Us))

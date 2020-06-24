@@ -472,7 +472,7 @@ namespace {
     int kingFlankDefense = popcount(b3);
 
     kingDanger +=        kingAttackersCount[Them] * kingAttackersWeight[Them]
-                                                  * (4 + kingPawnAttackers[Them]) / 4
+                                                  * (16 + kingPawnAttackers[Them]) / 16
                  + 185 * popcount(kingRing[Us] & weak)
                  + 148 * popcount(unsafeChecks)
                  +  98 * popcount(pos.blockers_for_king(Us))

@@ -110,7 +110,7 @@ namespace {
     }
 
     if (pcCount[Us] > pcCount[Them] + 1)
-        bonus += 60;
+        bonus += 40;
 
     return bonus;
   }

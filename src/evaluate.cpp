@@ -198,9 +198,7 @@ namespace {
 
     // kingAttackersCount[color] is the number of pieces of the given color
     // which attack a square in the kingRing of the enemy king.
-    // kingPawnAttackers[color] remembers how many pawns do this
     int kingAttackersCount[COLOR_NB];
-    int kingPawnAttackers[COLOR_NB];
 
     // kingAttackersWeight[color] is the sum of the "weights" of the pieces of
     // the given color which attack a square in the kingRing of the enemy king.
@@ -227,6 +225,8 @@ namespace {
     constexpr Direction Up   = pawn_push(Us);
     constexpr Direction Down = -Up;
     constexpr Bitboard LowRanks = (Us == WHITE ? Rank2BB | Rank3BB : Rank7BB | Rank6BB);
+    constexpr Bitboard OurHalf = (Us == WHITE ? Rank1BB | Rank2BB | Rank3BB | Rank4BB
+                                              : Rank8BB | Rank7BB | Rank6BB | Rank5BB);
 
     const Square ksq = pos.square<KING>(Us);
 
@@ -250,9 +250,9 @@ namespace {
                            Utility::clamp(rank_of(ksq), RANK_2, RANK_7));
     kingRing[Us] = attacks_bb<KING>(s) | s;
 
-    kingAttackersCount[Them] = popcount(  (shift<Up+EAST>(kingRing[Us]) | shift<Up+WEST>(kingRing[Us]))
+    kingAttackersCount[Them] = popcount(  (file_of(ksq) > FILE_D ? KingSide : QueenSide)
+                                        & OurHalf
                                         & pos.pieces(Them, PAWN));
-    kingPawnAttackers[Them] = kingAttackersCount[Them];
     kingAttacksCount[Them] = kingAttackersWeight[Them] = 0;
 
     // Remove from kingRing[] the squares defended by two pawns
@@ -472,7 +472,6 @@ namespace {
     int kingFlankDefense = popcount(b3);
 
     kingDanger +=        kingAttackersCount[Them] * kingAttackersWeight[Them]
-                                                  * (16 + kingPawnAttackers[Them]) / 16
                  + 185 * popcount(kingRing[Us] & weak)
                  + 148 * popcount(unsafeChecks)
                  +  98 * popcount(pos.blockers_for_king(Us))

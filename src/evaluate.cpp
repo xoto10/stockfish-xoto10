@@ -250,7 +250,7 @@ namespace {
                            Utility::clamp(rank_of(ksq), RANK_2, RANK_7));
     kingRing[Us] = attacks_bb<KING>(s) | s;
 
-    kingAttackersCount[Them] = popcount(  (file_of(ksq) > FILE_D ? KingSide : QueenSide)
+    kingAttackersCount[Them] = popcount(  (file_of(ksq) > FILE_D ? KingSide | FileDBB : QueenSide | FileEBB)
                                         & OurHalf
                                         & pos.pieces(Them, PAWN));
     kingAttacksCount[Them] = kingAttackersWeight[Them] = 0;

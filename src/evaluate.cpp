@@ -78,7 +78,7 @@ namespace {
   constexpr Value SpaceThreshold = Value(12222);
 
   // KingAttackWeights[PieceType] contains king attack weights by piece type
-  constexpr int KingAttackWeights[PIECE_TYPE_NB] = { 0, 6, 83, 51, 40, 9 };
+  constexpr int KingAttackWeights[PIECE_TYPE_NB] = { 0, 6, 82, 52, 39, 9 };
 
   // Penalties for enemy's safe checks
   constexpr int QueenSafeCheck  = 772;
@@ -248,7 +248,7 @@ namespace {
                            Utility::clamp(rank_of(ksq), RANK_2, RANK_7));
     kingRing[Us] = attacks_bb<KING>(s) | s;
 
-    kingAttackersCount[Them] = 15 * popcount(kingRing[Us] & pe->pawn_attacks(Them));
+    kingAttackersCount[Them] = 16 * popcount(kingRing[Us] & pe->pawn_attacks(Them));
     kingAttackersWeight[Them] += bool(kingAttackersCount[Them]) * KingAttackWeights[PAWN];
     kingAttacksCount[Them] = kingAttackersWeight[Them] = 0;
 
@@ -289,7 +289,7 @@ namespace {
 
         if (b & kingRing[Them])
         {
-            kingAttackersCount[Us] += 16;
+            kingAttackersCount[Us] += 15;
             kingAttackersWeight[Us] += KingAttackWeights[Pt];
             kingAttacksCount[Us] += popcount(b & attackedBy[Them][KING]);
         }
@@ -472,7 +472,7 @@ namespace {
                  + 185 * popcount(kingRing[Us] & weak)
                  + 148 * popcount(unsafeChecks)
                  +  98 * popcount(pos.blockers_for_king(Us))
-                 +  70 * kingAttacksCount[Them]
+                 +  69 * kingAttacksCount[Them]
                  +   3 * kingFlankAttack * kingFlankAttack / 8
                  +       mg_value(mobility[Them] - mobility[Us])
                  - 873 * !pos.count<QUEEN>(Them)

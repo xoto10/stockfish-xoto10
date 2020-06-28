@@ -23,14 +23,12 @@
 #include <cstring>   // For std::memset
 #include <iomanip>
 #include <sstream>
-//#include <iostream>
 
 #include "bitboard.h"
 #include "evaluate.h"
 #include "material.h"
 #include "pawns.h"
 #include "thread.h"
-//#include "uci.h"
 
 namespace Trace {
 
@@ -552,7 +550,10 @@ namespace {
 
         // Penalty for pieces trapped defending others
         if (weak)
-            score += WeakPiece * popcount(weak);
+        {
+            int p = popcount(weak);
+            score += WeakPiece * (p * p + p) / 4;
+        }
     }
 
     // Bonus for restricting their piece moves

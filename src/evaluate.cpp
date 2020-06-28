@@ -73,12 +73,18 @@ using namespace Trace;
 
 namespace {
 
+int A1=16, A2=16, A3=69;
+
   // Threshold for lazy and space evaluation
   constexpr Value LazyThreshold  = Value(1400);
   constexpr Value SpaceThreshold = Value(12222);
 
   // KingAttackWeights[PieceType] contains king attack weights by piece type
-  constexpr int KingAttackWeights[PIECE_TYPE_NB] = { 0, 0, 81, 52, 44, 10 };
+            int KAW              [PIECE_TYPE_NB] = { 0, 4, 81, 52, 44, 10 };
+
+inline Range vary30(int c) { return Range(c-30, c+30); }
+
+TUNE(SetRange(vary30), A1, A2, A3, KAW);
 
   // Penalties for enemy's safe checks
   constexpr int QueenSafeCheck  = 772;
@@ -248,7 +254,8 @@ namespace {
                            Utility::clamp(rank_of(ksq), RANK_2, RANK_7));
     kingRing[Us] = attacks_bb<KING>(s) | s;
 
-    kingAttackersCount[Them] = popcount(kingRing[Us] & pe->pawn_attacks(Them));
+    kingAttackersCount[Them] = A1 * popcount(kingRing[Us] & pe->pawn_attacks(Them));
+    kingAttackersWeight[Them] += bool(kingAttackersCount[Them]) * KAW              [PAWN];
     kingAttacksCount[Them] = kingAttackersWeight[Them] = 0;
 
     // Remove from kingRing[] the squares defended by two pawns
@@ -288,8 +295,8 @@ namespace {
 
         if (b & kingRing[Them])
         {
-            kingAttackersCount[Us]++;
-            kingAttackersWeight[Us] += KingAttackWeights[Pt];
+            kingAttackersCount[Us] += A2;
+            kingAttackersWeight[Us] += KAW              [Pt];
             kingAttacksCount[Us] += popcount(b & attackedBy[Them][KING]);
         }
 
@@ -467,11 +474,11 @@ namespace {
     int kingFlankAttack = popcount(b1) + popcount(b2);
     int kingFlankDefense = popcount(b3);
 
-    kingDanger +=        kingAttackersCount[Them] * kingAttackersWeight[Them]
+    kingDanger +=        kingAttackersCount[Them] * kingAttackersWeight[Them] / 16
                  + 185 * popcount(kingRing[Us] & weak)
                  + 148 * popcount(unsafeChecks)
                  +  98 * popcount(pos.blockers_for_king(Us))
-                 +  69 * kingAttacksCount[Them]
+                 +  A3 * kingAttacksCount[Them]
                  +   3 * kingFlankAttack * kingFlankAttack / 8
                  +       mg_value(mobility[Them] - mobility[Us])
                  - 873 * !pos.count<QUEEN>(Them)

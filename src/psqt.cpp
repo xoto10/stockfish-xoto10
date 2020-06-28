@@ -86,7 +86,7 @@ constexpr Score Bonus[][RANK_NB][int(FILE_NB) / 2] = {
   }
 };
 
-constexpr Score PBonus[RANK_NB][FILE_NB] =
+          Score PBonus[RANK_NB][FILE_NB] =
   { // Pawn (asymmetric distribution)
    { },
    { S(  3,-10), S(  3, -6), S( 10, 10), S( 19,  0), S( 16, 14), S( 19,  7), S(  7, -5), S( -5,-19) },
@@ -96,6 +96,22 @@ constexpr Score PBonus[RANK_NB][FILE_NB] =
    { S(  5, 28), S(-12, 20), S( -7, 21), S( 22, 28), S( -8, 30), S( -5,  7), S(-15,  6), S( -8, 13) },
    { S( -7,  0), S(  7,-11), S( -3, 12), S(-13, 21), S(  5, 25), S(-16, 19), S( 10,  4), S( -8,  7) }
   };
+
+Score D5 = S(1,-12), E5 = S(11,-12);
+
+inline Range vary30(int c) { return Range(c-30, c+30); }
+
+void init();
+
+void de5copy() {
+  PBonus[4][3] = D5,
+  PBonus[4][4] = E5;
+
+  init();
+}
+
+TUNE(SetRange(vary30), D5, E5, de5copy);
+
 
 #undef S
 

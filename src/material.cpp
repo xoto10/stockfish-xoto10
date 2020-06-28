@@ -94,7 +94,7 @@ namespace {
     // Second-degree polynomial material imbalance, by Tord Romstad
     for (int pt1 = NO_PIECE_TYPE; pt1 <= QUEEN; ++pt1)
     {
-        if (pt1 != PAWN && pt1 != NO_PIECE_TYPE)
+        if (pt1 > PAWN)
             pcCount[Us] += pieceCount[Us][pt1], pcCount[Them] += pieceCount[Them][pt1];
 
         if (!pieceCount[Us][pt1])

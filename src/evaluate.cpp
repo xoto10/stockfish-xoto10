@@ -23,12 +23,14 @@
 #include <cstring>   // For std::memset
 #include <iomanip>
 #include <sstream>
+//#include <iostream>
 
 #include "bitboard.h"
 #include "evaluate.h"
 #include "material.h"
 #include "pawns.h"
 #include "thread.h"
+//#include "uci.h"
 
 namespace Trace {
 
@@ -113,12 +115,13 @@ namespace {
   // ThreatByMinor/ByRook[attacked PieceType] contains bonuses according to
   // which piece type attacks which one. Attacks on lesser pieces which are
   // pawn-defended are not considered.
+  constexpr int A = 5;
   constexpr Score ThreatByMinor[PIECE_TYPE_NB] = {
-    S(0, 0), S(5, 32), S(57, 41), S(77, 56), S(88, 119), S(79, 161)
+    S(0, 0), S(5-A, 32-A), S(57-A, 41-A), S(77-A, 56-A), S(88-A, 119-A), S(79-A, 161-A)
   };
 
   constexpr Score ThreatByRook[PIECE_TYPE_NB] = {
-    S(0, 0), S(3, 46), S(37, 68), S(42, 60), S(0, 38), S(58, 41)
+    S(0, 0), S(5-A, 46-A), S(37-A, 68-A), S(42-A, 60-A), S(5-A, 38-A), S(58-A, 41-A)
   };
 
   // PassedRank[Rank] contains a bonus according to the rank of a passed pawn
@@ -148,11 +151,12 @@ namespace {
   constexpr Score RookOnKingRing      = S( 16,  0);
   constexpr Score RookOnQueenFile     = S(  6, 11);
   constexpr Score SliderOnQueen       = S( 60, 18);
-  constexpr Score ThreatByKing        = S( 24, 89);
+  constexpr Score ThreatByKing        = S( 24-A, 89-A);
   constexpr Score ThreatByPawnPush    = S( 48, 39);
   constexpr Score ThreatBySafePawn    = S(173, 94);
   constexpr Score TrappedRook         = S( 55, 13);
   constexpr Score WeakQueenProtection = S( 14,  0);
+  constexpr Score WeakPiece           = S(  5,  5);
   constexpr Score WeakQueen           = S( 56, 15);
 
 
@@ -545,6 +549,10 @@ namespace {
 
         // Additional bonus if weak piece is only protected by a queen
         score += WeakQueenProtection * popcount(weak & attackedBy[Them][QUEEN]);
+
+        // Penalty for pieces trapped defending others
+        if (weak)
+            score += WeakPiece * popcount(weak);
     }
 
     // Bonus for restricting their piece moves

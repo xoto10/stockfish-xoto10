@@ -176,6 +176,7 @@ namespace {
     template<Color Us> Score passed() const;
     template<Color Us> Score space() const;
     Value winnable(Score score) const;
+    Value recalibrate(Value value) const;
 
     const Position& pos;
     Material::Entry* me;
@@ -810,6 +811,17 @@ namespace {
   }
 
 
+  // mat 25->5 val 125->240
+  template<Tracing T>
+  Value Evaluation<T>::recalibrate(Value value) const {
+
+      int material =  9 * pos.count<QUEEN>() + 5 * pos.count<ROOK>() + pos.count<PAWN>()
+                    + 3 * (pos.count<KNIGHT>() + pos.count<BISHOP>());
+      return material > 25 || value < 0 ? value
+                                        : value * (15 + material) / 40;
+  }
+
+
   // Evaluation::value() is the main function of the class. It computes the various
   // parts of the evaluation and returns the value of the position from the point
   // of view of the side to move.
@@ -861,7 +873,7 @@ namespace {
             + space<  WHITE>() - space<  BLACK>();
 
     // Derive single value from mg and eg parts of score
-    v = winnable(score);
+    v = recalibrate(winnable(score));
 
     // In case of tracing add all remaining individual evaluation terms
     if (T)

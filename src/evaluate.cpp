@@ -811,14 +811,14 @@ namespace {
   }
 
 
-  // mat 25->5 val 120->180
+  // mat 25->5 val 125->250
   template<Tracing T>
   Value Evaluation<T>::recalibrate(Value value) const {
 
       int material =  9 * pos.count<QUEEN>() + 5 * pos.count<ROOK>() + pos.count<PAWN>()
                     + 3 * (pos.count<KNIGHT>() + pos.count<BISHOP>());
-      return material > 25 || value < 0 ? value
-                                        : value * (35 + material) / 60;
+      return material > 25 ? value
+                           : value * (15 + material) / 40;
   }
 
 

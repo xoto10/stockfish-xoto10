@@ -214,6 +214,10 @@ namespace {
     // a white knight on g5 and black's king is on g8, this white knight adds 2
     // to kingAttacksCount[WHITE].
     int kingAttacksCount[COLOR_NB];
+
+    // queenPinners[color] are the pieces of either color that block attacks
+    // on a queen
+    Bitboard queenPinners[COLOR_NB];
   };
 
 
@@ -376,8 +380,7 @@ namespace {
         if (Pt == QUEEN)
         {
             // Penalty if any relative pin or discovered attack against the queen
-            Bitboard queenPinners;
-            if (pos.slider_blockers(pos.pieces(Them, ROOK, BISHOP), s, queenPinners))
+            if (pos.slider_blockers(pos.pieces(Them, ROOK, BISHOP), s, queenPinners[Us]))
                 score -= WeakQueen;
 
             // Bonus for queen on weak square in enemy camp
@@ -551,7 +554,9 @@ namespace {
 
     // Bonus for their undefended pieces and pieces trapped defending others
     score += WeakPiece * popcount(weak | (  (pos.pieces(Them) ^ pos.pieces(Them, KING))
-                                          & ~attackedBy[Them][ALL_PIECES]));
+                                          & (  ~attackedBy[Them][ALL_PIECES]
+                                             | pos.blockers_for_king(Them)
+                                             | queenPinners[Them]) ) );
 
     // Bonus for restricting their piece moves
     b =   attackedBy[Them][ALL_PIECES]

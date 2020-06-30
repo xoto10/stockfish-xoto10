@@ -217,7 +217,7 @@ namespace {
 
     // queenPinners[color] are the pieces of either color that block attacks
     // on a queen
-    Bitboard queenPinners[COLOR_NB];
+    Bitboard queenBlockers[COLOR_NB];
   };
 
 
@@ -259,6 +259,8 @@ namespace {
 
     // Remove from kingRing[] the squares defended by two pawns
     kingRing[Us] &= ~dblAttackByPawn;
+
+    queenBlockers[Us] = 0;
   }
 
 
@@ -380,7 +382,9 @@ namespace {
         if (Pt == QUEEN)
         {
             // Penalty if any relative pin or discovered attack against the queen
-            if (pos.slider_blockers(pos.pieces(Them, ROOK, BISHOP), s, queenPinners[Us]))
+            Bitboard queenPinners;
+            queenBlockers[Us] = pos.slider_blockers(pos.pieces(Them, ROOK, BISHOP), s, queenPinners);
+            if (queenBlockers[Us])
                 score -= WeakQueen;
 
             // Bonus for queen on weak square in enemy camp
@@ -556,7 +560,7 @@ namespace {
     score += WeakPiece * popcount(weak | (  (pos.pieces(Them) ^ pos.pieces(Them, KING))
                                           & (  ~attackedBy[Them][ALL_PIECES]
                                              | pos.blockers_for_king(Them)
-                                             | queenPinners[Them]) ) );
+                                             | queenBlockers[Them]) ) );
 
     // Bonus for restricting their piece moves
     b =   attackedBy[Them][ALL_PIECES]

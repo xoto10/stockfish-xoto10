@@ -154,7 +154,7 @@ namespace {
   constexpr Score ThreatBySafePawn    = S(173, 94);
   constexpr Score TrappedRook         = S( 55, 13);
   constexpr Score WeakQueenProtection = S( 14,  0);
-  constexpr Score WeakPiece           = S(  6,  6);
+  constexpr Score WeakPiece           = S(  5,  5);
   constexpr Score WeakQueen           = S( 56, 15);
 
 
@@ -547,14 +547,11 @@ namespace {
 
         // Additional bonus if weak piece is only protected by a queen
         score += WeakQueenProtection * popcount(weak & attackedBy[Them][QUEEN]);
-
-        // Penalty for pieces trapped defending others
-        if (weak)
-        {
-            int p = popcount(weak);
-            score += WeakPiece * (p * p + p) / 4;
-        }
     }
+
+    // Bonus for their undefended pieces and pieces trapped defending others
+    score += WeakPiece * popcount(weak | (  (pos.pieces(Them) ^ pos.pieces(Them, KING))
+                                          & ~attackedBy[Them][ALL_PIECES]));
 
     // Bonus for restricting their piece moves
     b =   attackedBy[Them][ALL_PIECES]

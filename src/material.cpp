@@ -89,10 +89,14 @@ namespace {
     constexpr Color Them = ~Us;
 
     int bonus = 0;
+    int pcCount[] = { 0, 0 };
 
     // Second-degree polynomial material imbalance, by Tord Romstad
     for (int pt1 = NO_PIECE_TYPE; pt1 <= QUEEN; ++pt1)
     {
+        if (pt1 > PAWN)
+            pcCount[Us] += pieceCount[Us][pt1], pcCount[Them] += pieceCount[Them][pt1];
+
         if (!pieceCount[Us][pt1])
             continue;
 
@@ -104,6 +108,9 @@ namespace {
 
         bonus += pieceCount[Us][pt1] * v;
     }
+
+    if (pcCount[Us] > pcCount[Them] + 1)
+        bonus += 12;
 
     return bonus;
   }

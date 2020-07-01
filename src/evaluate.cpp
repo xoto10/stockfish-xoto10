@@ -811,13 +811,14 @@ namespace {
   }
 
 
-  // mat 25->5 val 125->250 (npm 6696->1339 = 5357 drop)
+  // mat 60->10 val 60->100
   template<Tracing T>
   Value Evaluation<T>::recalibrate(Value value) const {
 
-      int mat = pos.non_pawn_material();
-      return mat > 6696 ? value
-                        : value * (4018 + mat) / 10714;
+      int material =  9 * pos.count<QUEEN>() + 5 * pos.count<ROOK>() + pos.count<PAWN>()
+                    + 3 * (pos.count<KNIGHT>() + pos.count<BISHOP>());
+      return material > 60 ? value
+                           : value * (65 + material) / 125;
   }
 
 

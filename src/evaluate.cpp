@@ -793,7 +793,7 @@ namespace {
             if (   !pawnsOnBothFlanks
                 && pos.non_pawn_material(strongSide) - pos.non_pawn_material(~strongSide)
                        == BishopValueMg - KnightValueMg)
-                eg -= BishopValueMg - KnightValueMg;
+                eg -= ((eg > 0) - (eg < 0)) * 23;
 
             if (pos.count<QUEEN>() == 1)
                 sf = 37 + 3 * (pos.count<QUEEN>(WHITE) == 1 ? pos.count<BISHOP>(BLACK) + pos.count<KNIGHT>(BLACK)

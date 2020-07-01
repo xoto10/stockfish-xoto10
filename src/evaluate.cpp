@@ -744,6 +744,14 @@ namespace {
     bool infiltration = rank_of(pos.square<KING>(WHITE)) > RANK_4
                      || rank_of(pos.square<KING>(BLACK)) < RANK_5;
 
+    Value mg = mg_value(score);
+    Value eg = eg_value(score);
+    Color strongSide = eg > VALUE_DRAW ? WHITE : BLACK;
+
+    bool bishopVsKnight =    !pawnsOnBothFlanks
+                          && pos.non_pawn_material(strongSide) - pos.non_pawn_material(~strongSide)
+                             == BishopValueMg - KnightValueMg;
+
     // Compute the initiative bonus for the attacking side
     int complexity =   9 * pe->passed_count()
                     + 12 * pos.count<PAWN>()
@@ -751,11 +759,9 @@ namespace {
                     + 21 * pawnsOnBothFlanks
                     + 24 * infiltration
                     + 51 * !pos.non_pawn_material()
+                    - 23 * bishopVsKnight
                     - 43 * almostUnwinnable
                     -110 ;
-
-    Value mg = mg_value(score);
-    Value eg = eg_value(score);
 
     // Now apply the bonus: note that we find the attacking side by extracting the
     // sign of the midgame or endgame values, and that we carefully cap the bonus
@@ -767,7 +773,6 @@ namespace {
     eg += v;
 
     // Compute the scale factor for the winning side
-    Color strongSide = eg > VALUE_DRAW ? WHITE : BLACK;
     int sf = me->scale_factor(pos, strongSide);
 
     // If scale is not already specific, scale down the endgame via general heuristics
@@ -792,14 +797,7 @@ namespace {
             sf = 37 + 3 * (pos.count<QUEEN>(WHITE) == 1 ? pos.count<BISHOP>(BLACK) + pos.count<KNIGHT>(BLACK)
                                                         : pos.count<BISHOP>(WHITE) + pos.count<KNIGHT>(WHITE));
         else
-        {
-            if (   !pawnsOnBothFlanks
-                && pos.non_pawn_material(strongSide) - pos.non_pawn_material(~strongSide)
-                       == BishopValueMg - KnightValueMg)
-                eg -= ((eg > 0) - (eg < 0)) * 23;
-
             sf = std::min(sf, 36 + 7 * pos.count<PAWN>(strongSide));
-        }
     }
 
     // Interpolate between the middlegame and (scaled by 'sf') endgame score

@@ -147,6 +147,7 @@ namespace {
   constexpr Score MinorBehindPawn     = S( 18,  3);
   constexpr Score PassedFile          = S( 11,  8);
   constexpr Score PawnlessFlank       = S( 17, 95);
+  constexpr Score PawnAttackers       = S( 25,  0);
   constexpr Score QueenInfiltration   = S( -2, 14);
   constexpr Score ReachableOutpost    = S( 31, 22);
   constexpr Score RestrictedPiece     = S(  7,  7);
@@ -469,9 +470,7 @@ namespace {
     int kingFlankAttack  = popcount(b1) + popcount(b2);
     int kingFlankDefense = popcount(b3);
 
-    kingDanger +=        kingAttackersCount[Them]
-                         * (kingAttackersCount[Them] > 1 && kingAttackersWeight[Them] == 0
-                            ? 100 : kingAttackersWeight[Them])
+    kingDanger +=        kingAttackersCount[Them] * kingAttackersWeight[Them]
                  + 185 * popcount(kingRing[Us] & weak)
                  + 148 * popcount(unsafeChecks)
                  +  98 * popcount(pos.blockers_for_king(Us))
@@ -491,6 +490,10 @@ namespace {
     // Penalty when our king is on a pawnless flank
     if (!(pos.pieces(PAWN) & KingFlank[file_of(ksq)]))
         score -= PawnlessFlank;
+
+    // Penalty when our king is on a pawnless flank
+    if (kingAttackersCount[Them] > 1 && kingAttackersWeight[Them] == 0)
+        score -= PawnAttackers;
 
     // Penalty if king flank is under attack, potentially moving toward the king
     score -= FlankAttacks * kingFlankAttack;

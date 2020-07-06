@@ -491,8 +491,8 @@ namespace {
     if (!(pos.pieces(PAWN) & KingFlank[file_of(ksq)]))
         score -= PawnlessFlank;
 
-    // Penalty when our king is on a pawnless flank
-    if (kingAttackersCount[Them] > 1 && kingAttackersWeight[Them] == 0)
+    // Penalty if 2 pawn attackers
+    if (kingAttackersCount[Them] > 1 && kingAttackersWeight[Them] == 0 && pe->blocked_count() > 3)
         score -= PawnAttackers;
 
     // Penalty if king flank is under attack, potentially moving toward the king

@@ -147,7 +147,7 @@ namespace {
   constexpr Score MinorBehindPawn     = S( 18,  3);
   constexpr Score PassedFile          = S( 11,  8);
   constexpr Score PawnlessFlank       = S( 17, 95);
-  constexpr Score PawnAttackers       = S( 15,  0);
+  constexpr Score PawnAttackers       = S( 35,  0);
   constexpr Score QueenInfiltration   = S( -2, 14);
   constexpr Score ReachableOutpost    = S( 31, 22);
   constexpr Score RestrictedPiece     = S(  7,  7);

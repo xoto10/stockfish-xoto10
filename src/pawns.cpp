@@ -42,7 +42,7 @@ namespace {
   constexpr Score BlockedPawn[2] = { S(-11, -4), S(-3, 4) };
 
   constexpr Score BlockedStorm[RANK_NB] = {
-    S(0, 0), S(0, 0), S(76, 78), S(-10, 15), S(-7, 10), S(-4, 6), S(-1, 2)
+    S(0, 0), S(0, 0), S(79, 75), S(-8, 13), S(-6, 9), S(-4, 6), S(-1, 2)
   };
 
   // Connected pawn bonus

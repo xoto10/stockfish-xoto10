@@ -33,6 +33,7 @@ namespace {
 
   // Pawn penalties
   constexpr Score Backward      = S( 9, 24);
+  constexpr Score CanCastle     = S( 8,  0);
   constexpr Score Doubled       = S(11, 56);
   constexpr Score Isolated      = S( 5, 15);
   constexpr Score WeakLever     = S( 0, 56);
@@ -221,9 +222,6 @@ Score Entry::evaluate_shelter(const Position& pos, Square ksq) const {
 
   Score bonus = make_score(5, 5);
 
-  if (blockedCount > 3)
-      bonus += make_score(6 - 2 * edge_distance(file_of(ksq)), 0);
-
   File center = Utility::clamp(file_of(ksq), FILE_B, FILE_G);
   for (File f = File(center - 1); f <= File(center + 1); ++f)
   {
@@ -260,12 +258,15 @@ Score Entry::do_king_safety(const Position& pos) {
   Score shelter = evaluate_shelter<Us>(pos, ksq);
 
   // If we can castle use the bonus after castling if it is bigger
+  // Give bonus for being able to castle if blockedCount is large
 
   if (pos.can_castle(Us & KING_SIDE))
-      shelter = std::max(shelter, evaluate_shelter<Us>(pos, relative_square(Us, SQ_G1)), compare);
+      shelter =  std::max(shelter, evaluate_shelter<Us>(pos, relative_square(Us, SQ_G1)), compare)
+               + CanCastle * (blockedCount > 3);
 
   if (pos.can_castle(Us & QUEEN_SIDE))
-      shelter = std::max(shelter, evaluate_shelter<Us>(pos, relative_square(Us, SQ_C1)), compare);
+      shelter =  std::max(shelter, evaluate_shelter<Us>(pos, relative_square(Us, SQ_C1)), compare)
+               + CanCastle * (blockedCount > 3);
 
   // In endgame we like to bring our king near our closest pawn
   Bitboard pawns = pos.pieces(Us, PAWN);

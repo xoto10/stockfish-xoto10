@@ -222,7 +222,7 @@ Score Entry::evaluate_shelter(const Position& pos, Square ksq) const {
   Score bonus = make_score(5, 5);
 
   if (blockedCount > 3)
-      bonus += make_score(3 - edge_distance(file_of(ksq)), 0);
+      bonus += make_score(6 - 2 * edge_distance(file_of(ksq)), 0);
 
   File center = Utility::clamp(file_of(ksq), FILE_B, FILE_G);
   for (File f = File(center - 1); f <= File(center + 1); ++f)

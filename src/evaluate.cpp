@@ -218,7 +218,7 @@ namespace {
     // to kingAttacksCount[WHITE].
     int kingAttacksCount[COLOR_NB];
 
-    int kd[COLOR_NB];
+    Value kd[COLOR_NB];
   };
 
 
@@ -260,8 +260,6 @@ namespace {
 
     // Remove from kingRing[] the squares defended by two pawns
     kingRing[Us] &= ~dblAttackByPawn;
-
-    kd[Us] = 0;
   }
 
 

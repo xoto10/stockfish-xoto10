@@ -176,7 +176,7 @@ namespace {
   private:
     template<Color Us> void initialize();
     template<Color Us, PieceType Pt> Score pieces();
-    template<Color Us> Score king() const;
+    template<Color Us> Score king();
     template<Color Us> Score threats() const;
     template<Color Us> Score passed() const;
     template<Color Us> Score space() const;
@@ -217,6 +217,8 @@ namespace {
     // a white knight on g5 and black's king is on g8, this white knight adds 2
     // to kingAttacksCount[WHITE].
     int kingAttacksCount[COLOR_NB];
+
+    int kd[COLOR_NB];
   };
 
 
@@ -258,6 +260,8 @@ namespace {
 
     // Remove from kingRing[] the squares defended by two pawns
     kingRing[Us] &= ~dblAttackByPawn;
+
+    kd[Us] = 0;
   }
 
 
@@ -405,7 +409,7 @@ namespace {
   // Evaluation::king() assigns bonuses and penalties to a king of a given color
 
   template<Tracing T> template<Color Us>
-  Score Evaluation<T>::king() const {
+  Score Evaluation<T>::king() {
 
     constexpr Color    Them = ~Us;
     constexpr Bitboard Camp = (Us == WHITE ? AllSquares ^ Rank6BB ^ Rank7BB ^ Rank8BB
@@ -494,6 +498,8 @@ namespace {
 
     // Penalty if king flank is under attack, potentially moving toward the king
     score -= FlankAttacks * kingFlankAttack;
+
+    kd[Us] = mg_value(score);
 
     if (T)
         Trace::add(KING, Us, score);
@@ -772,9 +778,9 @@ namespace {
     int v = ((eg > 0) - (eg < 0)) * std::max(complexity, -abs(eg));
 
     // Remove some of shelterstrength weakness if winning
-    if (mg > 100)
+    if (mg > 100 && kd[WHITE] >= 0)
         u += pe->shelterDiff[WHITE] / 4;
-    else if (mg < -100)
+    else if (mg < -100 && kd[BLACK] >= 0)
         u -= pe->shelterDiff[BLACK] / 4;
 
     mg += u;

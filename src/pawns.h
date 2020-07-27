@@ -50,7 +50,7 @@ struct Entry {
   Score do_king_safety(const Position& pos);
 
   template<Color Us>
-  Score evaluate_shelter(const Position& pos, Square ksq) const;
+  Score evaluate_shelter(const Position& pos, Square ksq, Value& ss) const;
 
   Key key;
   Score scores[COLOR_NB];
@@ -59,6 +59,7 @@ struct Entry {
   Bitboard pawnAttacksSpan[COLOR_NB];
   Square kingSquares[COLOR_NB];
   Score kingSafety[COLOR_NB];
+  Value shelterDiff[COLOR_NB];
   int castlingRights[COLOR_NB];
   int blockedCount;
 };

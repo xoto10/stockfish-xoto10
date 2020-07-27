@@ -771,6 +771,12 @@ namespace {
     int u = ((mg > 0) - (mg < 0)) * Utility::clamp(complexity + 50, -abs(mg), 0);
     int v = ((eg > 0) - (eg < 0)) * std::max(complexity, -abs(eg));
 
+    // Remove some of shelterstrength weakness if winning
+    if (mg > 100)
+        u += pe->shelterDiff[WHITE] / 4;
+    else if (mg < -100)
+        u -= pe->shelterDiff[BLACK] / 4;
+
     mg += u;
     eg += v;
 

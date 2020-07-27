@@ -51,10 +51,10 @@ namespace {
   // Strength of pawn shelter for our king by [distance from edge][rank].
   // RANK_1 = 0 is used for files where we have no pawn, or pawn is behind our king.
   constexpr Value ShelterStrength[int(FILE_NB) / 2][RANK_NB] = {
-    { V( -6), V( 81), V( 93), V( 58), V( 39), V( 18), V(  25) },
-    { V(-43), V( 61), V( 35), V(-49), V(-29), V(-11), V( -63) },
-    { V(-10), V( 75), V( 23), V( -2), V( 32), V(  3), V( -45) },
-    { V(-39), V(-13), V(-29), V(-52), V(-48), V(-67), V(-166) }
+    { V( -6), V( 81), V( 93), V( 58), V( 39), V( 18), V(  25), V(  93) },
+    { V(-43), V( 61), V( 35), V(-49), V(-29), V(-11), V( -63), V(  61) },
+    { V(-10), V( 75), V( 23), V( -2), V( 32), V(  3), V( -45), V(  75) },
+    { V(-39), V(-13), V(-29), V(-52), V(-48), V(-67), V(-166), V( -13) }
   };
 
   // Danger of enemy pawns moving toward our king by [distance from edge][rank].
@@ -211,7 +211,7 @@ Entry* probe(const Position& pos) {
 /// penalty for a king, looking at the king file and the two closest files.
 
 template<Color Us>
-Score Entry::evaluate_shelter(const Position& pos, Square ksq) const {
+Score Entry::evaluate_shelter(const Position& pos, Square ksq, Value& sd2) const {
 
   constexpr Color Them = ~Us;
 
@@ -231,6 +231,7 @@ Score Entry::evaluate_shelter(const Position& pos, Square ksq) const {
       int theirRank = b ? relative_rank(Us, frontmost_sq(Them, b)) : 0;
 
       int d = edge_distance(f);
+      sd2 += ShelterStrength[d][7] - ShelterStrength[d][ourRank];
       bonus += make_score(ShelterStrength[d][ourRank], 0);
 
       if (ourRank && (ourRank == theirRank - 1))
@@ -252,17 +253,28 @@ Score Entry::do_king_safety(const Position& pos) {
   Square ksq = pos.square<KING>(Us);
   kingSquares[Us] = ksq;
   castlingRights[Us] = pos.castling_rights(Us);
-  auto compare = [](Score a, Score b) { return mg_value(a) < mg_value(b); };
+//  auto compare = [](Score a, Score b) { return mg_value(a) < mg_value(b); };
+  shelterDiff[Us] = VALUE_ZERO;
 
-  Score shelter = evaluate_shelter<Us>(pos, ksq);
+  Score shelter = evaluate_shelter<Us>(pos, ksq, shelterDiff[Us]);
 
   // If we can castle use the bonus after castling if it is bigger
 
   if (pos.can_castle(Us & KING_SIDE))
-      shelter = std::max(shelter, evaluate_shelter<Us>(pos, relative_square(Us, SQ_G1)), compare);
+  {
+      Value sd2 = VALUE_ZERO;
+      Score sh2 = evaluate_shelter<Us>(pos, relative_square(Us, SQ_G1), sd2);
+      if (mg_value(sh2) > mg_value(shelter))
+          shelter = sh2, shelterDiff[Us] = sd2;
+  }
 
   if (pos.can_castle(Us & QUEEN_SIDE))
-      shelter = std::max(shelter, evaluate_shelter<Us>(pos, relative_square(Us, SQ_C1)), compare);
+  {
+      Value sd2 = VALUE_ZERO;
+      Score sh2 = evaluate_shelter<Us>(pos, relative_square(Us, SQ_C1), sd2);
+      if (mg_value(sh2) > mg_value(shelter))
+          shelter = sh2, shelterDiff[Us] = sd2;
+  }
 
   // In endgame we like to bring our king near our closest pawn
   Bitboard pawns = pos.pieces(Us, PAWN);

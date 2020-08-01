@@ -858,6 +858,7 @@ namespace {
         return abs(mg_value(score) + eg_value(score)) / 2 > lazyThreshold + pos.non_pawn_material() / 64;
     };
 
+    kd[WHITE] = kd[BLACK] = VALUE_ZERO;
     if (lazy_skip(LazyThreshold1))
         goto make_v;
 

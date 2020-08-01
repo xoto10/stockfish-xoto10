@@ -776,9 +776,9 @@ namespace {
     int v = ((eg > 0) - (eg < 0)) * std::max(complexity, -abs(eg));
 
     // Remove some of shelterstrength weakness if winning
-    if (mg > 100 && kd[WHITE] >= 0)
+    if (mg > 100 && kd[WHITE] > 0)
         u += pe->shelterDiff[WHITE] / 4;
-    else if (mg < -100 && kd[BLACK] >= 0)
+    else if (mg < -100 && kd[BLACK] > 0)
         u -= pe->shelterDiff[BLACK] / 4;
 
     mg += u;

@@ -30,8 +30,6 @@ namespace Eval {
   std::string trace(const Position& pos);
   Value evaluate(const Position& pos);
 
-  constexpr Value NNUEThreshold1 = Value(550);
-  constexpr Value NNUEThreshold2 = Value(150);
   extern bool useNNUE;
   extern std::string eval_file_loaded;
   void init_NNUE();

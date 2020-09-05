@@ -187,7 +187,7 @@ namespace {
 } // namespace
 
 
-int BMC1 = 1, BMC2 = 2, TR1 = 9, TR2 = 192, TR3 = 95, TR4 = 147, TR5 = 232;
+int BMC1 = 16, BMC2 = 32, TR1 = 9, TR2 = 192, TR3 = 95, TR4 = 147, TR5 = 232;
 inline Range vary20(int c) { return (abs(c) < 20) ? Range(c-20, c+20) : c < 0 ? Range(c * 2, 0) : Range(0, c * 2); }
 TUNE(SetRange(vary20), BMC1, BMC2, TR1, TR2, TR3, TR4, TR5);
 
@@ -524,7 +524,7 @@ void Thread::search() {
               totBestMoveChanges += th->bestMoveChanges;
               th->bestMoveChanges = 0;
           }
-          double bestMoveInstability = BMC1 + BMC2 * totBestMoveChanges / Threads.size();
+          double bestMoveInstability = BMC1 / 16 + BMC2 * totBestMoveChanges / 16 / Threads.size();
           double totalTime = rootMoves.size() == 1 ? 0 :
                              Time.optimum() * fallingEval * reduction * bestMoveInstability;
 

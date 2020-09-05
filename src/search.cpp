@@ -349,7 +349,9 @@ void Thread::search() {
   multiPV = std::min(multiPV, rootMoves.size());
   ttHitAverage = TtHitAverageWindow * TtHitAverageResolution / 2;
 
-  int bmcMult = 1 + 2 * Eval::useNNUE;
+  int bmcMult = 1 + (   Eval::useNNUE
+                     && !(  abs(eg_value(rootPos.psq_score())) * 16
+                          > Eval::NNUEThreshold1 * (16 + rootPos.rule50_count())));
   int ct = int(Options["Contempt"]) * PawnValueEg / 100; // From centipawns
 
   // In analysis mode, adjust contempt in accordance with user preference

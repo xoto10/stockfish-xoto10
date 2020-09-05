@@ -187,6 +187,10 @@ namespace {
 } // namespace
 
 
+int BMC1 = 1, BMC2 = 2, TR1 = 9, TR2 = 192, TR3 = 95, TR4 = 147, TR5 = 232;
+inline Range vary20(int c) { return (abs(c) < 20) ? Range(c-20, c+20) : c < 0 ? Range(c * 2, 0) : Range(0, c * 2); }
+TUNE(SetRange(vary20), BMC1, BMC2, TR1, TR2, TR3, TR4, TR5);
+
 /// Search::init() is called at startup to initialize various lookup tables
 
 void Search::init() {
@@ -511,8 +515,8 @@ void Thread::search() {
           fallingEval = std::clamp(fallingEval, 0.5, 1.5);
 
           // If the bestMove is stable over several iterations, reduce time accordingly
-          timeReduction = lastBestMoveDepth + 9 < completedDepth ? 1.92 : 0.95;
-          double reduction = (1.47 + mainThread->previousTimeReduction) / (2.32 * timeReduction);
+          timeReduction = lastBestMoveDepth + TR1 < completedDepth ? TR2/100.0 : TR3/100.0;
+          double reduction = (TR4/100.0 + mainThread->previousTimeReduction) / (TR5/100.0 * timeReduction);
 
           // Use part of the gained time from a previous stable move for the current move
           for (Thread* th : Threads)
@@ -520,8 +524,7 @@ void Thread::search() {
               totBestMoveChanges += th->bestMoveChanges;
               th->bestMoveChanges = 0;
           }
-          double bestMoveInstability = 1 + totBestMoveChanges / Threads.size();
-
+          double bestMoveInstability = BMC1 + BMC2 * totBestMoveChanges / Threads.size();
           double totalTime = rootMoves.size() == 1 ? 0 :
                              Time.optimum() * fallingEval * reduction * bestMoveInstability;
 

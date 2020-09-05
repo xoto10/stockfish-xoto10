@@ -1015,7 +1015,8 @@ make_v:
 
 Value Eval::evaluate(const Position& pos) {
 
-  bool useClassical = abs(eg_value(pos.psq_score())) * 16 > NNUEThreshold1 * (16 + pos.rule50_count());
+  int egPsq = eg_value(pos.psq_score());
+  bool useClassical = abs(egPsq) * 16 > NNUEThreshold1 * (16 + pos.rule50_count());
   bool classical = !Eval::useNNUE
                 ||  useClassical
                 || (abs(eg_value(pos.psq_score())) > PawnValueMg / 8 && !(pos.this_thread()->nodes & 0xF));
@@ -1024,7 +1025,8 @@ Value Eval::evaluate(const Position& pos) {
 
   if (   useClassical 
       && Eval::useNNUE 
-      && abs(v) * 16 < NNUEThreshold2 * (16 + pos.rule50_count()))
+      && abs(v) * 16 < NNUEThreshold2 * (16 + pos.rule50_count())
+      && egPsq * v >= 0)
       v = NNUE::evaluate(pos) * 5 / 4 + Tempo;
 
   // Damp down the evaluation linearly when shuffling

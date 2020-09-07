@@ -187,9 +187,9 @@ namespace {
 } // namespace
 
 
-int BMC1 = 100, BMC2 = 200, TR1 = 9, TR2 = 192, TR3 = 95, TR4 = 147, TR5 = 232;
+int BMC1=100, BMC2=200, TR1=9, TR2=192, TR3=95, TR4=147, TR5=232, FE1=318, FE2=6, FE3=6, FE4=825;
 inline Range vary20(int c) { return (abs(c) < 20) ? Range(c-20, c+20) : c < 0 ? Range(c * 2, 0) : Range(0, c * 2); }
-TUNE(SetRange(vary20), BMC1, BMC2, TR1, TR2, TR3, TR4, TR5);
+TUNE(SetRange(vary20), BMC1, BMC2, TR1, TR2, TR3, TR4, TR5, FE1, FE2, FE3, FE4);
 
 /// Search::init() is called at startup to initialize various lookup tables
 
@@ -510,8 +510,8 @@ void Thread::search() {
           && !Threads.stop
           && !mainThread->stopOnPonderhit)
       {
-          double fallingEval = (318 + 6 * (mainThread->bestPreviousScore - bestValue)
-                                    + 6 * (mainThread->iterValue[iterIdx] - bestValue)) / 825.0;
+          double fallingEval = (FE1 + FE2 * (mainThread->bestPreviousScore - bestValue)
+                                    + FE3 * (mainThread->iterValue[iterIdx] - bestValue)) / double(FE4);
           fallingEval = std::clamp(fallingEval, 0.5, 1.5);
 
           // If the bestMove is stable over several iterations, reduce time accordingly

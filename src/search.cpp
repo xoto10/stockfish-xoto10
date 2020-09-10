@@ -187,6 +187,10 @@ namespace {
 } // namespace
 
 
+int BMC1=10, BMC2=21, TR1=9, TR2=186, TR3=101, TR4=157, TR5=243, FE1=313, FE2=7, FE3=7, FE4=782;
+inline Range vary20(int c) { return (abs(c) < 20) ? Range(c-20, c+20) : c < 0 ? Range(c * 2, 0) : Range(0, c * 2); }
+TUNE(SetRange(vary20), BMC1, BMC2, TR1, TR2, TR3, TR4, TR5, FE1, FE2, FE3, FE4);
+
 /// Search::init() is called at startup to initialize various lookup tables
 
 void Search::init() {
@@ -506,13 +510,13 @@ void Thread::search() {
           && !Threads.stop
           && !mainThread->stopOnPonderhit)
       {
-          double fallingEval = (313 + 7 * (mainThread->bestPreviousScore - bestValue)
-                                    + 7 * (mainThread->iterValue[iterIdx] - bestValue)) / 781.7;
+          double fallingEval = (FE1 + FE2 * (mainThread->bestPreviousScore - bestValue)
+                                    + FE3 * (mainThread->iterValue[iterIdx] - bestValue)) / double(FE4);
           fallingEval = std::clamp(fallingEval, 0.5, 1.5);
 
           // If the bestMove is stable over several iterations, reduce time accordingly
-          timeReduction = lastBestMoveDepth + 9 < completedDepth ? 1.86 : 1.01;
-          double reduction = (1.57 + mainThread->previousTimeReduction) / (2.43 * timeReduction);
+          timeReduction = lastBestMoveDepth + TR1 < completedDepth ? TR2/100.0 : TR3/100.0;
+          double reduction = (TR4/100.0 + mainThread->previousTimeReduction) / (TR5/100.0 * timeReduction);
 
           // Use part of the gained time from a previous stable move for the current move
           for (Thread* th : Threads)
@@ -520,8 +524,7 @@ void Thread::search() {
               totBestMoveChanges += th->bestMoveChanges;
               th->bestMoveChanges = 0;
           }
-          double bestMoveInstability = 1 + 2.1 * totBestMoveChanges / Threads.size();
-
+          double bestMoveInstability = BMC1 / 10.0 + BMC2 * totBestMoveChanges / 10.0 / Threads.size();
           double totalTime = rootMoves.size() == 1 ? 0 :
                              Time.optimum() * fallingEval * reduction * bestMoveInstability;
 

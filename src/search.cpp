@@ -601,7 +601,7 @@ namespace {
     bool captureOrPromotion, doFullDepthSearch, moveCountPruning,
          ttCapture, singularQuietLMR;
     Piece movedPiece;
-    int moveCount, captureCount, quietCount;
+    int moveCount, captureCount, quietCount, captureScore;
 
     // Step 1. Initialize node
     Thread* thisThread = pos.this_thread();
@@ -1150,6 +1150,9 @@ moves_loop: // When in check, search starts from here
                                                                 [captureOrPromotion]
                                                                 [movedPiece]
                                                                 [to_sq(move)];
+      if(pos.capture(move))
+          captureScore = captureHistory[movedPiece][to_sq(move)][type_of(pos.piece_on(to_sq(move)))];
+
 
       // Step 15. Make the move
       pos.do_move(move, st, givesCheck);
@@ -1232,6 +1235,15 @@ moves_loop: // When in check, search starts from here
             if (   !givesCheck
                 && ss->staticEval + PieceValue[EG][pos.captured_piece()] + 213 * depth <= alpha)
                 r++;
+
+            if (ss->statScore = 0)
+                ss->statScore = captureScore;
+            else if (ss->statScore < 0 && captureScore < 0)
+                ss->statScore = std::min(ss->statScore, captureScore);
+            else if (ss->statScore > 0 && captureScore > 0)
+                ss->statScore = std::max(ss->statScore, captureScore);
+
+
           }
 
           Depth d = std::clamp(newDepth - r, 1, newDepth);

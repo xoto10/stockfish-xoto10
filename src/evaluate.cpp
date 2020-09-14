@@ -1019,8 +1019,8 @@ Value Eval::evaluate(const Position& pos) {
   // If there is a moderate imbalance, use classical eval with probability (1/8),
   // as derived from the node counter.
   bool classical =   !Eval::useNNUE
-                  || (abs(eg_value(pos.psq_score())) + 10)
-                         > int(pos.this_thread()->nodes & 31) * (20 + pos.rule50_count());
+                  || (abs(eg_value(pos.psq_score())) + 70)
+                         > int(pos.this_thread()->nodes & 31) * (18 + pos.rule50_count());
   Value v = classical ? Evaluation<NO_TRACE>(pos).value()
                       : NNUE::evaluate(pos) * 5 / 4 + Tempo;
 

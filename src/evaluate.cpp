@@ -1020,7 +1020,7 @@ Value Eval::evaluate(const Position& pos) {
   // as derived from the node counter.
   bool classical =   !Eval::useNNUE
                   || (abs(eg_value(pos.psq_score())) - 150)
-                         > int(pos.this_thread()->nodes & 31) * 20;
+                         > int(pos.this_thread()->nodes & 31) * 19;
   Value v = classical ? Evaluation<NO_TRACE>(pos).value()
                       : NNUE::evaluate(pos) * 5 / 4 + Tempo;
 

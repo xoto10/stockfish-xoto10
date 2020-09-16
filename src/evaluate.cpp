@@ -1030,7 +1030,7 @@ Value Eval::evaluate(const Position& pos) {
 
   if (   useClassical 
       && Eval::useNNUE 
-      && (   abs(v) * 16 < NNUEThreshold2 * (16 + pos.rule50_count())
+      && (   abs(v) * 16 < (NNUEThreshold2 + 3 * int(pos.this_thread()->nodes & 31)) * (16 + pos.rule50_count())
           || blocked > 8))
       v = NNUE::evaluate(pos) * 5 / 4 + Tempo;
 

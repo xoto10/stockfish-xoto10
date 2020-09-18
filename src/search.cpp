@@ -508,7 +508,7 @@ void Thread::search() {
       {
           double fallingEval = (318 + 6 * (mainThread->bestPreviousScore - bestValue)
                                     + 6 * (mainThread->iterValue[iterIdx] - bestValue)) / 825.0;
-          fallingEval = std::clamp(fallingEval, 0.6, 1.5);
+          fallingEval = std::clamp(fallingEval, 0.4, 1.5);
 //sdbg_mean_of(1000*fallingEval); // 0.629
 
           // If the bestMove is stable over several iterations, reduce time accordingly

@@ -512,7 +512,7 @@ void Thread::search() {
 //sdbg_mean_of(1000*fallingEval); // 0.629
 
           // If the bestMove is stable over several iterations, reduce time accordingly
-          timeReduction = lastBestMoveDepth + 9 < completedDepth ? 1.92 : 0.91;
+          timeReduction = lastBestMoveDepth + 9 < completedDepth ? 1.92 : 0.99;
 //sdbg_mean_of(1000*timeReduction); // 1.310
           double reduction = (1.47 + mainThread->previousTimeReduction) / (2.32 * timeReduction);
 //sdbg_mean_of(1000*reduction); // 1.173

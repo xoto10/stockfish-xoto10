@@ -508,11 +508,14 @@ void Thread::search() {
       {
           double fallingEval = (318 + 6 * (mainThread->bestPreviousScore - bestValue)
                                     + 6 * (mainThread->iterValue[iterIdx] - bestValue)) / 825.0;
-          fallingEval = std::clamp(fallingEval, 0.5, 1.5);
+          fallingEval = std::clamp(fallingEval, 0.4, 1.5);
+//sdbg_mean_of(1000*fallingEval); // 0.629
 
           // If the bestMove is stable over several iterations, reduce time accordingly
-          timeReduction = lastBestMoveDepth + 9 < completedDepth ? 1.92 : 0.95;
+          timeReduction = lastBestMoveDepth + 9 < completedDepth ? 1.92 : 0.91;
+//sdbg_mean_of(1000*timeReduction); // 1.310
           double reduction = (1.47 + mainThread->previousTimeReduction) / (2.32 * timeReduction);
+//sdbg_mean_of(1000*reduction); // 1.173
 
           // Use part of the gained time from a previous stable move for the current move
           for (Thread* th : Threads)
@@ -520,10 +523,16 @@ void Thread::search() {
               totBestMoveChanges += th->bestMoveChanges;
               th->bestMoveChanges = 0;
           }
-          double bestMoveInstability = 0.8 + 2 * totBestMoveChanges / Threads.size();
+          double bestMoveInstability = 1 + 2 * totBestMoveChanges / Threads.size();
+//sdbg_mean_of(1000*bestMoveInstability); // 1.595
 
           double totalTime = rootMoves.size() == 1 ? 0 :
                              Time.optimum() * fallingEval * reduction * bestMoveInstability;
+//if (rootMoves.size() > 1)
+//{
+//sdbg_mean_of(1000*fallingEval * reduction * bestMoveInstability); // 0.879
+//sdbg_print();
+//}
 
           // Stop the search if we have exceeded the totalTime, at least 1ms search
           if (Time.elapsed() > totalTime)

@@ -1017,7 +1017,7 @@ Value Eval::evaluate(const Position& pos) {
 
   Value v;
 
-  if (!Eval::useNNUE)
+  if (!Eval::useNNUE || !Search::Limits.use_nnue())
       v = Evaluation<NO_TRACE>(pos).value();
   else
   {

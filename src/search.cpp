@@ -364,8 +364,7 @@ void Thread::search() {
                           : -make_score(ct, ct / 2));
 
   // Don't use NNUE when only a few pieces left
-  if (Options["Use NNUE"] && rootPos.count<ALL_PIECES>() < 13)
-      Options["Use NNUE"] = false;
+  Limits.useNNUE = Options["Use NNUE"] && rootPos.count<ALL_PIECES>() > 12;
 
   int searchAgainCounter = 0;
 

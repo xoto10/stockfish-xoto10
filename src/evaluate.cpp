@@ -1048,26 +1048,24 @@ Value Eval::evaluate(const Position& pos) {
       // scale and shift NNUE for compatibility with search and classical evaluation
       auto  adjusted_NNUE = [&](){ return NNUE::evaluate(pos) * 5 / 4 + Tempo; };
 
-//      Material::Entry* me;
-//      Pawns::Entry* pe;
       Evaluation ev = Evaluation<NO_TRACE>(pos);
       v = ev.prepareValue(sc, skip);
 
       if (v == VALUE_NONE)
       {
-          if (skip)
-              v = ev.value(sc, false);
+//          if (skip)
+//              v = ev.value(sc, false);
 
-          else
-          {
-              // if there is PSQ imbalance use classical eval, with small probability if it is small
+//          else
+//          {
+              // if there is PSQ imbalance use classical eval, or with small probability if it is small
               Value psq = Value(abs(eg_value(pos.psq_score())));
               int   r50 = 16 + pos.rule50_count();
               bool  largePsq = psq * 16 > (NNUEThreshold1 + pos.non_pawn_material() / 64) * r50;
-              bool  classical = largePsq || (psq > PawnValueMg / 4 && !(pos.this_thread()->nodes & 0xB));
 
-              if (classical)
-                  v = ev.value(sc, true);
+              if (   largePsq
+                  || (psq > PawnValueMg / 4 && !(pos.this_thread()->nodes & 0xB)))
+                  v = ev.value(sc, !skip);
               else
                   v = adjusted_NNUE();
 
@@ -1075,7 +1073,7 @@ Value Eval::evaluate(const Position& pos) {
               if (   largePsq
                   && abs(v) * 16 < NNUEThreshold2 * r50)
                   v = adjusted_NNUE();
-          }
+//          }
       }
   }
 

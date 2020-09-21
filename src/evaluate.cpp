@@ -1035,7 +1035,10 @@ Value Eval::evaluate(const Position& pos) {
       // if the classical eval is small and imbalance large, use NNUE nevertheless.
       if (   largePsq
           && abs(v) * 16 < NNUEThreshold2 * r50)
-          v = adjusted_NNUE();
+          classical = false, v = adjusted_NNUE();
+
+      if (!classical && pos.opposite_bishops())
+          v = v * (37 + pos.count<ALL_PIECES>()) / 64;
   }
 
   // Damp down the evaluation linearly when shuffling

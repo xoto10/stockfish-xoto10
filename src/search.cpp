@@ -366,7 +366,7 @@ void Thread::search() {
   int searchAgainCounter = 0;
 
   // Don't use NNUE when losing badly
-  Limits.useNNUE = Limits.use_nnue() && mainThread->bestPreviousScore > -250;
+  useNNUE = Eval::useNNUE && mainThread->bestPreviousScore > -250;
 
   // Iterative deepening loop until requested to stop or the target depth is reached
   while (   ++rootDepth < MAX_PLY

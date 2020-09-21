@@ -363,6 +363,10 @@ void Thread::search() {
   contempt = (us == WHITE ?  make_score(ct, ct / 2)
                           : -make_score(ct, ct / 2));
 
+  // Don't use NNUE when only a few pieces left
+  if (Options["Use NNUE"] && rootPos.count<ALL_PIECES>() < 13)
+      Options["Use NNUE"] = false;
+
   int searchAgainCounter = 0;
 
   // Iterative deepening loop until requested to stop or the target depth is reached

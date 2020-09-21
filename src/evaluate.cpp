@@ -285,7 +285,8 @@ namespace {
     Evaluation() = delete;
     explicit Evaluation(const Position& p) : pos(p) {}
     Evaluation& operator=(const Evaluation&) = delete;
-    Value value();
+    Value prepareValue(Score& score, bool& skip);
+    Value value(Score score, bool detail);
 
   private:
     template<Color Us> void initialize();
@@ -928,12 +929,11 @@ namespace {
   }
 
 
-  // Evaluation::value() is the main function of the class. It computes the various
-  // parts of the evaluation and returns the value of the position from the point
-  // of view of the side to move.
+  // Evaluation::prepareValue() does initial setup for the main evaluation function
+  // and may return a fast answer.
 
   template<Tracing T>
-  Value Evaluation<T>::value() {
+  Value Evaluation<T>::prepareValue(Score& score, bool& skip) {
 
     assert(!pos.checkers());
 
@@ -948,7 +948,7 @@ namespace {
     // Initialize score by reading the incrementally updated scores included in
     // the position object (material + piece square tables) and the material
     // imbalance. Score is computed internally from the white point of view.
-    Score score = pos.psq_score() + me->imbalance() + pos.this_thread()->contempt;
+    score = pos.psq_score() + me->imbalance() + pos.this_thread()->contempt;
 
     // Probe the pawn hash table
     pe = Pawns::probe(pos);
@@ -959,33 +959,48 @@ namespace {
         return abs(mg_value(score) + eg_value(score)) / 2 > lazyThreshold + pos.non_pawn_material() / 64;
     };
 
-    if (lazy_skip(LazyThreshold1))
-        goto make_v;
+    skip = lazy_skip(LazyThreshold1);
 
-    // Main evaluation begins here
-    initialize<WHITE>();
-    initialize<BLACK>();
+    return VALUE_NONE;
+  }
 
-    // Pieces evaluated first (also populates attackedBy, attackedBy2).
-    // Note that the order of evaluation of the terms is left unspecified.
-    score +=  pieces<WHITE, KNIGHT>() - pieces<BLACK, KNIGHT>()
-            + pieces<WHITE, BISHOP>() - pieces<BLACK, BISHOP>()
-            + pieces<WHITE, ROOK  >() - pieces<BLACK, ROOK  >()
-            + pieces<WHITE, QUEEN >() - pieces<BLACK, QUEEN >();
 
-    score += mobility[WHITE] - mobility[BLACK];
+  // Evaluation::value() is the main function of the class. It computes the various
+  // parts of the evaluation and returns the value of the position from the point
+  // of view of the side to move.
 
-    // More complex interactions that require fully populated attack bitboards
-    score +=  king<   WHITE>() - king<   BLACK>()
-            + passed< WHITE>() - passed< BLACK>();
+  template<Tracing T>
+  Value Evaluation<T>::value(Score score, bool detail) {
 
-    if (lazy_skip(LazyThreshold2))
-        goto make_v;
+    if (detail)
+    {
+        // Main evaluation begins here
+        initialize<WHITE>();
+        initialize<BLACK>();
 
-    score +=  threats<WHITE>() - threats<BLACK>()
-            + space<  WHITE>() - space<  BLACK>();
+        // Pieces evaluated first (also populates attackedBy, attackedBy2).
+        // Note that the order of evaluation of the terms is left unspecified.
+        score +=  pieces<WHITE, KNIGHT>() - pieces<BLACK, KNIGHT>()
+                + pieces<WHITE, BISHOP>() - pieces<BLACK, BISHOP>()
+                + pieces<WHITE, ROOK  >() - pieces<BLACK, ROOK  >()
+                + pieces<WHITE, QUEEN >() - pieces<BLACK, QUEEN >();
 
-make_v:
+        score += mobility[WHITE] - mobility[BLACK];
+
+        // More complex interactions that require fully populated attack bitboards
+        score +=  king<   WHITE>() - king<   BLACK>()
+                + passed< WHITE>() - passed< BLACK>();
+
+        // Early exit if score is high
+        auto lazy_skip = [&](Value lazyThreshold) {
+            return abs(mg_value(score) + eg_value(score)) / 2 > lazyThreshold + pos.non_pawn_material() / 64;
+        };
+
+        if (!lazy_skip(LazyThreshold2))
+            score +=  threats<WHITE>() - threats<BLACK>()
+                    + space<  WHITE>() - space<  BLACK>();
+    }
+
     // Derive single value from mg and eg parts of score
     Value v = winnable(score);
 
@@ -1015,27 +1030,53 @@ make_v:
 
 Value Eval::evaluate(const Position& pos) {
 
+  Score sc;
   Value v;
+  bool skip;
+
 
   if (!Eval::useNNUE)
-      v = Evaluation<NO_TRACE>(pos).value();
+  {
+      Evaluation ev = Evaluation<NO_TRACE>(pos);
+      v = ev.prepareValue(sc, skip);
+      if (v == VALUE_NONE)
+          v = ev.value(sc, !skip);
+  }
+
   else
   {
       // scale and shift NNUE for compatibility with search and classical evaluation
       auto  adjusted_NNUE = [&](){ return NNUE::evaluate(pos) * 5 / 4 + Tempo; };
 
-      // if there is PSQ imbalance use classical eval, with small probability if it is small
-      Value psq = Value(abs(eg_value(pos.psq_score())));
-      int   r50 = 16 + pos.rule50_count();
-      bool  largePsq = psq * 16 > (NNUEThreshold1 + pos.non_pawn_material() / 64) * r50;
-      bool  classical = largePsq || (psq > PawnValueMg / 4 && !(pos.this_thread()->nodes & 0xB));
+//      Material::Entry* me;
+//      Pawns::Entry* pe;
+      Evaluation ev = Evaluation<NO_TRACE>(pos);
+      v = ev.prepareValue(sc, skip);
 
-      v = classical ? Evaluation<NO_TRACE>(pos).value() : adjusted_NNUE();
+      if (v == VALUE_NONE)
+      {
+          if (skip)
+              v = ev.value(sc, false);
 
-      // if the classical eval is small and imbalance large, use NNUE nevertheless.
-      if (   largePsq
-          && abs(v) * 16 < NNUEThreshold2 * r50)
-          v = adjusted_NNUE();
+          else
+          {
+              // if there is PSQ imbalance use classical eval, with small probability if it is small
+              Value psq = Value(abs(eg_value(pos.psq_score())));
+              int   r50 = 16 + pos.rule50_count();
+              bool  largePsq = psq * 16 > (NNUEThreshold1 + pos.non_pawn_material() / 64) * r50;
+              bool  classical = largePsq || (psq > PawnValueMg / 4 && !(pos.this_thread()->nodes & 0xB));
+
+              if (classical)
+                  v = ev.value(sc, true);
+              else
+                  v = adjusted_NNUE();
+
+              // if the classical eval is small and imbalance large, use NNUE nevertheless.
+              if (   largePsq
+                  && abs(v) * 16 < NNUEThreshold2 * r50)
+                  v = adjusted_NNUE();
+          }
+      }
   }
 
   // Damp down the evaluation linearly when shuffling
@@ -1060,13 +1101,18 @@ std::string Eval::trace(const Position& pos) {
   std::stringstream ss;
   ss << std::showpoint << std::noshowpos << std::fixed << std::setprecision(2);
 
+  Score sc;
   Value v;
+  bool skip;
 
   std::memset(scores, 0, sizeof(scores));
 
   pos.this_thread()->contempt = SCORE_ZERO; // Reset any dynamic contempt
+  Evaluation ev = Evaluation<NO_TRACE>(pos);
 
-  v = Evaluation<TRACE>(pos).value();
+  v = ev.prepareValue(sc, skip);
+  if (v == VALUE_NONE)
+      v = ev.value(sc, !skip);
 
   ss << std::showpoint << std::noshowpos << std::fixed << std::setprecision(2)
      << "     Term    |    White    |    Black    |    Total   \n"

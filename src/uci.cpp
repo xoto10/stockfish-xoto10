@@ -127,6 +127,9 @@ namespace {
 
     limits.startTime = now(); // As early as possible!
 
+    // Don't use NNUE when only a few pieces left
+    limits.useNNUE = Options["Use NNUE"] && pos.count<ALL_PIECES>() > 12;
+
     while (is >> token)
         if (token == "searchmoves") // Needs to be the last command on the line
             while (is >> token)

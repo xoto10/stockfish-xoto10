@@ -1038,7 +1038,7 @@ Value Eval::evaluate(const Position& pos) {
           classical = false, v = adjusted_NNUE();
 
       if (!classical && pos.opposite_bishops())
-          v = v * (37 + pos.count<ALL_PIECES>()) / 64;
+          v = v * (98 + pos.count<ALL_PIECES>()) / 128;
   }
 
   // Damp down the evaluation linearly when shuffling

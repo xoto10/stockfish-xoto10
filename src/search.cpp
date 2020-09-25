@@ -225,6 +225,24 @@ void MainThread::search() {
       return;
   }
 
+  size_t ndim=Eval::NNUE::Network::kOutputDimensions;
+  std::cout << "int netbiases[" << ndim << "] = {";
+  for (size_t i=0; i < ndim; ++i)
+  {
+      std::cout << int(Eval::NNUE::network->biases_[i]);
+      if (i < ndim - 1) std::cout << ", ";
+  }
+  std::cout << "}; // int32_t " << std::endl;
+
+  ndim=Eval::NNUE::Network::kOutputDimensions * Eval::NNUE::Network::kPaddedInputDimensions;
+  std::cout << "int netweights[" << ndim << "] = {";
+  for (size_t i=0; i < ndim; ++i)
+  {
+      std::cout << int(Eval::NNUE::network->weights_[i]);
+      if (i < ndim - 1) std::cout << ", ";
+  }
+  std::cout << "}; // int8_t " << std::endl;
+
   Color us = rootPos.side_to_move();
   Time.init(Limits, us, rootPos.game_ply());
   TT.new_search();

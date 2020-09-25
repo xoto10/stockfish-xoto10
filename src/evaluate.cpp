@@ -186,6 +186,12 @@ using namespace Trace;
 
 namespace {
 
+int C1=9, C2=12, C3=9, C4=21, C5=24, C6=51, C7=43, C8=110, S1=18, S2=4, S3=22, S4=3, S5=36, S6=37, S7=3, S8=36, S9=7;
+
+inline Range vary20(int c) { return (abs(c) < 20) ? Range(c-20, c+20) : c < 0 ? Range(c * 2, 0) : Range(0, c * 2); }
+
+TUNE(SetRange(vary20), C1, C2, C3, C4, C5, C6, C7, C8, S1, S2, S3, S4, S5, S6, S7, S8, S9);
+
   // Threshold for lazy and space evaluation
   constexpr Value LazyThreshold1 =  Value(1400);
   constexpr Value LazyThreshold2 =  Value(1300);
@@ -864,14 +870,14 @@ namespace {
                        || rank_of(pos.square<KING>(BLACK)) < RANK_5;
 
     // Compute the initiative bonus for the attacking side
-    int complexity =   9 * pe->passed_count()
-                    + 12 * pos.count<PAWN>()
-                    +  9 * outflanking
-                    + 21 * pawnsOnBothFlanks
-                    + 24 * infiltration
-                    + 51 * !pos.non_pawn_material()
-                    - 43 * almostUnwinnable
-                    -110 ;
+    int complexity =  C1 * pe->passed_count()
+                    + C2 * pos.count<PAWN>()
+                    + C3 * outflanking
+                    + C4 * pawnsOnBothFlanks
+                    + C5 * infiltration
+                    + C6 * !pos.non_pawn_material()
+                    - C7 * almostUnwinnable
+                    - C8 ;
 
     Value mg = mg_value(score);
     Value eg = eg_value(score);
@@ -896,21 +902,21 @@ namespace {
         {
             if (   pos.non_pawn_material(WHITE) == BishopValueMg
                 && pos.non_pawn_material(BLACK) == BishopValueMg)
-                sf = 18 + 4 * popcount(pe->passed_pawns(strongSide));
+                sf = S1 + S2* popcount(pe->passed_pawns(strongSide));
             else
-                sf = 22 + 3 * pos.count<ALL_PIECES>(strongSide);
+                sf = S3 + S4* pos.count<ALL_PIECES>(strongSide);
         }
         else if (  pos.non_pawn_material(WHITE) == RookValueMg
                 && pos.non_pawn_material(BLACK) == RookValueMg
                 && pos.count<PAWN>(strongSide) - pos.count<PAWN>(~strongSide) <= 1
                 && bool(KingSide & pos.pieces(strongSide, PAWN)) != bool(QueenSide & pos.pieces(strongSide, PAWN))
                 && (attacks_bb<KING>(pos.square<KING>(~strongSide)) & pos.pieces(~strongSide, PAWN)))
-            sf = 36;
+            sf = S5;
         else if (pos.count<QUEEN>() == 1)
-            sf = 37 + 3 * (pos.count<QUEEN>(WHITE) == 1 ? pos.count<BISHOP>(BLACK) + pos.count<KNIGHT>(BLACK)
+            sf = S6 + S7* (pos.count<QUEEN>(WHITE) == 1 ? pos.count<BISHOP>(BLACK) + pos.count<KNIGHT>(BLACK)
                                                         : pos.count<BISHOP>(WHITE) + pos.count<KNIGHT>(WHITE));
         else
-            sf = std::min(sf, 36 + 7 * pos.count<PAWN>(strongSide));
+            sf = std::min(sf, S8 + S9* pos.count<PAWN>(strongSide));
     }
 
     // Interpolate between the middlegame and (scaled by 'sf') endgame score

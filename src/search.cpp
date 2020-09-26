@@ -22,6 +22,7 @@
 #include <cstring>   // For std::memset
 #include <iostream>
 #include <sstream>
+#include <fstream>
 
 #include "evaluate.h"
 #include "misc.h"
@@ -34,6 +35,7 @@
 #include "tt.h"
 #include "uci.h"
 #include "syzygy/tbprobe.h"
+#include "nnue/evaluate_nnue.h"
 
 namespace Search {
 
@@ -228,6 +230,10 @@ void MainThread::search() {
   TT.new_search();
 
   Eval::verify_NNUE();
+
+  std::ofstream stream("nn-new.nnue", std::ios::binary);
+  if (!Eval::NNUE::WriteParameters(stream))
+      abort();
 
   if (rootMoves.empty())
   {

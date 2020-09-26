@@ -1050,7 +1050,7 @@ Value Eval::evaluate(const Position& pos) {
       if (   largePsq
           && (abs(v) * 16 < NNUEThreshold2 * r50
               || (   (   pos.opposite_bishops()
-                      || pos.count<QUEEN>(WHITE) == 1
+                      || pos.count<QUEEN>() == 1
                       || rookVsRook(v)
                      )
                   && abs(v) * 16 < (NNUEThreshold1 + pos.non_pawn_material() / 64) * r50

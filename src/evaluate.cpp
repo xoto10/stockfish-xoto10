@@ -1024,6 +1024,18 @@ Value Eval::evaluate(const Position& pos) {
       // Scale and shift NNUE for compatibility with search and classical evaluation
       auto  adjusted_NNUE = [&](){ return NNUE::evaluate(pos) * 5 / 4 + Tempo; };
 
+      // Find RvsR ending that might benefit from nnue
+      auto  rookVsRook = [&](Value eg) {
+                Color strongSide = eg > VALUE_DRAW ? WHITE : BLACK;
+                return       pos.non_pawn_material(WHITE) == RookValueMg
+                          && pos.non_pawn_material(BLACK) == RookValueMg
+                          && pos.count<PAWN>(strongSide) - pos.count<PAWN>(~strongSide) <= 1
+                          && bool(KingSide & pos.pieces(strongSide, PAWN))
+                                 != bool(QueenSide & pos.pieces(strongSide, PAWN))
+                          && (  attacks_bb<KING>(pos.square<KING>(~strongSide))
+                              & pos.pieces(~strongSide, PAWN));
+      };
+
       // If there is PSQ imbalance use classical eval, with small probability if it is small
       Value psq = Value(abs(eg_value(pos.psq_score())));
       int   r50 = 16 + pos.rule50_count();
@@ -1037,9 +1049,12 @@ Value Eval::evaluate(const Position& pos) {
       // small probability if the classical eval is less than the threshold.
       if (   largePsq
           && (abs(v) * 16 < NNUEThreshold2 * r50
-          || (   pos.opposite_bishops() 
-              && abs(v) * 16 < (NNUEThreshold1 + pos.non_pawn_material() / 64) * r50
-              && !(pos.this_thread()->nodes & 0xB))))
+              || (   (   pos.opposite_bishops()
+                      || pos.count<QUEEN>(WHITE) == 1
+                      || rookVsRook(v)
+                     )
+                  && abs(v) * 16 < (NNUEThreshold1 + pos.non_pawn_material() / 64) * r50
+                  && !(pos.this_thread()->nodes & 0xB))))
           v = adjusted_NNUE();
   }
 

@@ -1026,8 +1026,7 @@ Value Eval::evaluate(const Position& pos) {
          Value nnEv = NNUE::evaluate(pos);
          int   mat  = pos.non_pawn_material();
 
-         return  nnEv * (65536 + (nnEv < 0 ? -mat : mat) ) / 65536
-               + Tempo;
+         return  nnEv * (32768 + (nnEv >= 0) * mat) / 32768 + Tempo;
       };
 
       // If there is PSQ imbalance use classical eval, with small probability if it is small

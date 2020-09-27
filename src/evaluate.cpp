@@ -1025,11 +1025,10 @@ Value Eval::evaluate(const Position& pos) {
       auto  adjusted_NNUE = [&](){
 
          Value nnEv = NNUE::evaluate(pos);
-         int   matB = pos.non_pawn_material(BLACK);
-         int   matW = pos.non_pawn_material(WHITE);
+         int   mat = pos.non_pawn_material();
 
-         return  nnEv * (1024 + (matB + matW) / 32) / 1024
-               + 16 * (matB != matW && nnEv > 0)
+         return  nnEv * (1024 + mat / 32) / 1024
+               + 5 * Pawns::probe(pos)->passed_count() * (nnEv >= 0)
                + Tempo;
       };
 

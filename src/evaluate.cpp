@@ -1026,7 +1026,7 @@ Value Eval::evaluate(const Position& pos) {
          Value nnEv = NNUE::evaluate(pos);
          int mat = pos.non_pawn_material();
          return  nnEv * (1024 + mat / 32) / 1024
-               + 16 * bool(mat) * (nnEv > 0)
+               + 8 * bool(mat) * (nnEv > 0)
                + Tempo;
       };
 

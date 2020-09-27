@@ -1037,7 +1037,7 @@ Value Eval::evaluate(const Position& pos) {
 //                        || pawnsOnBothFlanks;
 
          return  nnEv * (1024 + mat / 32) / 1024
-               + 6 * pawnsOnBothFlanks * (nnEv > 0)
+               + 10 * pawnsOnBothFlanks * (nnEv > 0)
                + Tempo;
       };
 

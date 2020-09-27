@@ -60,8 +60,8 @@ bool Search::prune_at_shallow_depth_on_pv_node = true;
 
 namespace {
 
-  int netbiases[1] = {-156}; // int32_t
-  int netweights[32] = {-18, -15, -79,  53, -17, 120, -117,  29,  34,  44, -46,  13,  16, -38, -24,  96, -44,  33,  37,  37, -18, -14,  21, -38, -13, -41, -15, -16, -23,  30, -17,  25}; // int8_t
+  int netbiases[1] = {-158}; // int32_t
+  int netweights[32] = {-18, -14, -79,  53, -19, 119, -118,  31,  34,  43, -45,  14,  16, -37, -24,  96, -46,  33,  38,  38, -17, -14,  21, -37, -11, -41, -15, -14, -23,  28, -17,  23}; // int8_t
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV };

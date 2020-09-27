@@ -1030,14 +1030,14 @@ Value Eval::evaluate(const Position& pos) {
          int outflanking =  distance<File>(pos.square<KING>(WHITE), pos.square<KING>(BLACK))
                           - distance<Rank>(pos.square<KING>(WHITE), pos.square<KING>(BLACK));
 
-         bool pawnsOnBothFlanks =   (pos.pieces(PAWN) & QueenSide)
-                                 && (pos.pieces(PAWN) & KingSide);
+//         bool pawnsOnBothFlanks =   (pos.pieces(PAWN) & QueenSide)
+//                                 && (pos.pieces(PAWN) & KingSide);
 
-         bool winnable =   outflanking >= 0
-                        || pawnsOnBothFlanks;
+//         bool winnable =   outflanking >= 0
+//                        || pawnsOnBothFlanks;
 
          return  nnEv * (1024 + mat / 32) / 1024
-               + 32 * winnable * (nnEv > 0)
+               + 8 * outflanking * (nnEv > 0)
                + Tempo;
       };
 

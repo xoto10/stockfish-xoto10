@@ -1024,7 +1024,7 @@ Value Eval::evaluate(const Position& pos) {
       // Scale and shift NNUE for compatibility with search and classical evaluation
       auto  adjusted_NNUE = [&](){
          int mat = pos.non_pawn_material();
-         return NNUE::evaluate(pos) * (65536 + mat) / 65536 + Tempo;
+         return NNUE::evaluate(pos) * (32768 + mat) / 32768 + Tempo;
       };
 
       // If there is PSQ imbalance use classical eval, with small probability if it is small

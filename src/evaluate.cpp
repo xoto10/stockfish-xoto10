@@ -1023,21 +1023,13 @@ Value Eval::evaluate(const Position& pos) {
   {
       // Scale and shift NNUE for compatibility with search and classical evaluation
       auto  adjusted_NNUE = [&](){
+
          Value nnEv = NNUE::evaluate(pos);
+         int   matB = pos.non_pawn_material(BLACK);
+         int   matW = pos.non_pawn_material(WHITE);
 
-         int mat = pos.non_pawn_material();
-
-//         int outflanking =  distance<File>(pos.square<KING>(WHITE), pos.square<KING>(BLACK))
-//                          - distance<Rank>(pos.square<KING>(WHITE), pos.square<KING>(BLACK));
-
-         bool pawnsOnBothFlanks =   (pos.pieces(PAWN) & QueenSide)
-                                 && (pos.pieces(PAWN) & KingSide);
-
-//         bool winnable =   outflanking >= 0
-//                        || pawnsOnBothFlanks;
-
-         return  nnEv * (1024 + mat / 32) / 1024
-               + 10 * pawnsOnBothFlanks * (nnEv > 0)
+         return  nnEv * (1024 + (matB + matW) / 32) / 1024
+               + 16 * (matB != matW && nnEv > 0)
                + Tempo;
       };
 

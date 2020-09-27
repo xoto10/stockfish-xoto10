@@ -1023,9 +1023,10 @@ Value Eval::evaluate(const Position& pos) {
   {
       // Scale and shift NNUE for compatibility with search and classical evaluation
       auto  adjusted_NNUE = [&](){
+         Value nnEv = NNUE::evaluate(pos);
          int mat = pos.non_pawn_material();
-         return  NNUE::evaluate(pos) * (1024 + mat / 32) / 1024
-               + 32 * bool(mat)
+         return  nnEv * (1024 + mat / 32) / 1024
+               + 32 * bool(mat) * (nnEv > 0)
                + Tempo;
       };
 

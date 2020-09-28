@@ -190,7 +190,7 @@ namespace {
   constexpr Value LazyThreshold1 =  Value(1400);
   constexpr Value LazyThreshold2 =  Value(1300);
   constexpr Value SpaceThreshold = Value(12222);
-  constexpr Value NNUEThreshold1 =   Value(500);
+  constexpr Value NNUEThreshold1 =   Value(520);
   constexpr Value NNUEThreshold2 =   Value(150);
 
   // KingAttackWeights[PieceType] contains king attack weights by piece type
@@ -1030,7 +1030,7 @@ Value Eval::evaluate(const Position& pos) {
       // If there is PSQ imbalance use classical eval, with small probability if it is small
       int outflanking =  distance<File>(pos.square<KING>(WHITE), pos.square<KING>(BLACK))
                        - distance<Rank>(pos.square<KING>(WHITE), pos.square<KING>(BLACK));
-      Value psq = Value(abs(eg_value(pos.psq_score())) + 14 * outflanking);
+      Value psq = Value(abs(eg_value(pos.psq_score())) + 10 * outflanking);
       int   r50 = 16 + pos.rule50_count();
       bool  largePsq = psq * 16 > (NNUEThreshold1 + pos.non_pawn_material() / 64) * r50;
       bool  classical = largePsq || (psq > PawnValueMg / 4 && !(pos.this_thread()->nodes & 0xB));

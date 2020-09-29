@@ -1026,7 +1026,7 @@ Value Eval::evaluate(const Position& pos) {
          Value nnEv = NNUE::evaluate(pos);
 
          int mat = pos.non_pawn_material() + PieceValue[MG][PAWN] * pos.count<PAWN>();
-         mat = (nnEv > 0) - (nnEv < 0) * (mat - 9728);
+         mat = (nnEv > 0) * (mat - 9728);
 
          return nnEv * (1024 + mat / 64) / 1024 + Tempo;
       };

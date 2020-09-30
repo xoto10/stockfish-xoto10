@@ -1028,7 +1028,7 @@ Value Eval::evaluate(const Position& pos) {
          int   matW = pos.non_pawn_material(WHITE);
 
          return  nnEv * (720 + (matB + matW) / 32) / 1024
-               + 16 * (matB != matW) * ((nnEv > 0) - (nnEv < 0))
+               + 12 * (matB != matW) * ((nnEv > 0) - (nnEv < 0))
                + Tempo;
       };
 

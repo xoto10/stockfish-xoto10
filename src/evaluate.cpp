@@ -1023,12 +1023,15 @@ Value Eval::evaluate(const Position& pos) {
   {
       // Scale and shift NNUE for compatibility with search and classical evaluation
       auto  adjusted_NNUE = [&](){
+         constexpr Bitboard FilesABC = FileABB | FileBBB | FileCBB;
+         constexpr Bitboard FilesFGH = FileFBB | FileGBB | FileHBB;
+
          Value nnEv = NNUE::evaluate(pos);
 
          int mat = pos.non_pawn_material() + PieceValue[MG][PAWN] * pos.count<PAWN>();
 
-         bool pawnsOnBothFlanks =   (pos.pieces(PAWN) & QueenSide)
-                                 && (pos.pieces(PAWN) & KingSide);
+         bool pawnsOnBothFlanks =   (pos.pieces(PAWN) & FilesABC)
+                                 && (pos.pieces(PAWN) & FilesFGH);
 
          return  nnEv * (720 + mat / 32) / 1024
                + 10 * pawnsOnBothFlanks * ((nnEv > 0) - (nnEv < 0))

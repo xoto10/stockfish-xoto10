@@ -1027,8 +1027,8 @@ Value Eval::evaluate(const Position& pos) {
 
          Value nnEv = NNUE::evaluate(pos) * (720 + mat / 32) / 1024;
 
-         int complexity =  12 * pos.count<PAWN>()
-                         - 108;
+         int complexity =  8 * pos.count<PAWN>()
+                         - 72;
          complexity = ((nnEv > 0) - (nnEv < 0)) * std::max(complexity, -abs(nnEv));
 
          return  nnEv

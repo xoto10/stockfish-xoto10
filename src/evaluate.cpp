@@ -1024,7 +1024,24 @@ Value Eval::evaluate(const Position& pos) {
       // Scale and shift NNUE for compatibility with search and classical evaluation
       auto  adjusted_NNUE = [&](){
          int mat = pos.non_pawn_material() + PieceValue[MG][PAWN] * pos.count<PAWN>();
-         return NNUE::evaluate(pos) * (720 + mat / 32) / 1024 + Tempo;
+
+         Value nnEv = NNUE::evaluate(pos) * (720 + mat / 32) / 1024;
+
+         int outflanking =  distance<File>(pos.square<KING>(WHITE), pos.square<KING>(BLACK))
+                          - distance<Rank>(pos.square<KING>(WHITE), pos.square<KING>(BLACK));
+
+         bool pawnsOnBothFlanks =   (pos.pieces(PAWN) & QueenSide)
+                                 && (pos.pieces(PAWN) & KingSide);
+
+         bool almostUnwinnable =   outflanking < 0
+                                && !pawnsOnBothFlanks;
+
+         int complexity = -43 * almostUnwinnable;
+         complexity = ((nnEv > 0) - (nnEv < 0)) * std::max(complexity, -abs(nnEv));
+
+         return  nnEv
+               + complexity
+               + Tempo;
       };
 
       // If there is PSQ imbalance use classical eval, with small probability if it is small

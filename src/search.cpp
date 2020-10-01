@@ -364,6 +364,8 @@ void Thread::search() {
                           : -make_score(ct, ct / 2));
 
   int searchAgainCounter = 0;
+  int fails0cnt = 0;
+  int failsAvg = 0;
 
   // Iterative deepening loop until requested to stop or the target depth is reached
   while (   ++rootDepth < MAX_PLY
@@ -382,12 +384,13 @@ void Thread::search() {
       size_t pvFirst = 0;
       pvLast = 0;
 
-      if (!Threads.increaseDepth)
+      if (!Threads.increaseDepth && failsAvg < 256 * 2)
          searchAgainCounter++;
 
       // MultiPV loop. We perform a full root search for each PV line
       for (pvIdx = 0; pvIdx < multiPV && !Threads.stop; ++pvIdx)
       {
+          int failedHighCnt = 0;
           if (pvIdx == pvLast)
           {
               pvFirst = pvLast;
@@ -417,7 +420,6 @@ void Thread::search() {
           // Start with a small aspiration window and, in the case of a fail
           // high/low, re-search with a bigger window until we don't fail
           // high/low anymore.
-          int failedHighCnt = 0;
           while (true)
           {
               Depth adjustedDepth = std::max(1, rootDepth - failedHighCnt - searchAgainCounter);
@@ -471,6 +473,9 @@ void Thread::search() {
 
           // Sort the PV lines searched so far and update the GUI
           std::stable_sort(rootMoves.begin() + pvFirst, rootMoves.begin() + pvIdx + 1);
+
+          if (pvIdx == 0)
+              fails0cnt = failedHighCnt;
 
           if (    mainThread
               && (Threads.stop || pvIdx + 1 == multiPV || Time.elapsed() > 3000))
@@ -539,6 +544,8 @@ void Thread::search() {
           else
                    Threads.increaseDepth = true;
       }
+
+      failsAvg = (3 * failsAvg + 256 * fails0cnt) / 4;
 
       mainThread->iterValue[iterIdx] = bestValue;
       iterIdx = (iterIdx + 1) & 3;

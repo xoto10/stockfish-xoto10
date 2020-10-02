@@ -1314,7 +1314,7 @@ moves_loop: // When in check, search starts from here
               // move position in the list is preserved - just the PV is pushed up.
               rm.score = -VALUE_INFINITE;
 
-          Move thisMove2 = rm.pv.size() > 2 ? rm.pv[2] : MOVE_NONE;
+          Move thisMove2 = rm.pv.size() > 1 ? rm.pv[1] : MOVE_NONE;
           if (thisMove2 != lastMove2 && moveCount > 1)
               ++thisThread->bestMove2Changes;
           lastMove2 = thisMove2;

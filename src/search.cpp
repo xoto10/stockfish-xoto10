@@ -512,13 +512,17 @@ void Thread::search() {
           double reduction = (1.47 + mainThread->previousTimeReduction) / (2.32 * timeReduction);
 
           // Use part of the gained time from a previous stable move for the current move
+          int totBestMove2Changes = 0;
           for (Thread* th : Threads)
           {
               totBestMoveChanges += th->bestMoveChanges;
-              th->bestMoveChanges = 0;
+              totBestMove2Changes += th->bestMove2Changes;
+              th->bestMoveChanges = th->bestMove2Changes = 0;
           }
-          double bestMoveInstability = 1 + 2 * totBestMoveChanges / Threads.size();
-
+          double bestMoveInstability =  1 + (150 * totBestMoveChanges + 25 * totBestMove2Changes)
+                                            / (100 * Threads.size());
+//sync_cout << "info string bestchg cd " << completedDepth << " chg1 " << totBestMoveChanges
+//          << " chg2 " << totBestMove2Changes << sync_endl;
           double totalTime = rootMoves.size() == 1 ? 0 :
                              Time.optimum() * fallingEval * reduction * bestMoveInstability;
 
@@ -952,6 +956,7 @@ moves_loop: // When in check, search starts from here
                                           nullptr                   , (ss-4)->continuationHistory,
                                           nullptr                   , (ss-6)->continuationHistory };
 
+    Move lastMove2 = MOVE_NONE;
     Move countermove = thisThread->counterMoves[pos.piece_on(prevSq)][prevSq];
 
     MovePicker mp(pos, ttMove, depth, &thisThread->mainHistory,
@@ -1308,6 +1313,11 @@ moves_loop: // When in check, search starts from here
               // is not a problem when sorting because the sort is stable and the
               // move position in the list is preserved - just the PV is pushed up.
               rm.score = -VALUE_INFINITE;
+
+          Move thisMove2 = rm.pv.size() > 2 ? rm.pv[2] : MOVE_NONE;
+          if (thisMove2 != lastMove2 && moveCount > 1)
+              ++thisThread->bestMove2Changes;
+          lastMove2 = thisMove2;
       }
 
       if (value > bestValue)

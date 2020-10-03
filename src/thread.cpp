@@ -34,6 +34,15 @@ ThreadPool Threads; // Global object
 
 Thread::Thread(size_t n) : idx(n), stdThread(&Thread::idle_loop, this) {
 
+  NNUEThreshold1 = 550;
+  int i = idx;
+  if ( (i & 7) == 7 )
+  {
+    i >>= 1;
+    while (i /= 2)
+      NNUEThreshold1 /= 2;
+  }
+//sync_cout << "info string i " << idx << " srchg " << searching << " exit " << exit << " nt " << NNUEThreshold1 << sync_endl;
   wait_for_search_finished();
 }
 
@@ -77,6 +86,7 @@ void Thread::start_searching() {
 
   std::lock_guard<std::mutex> lk(mutex);
   searching = true;
+//sync_cout << "info string starts i " << idx << " srchg " << searching << " exit " << exit << sync_endl;
   cv.notify_one(); // Wake up the thread in idle_loop()
 }
 
@@ -107,6 +117,7 @@ void Thread::idle_loop() {
   while (true)
   {
       std::unique_lock<std::mutex> lk(mutex);
+//sync_cout << "info string idle i " << idx << " srchg " << searching << " exit " << exit << sync_endl;
       searching = false;
       cv.notify_one(); // Wake up anyone waiting for search finished
       cv.wait(lk, [&]{ return searching; });

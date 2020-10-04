@@ -40,7 +40,7 @@ Thread::Thread(size_t n) : idx(n), stdThread(&Thread::idle_loop, this) {
   {
     i >>= 1;
     while (i /= 2)
-      NNUEThreshold1 /= 2;
+      NNUEThreshold1 = 3 * NNUEThreshold1 / 4;
   }
 //sync_cout << "info string i " << idx << " srchg " << searching << " exit " << exit << " nt " << NNUEThreshold1 << sync_endl;
   wait_for_search_finished();

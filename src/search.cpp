@@ -509,7 +509,7 @@ void Thread::search() {
           double drawAdjustment = 0;
           if (   mainThread->initialScore != VALUE_INFINITE
               && mainThread->initialScore * int(bestValue) > 0)
-              drawAdjustment = -mainThread->initialScore;
+              drawAdjustment = -2 * mainThread->initialScore;
 
           double fallingEval = (318 + 6 * (mainThread->bestPreviousScore - bestValue)
                                     + 6 * (mainThread->iterValue[iterIdx] - bestValue)

@@ -86,7 +86,7 @@ struct MainThread : public Thread {
   void check_time();
 
   double previousTimeReduction;
-  Value bestPreviousScore;
+  Value bestPreviousScore, initialScore;
   Value iterValue[4];
   int callsCnt;
   bool stopOnPonderhit;

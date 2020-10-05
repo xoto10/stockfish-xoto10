@@ -270,6 +270,8 @@ void MainThread::search() {
       bestThread = Threads.get_best_thread();
 
   bestPreviousScore = bestThread->rootMoves[0].score;
+  if (initialScore == VALUE_INFINITE)
+      initialScore = bestThread->rootMoves[0].score;
 
   // Send again PV info if we have a new best thread
   if (bestThread != this)
@@ -503,8 +505,15 @@ void Thread::search() {
           && !Threads.stop
           && !mainThread->stopOnPonderhit)
       {
+          // Adjust time use for usual trend from initial score to value_draw
+          double drawAdjustment = 0;
+          if (   mainThread->initialScore != VALUE_INFINITE
+              && mainThread->initialScore * int(bestValue) > 0)
+              drawAdjustment = -mainThread->initialScore / 4;
+
           double fallingEval = (318 + 6 * (mainThread->bestPreviousScore - bestValue)
-                                    + 6 * (mainThread->iterValue[iterIdx] - bestValue)) / 825.0;
+                                    + 6 * (mainThread->iterValue[iterIdx] - bestValue)
+                                    +     drawAdjustment) / 825.0;
           fallingEval = std::clamp(fallingEval, 0.5, 1.5);
 
           // If the bestMove is stable over several iterations, reduce time accordingly

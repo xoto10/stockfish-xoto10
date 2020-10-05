@@ -519,7 +519,7 @@ void Thread::search() {
               totBestMove2Changes += th->bestMove2Changes;
               th->bestMoveChanges = th->bestMove2Changes = 0;
           }
-          double bestMoveInstability =  1 + (190 * totBestMoveChanges + 10 * totBestMove2Changes)
+          double bestMoveInstability =  1 + (210 * totBestMoveChanges - 10 * totBestMove2Changes)
                                             / (100 * Threads.size());
 //sync_cout << "info string bestchg cd " << completedDepth << " chg1 " << totBestMoveChanges
 //          << " chg2 " << totBestMove2Changes << sync_endl;

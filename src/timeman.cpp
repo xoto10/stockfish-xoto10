@@ -78,9 +78,16 @@ void TimeManagement::init(Search::LimitsType& limits, Color us, int ply) {
       optScale = std::min(0.008 + std::pow(ply + 3.0, 0.5) / 250.0,
                            0.2 * limits.time[us] / double(timeLeft));
       maxScale = std::min(7.0, 4.0 + ply / 12.0);
-//      if (maxScale > 8.0 && limits.time[us] > 50 * limits.time[us])
-//          maxScale /= 2;
+      // Halve maxScale if it is large and time is large compared to inc
+      if (maxScale > 5.0 && limits.time[us] > 40 * limits.inc[us])
+//      {
+//sync_cout << "info string maxsc " << maxScale
+//          << " t/inc " << float(limits.time[us]) / limits.inc[us] << " new "
+//          << maxScale * std::max(50.0, 200.0 - 2.5 * limits.time[us] / limits.inc[us]) / 100.0 << sync_endl;
+          maxScale = maxScale * std::max(50.0, 200.0 - 2.5 * limits.time[us] / limits.inc[us]) / 100.0;
+//      }
 
+      // 40->100 60->50 200-2.5*n
   }
 
   // x moves in y seconds (+ z increment)

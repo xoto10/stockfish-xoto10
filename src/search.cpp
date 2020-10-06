@@ -1240,7 +1240,9 @@ moves_loop: // When in check, search starts from here
                   r++;
           }
 
-          Depth d = std::clamp(newDepth - r, 1, newDepth);
+          Depth d = std::clamp(newDepth - r, 1, std::min(depth-1, newDepth));
+//if (d >= depth-1)
+//sync_cout << "info string depth " << depth << " d " << d << sync_endl;
 
           value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, d, true);
 

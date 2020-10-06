@@ -506,11 +506,14 @@ if (12 <= rootDepth && rootDepth <= 13)
     sync_cout << "info string itertime d " << rootDepth << " tim " << iterLen
               << " ratio " << float(iterLen) / iter1time << sync_endl;
 }
-//awk '/itertime/ { if ($9 < 1.0)      r0++;
-//                  else if ($9 < 2.5) r1++;
-//                  else if ($9 < 4.5) r3++;
-//                  else               r5++; }
-//END { printf "%d:%d:%d:%d\n", r0, r1, r3, r5; }' <file
+/*
+awk '/itertime/ { sub(/.*ratio /, "");
+                  if ($0 < 1.0)      r0++;
+                  else if ($0 < 2.5) r1++;
+                  else if ($0 < 4.5) r3++;
+                  else               r5++; }
+END { printf "%d:%d:%d:%d\n", r0, r1, r3, r5; }' <file
+*/
 
       if (!mainThread)
           continue;

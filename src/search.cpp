@@ -364,12 +364,15 @@ void Thread::search() {
                           : -make_score(ct, ct / 2));
 
   int searchAgainCounter = 0;
+  int iter1time = 0;
 
   // Iterative deepening loop until requested to stop or the target depth is reached
   while (   ++rootDepth < MAX_PLY
          && !Threads.stop
          && !(Limits.depth && mainThread && rootDepth > Limits.depth))
   {
+TimePoint iterTime = now();
+
       // Age out PV variability metric
       if (mainThread)
           totBestMoveChanges /= 2;
@@ -490,6 +493,24 @@ void Thread::search() {
           && bestValue >= VALUE_MATE_IN_MAX_PLY
           && VALUE_MATE - bestValue <= 2 * Limits.mate)
           Threads.stop = true;
+
+if (12 <= rootDepth && rootDepth <= 13)
+{
+  int iterLen = now() - iterTime;
+  if (rootDepth == 12)
+  {
+    iter1time = iterLen;
+//    sync_cout << "info string itertime d " << rootDepth << " tim " << iterLen << sync_endl;
+  }
+  else if (iterLen != 0 && iter1time != 0)
+    sync_cout << "info string itertime d " << rootDepth << " tim " << iterLen
+              << " ratio " << float(iterLen) / iter1time << sync_endl;
+}
+//awk '/itertime/ { if ($9 < 1.0)      r0++;
+//                  else if ($9 < 2.5) r1++;
+//                  else if ($9 < 4.5) r3++;
+//                  else               r5++; }
+//END { printf "%d:%d:%d:%d\n", r0, r1, r3, r5; }' <file
 
       if (!mainThread)
           continue;

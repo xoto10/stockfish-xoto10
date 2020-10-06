@@ -520,10 +520,8 @@ void Thread::search() {
               th->bestMoveChanges = th->bestMove2Changes = 0;
           }
           double bestMoveInstability =  1.0 + (  175.0 * totBestMoveChanges
-                                               +  10.0 * std::min(5, totBestMove2Changes))
+                                               +  20.0 * std::min(5, totBestMove2Changes))
                                             / (100.0 * Threads.size());
-//sync_cout << "info string bestchg cd " << completedDepth << " chg1 " << totBestMoveChanges
-//          << " chg2 " << totBestMove2Changes << " bmi " << bestMoveInstability << sync_endl;
           double totalTime = rootMoves.size() == 1 ? 0 :
                              Time.optimum() * fallingEval * reduction * bestMoveInstability;
 
@@ -1311,12 +1309,7 @@ moves_loop: // When in check, search starts from here
               && lastMove2 != MOVE_NONE
               && thisMove2 != MOVE_NONE
               && moveCount > 1)
-//{
               ++thisThread->bestMove2Changes;
-//    sync_cout << "info string mv2chg " << UCI::move(rm.pv[0],false)
-//              << " - " << UCI::move(lastMove2,false) << " - "
-//              << UCI::move(thisMove2,false) << sync_endl;
-//}
           lastMove2 = thisMove2;
       }
 

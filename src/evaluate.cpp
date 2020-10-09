@@ -1025,7 +1025,7 @@ Value Eval::evaluate(const Position& pos) {
       auto  adjusted_NNUE = [&](){
          int mat = pos.non_pawn_material() + PieceValue[MG][PAWN] * pos.count<PAWN>();
          Value nnEv = NNUE::evaluate(pos);
-         return  (nnEv * 720 + (nnEv > 20 ? nnEv - 20 : nnEv < -20 ? nnEv + 20 : 0) * (mat / 32))
+         return  (nnEv * 720 + (nnEv > 40 ? nnEv + 8 : nnEv < -40 ? nnEv - 8 : nnEv * 2) * (mat / 32))
                  / 1024 + Tempo;
       };
 

@@ -190,6 +190,7 @@ namespace {
   constexpr Value LazyThreshold1 =  Value(1400);
   constexpr Value LazyThreshold2 =  Value(1300);
   constexpr Value SpaceThreshold = Value(12222);
+  constexpr Value NNUEOffset     =    Value(40);
   constexpr Value NNUEThreshold1 =   Value(550);
   constexpr Value NNUEThreshold2 =   Value(150);
 
@@ -1024,7 +1025,8 @@ Value Eval::evaluate(const Position& pos) {
       // Scale and shift NNUE for compatibility with search and classical evaluation
       auto  adjusted_NNUE = [&](){
          int mat = pos.non_pawn_material() + PieceValue[MG][PAWN] * pos.count<PAWN>();
-         return NNUE::evaluate(pos) * (720 + mat / 32) / 1024 + Tempo;
+         Value nnEv = NNUE::evaluate(pos);
+         return  (nnEv * 720 + (nnEv + NNUEOffset) * (mat / 32)) / 1024 + Tempo;
       };
 
       // If there is PSQ imbalance use classical eval, with small probability if it is small

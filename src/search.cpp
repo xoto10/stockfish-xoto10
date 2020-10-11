@@ -1217,7 +1217,9 @@ moves_loop: // When in check, search starts from here
 
           Depth d = std::clamp(newDepth - r, 1, newDepth);
 
-          if (d <= thisThread->rootDepth)
+          if (   d <= thisThread->rootDepth
+              || !Limits.use_time_management()
+              || Time.elapsed() < Time.optimum())
           {
               value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, d, true);
 
@@ -1240,7 +1242,11 @@ moves_loop: // When in check, search starts from here
       // Step 17. Full depth search when LMR is skipped or fails high
       if (doFullDepthSearch)
       {
-          value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, std::min(thisThread->rootDepth, newDepth), !cutNode);
+          if (   Limits.use_time_management()
+              && Time.elapsed() > Time.optimum()
+              && newDepth > thisThread->rootDepth)
+              newDepth = thisThread->rootDepth;
+          value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, newDepth, !cutNode);
 
           if (didLMR && !captureOrPromotion)
           {

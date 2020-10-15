@@ -1177,8 +1177,7 @@ moves_loop: // When in check, search starts from here
               if (ttCapture)
                   r++;
 
-              if (failedHighCnt * moveCount >= 192)
-                  r++;
+              r += failedHighCnt * failedHighCnt * moveCount / 256;
 
               // Increase reduction for cut nodes (~10 Elo)
               if (cutNode)

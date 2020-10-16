@@ -296,7 +296,7 @@ void Thread::search() {
   // The latter is needed for statScores and killer initialization.
   Stack stack[MAX_PLY+10], *ss = stack+7;
   Move  pv[MAX_PLY+1];
-  Value bestValue, alpha, beta, delta;
+  Value bestValue, lastBestValue = VALUE_INFINITE, alpha, beta, delta;
   Move  lastBestMove = MOVE_NONE;
   Depth lastBestMoveDepth = 0;
   MainThread* mainThread = (this == Threads.main() ? Threads.main() : nullptr);
@@ -480,7 +480,14 @@ void Thread::search() {
       if (!Threads.stop)
           completedDepth = rootDepth;
 
-      if (rootMoves[0].pv[0] != lastBestMove) {
+      if (rootMoves[0].pv[0] == lastBestMove)
+      {
+          Value tmp = rootMoves[0].score;
+          rootMoves[0].score = (192 * rootMoves[0].score + 64 * lastBestValue) / 256;
+          lastBestValue = tmp;
+      }
+      else
+      {
          lastBestMove = rootMoves[0].pv[0];
          lastBestMoveDepth = rootDepth;
       }

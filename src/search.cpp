@@ -421,7 +421,7 @@ void Thread::search() {
           while (true)
           {
               Depth adjustedDepth = std::max(1, rootDepth - failedHighCnt - searchAgainCounter);
-              bestValue = ::search<PV>(rootPos, ss, alpha, beta, adjustedDepth, adjustedDepth+1, false);
+              bestValue = ::search<PV>(rootPos, ss, alpha, beta, adjustedDepth, adjustedDepth, false);
 
               // Bring the best move to the front. It is critical that sorting
               // is done with a stable algorithm because all the values but the
@@ -1257,7 +1257,7 @@ moves_loop: // When in check, search starts from here
           (ss+1)->pv[0] = MOVE_NONE;
 
           value = -search<PV>(pos, ss+1, -beta, -alpha,
-                              std::min(maxNextDepth, newDepth), std::min(maxNextDepth, newDepth)-1, false);
+                              std::min(maxNextDepth, newDepth), std::min(maxNextDepth, newDepth)+1, false);
       }
 
       // Step 18. Undo move

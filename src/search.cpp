@@ -483,7 +483,7 @@ void Thread::search() {
       if (rootMoves[0].pv[0] == lastBestMove)
       {
           Value tmp = rootMoves[0].score;
-          rootMoves[0].score = (240 * rootMoves[0].score + 16 * lastBestValue) / 256;
+          rootMoves[0].score = (216 * rootMoves[0].score + 40 * lastBestValue) / 256;
           lastBestValue = tmp;
       }
       else

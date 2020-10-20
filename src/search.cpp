@@ -379,6 +379,7 @@ void Thread::search() {
       for (RootMove& rm : rootMoves)
           rm.previousScore = rm.score;
 
+      Depth adjustedDepth;
       size_t pvFirst = 0;
       pvLast = 0;
 
@@ -420,7 +421,7 @@ void Thread::search() {
           failedHighCnt = 0;
           while (true)
           {
-              Depth adjustedDepth = std::max(1, rootDepth - failedHighCnt - searchAgainCounter);
+              adjustedDepth = std::max(1, rootDepth - failedHighCnt - searchAgainCounter);
               bestValue = ::search<PV>(rootPos, ss, alpha, beta, adjustedDepth, false);
 
               // Bring the best move to the front. It is critical that sorting
@@ -534,10 +535,10 @@ void Thread::search() {
           }
           else if (   Threads.increaseDepth
                    && !mainThread->ponder
-                   && Time.elapsed() > totalTime * 0.58)
-                   Threads.increaseDepth = false;
+                   && Time.elapsed() > totalTime * (0.56 + 0.4 * (adjustedDepth & 1)))
+                  Threads.increaseDepth = false;
           else
-                   Threads.increaseDepth = true;
+                  Threads.increaseDepth = true;
       }
 
       mainThread->iterValue[iterIdx] = bestValue;

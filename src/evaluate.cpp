@@ -1025,20 +1025,23 @@ Value Eval::evaluate(const Position& pos) {
          File fMin = FILE_NB, fMax = FILE_NB;
          Bitboard fbbMin = FileABB, fbbMax = FileHBB;
 
-         for (File f=FILE_A; f<FILE_F; ++f)
+         if (pos.non_pawn_material() == 0)
          {
-             if (fMin == FILE_NB && (pos.pieces() & fbbMin))
-                 fMin = f;
-             if (fMax == FILE_NB && (pos.pieces() & fbbMax))
-                 fMax = File(7-f);
-             fbbMin = shift<EAST>(fbbMin);
-             fbbMax = shift<WEST>(fbbMax);
-         }
-         if (fMax - fMin < 4)
+             for (File f=FILE_A; f<FILE_F; ++f)
+             {
+                 if (fMin == FILE_NB && (pos.pieces() & fbbMin))
+                     fMin = f;
+                 if (fMax == FILE_NB && (pos.pieces() & fbbMax))
+                     fMax = File(7-f);
+                 fbbMin = shift<EAST>(fbbMin);
+                 fbbMax = shift<WEST>(fbbMax);
+             }
+             if (fMax - fMin < 4)
 {
 //sync_cout << "info string drv " << fMin << "," << fMax << " pos:\n" << pos << sync_endl;
              dr = 256;
 }
+         }
 
          return NNUE::evaluate(pos) * (720 + mat / 32 - dr) / 1024 + Tempo;
       };

@@ -201,6 +201,7 @@ void Search::init() {
 void Search::clear() {
 
   Threads.main()->wait_for_search_finished();
+  Threads.main()->lastOnly = false;
 
   Time.availableNodes = 0;
   TT.clear();
@@ -519,8 +520,15 @@ void Thread::search() {
           }
           double bestMoveInstability = 1 + 2 * totBestMoveChanges / Threads.size();
 
-          double totalTime = rootMoves.size() == 1 ? 0 :
-                             Time.optimum() * fallingEval * reduction * bestMoveInstability;
+          double totalTime;
+          if (rootMoves.size() == 1)
+              totalTime = 0,
+              mainThread->lastOnly = true;
+          else
+              totalTime = Time.optimum() * fallingEval * reduction * bestMoveInstability
+                         * (mainThread->lastOnly ? 2 : 1),
+              mainThread->lastOnly = false;
+
 
           // Stop the search if we have exceeded the totalTime, at least 1ms search
           if (Time.elapsed() > totalTime)

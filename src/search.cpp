@@ -269,7 +269,7 @@ void MainThread::search() {
       && rootMoves[0].pv[0] != MOVE_NONE)
       bestThread = Threads.get_best_thread();
 
-  bestPreviousScore = bestThread->rootMoves[0].score;
+  bestPreviousScore = rootMoves.size() == 1 ? VALUE_INFINITE : bestThread->rootMoves[0].score;
 
   // Send again PV info if we have a new best thread
   if (bestThread != this)
@@ -519,8 +519,8 @@ void Thread::search() {
           }
           double bestMoveInstability = 1 + 2 * totBestMoveChanges / Threads.size();
 
-          double totalTime = Time.optimum()
-                            * (rootMoves.size() == 1 ? 1.0 : fallingEval * reduction * bestMoveInstability);
+          double totalTime = rootMoves.size() == 1 ? 0 :
+                             Time.optimum() * fallingEval * reduction * bestMoveInstability;
 
           // Stop the search if we have exceeded the totalTime, at least 1ms search
           if (Time.elapsed() > totalTime)

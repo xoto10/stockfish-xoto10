@@ -481,7 +481,7 @@ void Thread::search() {
           completedDepth = rootDepth;
 
       if (rootMoves[0].pv[0] == lastBestMove2)
-          rootMoves[0].score = (220 * rootMoves[0].score + 36 * lastBestValue2) / 256;
+          rootMoves[0].score = (244 * rootMoves[0].score + 12 * lastBestValue2) / 256;
       lastBestMove2 = lastBestMove;
 
       if (rootMoves[0].pv[0] != lastBestMove)

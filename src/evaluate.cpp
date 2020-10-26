@@ -1021,7 +1021,7 @@ Value Eval::evaluate(const Position& pos) {
       // Scale and shift NNUE for compatibility with search and classical evaluation
       auto  adjusted_NNUE = [&](){
          int mat = pos.non_pawn_material() + PieceValue[MG][PAWN] * pos.count<PAWN>();
-         return NNUE::evaluate(pos) * (741 + mat * 171 / 16384 + mat * mat * 283 / (4096*65536)) / 1024
+         return NNUE::evaluate(pos) * (751 + mat * mat * 423 / (4096*65536)) / 1024
               + Tempo;
       };
 

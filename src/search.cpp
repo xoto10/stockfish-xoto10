@@ -481,17 +481,20 @@ void Thread::search() {
           completedDepth = rootDepth;
 
       if (rootMoves[0].pv[0] == lastBestMove2)
-          rootMoves[0].score = (244 * rootMoves[0].score + 12 * lastBestValue2) / 256;
+          rootMoves[0].score = (240 * rootMoves[0].score + 16 * lastBestValue2) / 256;
       lastBestMove2 = lastBestMove;
 
-      if (rootMoves[0].pv[0] != lastBestMove)
+      Value rmSc = rootMoves[0].score;
+      if (rootMoves[0].pv[0] == lastBestMove)
+          rootMoves[0].score = (240 * rootMoves[0].score + 16 * lastBestValue) / 256;
+      else
       {
          lastBestMove = rootMoves[0].pv[0];
          lastBestMoveDepth = rootDepth;
       }
 
       lastBestValue2 = lastBestValue;
-      lastBestValue = rootMoves[0].score;
+      lastBestValue = rmSc;
 
       // Have we found a "mate in x"?
       if (   Limits.mate

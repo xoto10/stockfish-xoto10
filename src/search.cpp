@@ -60,8 +60,10 @@ bool Search::prune_at_shallow_depth_on_pv_node = true;
 
 namespace {
 
-  int netbiases[1] = {-156}; // int32_t
-  int netweights[32] = {-19, -15, -78,  52, -19, 120, -119,  26,  33,  47, -45,  14,  18, -37, -25,  96, -45,  30,  38,  38, -16, -15,  18, -36, -12, -41, -15, -12, -25,  29, -16,  21};
+  int netbiases[1] = {-158};
+  int netweights[32] = {-24, -16, -75, 55, -17, 122, -118, 22, 32, 50, -34, 19, 15, -37, -20,
+                        97, -54, 30, 35, 41, -18, -20, 17, -30, -12, -37, -21, -10, -29, 28, -13, 17};
+  int adj[32] = {0, 0, 0, 0, 0, 0, 0, -1, -1, 0, -2, -1, 0, 0, 0, 0, 1, 0, -2, 0, 0, 0, -2, -2, 0, 0, 0, 0, 0, 0, -3, 1};
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV };
@@ -258,7 +260,7 @@ void MainThread::search() {
      ndim=Eval::NNUE::Network::kOutputDimensions * Eval::NNUE::Network::kPaddedInputDimensions;
      for (size_t i=0; i < ndim; ++i)
      {
-        Eval::NNUE::network->weights_[i] = netweights[i];
+        Eval::NNUE::network->weights_[i] = netweights[i] + adj[i];
      }
   }
 

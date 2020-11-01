@@ -321,6 +321,7 @@ ifeq ($(COMP),gcc)
 	comp=gcc
 	CXX=g++
 	CXXFLAGS += -pedantic -Wextra -Wshadow
+        LDFLAGS += -lstdc++fs
 
 	ifeq ($(arch),$(filter $(arch),armv7 armv8))
 		ifeq ($(OS),Android)

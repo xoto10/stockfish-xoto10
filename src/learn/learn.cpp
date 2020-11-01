@@ -41,7 +41,7 @@
 #include <climits>
 #include <cmath>    // std::exp(),std::pow(),std::log()
 #include <cstring>  // memcpy()
-#include <filesystem>
+#include <experimental/filesystem>
 #include <fstream>
 #include <iomanip>
 #include <limits>
@@ -1487,7 +1487,7 @@ namespace Learner
             cout << ".";
         };
 
-        std::filesystem::create_directory("tmp");
+        std::experimental::filesystem::create_directory("tmp");
 
         // Shuffle and export as a 10M phase shredded file.
         for (auto filename : filenames)
@@ -1837,7 +1837,7 @@ namespace Learner
         {
             string kif_base_dir = Path::Combine(base_dir, target_dir);
 
-            namespace sys = std::filesystem;
+            namespace sys = std::experimental::filesystem;
             sys::path p(kif_base_dir); // Origin of enumeration
             std::for_each(sys::directory_iterator(p), sys::directory_iterator(),
                 [&](const sys::path& path) {

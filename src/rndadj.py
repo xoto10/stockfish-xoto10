@@ -41,6 +41,6 @@ for j in range(3):
       f.write("%05d:OUT163:%s\n" % (netId, adj))
 
    with open('net_run.sh', 'a') as f:
-      f.write("./cute_1+0.07 500 nnrnd1a1 master 1 1 %s &\n" % (adj))
+      f.write("./cute_1+0.07adj 500 nnrnd1a master 1 1 %s %05d &\n" % (adj, netId))
 
 

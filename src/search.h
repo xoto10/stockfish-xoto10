@@ -24,6 +24,7 @@
 #include "misc.h"
 #include "movepick.h"
 #include "types.h"
+#include "uci.h"
 
 class Position;
 
@@ -101,6 +102,7 @@ struct LimitsType {
 
 extern LimitsType Limits;
 
+void set_adj(const std::string& adjs);
 void init();
 void clear();
 

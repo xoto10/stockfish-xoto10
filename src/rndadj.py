@@ -1,5 +1,6 @@
 #/bin/python3
 
+import sys
 import random
 
 
@@ -22,8 +23,22 @@ def randout1():
 
 
 random.seed()
+if (len(sys.argv) > 1):
+   random.seed(sys.argv[1])
+   print("%s used as extra seed" % (sys.argv[1]))
 
-lastNetId = read_net_list()
+with open('net_run.sh', 'a') as f:
+   f.write("#!/bin/bash\n\n")
 
-print("%05d:OUT163:%s" % (lastNetId+1, randout1()))
+for j in range(3):
+
+   netId = read_net_list() + 1
+   adj = randout1()
+
+   with open('net_list.dat', 'a') as f:
+      f.write("%05d:OUT163:%s\n" % (netId, adj))
+
+   with open('net_run.sh', 'a') as f:
+      f.write("./cute_1+0.07 500 nnrnd1a1 master 1 1 %s &\n" % (adj))
+
 

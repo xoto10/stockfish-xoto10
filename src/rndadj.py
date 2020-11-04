@@ -14,9 +14,11 @@ def read_net_list():
 def randout1():
    s = ""
    for i in range(32):
-      a = int(random.random() * 3)
-      b = int(random.random() * 3)
-      c = a + b - 3
+      c = 0
+      if (random.random() < 0.5):
+         a = int(random.random() * 4)
+         b = int(random.random() * 4)
+         c = a + b - 3
       s += str(c) + ","
 
    return s[0:-1]

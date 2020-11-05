@@ -21,6 +21,7 @@
 #include <cmath>
 #include <cstring>   // For std::memset
 #include <iostream>
+#include <fstream>
 #include <sstream>
 
 #include "evaluate.h"
@@ -59,15 +60,19 @@ using namespace Search;
 // Extra 999 digits to make bad net if setoption adj not used
 int adj[32] = {-1999, 0, 0, -3999, -1999, 0, 0, 0, -1, 0, 0, -1, -2, 0, -2, 0, 1, 0, -1, -2, 0, 0, 0, 0, 0, 0, 0, 0, -3, 0, 0, 0};
 
-void Search::set_adj(const std::string& adjs) {
+void Search::set_adj(const string& adjs) {
   std::stringstream ss(adjs);
   string a;
-//  sync_cout << "info string set_adj " << adjs << sync_endl;
+//  std::ofstream fil;
+
+//  fil.open("/home/mc/Data/sf/src/stockfish-xoto10/src/adj.out", std::ios::app);
+//  fil << "info string set_adj " << adjs << "\n";
   for (int i=0; i<32 && getline(ss, a, ','); ++i)
   {
     adj[i] = std::stoi(a);
-//    sync_cout << "info string adjx " << a << " adji " << adj[i] << sync_endl;
+//    fil << "info string adjx " << a << " adji " << adj[i] << "\n";
   }
+//  fil.close();
 }
 
 

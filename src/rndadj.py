@@ -11,7 +11,7 @@ def read_net_list():
          (netId, adjType, adjs, active, scores) = l.split(':')
          if (active):
             with open('net_run.sh', 'a') as fo:
-               fo.write("nohup ./cute_1+0.07adj 500 nnrnd1a master 1 1 %s %05d &\n" % (adjs, int(netId)))
+               fo.write("nohup ./cute_1+0.07adj 500 nnrnd1a master 1 1 %s nn-%05d &\n" % (adjs, int(netId)))
          
    return int(netId)
 
@@ -37,7 +37,7 @@ def new_adj(n, netId):
          f.write("%05d:OUT163:%s::0,0,0\n" % (netId, adjs))
 
       with open('net_run.sh', 'a') as f:
-         f.write("nohup ./cute_1+0.07adj 500 nnrnd1a master 1 1 %s %05d &\n" % (adjs, netId))
+         f.write("nohup ./cute_1+0.07adj 500 nnrnd1a master 1 1 %s nn-%05d &\n" % (adjs, netId))
 
 
 # seed
@@ -52,6 +52,6 @@ with open('net_run.sh', 'a') as f:
 
 # new net(s)
 netId = read_net_list()
-new_adj(1, netId)
+new_adj(2, netId)
 
 

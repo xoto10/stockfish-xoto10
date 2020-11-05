@@ -1,0 +1,56 @@
+#!/bin/bash
+
+
+# run cutechess
+export WD=$(pwd)
+export CD=/home/mc/Data/sf/cutechess-cli
+export day=$(date +%d)
+export seed=$(rn)
+export OUT=$(basename $0)_${7:-${2:-$day}}.out
+
+export BOOKDIR=/home/mc/Data/sf/books
+export BOOK="-openings file=$BOOKDIR/12openings.pgn format=pgn plies=16"
+export BOOK="-openings file=$BOOKDIR/french.pgn format=pgn plies=16"
+export BOOK="-openings file=$WD/8moves_v3.pgn format=pgn order=random plies=16"
+export BOOK="-openings file=../../../arenalinux_64bit_1.1/Books/2moves_v1.pgn format=pgn order=random plies=6"
+export BOOK="-openings file=$BOOKDIR/2moves_v1.pgn format=pgn order=random plies=6"
+export BOOK="-openings file=$BOOKDIR/noob_3moves.epd format=epd order=random plies=6"
+export BOOK="-openings file=$BOOKDIR/closedpos.epd format=epd order=random plies=6"
+
+export ADJUD=
+export ADJUD='-resign movecount=3 score=400 -draw movenumber=34 movecount=8 score=20'
+export ADJUD='-resign movecount=3 score=400 -draw movenumber=40 movecount=5 score=5'
+
+export DEBUG=-debug
+export DEBUG=
+# use these not $DEBUG :
+            #"option.Debug Log File=$WD/sf.log" \
+            #"option.Debug Log File=$WD/sfnew.log" \
+
+
+\rm "$OUT" 2>/dev/null
+
+( date
+  $CD/cutechess-cli \
+    -repeat -rounds ${1:-1} -games 2 \
+    -srand $seed \
+    $BOOK $ADJUD \
+    -ratinginterval 100 \
+    -pgnout cc_${day}.pgn \
+    -engine cmd=stockfish_${2:-new}   name=${2:-newfish} \
+            option.adjs=“$6“ \
+    -engine cmd=stockfish_${3:-master} name=${3:-master} \
+    -concurrency ${4:-1} \
+    -each tc=1+0.07 option.Threads=${5:-1} \
+          proto=uci option.Hash=4 \
+          "option.Move Overhead=50"
+  date
+) 2>&1 | tee -a "$OUT" |
+grep -F -e newfish -e "Elo diff" >cutenew.log
+
+
+#grep -F sf_master cute.out >cutemaster.log
+
+          #option.SyzygyPath=““ \
+          #"option.Minimum Thinking Time=5"
+

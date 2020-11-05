@@ -6,9 +6,13 @@ import random
 
 def read_net_list():
    netId = -1
-   with open('net_list.dat') as f:
-      for l in f:
-         (netId, adjType, adjs) = l.split(':')
+   with open('net_list.dat') as fi:
+      for l in fi:
+         (netId, adjType, adjs, active, scores) = l.split(':')
+         if (active):
+            with open('net_run.sh', 'a') as fo:
+               fo.write("nohup ./cute_1+0.07adj 500 nnrnd1a master 1 1 %s %05d &\n" % (adjs, int(netId)))
+         
    return int(netId)
 
 def randout1():
@@ -23,24 +27,31 @@ def randout1():
 
    return s[0:-1]
 
+def new_adj(n, netId):
+   for j in range(n):
 
+      netId = netId + 1
+      adjs = randout1()
+
+      with open('net_list.dat', 'a') as f:
+         f.write("%05d:OUT163:%s::0,0,0\n" % (netId, adjs))
+
+      with open('net_run.sh', 'a') as f:
+         f.write("nohup ./cute_1+0.07adj 500 nnrnd1a master 1 1 %s %05d &\n" % (adjs, netId))
+
+
+# seed
 random.seed()
 if (len(sys.argv) > 1):
    random.seed(sys.argv[1])
    print("%s used as extra seed" % (sys.argv[1]))
 
+# header
 with open('net_run.sh', 'a') as f:
    f.write("#!/bin/bash\n\n")
 
-for j in range(3):
-
-   netId = read_net_list() + 1
-   adj = randout1()
-
-   with open('net_list.dat', 'a') as f:
-      f.write("%05d:OUT163:%s\n" % (netId, adj))
-
-   with open('net_run.sh', 'a') as f:
-      f.write("nohup ./cute_1+0.07adj 500 nnrnd1a master 1 1 %s %05d &\n" % (adj, netId))
+# new net(s)
+netId = read_net_list()
+new_adj(1, netId)
 
 

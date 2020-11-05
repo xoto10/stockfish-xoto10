@@ -3,19 +3,14 @@
 
 # run cutechess
 export WD=$(pwd)
-export CD=/home/mc/Data/sf/cutechess-cli
+export CD=$HOME/Code/cutechess-cli
 export day=$(date +%d)
 export seed=$(rn)
 export OUT=$(basename $0)_${7:-${2:-$day}}.out
 
-export BOOKDIR=/home/mc/Data/sf/books
-export BOOK="-openings file=$BOOKDIR/12openings.pgn format=pgn plies=16"
-export BOOK="-openings file=$BOOKDIR/french.pgn format=pgn plies=16"
-export BOOK="-openings file=$WD/8moves_v3.pgn format=pgn order=random plies=16"
-export BOOK="-openings file=../../../arenalinux_64bit_1.1/Books/2moves_v1.pgn format=pgn order=random plies=6"
-export BOOK="-openings file=$BOOKDIR/2moves_v1.pgn format=pgn order=random plies=6"
-export BOOK="-openings file=$BOOKDIR/noob_3moves.epd format=epd order=random plies=6"
-export BOOK="-openings file=$BOOKDIR/closedpos.epd format=epd order=random plies=6"
+export BOOK=
+export BOOK="-openings file=$WD/2mv_v2.pgn format=pgn order=random plies=6"
+export BOOK="-openings file=$HOME/Data/chess/books/2moves_v1.pgn format=pgn order=random plies=6"
 
 export ADJUD=
 export ADJUD='-resign movecount=3 score=400 -draw movenumber=34 movecount=8 score=20'

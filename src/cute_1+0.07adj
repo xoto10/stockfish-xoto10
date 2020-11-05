@@ -33,7 +33,7 @@ export DEBUG=
     -ratinginterval 100 \
     -pgnout cc_${day}.pgn \
     -engine cmd=stockfish_${2:-new}   name=${2:-newfish} \
-            "option.adjs=$6" \
+            "option.Adj=$6" \
     -engine cmd=stockfish_${3:-master} name=${3:-master} \
     -concurrency ${4:-1} \
     -each tc=1+0.07 option.Threads=${5:-1} \

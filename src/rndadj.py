@@ -4,12 +4,16 @@ import sys
 import random
 
 
+numActive = 0
+
+
 def read_net_list():
    netId = -1
    with open('net_list.dat') as fi:
       for l in fi:
          (netId, adjType, adjs, active, scores) = l.split(':')
          if (active):
+            numActive = numActive + 1
             with open('net_run.sh', 'a') as fo:
                fo.write("nohup ./cute_1+0.07adj 500 nnrnd1a master 1 1 %s nn-%05d &\n" % (adjs, int(netId)))
          
@@ -52,6 +56,7 @@ with open('net_run.sh', 'a') as f:
 
 # new net(s)
 netId = read_net_list()
-new_adj(2, netId)
+new_adj(3, netId)
+print("Active nets: " + str(numActive) + " new nets: 3")
 
 

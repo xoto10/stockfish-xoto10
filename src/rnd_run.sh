@@ -16,7 +16,8 @@ do
    python3 rndadj.py
 
    out="none"
-   read -p "run cutechess tests? " ans
+#  read -p "run cutechess tests? " ans
+ans=y
    case "$ans" in
       [Yy])
          out=$(. ./net_run.sh 2>net_run.err)

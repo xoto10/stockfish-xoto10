@@ -51,7 +51,8 @@ if (len(sys.argv) > 1):
    print("%s used as extra seed" % (sys.argv[1]))
 
 # header
-with open('net_run.sh', 'a') as f:
+os.rename('net_run.sh', 'net_run_old.sh')
+with open('net_run.sh', 'w') as f:
    f.write("#!/bin/bash\n\n")
 
 # new net(s)

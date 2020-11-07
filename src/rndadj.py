@@ -41,7 +41,7 @@ def new_adj(n, netId):
          f.write("%05d:OUT163:%s::0,0,0\n" % (netId, adjs))
 
       with open('net_run.sh', 'a') as f:
-         f.write("nohup ./cute_1+0.07adj 500 nnrnd1a master 1 1 %s nn-%05d &\n" % (adjs, netId))
+         f.write("nohup ./cute_1+0.07adj 1000 nnrnd1a master 2 1 %s nn-%05d &\n" % (adjs, netId))
 
 
 # seed

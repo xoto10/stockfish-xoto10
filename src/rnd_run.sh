@@ -3,35 +3,40 @@
 # rnd_run.sh - add more randomised net args and run (mix of old and new nets)
 
 
-for i in 1 2 3
+# No jobs running allows wait to be used
+if [[ "$(jobs | wc -l)" != 0 ]] ; then
+   echo "There are already jobs running in this shell"
+   exit 1
+fi
+
+for i in 1 2 3 4 5
 do
 
-   # No jobs running allows wait to be used
-   if [[ "$(jobs | wc -l)" != 0 ]] ; then
-      echo "There are already jobs running in this shell"
-      exit 1
-   fi
+   out1=$(python3 rndadj.py 2>&1)
+   echo "rnds generated, out1=<
+$out1>"
 
 
-   python3 rndadj.py
-
-   out="none"
 #  read -p "run cutechess tests? " ans
+out2=
 ans=y
    case "$ans" in
       [Yy])
-         out=$(. ./net_run.sh 2>net_run.err)
+         out2=$(. ./net_run.sh)
          ;;
       *)
          exit 2
    esac
-   echo "tests started, out=<$out>"
 
-   # Wait for tests to finish and then update db
+   # Wait for tests to finish and then update db (use out2?)
 
+   echo "out2=<
+$out2>"
+   wait
+   wait
    wait
 
-   # use $out ...
+   # use $out1 ...
    #python3 results.py
 
 done

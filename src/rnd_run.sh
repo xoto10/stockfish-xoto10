@@ -32,9 +32,9 @@ ans=y
 
    echo "out2=<
 $out2>"
-   wait
-   wait
-   wait
+   wait; sleep 1
+   wait; sleep 1
+   wait; sleep 1
 
    # use $out1 ...
    #python3 results.py

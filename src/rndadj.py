@@ -5,10 +5,11 @@ import sys
 import random
 
 
-numActive = 0
+#global numActive
 
 
 def read_net_list():
+   global numActive
    netId = -1
    with open('net_list.dat') as fi:
       for l in fi:
@@ -57,8 +58,9 @@ with open('net_run.sh', 'w') as f:
    f.write("#!/bin/bash\n\n")
 
 # new net(s)
+numActive = 0
 netId = read_net_list()
-new_adj(3, netId)
+new_adj(3-numActive, netId)
 print("Active nets: " + str(numActive) + " new nets: 3")
 
 

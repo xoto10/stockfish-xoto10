@@ -9,7 +9,7 @@ if [[ "$(jobs | wc -l)" != 0 ]] ; then
    exit 1
 fi
 
-for i in 1 2 3 4 5
+for i in 1 2 3 4 5 6 7 8 9 10
 do
 
    out1=$(python3 rndadj.py 2>&1)
@@ -36,8 +36,11 @@ $out2>"
    wait; sleep 1
    wait; sleep 1
 
-   # use $out1 ...
-   #python3 results.py
+   # get run list from net_run.sh and parse results
+   nns=$(grep nn- net_run.sh | sed 's/.*nn-/nn-/
+                                    s/ [^ ]*$//')
+   echo "nns=<$nns>" nns2 $nns
+   python3 results.py $nns
 
 done
 

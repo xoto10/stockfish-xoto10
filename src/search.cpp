@@ -1018,6 +1018,7 @@ moves_loop: // When in check, search starts from here
 
       // Step 13. Pruning at shallow depth (~200 Elo)
       if (  !rootNode
+          && ss->ply != 2
           && pos.non_pawn_material(us)
           && bestValue > VALUE_TB_LOSS_IN_MAX_PLY)
       {
@@ -1073,7 +1074,7 @@ moves_loop: // When in check, search starts from here
       // result is lower than ttValue minus a margin, then we will extend the ttMove.
       if (    depth >= 7
           &&  move == ttMove
-          && !(ss->ply == 0 || ss->ply == 2)
+          && !rootNode
           && !excludedMove // Avoid recursive singular search
        /* &&  ttValue != VALUE_NONE Already implicit in the next condition */
           &&  abs(ttValue) < VALUE_KNOWN_WIN

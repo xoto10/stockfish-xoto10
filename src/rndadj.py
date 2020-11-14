@@ -21,7 +21,7 @@ def read_net_list():
 
    return int(netId)
 
-def randout1():
+def rnd_out163():
    s = ""
    for i in range(32):
       c = 0
@@ -37,7 +37,7 @@ def new_adj(n, netId):
    for j in range(n):
 
       netId = netId + 1
-      adjs = randout1()
+      adjs = rnd_out163()
 
       with open('net_list.dat', 'a') as f:
          f.write("%05d:OUT163:%s::0,0,0\n" % (netId, adjs))

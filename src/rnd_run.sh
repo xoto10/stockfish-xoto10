@@ -9,6 +9,12 @@ if [[ "$(jobs | wc -l)" != 0 ]] ; then
    exit 1
 fi
 
+# Clear tmp files
+\rm net_list.wk[12]
+touch net_list.wk[12]
+
+
+# Loop a few times
 for i in 1 2 3 4 5 6 7 8 9 10
 do
 

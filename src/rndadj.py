@@ -17,7 +17,7 @@ def read_net_list():
          if (active):
             numActive = numActive + 1
             with open('net_run.sh', 'a') as fo:
-               fo.write("nohup ./cute_1+0.07adj 500 nnrnd1a master 1 1 %s nn-%05d &\n" % (adjs, int(netId)))
+               fo.write("nohup ./cute_1+0.07adj 1000 nnrnd1a master 1 1 %s nn-%05d &\n" % (adjs, int(netId)))
 
    return int(netId)
 

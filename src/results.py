@@ -6,6 +6,7 @@
 import sys
 import re
 import shutil
+import subprocess
 
 
 def get_wld(a):
@@ -45,9 +46,11 @@ def update_list(a,w,l,d):
 
 
 
-#Score of nnrnd1a vs master: 9 - 4 - 10  [0.609] 23
+# Initialise work file .wk1 from .dat
 shutil.copy2('net_list.dat', 'net_list.wk1')
-# join -t : -a 1 net_list.dat net_list.wk2 -o 1.0,2.1,2.2 >net_list.wk1
+# subprocess.run(['join', '-t', ':', '-v', '1', '-o', '1.1,1.2,1.3,1.4,1.5', 'net_list.dat', 'net_list.wk2', '>>net_list.wk1'])
+
+# Process results for each arg given
 for a in sys.argv[1:]:
    print("Processing %s ..." % (a))
    (w,l,d) = get_wld(a)

@@ -18,6 +18,10 @@ touch net_list.wk[12]
 for i in 1 2 3 4 5 6 7 8 9 10
 do
 
+   if [[ -r "rnd_run.stop" ]] ; then
+      break
+   fi
+
    out1=$(python3 rndadj.py 2>&1)
    echo "rnds generated, out1=<
 $out1>"

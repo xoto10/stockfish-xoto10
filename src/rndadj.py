@@ -8,6 +8,10 @@ import random
 #global numActive
 
 
+def cute_cmd(adjs, netId):
+   return "nohup ./cute_1+0.07adj 1000 nnrnd1a master 3 1 %s nn-%05d &\n" % (adjs, netId)
+
+
 def read_net_list():
    global numActive
    netId = -1
@@ -17,7 +21,7 @@ def read_net_list():
          if (active):
             numActive = numActive + 1
             with open('net_run.sh', 'a') as fo:
-               fo.write("nohup ./cute_1+0.07adj 1000 nnrnd1a master 1 1 %s nn-%05d &\n" % (adjs, int(netId)))
+               fo.write(cute_cmd(adjs, int(netId)))
 
    return int(netId)
 
@@ -43,7 +47,7 @@ def new_adj(n, netId):
          f.write("%05d:OUT163:%s::0,0,0\n" % (netId, adjs))
 
       with open('net_run.sh', 'a') as f:
-         f.write("nohup ./cute_1+0.07adj 1000 nnrnd1a master 3 1 %s nn-%05d &\n" % (adjs, netId))
+         f.write(cute_cmd(adjs, netId))
 
 
 # seed

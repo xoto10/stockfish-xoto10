@@ -12,13 +12,13 @@ def cute_cmd(adjs, netId):
    return "nohup ./cute_1+0.07adj 1000 nnrnd1a master 3 1 %s nn-%05d &\n" % (adjs, netId)
 
 
-def read_net_list():
+def read_net_list(runNum):
    global numActive
    netId = -1
    with open('net_list.dat') as fi:
       for l in fi:
          (netId, adjType, adjs, active, scores) = l.split(':')
-         if (active):
+         if active and runNum == '1':
             numActive = numActive + 1
             with open('net_run.sh', 'a') as fo:
                fo.write(cute_cmd(adjs, int(netId)))
@@ -29,7 +29,7 @@ def rnd_out163():
    s = ""
    for i in range(32):
       c = 0
-      if (random.random() < 0.5):
+      if random.random() < 0.5:
          a = int(random.random() * 4)
          b = int(random.random() * 4)
          c = a + b - 3
@@ -52,9 +52,13 @@ def new_adj(n, netId):
 
 # seed
 random.seed()
-if (len(sys.argv) > 1):
+if len(sys.argv) > 1:
    random.seed(sys.argv[1])
    print("%s used as extra seed" % (sys.argv[1]))
+
+runNum = 0
+if len(sys.argv) > 2:
+   runNum = sys.argv[2]
 
 # header
 os.rename('net_run.sh', 'net_run_old.sh')
@@ -63,7 +67,7 @@ with open('net_run.sh', 'w') as f:
 
 # new net(s)
 numActive = 0
-netId = read_net_list()
+netId = read_net_list(runNum)
 new_adj(3-numActive, netId)
 print("Active nets: " + str(numActive) + " new nets: 3")
 

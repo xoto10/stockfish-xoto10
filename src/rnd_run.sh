@@ -23,7 +23,7 @@ do
    fi
 
    touch net_run.sh
-   out1=$(python3 rndadj.py 2>&1)
+   out1=$(python3 rndadj.py $(rn) $i 2>&1)
    echo "rnds generated, out1=<
 $out1>"
 

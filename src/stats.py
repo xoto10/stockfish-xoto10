@@ -19,7 +19,7 @@ def read_list(cond):
             if w+l+d > 0:
                if (   cond == 'a'
                    or (cond == 'g' and (w+d*0.5)/(w+l+d) >= 0.5 and float(d)/(w+l+d) >= 0.6)):
-                  print("%-102s%5.3f %5.3f" % (line, (w+d*0.5)/(w+l+d), float(d)/(w+l+d)))
+                  print("%-103s%5.3f %5.3f" % (line, (w+d*0.5)/(w+l+d), float(d)/(w+l+d)))
             else:
                print(line)
 

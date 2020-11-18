@@ -519,7 +519,7 @@ void Thread::search() {
               totBestMoveChanges += th->bestMoveChanges;
               th->bestMoveChanges = 0;
           }
-          double bestMoveInstability = 1 + 2 * totBestMoveChanges / Threads.size();
+          double bestMoveInstability = 1 + 4 * totBestMoveChanges / Threads.size();
           double totalTime = Time.optimum() * fallingEval * reduction * bestMoveInstability;
 
           // Cap used time in case of a single legal move for a better viewer experience in tournaments
@@ -1308,7 +1308,7 @@ moves_loop: // When in check, search starts from here
               // iteration. This information is used for time management: when
               // the best move changes frequently, we allocate some more time.
               if (moveCount > 1 && newDepth > 8)
-                  thisThread->bestMoveChanges += 2;
+                  ++thisThread->bestMoveChanges;
           }
           else
               // All other moves but the PV are set to the lowest value: this

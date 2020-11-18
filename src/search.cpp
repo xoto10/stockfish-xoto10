@@ -1308,7 +1308,7 @@ moves_loop: // When in check, search starts from here
               // iteration. This information is used for time management: when
               // the best move changes frequently, we allocate some more time.
               if (moveCount > 1 && newDepth > 8)
-                  thisThread->bestMoveChanges += 4;
+                  thisThread->bestMoveChanges += 2;
           }
           else
               // All other moves but the PV are set to the lowest value: this

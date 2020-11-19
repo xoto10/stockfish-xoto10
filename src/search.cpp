@@ -56,6 +56,11 @@ using namespace Search;
 
 namespace {
 
+int B[31] = { 20,  20,  20,  20,  20,  20,  20,  20,  20,  20,  20,  20,  20,  20,  20,
+              20,  20,  20,  20,  20,  20,  20,  20,  20,  20,  20,  20,  20,  20,  20,  20};
+int C = 32;
+TUNE(B, C);
+
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV };
 
@@ -519,7 +524,7 @@ void Thread::search() {
               totBestMoveChanges += th->bestMoveChanges;
               th->bestMoveChanges = 0;
           }
-          double bestMoveInstability = 1 + 2 * totBestMoveChanges / Threads.size();
+          double bestMoveInstability = 1 + totBestMoveChanges / 8 / Threads.size();
 
           double totalTime = Time.optimum() * fallingEval * reduction * bestMoveInstability;
 
@@ -1170,7 +1175,7 @@ moves_loop: // When in check, search starts from here
               r -= 2;
 
           // Increase reduction at root and non-PV nodes when the best move does not change frequently
-          if ((rootNode || !PvNode) && depth > 10 && thisThread->bestMoveChanges <= 2)
+          if ((rootNode || !PvNode) && depth > 10 && int(thisThread->bestMoveChanges) <= C)
               r++;
 
           if (moveCountPruning && !formerPv)
@@ -1309,7 +1314,7 @@ moves_loop: // When in check, search starts from here
               // iteration. This information is used for time management: when
               // the best move changes frequently, we allocate some more time.
               if (moveCount > 1)
-                  ++thisThread->bestMoveChanges;
+                  thisThread->bestMoveChanges += B[std::min(30, newDepth)];
           }
           else
               // All other moves but the PV are set to the lowest value: this

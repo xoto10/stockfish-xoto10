@@ -56,10 +56,9 @@ using namespace Search;
 
 namespace {
 
-int B[31] = { 20,  20,  20,  20,  20,  20,  20,  20,  20,  20,  20,  20,  20,  20,  20,
-              20,  20,  20,  20,  20,  20,  20,  20,  20,  20,  20,  20,  20,  20,  20,  20};
+int B = 20;
 int C = 32;
-TUNE(B, C);
+//TUNE(B, C);
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV };
@@ -1314,7 +1313,7 @@ moves_loop: // When in check, search starts from here
               // iteration. This information is used for time management: when
               // the best move changes frequently, we allocate some more time.
               if (moveCount > 1)
-                  thisThread->bestMoveChanges += B[std::min(30, newDepth)];
+                  thisThread->bestMoveChanges += B;
           }
           else
               // All other moves but the PV are set to the lowest value: this

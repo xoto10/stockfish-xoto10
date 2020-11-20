@@ -47,7 +47,7 @@ def update_list(a,w,l,d):
 
 
 # Initialise work file .wk1 from .dat
-shutil.copy2('net_list.dat', 'net_list.wk1')
+#shutil.copy2('net_list.dat', 'net_list.wk1')
 # subprocess.run(['join', '-t', ':', '-v', '1', '-o', '1.1,1.2,1.3,1.4,1.5', 'net_list.dat', 'net_list.wk2', '>>net_list.wk1'])
 
 # Process results for each arg given

@@ -13,6 +13,9 @@ fi
 \rm net_list.wk[12]
 touch net_list.wk[12]
 
+# Initialise work file .wk1 from .dat
+cp net_list.dat net_list.wk1
+
 
 # Loop a few times
 for i in 1 2 3 4 5 6 7 8 9 10

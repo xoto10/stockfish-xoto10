@@ -50,6 +50,9 @@ $out2>"
    wait; sleep 1
    wait; sleep 1
 
+   # Add extra lines to work file from main file
+   join -t : -v 1 -o 1.1,1.2,1.3,1.4,1.5 net_list.dt net_list.wk1 >>net_list.wk1
+
    # get run list from net_run.sh and parse results
    nns=$(grep nn- net_run.sh | sed 's/.*nn-/nn-/
                                     s/ [^ ]*$//')

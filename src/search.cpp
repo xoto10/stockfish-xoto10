@@ -56,8 +56,8 @@ using namespace Search;
 
 namespace {
 
-int B = 12;
-int C = 32;
+int B = 10;
+int C = 30;
 //TUNE(B, C);
 
   // Different node types, used as a template parameter

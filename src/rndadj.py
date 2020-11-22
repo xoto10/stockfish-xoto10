@@ -9,7 +9,7 @@ import random
 
 
 def cute_cmd(adjs, netId):
-   return "nohup ./cute_1+0.07adj 1000 nnrnd1a master 3 1 %s nn-%05d &\n" % (adjs, netId)
+   return "nohup ./cute_1+0.07adj 1000 nnrnd1a master 4 1 %s nn-%05d &\n" % (adjs, netId)
 
 
 def read_net_list(runNum):

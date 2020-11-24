@@ -10,7 +10,7 @@ import sys
 
 
 def read_list(cond):
-   with open('net_list.dat') as fi:
+   with open('net_list.wk1') as fi:
       for line in fi:
             nums = re.sub('.*:','',line)
             (a,b,c) = nums.split(',')

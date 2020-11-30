@@ -18,6 +18,7 @@ cp net_list.dat net_list.wk1
 
 
 # Loop a few times
+i=1
 while true
 do
 
@@ -58,6 +59,7 @@ $out2>"
                                     s/ [^ ]*$//')
    echo "nns=<$nns>" nns2 $nns
    python3 results.py $nns
+   i=2
 
 done
 

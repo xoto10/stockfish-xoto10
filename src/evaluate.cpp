@@ -1097,7 +1097,7 @@ Value Eval::evaluate(const Position& pos) {
                     - 4 * pos.rule50_count();
 
          Value nnue =  NNUE::evaluate(pos) * scale / 1024
-                     + pos.this_thread()->sct
+                     + (pos.side_to_move() == WHITE ? pos.this_thread()->sct : -pos.this_thread()->sct)
                      + Tempo;
 
          if (pos.is_chess960())

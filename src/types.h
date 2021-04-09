@@ -192,6 +192,7 @@ enum Value : int {
   RookValueMg   = 1276,  RookValueEg   = 1380,
   QueenValueMg  = 2538,  QueenValueEg  = 2682,
   Tempo = 28,
+  TempoNNUE = 36,
 
   MidgameLimit  = 15258, EndgameLimit  = 3915
 };

@@ -101,17 +101,20 @@ void TimeManagement::init(Search::LimitsType& limits, Color us, int ply) {
   // Scale from 100 -> 102,400 then clamp, ignoring higher end of possible range
   int strength = std::clamp( int(std::log(optimumTime * Threads.size() / 10) * 60), 1, 1024);
   // 10+0.1 to 60+0.6 gives roughly 19-24 for tempo
-  tempoNNUE = std::clamp( (strength + 408) / 30, 18, 30);
+  tempoNNUE = std::clamp( (strength + 648) / 40, 18, 30);
 //sync_cout << "info string strngth: "
 //          << " opt " << optimumTime
 //          << " ths " << Threads.size()
 //          << " log " << int(std::log(optimumTime * Threads.size() / 10) * 60)
 //          << " clmp " << std::clamp( int(std::log(optimumTime * Threads.size() / 10) * 60), 1, 1024)
-//          << " tmpo " << (strength + 408) / 30
+//          << " tmpo " << (strength + 648) / 40
 //          << sync_endl;
 
 //  252: 192 -> 20        16  (192+408)/30=20
 // 1800: 312 -> 24        26  (312+408)/30=24
+
+//  252: 192 -> 21        16  (192+648)/40=21
+// 1800: 312 -> 24        26  (312+648)/40=24
 
 // stc:  150-300?
 // ltc: 1360-2768 avg ~ 2200?

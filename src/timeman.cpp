@@ -97,10 +97,10 @@ void TimeManagement::init(Search::LimitsType& limits, Color us, int ply) {
   if (Stockfish::Search::Limits.use_time_management())
   {
       int strength = std::clamp( int(std::log(optimumTime * Threads.size() / 10) * 60), 1, 1024);
-      tempoNNUE = std::clamp( (strength + 264) / 24, 18, 30);
+      tempo = std::clamp( (strength + 264) / 24, 18, 30);
   }
   else
-      tempoNNUE = 28; // default for no time given
+      tempo = 28; // default for no time given
 
   if (Options["Ponder"])
       optimumTime += optimumTime / 4;

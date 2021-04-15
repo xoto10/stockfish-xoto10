@@ -195,8 +195,8 @@ namespace {
   constexpr Value NNUEThreshold1 =   Value(682);
   constexpr Value NNUEThreshold2 =   Value(176);
 
-  int nnueCurve[] = { 0, 0, 0, 0, 0 };
-TUNE(SetRange(-200,200), nnueCurve);
+  int NC[] = { 0, 0, 0, 0, 0 };
+TUNE(SetRange(-200,200), NC);
 
   // KingAttackWeights[PieceType] contains king attack weights by piece type
   constexpr int KingAttackWeights[PIECE_TYPE_NB] = { 0, 0, 81, 52, 44, 10 };
@@ -1100,11 +1100,11 @@ Value Eval::evaluate(const Position& pos) {
                     - 4 * pos.rule50_count();
 
          Value nnue = NNUE::evaluate(pos);
-         int inc =   abs(nnue) < 64 ? nnueCurve[0]
-                   : abs(nnue) < 128 ? nnueCurve[1]
-                   : abs(nnue) < 256 ? nnueCurve[2]
-                   : abs(nnue) < 512 ? nnueCurve[3]
-                                     : nnueCurve[4];
+         int inc =   abs(nnue) < 64 ? NC[0]
+                   : abs(nnue) < 128 ? NC[1]
+                   : abs(nnue) < 256 ? NC[2]
+                   : abs(nnue) < 512 ? NC[3]
+                                     : NC[4];
          nnue = nnue * (scale + inc) / 1024 + Tempo;
 
          if (pos.is_chess960())

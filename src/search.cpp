@@ -303,7 +303,7 @@ void Thread::search() {
   Move  lastBestMove = MOVE_NONE;
   Depth lastBestMoveDepth = 0;
   MainThread* mainThread = (this == Threads.main() ? Threads.main() : nullptr);
-  double timeReduction = 1, totBestMoveChanges = 0;
+  double timeReduction = 1, totBestMoveChanges = 0, totalTime = 0;
   Color us = rootPos.side_to_move();
   int iterIdx = 0;
 
@@ -522,7 +522,10 @@ void Thread::search() {
           }
           double bestMoveInstability = 1 + 2 * totBestMoveChanges / Threads.size();
 
-          double totalTime = Time.optimum() * fallingEval * reduction * bestMoveInstability;
+          if (totalTime > 0)
+              totalTime = (totalTime + Time.optimum() * fallingEval * reduction * bestMoveInstability) / 2;
+          else
+              totalTime = Time.optimum() * fallingEval * reduction * bestMoveInstability;
 
           // Cap used time in case of a single legal move for a better viewer experience in tournaments
           // yielding correct scores and sufficiently fast moves.

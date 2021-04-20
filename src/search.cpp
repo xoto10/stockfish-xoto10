@@ -522,29 +522,38 @@ void Thread::search() {
           }
           double bestMoveInstability = 1 + 2 * totBestMoveChanges / Threads.size();
 
-          double totalTime = Time.optimum() * fallingEval * reduction * bestMoveInstability;
+          double totalTime = 0.9 * Time.optimum() * fallingEval * reduction * bestMoveInstability;
 
           // Cap used time in case of a single legal move for a better viewer experience in tournaments
           // yielding correct scores and sufficiently fast moves.
           if (rootMoves.size() == 1)
               totalTime = std::min(500.0, totalTime);
 
-          // Stop the search if we have exceeded the totalTime
+          // Stop the search if we have exceeded the totalTime in 2 consecutive iterations
           if (Time.elapsed() > totalTime)
           {
-              // If we are allowed to ponder do not stop the search now but
-              // keep pondering until the GUI sends "ponderhit" or "stop".
-              if (mainThread->ponder)
-                  mainThread->stopOnPonderhit = true;
+              if (mainThread->prevTimeHit)
+              {
+                  // If we are allowed to ponder do not stop the search now but
+                  // keep pondering until the GUI sends "ponderhit" or "stop".
+                  if (mainThread->ponder)
+                      mainThread->stopOnPonderhit = true;
+                  else
+                      Threads.stop = true;
+              }
               else
-                  Threads.stop = true;
+                  mainThread->prevTimeHit = true;
           }
-          else if (   Threads.increaseDepth
-                   && !mainThread->ponder
-                   && Time.elapsed() > totalTime * 0.58)
-                   Threads.increaseDepth = false;
           else
-                   Threads.increaseDepth = true;
+          {
+              mainThread->prevTimeHit = false;
+              if (   Threads.increaseDepth
+                  && !mainThread->ponder
+                  && Time.elapsed() > totalTime * 0.58)
+                  Threads.increaseDepth = false;
+              else
+                  Threads.increaseDepth = true;
+          }
       }
 
       mainThread->iterValue[iterIdx] = bestValue;

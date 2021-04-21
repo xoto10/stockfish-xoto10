@@ -35,6 +35,13 @@ public:
   TimePoint maximum() const { return maximumTime; }
   TimePoint elapsed() const { return Search::Limits.npmsec ?
                                      TimePoint(Threads.nodes_searched()) : now() - startTime; }
+  void get_multipliers(int& fe1, int& fe2, int& fe3, int& fe4, int& fe5) {
+    fe1 = fallingEvalM1;
+    fe2 = fallingEvalM2;
+    fe3 = fallingEvalM3;
+    fe4 = fallingEvalM4;
+    fe5 = fallingEvalM5;
+  }
 
   int64_t availableNodes; // When in 'nodes as time' mode
 
@@ -42,6 +49,7 @@ private:
   TimePoint startTime;
   TimePoint optimumTime;
   TimePoint maximumTime;
+  int fallingEvalM1, fallingEvalM2, fallingEvalM3, fallingEvalM4, fallingEvalM5;
 };
 
 extern TimeManagement Time;

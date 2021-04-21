@@ -362,6 +362,10 @@ void Thread::search() {
           : Options["Analysis Contempt"] == "Black" && us == WHITE ? -ct
           : ct;
 
+  // Get time management constants
+  int fe1, fe2, fe3, fe4, fe5;
+  Time.get_multipliers(fe1, fe2, fe3, fe4, fe5);
+
   // Evaluation score is from the white point of view
   contempt = (us == WHITE ?  make_score(ct, ct / 2)
                           : -make_score(ct, ct / 2));
@@ -506,8 +510,11 @@ void Thread::search() {
           && !Threads.stop
           && !mainThread->stopOnPonderhit)
       {
-          double fallingEval = (318 + 6 * (mainThread->bestPreviousScore - bestValue)
-                                    + 6 * (mainThread->iterValue[iterIdx] - bestValue)) / 825.0;
+          // ltc: 89/87/367 111/307
+          double fallingEval = (3180 + fe1 * (mainThread->bestPreviousScore - bestValue)
+                                     + fe2 * (mainThread->iterValue[iterIdx] - bestValue)
+                                     + fe3 * std::clamp(int(-bestValue) - fe4, 0, fe5) / 256
+                               ) / 8250.0;
           fallingEval = std::clamp(fallingEval, 0.5, 1.5);
 
           // If the bestMove is stable over several iterations, reduce time accordingly

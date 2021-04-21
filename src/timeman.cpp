@@ -94,6 +94,22 @@ void TimeManagement::init(Search::LimitsType& limits, Color us, int ply) {
   optimumTime = TimePoint(optScale * timeLeft);
   maximumTime = TimePoint(std::min(0.8 * limits.time[us] - moveOverhead, maxScale * optimumTime));
 
+  int strength;
+  if (Stockfish::Search::Limits.use_time_management())
+      strength = std::clamp( int(std::log(optimumTime * Threads.size() / 10) * 60), 1, 1024);
+  else
+      strength = 312; // default for no time given ~= ltc (stc ~= 192)
+
+//        // ltc: 89/87/367 111/307
+//        double fallingEval = (3180 +  67 * (mainThread->bestPreviousScore - bestValue)
+//                                   +  71 * (mainThread->iterValue[iterIdx] - bestValue)
+//                                   + 450 * std::clamp(int(-bestValue) - 100, 0, 200) / 256
+  fallingEvalM1 = std::clamp( (strength + 174) *  11 /  60,  63,  93);
+  fallingEvalM2 = std::clamp( (strength + 341) *   2 /  15,  68,  90);
+  fallingEvalM3 = std::clamp( (843 - strength) *  83 / 120, 351, 465);
+  fallingEvalM4 = std::clamp( (strength + 899) *  11 / 120,  99, 112);
+  fallingEvalM5 = std::clamp( (strength +  33) * 107 / 120, 179, 328);
+
   if (Options["Ponder"])
       optimumTime += optimumTime / 4;
 }

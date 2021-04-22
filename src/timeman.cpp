@@ -103,11 +103,11 @@ void TimeManagement::init(Search::LimitsType& limits, Color us, int ply) {
 //        // ltc: 89/87/367 111/307
 //        // stc: 67/71/450 100/200
   int str = std::clamp(strength, 192, 312);
-  fallingEvalM1 = (str + 174) *  11 /  60;
-  fallingEvalM2 = (str + 341) *   2 /  15;
-  fallingEvalM3 = (843 - str) *  83 / 120;
-  fallingEvalM4 = (str + 899) *  11 / 120;
-  fallingEvalM5 = (str +  33) * 107 / 120;
+  fallingEvalM1 = (str + 174) *  23 / 128;
+  fallingEvalM2 = (str + 341) *  17 / 128;
+  fallingEvalM3 = (843 - str) *  89 / 128;
+  fallingEvalM4 = (str + 899) *  12 / 128;
+  fallingEvalM5 = (str +  33) * 114 / 128;
 
   if (Options["Ponder"])
       optimumTime += optimumTime / 4;

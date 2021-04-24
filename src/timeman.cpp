@@ -98,7 +98,7 @@ void TimeManagement::init(Search::LimitsType& limits, Color us, int ply) {
   int strength = -1;
   if (Stockfish::Search::Limits.use_time_management())
   {
-      strength = std::log( std::max(1ull, optimumTime * Threads.size() * knps / 20000)) * 60;
+      strength = std::log( std::max(1, int(optimumTime * Threads.size() * knps / 20000))) * 60;
       tempoNNUE = std::clamp( (strength + 264) / 24, 18, 30);
   }
   else

@@ -284,6 +284,12 @@ void MainThread::search() {
       std::cout << " ponder " << UCI::move(bestThread->rootMoves[0].pv[1], rootPos.is_chess960());
 
   std::cout << sync_endl;
+  int thElapsed = Threads.size() * Time.elapsed();
+  if (thElapsed)
+  {
+      Time.knps = (Time.knps + Threads.nodes_searched() / thElapsed) / 2;
+//    sync_cout << "info string knpsupd " << Time.knps << sync_endl;
+  }
 }
 
 

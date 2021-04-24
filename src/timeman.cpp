@@ -19,6 +19,7 @@
 #include <algorithm>
 #include <cfloat>
 #include <cmath>
+//#include <iostream>
 
 #include "search.h"
 #include "timeman.h"
@@ -93,6 +94,23 @@ void TimeManagement::init(Search::LimitsType& limits, Color us, int ply) {
   // Never use more than 80% of the available time for this move
   optimumTime = TimePoint(optScale * timeLeft);
   maximumTime = TimePoint(std::min(0.8 * limits.time[us] - moveOverhead, maxScale * optimumTime));
+
+  int strength = -1;
+  if (Stockfish::Search::Limits.use_time_management())
+  {
+      strength = std::log( std::max(1ull, optimumTime * Threads.size() * knps / 20000)) * 60;
+      tempoNNUE = std::clamp( (strength + 264) / 24, 18, 30);
+  }
+  else
+      tempoNNUE = 28; // default for no time given
+//sync_cout << "info string strngth:" << strength
+//          << " opt " << optimumTime
+//          << " knps " << knps
+//          << " ths " << Threads.size()
+//          << " log " << int(std::log(optimumTime * Threads.size() / 10) * 60)
+//          << " clmp " << std::clamp( int(std::log(optimumTime * Threads.size() / 10) * 60), 1, 1024)
+//          << " tmpo " << (strength + 264) / 24
+//          << sync_endl;
 
   if (Options["Ponder"])
       optimumTime += optimumTime / 4;

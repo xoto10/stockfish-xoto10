@@ -95,26 +95,22 @@ void TimeManagement::init(Search::LimitsType& limits, Color us, int ply) {
   optimumTime = TimePoint(optScale * timeLeft);
   maximumTime = TimePoint(std::min(0.8 * limits.time[us] - moveOverhead, maxScale * optimumTime));
 
-  // strength is set in range 1 to 1024 according to optimumTime and number of threads
-  // 240,000ms * 1024th ~= 250m
-  //     333ms *    1th ~= 333
-  // Scale from 100 -> 102,400 then clamp, ignoring higher end of possible range
-  int strength = std::clamp( int(std::log(optimumTime * Threads.size() / 10) * 60), 1, 1024);
-  // 10+0.1 to 60+0.6 gives roughly 19-24 for tempo
-  tempoNNUE = std::clamp( (strength + 264) / 24, 18, 30);
-//sync_cout << "info string strngth: "
-//          << " opt " << optimumTime
-//          << " ths " << Threads.size()
-//          << " log " << int(std::log(optimumTime * Threads.size() / 10) * 60)
-//          << " clmp " << std::clamp( int(std::log(optimumTime * Threads.size() / 10) * 60), 1, 1024)
-//          << " tmpo " << (strength + 264) / 24
-//          << sync_endl;
-
-//  252: 192 -> 19        16  (192+264)/24=19
-// 1800: 312 -> 24        26  (312+264)/24=24
-
-// stc:  150-300?
-// ltc: 1360-2768 avg ~ 2200?
+  int strengthOld = -1, strength = -1;
+  if (Stockfish::Search::Limits.use_time_management())
+  {
+      strengthOld = std::clamp( int(std::log(optimumTime * Threads.size() / 10) * 60), 1, 1024);
+      strength = std::log( std::max(1ull, optimumTime * Threads.size() / 10)) * 60;
+      tempoNNUE = std::clamp( (strength + 264) / 24, 18, 30);
+  }
+  else
+      tempoNNUE = 28; // default for no time given
+sync_cout << "info string strngth: " << strengthOld << " " << strength
+          << " opt " << optimumTime
+          << " ths " << Threads.size()
+          << " log " << int(std::log(optimumTime * Threads.size() / 10) * 60)
+          << " clmp " << std::clamp( int(std::log(optimumTime * Threads.size() / 10) * 60), 1, 1024)
+          << " tmpo " << (strength + 264) / 24
+          << sync_endl;
 
   if (Options["Ponder"])
       optimumTime += optimumTime / 4;

@@ -517,7 +517,7 @@ void Thread::search() {
           stableMove = lastBestMoveDepth + 9 < completedDepth;
           double reduction;
           if (stableMove)
-              reduction = mainThread->previousStableMove ? 0.800 : (bestValue < -100 ? 0.800 : 0.571);
+              reduction = mainThread->previousStableMove ? 0.800 : (bestValue < -100 ? 0.500 : 0.571);
           else
               reduction = mainThread->previousStableMove ? 1.037 : 0.740;
 

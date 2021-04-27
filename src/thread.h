@@ -88,7 +88,7 @@ struct MainThread : public Thread {
   void search() override;
   void check_time();
 
-  double previousStableMove;
+  bool previousStableMove;
   Value bestPreviousScore;
   Value iterValue[4];
   int callsCnt;

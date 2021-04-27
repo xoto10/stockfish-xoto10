@@ -519,7 +519,7 @@ void Thread::search() {
           if (stableMove)
               reduction = mainThread->previousStableMove ? 0.800 : 0.571; // - 0.071 * (bestValue < -100);
           else
-              reduction = mainThread->previousStableMove ? 1.037 : 0.740 - 0.080 * (bestValue < -100);
+              reduction = mainThread->previousStableMove ? 1.037 : 0.740 + 0.080 * (bestValue < -100);
 
           // Use part of the gained time from a previous stable move for the current move
           for (Thread* th : Threads)

@@ -98,7 +98,7 @@ void TimeManagement::init(Search::LimitsType& limits, Color us, int ply) {
   {
       int strength = std::log( std::max(1, int(optimumTime * Threads.size() / 10))) * 60;
       tempoNNUE = std::clamp( (strength + 264) / 24, 18, 30);
-      tempo     = std::clamp( (strength + 252) / 20, 18, 30);
+      tempo     = std::clamp( (strength -   4) * 11 / 120, 18, 30);
   }
   else
       tempoNNUE = tempo = 28; // defaults for no time given

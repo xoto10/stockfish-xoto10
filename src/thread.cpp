@@ -164,6 +164,7 @@ void ThreadPool::clear() {
   main()->bestPreviousScore = VALUE_INFINITE;
   for (int i=0; i<4; ++i)
       main()->stableAdjustment[i] = 1.0;
+  main()->moveIdx = 0;
 }
 
 

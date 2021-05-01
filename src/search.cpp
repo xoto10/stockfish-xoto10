@@ -536,7 +536,7 @@ void Thread::search() {
 //          << sync_endl;
               if (stable < 3.2)
               {
-                  thinkMore = 3.2 / stable;
+                  thinkMore = 3.5 / stable;
                   mainThread->stableAdjustment[mainThread->moveIdx] *= thinkMore;
               }
           }

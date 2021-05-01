@@ -523,15 +523,22 @@ void Thread::search() {
           }
           double bestMoveInstability = 1 + 2 * totBestMoveChanges / Threads.size();
 
-          double totalTime = Time.optimum() * fallingEval * reduction * bestMoveInstability;
+          double thinkMore = 1.0;
           mainThread->stableAdjustment[mainThread->moveIdx] = reduction * bestMoveInstability;
-          double stab = (  mainThread->stableAdjustment[0] + mainThread->stableAdjustment[1]
-                         + mainThread->stableAdjustment[2] + mainThread->stableAdjustment[3]);
-sync_cout << "info string stab " << stab
-          << " stadj0 " << mainThread->stableAdjustment[0]
-          << " stadj1 " << mainThread->stableAdjustment[1]
-          << " mvidx " << mainThread->moveIdx
-          << sync_endl;
+          double stable = (  mainThread->stableAdjustment[0] + mainThread->stableAdjustment[1]
+                           + mainThread->stableAdjustment[2] + mainThread->stableAdjustment[3]);
+//sync_cout << "info string stable " << stable
+//          << " stadj0 " << mainThread->stableAdjustment[0]
+//          << " stadj1 " << mainThread->stableAdjustment[1]
+//          << " mvidx " << mainThread->moveIdx
+//          << sync_endl;
+          if (stable < 3.2)
+          {
+              thinkMore = 3.2 / stable;
+              mainThread->stableAdjustment[mainThread->moveIdx] *= thinkMore;
+          }
+
+          double totalTime = Time.optimum() * fallingEval * reduction * bestMoveInstability * thinkMore;
 
           // Cap used time in case of a single legal move for a better viewer experience in tournaments
           // yielding correct scores and sufficiently fast moves.

@@ -525,7 +525,7 @@ void Thread::search() {
 
           double thinkMore = 1.0;
           mainThread->stableAdjustment[mainThread->moveIdx] = reduction * bestMoveInstability;
-          if (rootDepth > 10 && bestValue < -100)
+          if (rootDepth > 10 && bestValue < 0)
           {
               double stable = (  mainThread->stableAdjustment[0] + mainThread->stableAdjustment[1]
                                + mainThread->stableAdjustment[2] + mainThread->stableAdjustment[3]);

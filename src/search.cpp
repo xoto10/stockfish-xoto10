@@ -525,7 +525,7 @@ void Thread::search() {
 
           double thinkMore = 1.0;
           mainThread->stableAdjustment[mainThread->moveIdx] = reduction * bestMoveInstability;
-          if (rootDepth > 10 && bestValue < -100)
+          if (rootDepth > 10 && bestValue < -50)
           {
               double stable = (  mainThread->stableAdjustment[0] + mainThread->stableAdjustment[1]
                                + mainThread->stableAdjustment[2] + mainThread->stableAdjustment[3]);
@@ -534,9 +534,9 @@ void Thread::search() {
 //          << " stadj1 " << mainThread->stableAdjustment[1]
 //          << " mvidx " << mainThread->moveIdx
 //          << sync_endl;
-              if (stable < 3.2)
+              if (stable < 4.0)
               {
-                  thinkMore = 3.2 / stable;
+                  thinkMore = 4.0 / stable;
                   mainThread->stableAdjustment[mainThread->moveIdx] *= thinkMore;
               }
           }

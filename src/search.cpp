@@ -534,7 +534,7 @@ void Thread::search() {
 //          << " stadj1 " << mainThread->stableAdjustment[1]
 //          << " mvidx " << mainThread->moveIdx
 //          << sync_endl;
-              if (stable < 3.2)
+              if (stable < 3.6)
               {
                   thinkMore = 3.2 / stable;
                   mainThread->stableAdjustment[mainThread->moveIdx] *= thinkMore;

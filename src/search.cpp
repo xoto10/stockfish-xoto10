@@ -198,6 +198,8 @@ void Search::init() {
       Reductions[i] = int((21.3 + 2 * std::log(Threads.size())) * std::log(i + 0.25 * std::log(i)));
 }
 
+int B=-50, C=360, D=360, E=0;
+TUNE(C, D, SetRange(-150,50), B, SetRange(-360,360), E);
 
 /// Search::clear() resets search state to its initial value
 
@@ -524,14 +526,14 @@ void Thread::search() {
           double bestMoveInstability = 1 + 2 * totBestMoveChanges / Threads.size();
 
           double thinkMore = 1.0;
-          mainThread->stableAdjustment[mainThread->moveIdx] = fallingEval * reduction * bestMoveInstability;
-          if (rootDepth > 10 && bestValue < -50)
+          mainThread->stableAdjustment[mainThread->moveIdx] = reduction * bestMoveInstability;
+          if (rootDepth > 10 && bestValue < B)
           {
               double stable = (  mainThread->stableAdjustment[0] + mainThread->stableAdjustment[1]
                                + mainThread->stableAdjustment[2] + mainThread->stableAdjustment[3]);
-              if (stable < 2.0)
+              if (stable < C/100.0)
               {
-                  thinkMore = 2.0 / stable;
+                  thinkMore = D/100.0 / (E/100.0 + stable);
                   mainThread->stableAdjustment[mainThread->moveIdx] *= thinkMore;
               }
           }

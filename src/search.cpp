@@ -529,8 +529,8 @@ void Thread::search() {
           {
               double stable = (  mainThread->stableAdjustment[0] + mainThread->stableAdjustment[1]
                                + mainThread->stableAdjustment[2] + mainThread->stableAdjustment[3]);
-              if (stable < 3.5)
-                  thinkMore = 3.5 / stable;
+              if (stable < 3.6)
+                  thinkMore = 14.4 / (10.8 + stable);
           }
 
           double totalTime = Time.optimum() * fallingEval * reduction * bestMoveInstability * thinkMore;

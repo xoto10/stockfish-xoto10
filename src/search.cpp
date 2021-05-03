@@ -529,9 +529,9 @@ void Thread::search() {
           {
               double stable = (  mainThread->stableAdjustment[0] + mainThread->stableAdjustment[1]
                                + mainThread->stableAdjustment[2] + mainThread->stableAdjustment[3]);
-              if (stable < 3.0)
+              if (stable < 2.0)
               {
-                  thinkMore = 3.0 / stable;
+                  thinkMore = 2.0 / stable;
                   mainThread->stableAdjustment[mainThread->moveIdx] *= thinkMore;
               }
           }

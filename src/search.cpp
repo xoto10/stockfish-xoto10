@@ -524,14 +524,14 @@ void Thread::search() {
           double bestMoveInstability = 1 + 2 * totBestMoveChanges / Threads.size();
 
           double thinkMore = 1.0;
-          mainThread->stableAdjustment[mainThread->moveIdx] = fallingEval * reduction * bestMoveInstability;
-          if (rootDepth > 10 && bestValue < -50)
+          mainThread->stableAdjustment[mainThread->moveIdx] = reduction * bestMoveInstability;
+          if (rootDepth > 10 && bestValue < -70)
           {
               double stable = (  mainThread->stableAdjustment[0] + mainThread->stableAdjustment[1]
                                + mainThread->stableAdjustment[2] + mainThread->stableAdjustment[3]);
-              if (stable < 1.8)
+              if (stable < 3.18)
               {
-                  thinkMore = 1.8 / stable;
+                  thinkMore = 3.89 / (stable - 0.25);
                   mainThread->stableAdjustment[mainThread->moveIdx] *= thinkMore;
               }
           }

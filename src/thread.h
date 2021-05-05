@@ -91,7 +91,7 @@ struct MainThread : public Thread {
   double previousTimeReduction;
   Value bestPreviousScore;
   Value iterValue[4];
-  int callsCnt;
+  int callsCnt, stability;
   bool stopOnPonderhit;
   std::atomic_bool ponder;
 };

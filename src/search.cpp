@@ -522,7 +522,16 @@ void Thread::search() {
           }
           double bestMoveInstability = 1 + 2 * totBestMoveChanges / Threads.size();
 
-          double totalTime = Time.optimum() * fallingEval * reduction * bestMoveInstability;
+          double manyStable = 1.0;
+          if (bestMoveInstability < 1.05)
+          {
+              if (++mainThread->stability > 3)
+                  manyStable = 1.2;
+          }
+          else
+              mainThread->stability = 0;
+
+          double totalTime = Time.optimum() * fallingEval * reduction * bestMoveInstability * manyStable;
 
           // Cap used time in case of a single legal move for a better viewer experience in tournaments
           // yielding correct scores and sufficiently fast moves.

@@ -526,7 +526,7 @@ void Thread::search() {
           if (bestMoveInstability < 1.05)
           {
               if (++mainThread->stability > 3)
-                  manyStable = 1.2;
+                  manyStable = 1.1;
           }
           else
               mainThread->stability = 0;

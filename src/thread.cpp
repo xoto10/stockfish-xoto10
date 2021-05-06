@@ -162,7 +162,9 @@ void ThreadPool::clear() {
 
   main()->callsCnt = 0;
   main()->bestPreviousScore = VALUE_INFINITE;
-  main()->previousTimeReduction = 1.0;
+  for (int i=0; i<4; ++i)
+      main()->stableAdjustment[i] = 1.0;
+  main()->moveIdx = 0;
 }
 
 

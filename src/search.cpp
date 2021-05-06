@@ -273,6 +273,7 @@ void MainThread::search() {
       bestThread = Threads.get_best_thread();
 
   bestPreviousScore = bestThread->rootMoves[0].score;
+  moveIdx = (moveIdx + 1) & 3;
 
   // Send again PV info if we have a new best thread
   if (bestThread != this)
@@ -522,7 +523,17 @@ void Thread::search() {
           }
           double bestMoveInstability = 1 + 2 * totBestMoveChanges / Threads.size();
 
-          double totalTime = Time.optimum() * fallingEval * reduction * bestMoveInstability;
+          double veryStable = 1.0;
+          mainThread->stableAdjustment[mainThread->moveIdx] = bestMoveInstability;
+          if (rootDepth > 10) // && bestValue < -50)
+          {
+              double stable = (  mainThread->stableAdjustment[0] + mainThread->stableAdjustment[1]
+                               + mainThread->stableAdjustment[2] + mainThread->stableAdjustment[3]);
+              if (stable < 5.1)
+                  veryStable = 1.2;
+          }
+
+          double totalTime = Time.optimum() * fallingEval * reduction * bestMoveInstability * veryStable;
 
           // Cap used time in case of a single legal move for a better viewer experience in tournaments
           // yielding correct scores and sufficiently fast moves.

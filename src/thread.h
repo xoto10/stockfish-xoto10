@@ -89,9 +89,10 @@ struct MainThread : public Thread {
   void check_time();
 
   double previousTimeReduction;
+  double stableAdjustment[4];
   Value bestPreviousScore;
   Value iterValue[4];
-  int callsCnt;
+  int callsCnt, moveIdx;
   bool stopOnPonderhit;
   std::atomic_bool ponder;
 };

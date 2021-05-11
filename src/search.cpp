@@ -147,6 +147,25 @@ namespace {
 } // namespace
 
 
+/// Debug functions used mainly to collect run-time statistics
+static int64_t shits[2], smeans[2];
+
+void sdbg_hit_on(bool b) { ++shits[0]; if (b) ++shits[1]; }
+void sdbg_hit_on(bool c, bool b) { if (c) sdbg_hit_on(b); }
+void sdbg_mean_of(int v) { ++smeans[0]; smeans[1] += v; }
+
+void sdbg_print() {
+
+  if (shits[0])
+      sync_cout << "info string Total " << shits[0] << " Hits " << shits[1]
+           << " hit rate (%) " << 100 * shits[1] / shits[0] << sync_endl;
+
+  if (smeans[0])
+      sync_cout << "info string Total " << smeans[0] << " Mean "
+           << (double)smeans[1] / smeans[0] << sync_endl;
+}
+
+
 /// Search::init() is called at startup to initialize various lookup tables
 
 void Search::init() {
@@ -472,11 +491,18 @@ void Thread::search() {
           double reduction = (1.47 + mainThread->previousTimeReduction) / (2.32 * timeReduction);
 
           // Use part of the gained time from a previous stable move for the current move
+          int maxBestMoveChanges = 0;
           for (Thread* th : Threads)
           {
-              totBestMoveChanges += th->bestMoveChanges;
+              if (int(th->bestMoveChanges) > maxBestMoveChanges)
+                  maxBestMoveChanges = th->bestMoveChanges;
+//sync_cout << "info string thbmc " << th->bestMoveChanges << sync_endl;
               th->bestMoveChanges = 0;
           }
+          totBestMoveChanges += maxBestMoveChanges;
+//sync_cout << "info string tbmc " << totBestMoveChanges << sync_endl;
+//sdbg_mean_of(totBestMoveChanges );
+//sdbg_print();
           double bestMoveInstability = 1 + 2 * totBestMoveChanges / Threads.size();
 
           double totalTime = Time.optimum() * fallingEval * reduction * bestMoveInstability;
@@ -507,6 +533,7 @@ void Thread::search() {
       mainThread->iterValue[iterIdx] = bestValue;
       iterIdx = (iterIdx + 1) & 3;
   }
+sdbg_print();
 
   if (!mainThread)
       return;

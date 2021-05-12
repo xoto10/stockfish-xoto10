@@ -472,12 +472,22 @@ void Thread::search() {
           double reduction = (1.47 + mainThread->previousTimeReduction) / (2.32 * timeReduction);
 
           // Use part of the gained time from a previous stable move for the current move
+          unsigned minBestMoveChanges = MAX_PLY, maxBestMoveChanges = 0;
           for (Thread* th : Threads)
           {
-              totBestMoveChanges += th->bestMoveChanges;
+              unsigned thBmc = th->bestMoveChanges;
+              totBestMoveChanges += thBmc;
+              if (thBmc < minBestMoveChanges)
+                  minBestMoveChanges = thBmc;
+              if (thBmc > maxBestMoveChanges)
+                  maxBestMoveChanges = thBmc;
+//sync_cout << "info string thbmc " << th->bestMoveChanges << sync_endl;
               th->bestMoveChanges = 0;
           }
-          double bestMoveInstability = 1 + 2 * totBestMoveChanges / Threads.size();
+//sync_cout << "info string tbmc " << totBestMoveChanges << sync_endl;
+          double bestMoveInstability =   1
+                                       + 2    * totBestMoveChanges / Threads.size()
+                                       + 0.25 * (maxBestMoveChanges - minBestMoveChanges);
 
           double totalTime = Time.optimum() * fallingEval * reduction * bestMoveInstability;
 

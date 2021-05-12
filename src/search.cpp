@@ -475,14 +475,16 @@ void Thread::search() {
           unsigned minBestMoveChanges = MAX_PLY, maxBestMoveChanges = 0;
           for (Thread* th : Threads)
           {
-              if (th->bestMoveChanges < minBestMoveChanges)
-                  minBestMoveChanges = th->bestMoveChanges;
-              if (th->bestMoveChanges > maxBestMoveChanges)
-                  maxBestMoveChanges = th->bestMoveChanges;
+              unsigned thBmc = th->bestMoveChanges;
+              totBestMoveChanges += thBmc;
+              if (thBmc < minBestMoveChanges)
+                  minBestMoveChanges = thBmc;
+              if (thBmc > maxBestMoveChanges)
+                  maxBestMoveChanges = thBmc;
 //sync_cout << "info string thbmc " << th->bestMoveChanges << sync_endl;
               th->bestMoveChanges = 0;
           }
-          totBestMoveChanges += 2 * maxBestMoveChanges - minBestMoveChanges;
+          totBestMoveChanges += maxBestMoveChanges - minBestMoveChanges;
 //sync_cout << "info string tbmc " << totBestMoveChanges << sync_endl;
           double bestMoveInstability = 1 + 2 * totBestMoveChanges / Threads.size();
 

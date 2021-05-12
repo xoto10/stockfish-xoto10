@@ -486,7 +486,7 @@ void Thread::search() {
           }
           totBestMoveChanges += maxBestMoveChanges - minBestMoveChanges;
 //sync_cout << "info string tbmc " << totBestMoveChanges << sync_endl;
-          double bestMoveInstability = 1 + 2 * totBestMoveChanges / Threads.size();
+          double bestMoveInstability = 0.9 + 2 * totBestMoveChanges / Threads.size();
 
           double totalTime = Time.optimum() * fallingEval * reduction * bestMoveInstability;
 

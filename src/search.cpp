@@ -498,7 +498,7 @@ void Thread::search() {
           }
           else if (   Threads.increaseDepth
                    && !mainThread->ponder
-                   && totBestMoveChanges > 2.0
+                   && totBestMoveChanges < 2.0
                    && Time.elapsed() > totalTime * 0.58)
                    Threads.increaseDepth = false;
           else

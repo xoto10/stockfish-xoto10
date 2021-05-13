@@ -481,7 +481,7 @@ void Thread::search() {
           totBestMoveChanges += totThisTime;
           double bestMoveInstability =   1
                                        + 2   * totBestMoveChanges / Threads.size()
-                                       + 0.4 * (totThisTime % Threads.size() != 0);
+                                       + 0.8 * (totThisTime % Threads.size() != 0);
 
           double totalTime = Time.optimum() * fallingEval * reduction * bestMoveInstability;
 

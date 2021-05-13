@@ -1134,7 +1134,7 @@ Value Eval::evaluate(const Position& pos) {
 
          // dbg_mean_of(scale);
 
-         nnue = nnue * scale / 1024;
+         nnue = nnue * scale / 1024 + 2 * bucket;
 
          if (pos.is_chess960())
              nnue += fix_FRC(pos);

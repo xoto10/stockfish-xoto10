@@ -910,7 +910,7 @@ namespace {
                     + 37 * !pos.non_pawn_material()
                     -  2 * pos.count<ALL_PIECES>()
                     - 43 * almostUnwinnable
-                    - 92 ;
+                    - 72 ;
 
     Value mg = mg_value(score);
     Value eg = eg_value(score);

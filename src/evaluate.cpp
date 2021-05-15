@@ -907,10 +907,10 @@ namespace {
                     +  9 * outflanking
                     + 21 * pawnsOnBothFlanks
                     + 24 * infiltration
-                    + 37 * !pos.non_pawn_material()
+                    + 30 * !pos.non_pawn_material()
                     -  2 * pos.count<ALL_PIECES>()
                     - 43 * almostUnwinnable
-                    - 72 ;
+                    - 82 ;
 
     Value mg = mg_value(score);
     Value eg = eg_value(score);

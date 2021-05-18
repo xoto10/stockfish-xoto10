@@ -1132,15 +1132,14 @@ Value Eval::evaluate(const Position& pos) {
       Value psq = Value(abs(eg_value(pos.psq_score())));
       int   r50 = 16 + pos.rule50_count();
       bool  largePsq = psq * 16 > (NNUEThreshold1 + pos.non_pawn_material() / 64) * r50;
-      bool  classical = largePsq;
 
       // Use classical evaluation for really low piece endgames.
       // One critical case is the draw for bishop + A/H file pawn vs naked king.
       bool lowPieceEndgame =   pos.non_pawn_material() == BishopValueMg
                             || (pos.non_pawn_material() < 2 * RookValueMg && pos.count<PAWN>() < 2);
 
-      v = classical || lowPieceEndgame ? Evaluation<NO_TRACE>(pos).value()
-                                       : adjusted_NNUE();
+      v = largePsq || lowPieceEndgame ? Evaluation<NO_TRACE>(pos).value()
+                                      : adjusted_NNUE();
 
       // If the classical eval is small and imbalance large, use NNUE nevertheless.
       // For the case of opposite colored bishops, switch to NNUE eval with small

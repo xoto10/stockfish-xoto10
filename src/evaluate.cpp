@@ -901,8 +901,7 @@ namespace {
     bool infiltration =   rank_of(pos.square<KING>(WHITE)) > RANK_4
                        || rank_of(pos.square<KING>(BLACK)) < RANK_5;
 
-    int pc = pos.count<PAWN>();
-    int pawns = (-299 * pc*pc*pc + 7578 * pc*pc - 1692 * pc) / 4096 - 12;
+    int pawns = std::max(25 * pos.count<PAWN>() / 2 - 36, -13);
 
     // Compute the initiative bonus for the attacking side
     int complexity =   9 * pe->passed_count()
@@ -910,7 +909,7 @@ namespace {
                     +  9 * outflanking
                     + 21 * pawnsOnBothFlanks
                     + 24 * infiltration
-                    + 39 * !pos.non_pawn_material()
+                    + 40 * !pos.non_pawn_material()
                     -      pos.count<ALL_PIECES>()
                     - 43 * almostUnwinnable
                     -103 ;

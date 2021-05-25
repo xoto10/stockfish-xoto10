@@ -213,15 +213,6 @@ using namespace Trace;
 
 namespace {
 
-int A[5][5] = { { 23, 35, 83, 131, 179},
-                { -6,  6, 52, 102, 150},
-                {-14, -2, 46,  94, 142},
-                {-22,-10, 38,  86, 134},
-                {-30,-18, 30,  78, 126} };
-int B=82, C=140;
-auto f100 = [](int m){ return Range(m - 100, m + 100); };
-TUNE(SetRange(f100), A, B, C);
-
   // Threshold for lazy and space evaluation
   constexpr Value LazyThreshold1    =  Value(1565);
   constexpr Value LazyThreshold2    =  Value(1102);
@@ -919,14 +910,16 @@ TUNE(SetRange(f100), A, B, C);
     int npc = (1 + pos.count<ALL_PIECES>() - pos.count<PAWN>()) / 4;
     int complexity =   9 * pe->passed_count()
 //                  + 12 * pos.count<PAWN>()
-                    +  C * ((3 + pos.count<PAWN>()) % 4) * (pos.count<PAWN>() > 0) / 10
+                    +134 * ((3 + pos.count<PAWN>()) % 4) * (pos.count<PAWN>() > 0) / 10
                     +  9 * outflanking
                     + 21 * pawnsOnBothFlanks
                     + 24 * infiltration
 //                  + 51 * !pos.non_pawn_material()
-                    +      A[npc][pc]
+//                  +      A[npc][pc]
+                    +      856*pc*pc/4096 - 16*pc - 45
+                    +      162*npc*npc*npc/4096 - 5652*npc*npc/4096 + 13*npc + 19
                     - 43 * almostUnwinnable
-                    -  B ;
+                    -101 ;
 
     Value mg = mg_value(score);
     Value eg = eg_value(score);

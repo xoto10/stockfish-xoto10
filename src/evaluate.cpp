@@ -910,11 +910,11 @@ namespace {
     int npc = (1 + pos.count<ALL_PIECES>() - pos.count<PAWN>()) / 4;
     int complexity =   9 * pe->passed_count()
 //                  + 12 * pos.count<PAWN>()
-                    +134 * ((3 + pos.count<PAWN>()) % 4) * (pos.count<PAWN>() > 0) / 10
+//                  +134 * ((3 + pos.count<PAWN>()) % 4) * (pos.count<PAWN>() > 0) / 10
                     +  9 * outflanking
                     + 21 * pawnsOnBothFlanks
                     + 24 * infiltration
-                    + 45 * !pos.non_pawn_material()
+                    + 51 * !pos.non_pawn_material()
 //                  +      A[npc][pc]
                     +      856*pc*pc/4096 - 16*pc - 45
                     +      162*npc*npc*npc/4096 - 5652*npc*npc/4096 + 13*npc + 19

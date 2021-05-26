@@ -908,7 +908,7 @@ namespace {
     int pc = pos.count<PAWN>();
     int npc = pos.count<ALL_PIECES>() - pos.count<PAWN>();
     int material =  std::max(-11, 13 * pc - 27)
-                  + (-1511 * npc + 24576) * npc / 4096 + 32
+                  + (-1511 * npc + 24576) * npc / 4096
                   + 61 * !pos.non_pawn_material();
 
     // Compute the initiative bonus for the attacking side
@@ -918,7 +918,7 @@ namespace {
                     + 24 * infiltration
                     +      material
                     - 43 * almostUnwinnable
-                    -101 ;
+                    - 65 ;
 
     Value mg = mg_value(score);
     Value eg = eg_value(score);

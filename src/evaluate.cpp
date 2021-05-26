@@ -907,7 +907,7 @@ namespace {
 
     int pc = (3 + pos.count<PAWN>()) / 4;
     int npc = (1 + pos.count<ALL_PIECES>() - pos.count<PAWN>()) / 4;
-    int material =  std::max(-11, 856 * pc * pc / 4096 - 16 * pc - 45)
+    int material =  std::max(-11, 13 * pc - 35)
                   + 162 * npc * npc * npc / 4096 - 5652 * npc * npc / 4096 + 13 * npc + 19
                   + 74 * !pos.non_pawn_material();
 

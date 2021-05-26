@@ -213,6 +213,9 @@ using namespace Trace;
 
 namespace {
 
+int A=-11, B=13, C=27, D=-1511, E=24576, F=61, G=73;
+TUNE(A, B, C, D, E, F, G);
+
   // Threshold for lazy and space evaluation
   constexpr Value LazyThreshold1    =  Value(1565);
   constexpr Value LazyThreshold2    =  Value(1102);
@@ -906,15 +909,20 @@ namespace {
     bool infiltration =   rank_of(pos.square<KING>(WHITE)) > RANK_4
                        || rank_of(pos.square<KING>(BLACK)) < RANK_5;
 
+    int pc = pos.count<PAWN>();
+    int npc = pos.count<ALL_PIECES>() - pos.count<PAWN>();
+    int material =  std::max(A, B * pc - C)
+                  + (D * npc + E) * npc / 4096
+                  + F * !pos.non_pawn_material();
+
     // Compute the initiative bonus for the attacking side
     int complexity =   9 * pe->passed_count()
-                    + 12 * pos.count<PAWN>()
                     +  9 * outflanking
                     + 21 * pawnsOnBothFlanks
                     + 24 * infiltration
-                    + 51 * !pos.non_pawn_material()
+                    +      material
                     - 43 * almostUnwinnable
-                    -110 ;
+                    -  G ;
 
     Value mg = mg_value(score);
     Value eg = eg_value(score);

@@ -907,9 +907,9 @@ namespace {
 
     int pc = pos.count<PAWN>();
     int npc = pos.count<ALL_PIECES>() - pos.count<PAWN>();
-    int material =  std::max(-11, 13 * pc - 35)
+    int material =  std::max(-11, 13 * pc - 31)
                   + (-1511 * npc + 24576) * npc / 4096 + 32
-                  + 69 * !pos.non_pawn_material();
+                  + 61 * !pos.non_pawn_material();
 
     // Compute the initiative bonus for the attacking side
     int complexity =   9 * pe->passed_count()

@@ -166,8 +166,8 @@ namespace Stockfish::Eval::NNUE {
     {
       const auto output = network[bucket]->propagate(transformedFeatures, buffer);
 
-      int materialist = psqt;
-      int positional  = output[0];
+      int materialist = psqt < 0 ? psqt * 17 / 16 : psqt;
+      int positional  = output[0] < 0 ? output[0] * 17 / 16 : output[0];
 
       int delta_npm = abs(pos.non_pawn_material(WHITE) - pos.non_pawn_material(BLACK));
       int entertainment = (adjusted && delta_npm <= BishopValueMg - KnightValueMg ? 7 : 0);

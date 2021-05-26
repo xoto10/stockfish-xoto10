@@ -969,7 +969,7 @@ namespace {
         // Reduce scale factor in case of pawns being on a single flank
         sf -= 4 * !pawnsOnBothFlanks;
 
-        sf += outflanking + 5;
+        sf -= 4 * almostUnwinnable;
     }
 
     // Interpolate between the middlegame and (scaled by 'sf') endgame score

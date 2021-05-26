@@ -918,7 +918,7 @@ namespace {
                     + 24 * infiltration
                     +      material
                     - 43 * almostUnwinnable
-                    - 65 ;
+                    - 73 ;
 
     Value mg = mg_value(score);
     Value eg = eg_value(score);

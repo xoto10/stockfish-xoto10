@@ -31,6 +31,10 @@
 
 namespace Stockfish::Eval::NNUE {
 
+int M[2][2] = { { 256, 256 }, { 256, 256 } };
+int P[2][2] = { { 256, 256 }, { 256, 256 } };
+TUNE(M, P);
+
   // Input feature converter
   LargePagePtr<FeatureTransformer> featureTransformer;
 
@@ -168,6 +172,10 @@ namespace Stockfish::Eval::NNUE {
 
       int materialist = psqt;
       int positional  = output[0];
+
+      bool matBig = abs(materialist) > 5000, posBig = abs(positional) > 5000;
+      materialist = materialist * M[matBig][posBig] / 256;
+      positional = positional * P[matBig][posBig] / 256;
 
       int delta_npm = abs(pos.non_pawn_material(WHITE) - pos.non_pawn_material(BLACK));
       int entertainment = (adjusted && delta_npm <= BishopValueMg - KnightValueMg ? 7 : 0);

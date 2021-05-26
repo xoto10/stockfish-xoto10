@@ -905,8 +905,8 @@ namespace {
     bool infiltration =   rank_of(pos.square<KING>(WHITE)) > RANK_4
                        || rank_of(pos.square<KING>(BLACK)) < RANK_5;
 
-    int pc = (3 + pos.count<PAWN>()) / 4;
-    int npc = (1 + pos.count<ALL_PIECES>() - pos.count<PAWN>()) / 4;
+    int pc = pos.count<PAWN>();
+    int npc = pos.count<ALL_PIECES>() - pos.count<PAWN>();
     int material =  std::max(-11, 13 * pc - 35)
                   - 1511 * npc * npc / 4096 + 6 * npc + 32
                   + 61 * !pos.non_pawn_material();

@@ -170,6 +170,9 @@ namespace Stockfish::Eval::NNUE {
     int A = 128 - entertainment;
     int B = 128 + entertainment;
 
+    if (abs(materialist) < 5000 && abs(positional) > 5000)
+      A -= 5, B += 13;
+
     int sum = (A * materialist + B * positional) / 128;
 
     return static_cast<Value>( sum / OutputScale );

@@ -31,8 +31,8 @@
 
 namespace Stockfish::Eval::NNUE {
 
-int C[4] = { 0, 0, 0, 0 };
-TUNE(SetRange(-100, 100), C);
+int C[4] = { -80, -64, 80, 64 };
+//TUNE(SetRange(-100, 100), C);
 
   // Input feature converter
   LargePagePtr<FeatureTransformer> featureTransformer;
@@ -169,10 +169,10 @@ TUNE(SetRange(-100, 100), C);
 
     // Adjust positional according to values
     if (materialist + positional < 8000)
-      positional = positional * (128 + C[0] * positional / 2048
-                                     + C[1] * positional * positional * positional / (65536l * 32768l)
-                                     + C[2] * materialist / 2048
-                                     + C[3] * materialist * materialist * materialist / (65536l * 32768l))
+      positional = positional * (128 + C[0] * positional / 65536
+                                     + C[1] * positional * positional * positional / (65536l * 65536l * 16)
+                                     + C[2] * materialist / 65536
+                                     + C[3] * materialist * materialist * materialist / (65536l * 65536l * 16))
                                 / 128;
 
     int delta_npm = abs(pos.non_pawn_material(WHITE) - pos.non_pawn_material(BLACK));

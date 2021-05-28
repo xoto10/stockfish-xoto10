@@ -170,8 +170,12 @@ namespace Stockfish::Eval::NNUE {
     int A = 128 - entertainment;
     int B = 128 + entertainment;
 
-    if (abs(materialist) < 5000 && abs(positional) > 5000)
-      A -= 5, B += 13;
+    if (abs(materialist) > 5000)
+      A += 10;
+    else if (abs(positional) > 5000)
+      A -= 12, B += 22;
+    else
+      A += 13, B += 21;
 
     int sum = (A * materialist + B * positional) / 128;
 

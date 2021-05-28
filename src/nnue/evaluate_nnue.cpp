@@ -173,9 +173,7 @@ namespace Stockfish::Eval::NNUE {
     if (abs(materialist) > 5000)
       A += 10;
     else if (abs(positional) > 5000)
-      A -= 12, B += 22;
-    else
-      B += 8;
+      B += 10;
 
     int sum = (A * materialist + B * positional) / 128;
 

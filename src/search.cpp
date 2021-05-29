@@ -480,6 +480,10 @@ void Thread::search() {
           double bestMoveInstability = 1 + 2 * totBestMoveChanges / Threads.size();
 
           double totalTime = Time.optimum() * fallingEval * reduction * bestMoveInstability;
+if (rootDepth > 10) {
+  sync_cout << "info string fe " << fallingEval << " red " << reduction << " bmi " << bestMoveInstability
+            << sync_endl;
+}
 
           // Cap used time in case of a single legal move for a better viewer experience in tournaments
           // yielding correct scores and sufficiently fast moves.

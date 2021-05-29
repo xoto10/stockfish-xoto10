@@ -163,12 +163,19 @@ namespace Stockfish::Eval::NNUE {
 
     int materialist = psqt;
     int positional  = output[0];
+    int A = 128, B = 128;
 
-    int delta_npm = abs(pos.non_pawn_material(WHITE) - pos.non_pawn_material(BLACK));
-    int entertainment = (adjusted && delta_npm <= BishopValueMg - KnightValueMg ? 7 : 0);
+    if (adjusted)
+    {
+      int delta_npm = abs(pos.non_pawn_material(WHITE) - pos.non_pawn_material(BLACK));
+      int entertainment = (delta_npm <= BishopValueMg - KnightValueMg ? 7 : 0);
 
-    int A = 128 - entertainment;
-    int B = 128 + entertainment;
+      if (shift<NORTH>(pos.pieces(WHITE, PAWN)) & pos.pieces(BLACK, PAWN) & CenterFiles)
+        entertainment += 10;
+
+      A -= entertainment;
+      B += entertainment;
+    }
 
     int sum = (A * materialist + B * positional) / 128;
 

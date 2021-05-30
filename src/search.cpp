@@ -146,7 +146,7 @@ namespace {
 
 } // namespace
 
-int A=140, B=100;
+int A=120, B=100;
 TUNE(B, SetRange(100,180), A);
 
 /// Search::init() is called at startup to initialize various lookup tables

@@ -63,6 +63,7 @@ namespace {
 
   constexpr uint64_t TtHitAverageWindow     = 4096;
   constexpr uint64_t TtHitAverageResolution = 1024;
+  constexpr Value    NNUEThreshold1         = Value(800);
 
   // Futility margin
   Value futility_margin(Depth d, bool improving) {
@@ -324,6 +325,10 @@ void Thread::search() {
                           : -make_score(ct, ct / 2));
 
   int searchAgainCounter = 0;
+
+  Value psq = Value(abs(eg_value(rootPos.psq_score())));
+  int   r50 = 16 + rootPos.rule50_count();
+  useNNUE = Eval::useNNUE && psq * 16 <= (NNUEThreshold1 + rootPos.non_pawn_material() / 64) * r50;
 
   // Iterative deepening loop until requested to stop or the target depth is reached
   while (   ++rootDepth < MAX_PLY

@@ -480,7 +480,7 @@ void Thread::search() {
               totBestMoveChanges += th->bestMoveChanges;
               th->bestMoveChanges = 0;
           }
-          double bestMoveInstability = 1.10 + std::max(1.0, 2.5 - 8.0 / rootDepth)
+          double bestMoveInstability = 1.10 + std::max(1.0, 2.5 - 12.0 / rootDepth)
                                               * totBestMoveChanges / Threads.size();
           double totalTime = Time.optimum() * fallingEval * reduction * bestMoveInstability;
 

@@ -147,7 +147,7 @@ namespace {
 } // namespace
 
 
-int A=228, B=200, C=200;
+int A=220, B=250, C=200;
 TUNE(A, B, C);
 
 

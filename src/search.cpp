@@ -474,7 +474,7 @@ void Thread::search() {
           timeReduction = lastBestMoveDepth + 9 < completedDepth ? 1.92 : 0.95;
           double extra = 0;
           if (bestValue < -50 && mainThread->previousTimeReduction + timeReduction > 3.5)
-              extra = 1.70;
+              extra = 2.00;
           double reduction = (1.47 + mainThread->previousTimeReduction + extra) / (2.32 * timeReduction);
 
           // Use part of the gained time from a previous stable move for the current move

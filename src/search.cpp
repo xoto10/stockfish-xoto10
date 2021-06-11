@@ -146,6 +146,8 @@ namespace {
 
 } // namespace
 
+int A=318, B=300, C=300, D=275, E=240, F=167, G=192, H=190, I=294, J=232, K=292, L=225, M=198;
+TUNE(A, B, C, D, E, F, G, H, I, J, K, L, M);
 
 /// Search::init() is called at startup to initialize various lookup tables
 
@@ -467,21 +469,21 @@ void Thread::search() {
           && !Threads.stop
           && !mainThread->stopOnPonderhit)
       {
-          double fallingEval = (318 + 6 * (mainThread->bestPreviousScore - bestValue)
-                                    + 6 * (mainThread->iterValue[iterIdx] - bestValue)) / 825.0;
+          double fallingEval = (A*10+ (B/5) * (mainThread->bestPreviousScore - bestValue)
+                                    + (C/5) * (mainThread->iterValue[iterIdx] - bestValue)) / (D*30.0);
           fallingEval = std::clamp(fallingEval, 0.5, 1.5);
 
           if ( mainThread->bestPreviousScore2 <= mainThread->bestPreviousScore)
           {
               if (mainThread->bestPreviousScore > bestValue)
-                  fallingEval *= 1.50;
+                  fallingEval *= E/200.0;
           }
           else if (mainThread->bestPreviousScore < bestValue)
-              fallingEval *= 0.67;
+              fallingEval *= F/200.0;
 
           // If the bestMove is stable over several iterations, reduce time accordingly
-          timeReduction = lastBestMoveDepth + 9 < completedDepth ? 1.92 : 0.95;
-          double stabilityChange = (1.47 + mainThread->previousTimeReduction) / (2.32 * timeReduction);
+          timeReduction = lastBestMoveDepth + 9 < completedDepth ? G/100.0 : H/200.0;
+          double stabilityChange = (I/200.0 + mainThread->previousTimeReduction) / (J/100.0 * timeReduction);
 
           // Use part of the gained time from a previous stable move for the current move
           for (Thread* th : Threads)
@@ -489,7 +491,7 @@ void Thread::search() {
               totBestMoveChanges += th->bestMoveChanges;
               th->bestMoveChanges = 0;
           }
-          double bestMoveInstability = 1.073 + std::max(1.0, 2.25 - 9.9 / rootDepth)
+          double bestMoveInstability = (1.0+K/4000.0) + std::max(1.0, L/100.0 - (M/20.0) / rootDepth)
                                               * totBestMoveChanges / Threads.size();
           double totalTime = Time.optimum() * fallingEval * stabilityChange * bestMoveInstability;
 

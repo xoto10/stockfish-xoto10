@@ -229,6 +229,7 @@ void MainThread::search() {
       && rootMoves[0].pv[0] != MOVE_NONE)
       bestThread = Threads.get_best_thread();
 
+  bestPreviousScore2 = bestPreviousScore;
   bestPreviousScore = bestThread->rootMoves[0].score;
 
   // Send again PV info if we have a new best thread
@@ -466,7 +467,11 @@ void Thread::search() {
           && !Threads.stop
           && !mainThread->stopOnPonderhit)
       {
-          double fallingEval = (318 + 6 * (mainThread->bestPreviousScore - bestValue)
+          int extra = 0;
+          if (   mainThread->bestPreviousScore2 <= mainThread->bestPreviousScore
+              && mainThread->bestPreviousScore > bestValue)
+              extra = 4;
+          double fallingEval = (318 + (5 + extra) * (mainThread->bestPreviousScore - bestValue)
                                     + 6 * (mainThread->iterValue[iterIdx] - bestValue)) / 825.0;
           fallingEval = std::clamp(fallingEval, 0.5, 1.5);
 

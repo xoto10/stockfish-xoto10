@@ -467,17 +467,21 @@ void Thread::search() {
           && !Threads.stop
           && !mainThread->stopOnPonderhit)
       {
-          int extra = 0;
-          if (   mainThread->bestPreviousScore2 <= mainThread->bestPreviousScore
-              && mainThread->bestPreviousScore > bestValue)
-              extra = 4;
-          double fallingEval = (318 + (4 + extra) * (mainThread->bestPreviousScore - bestValue)
+          double fallingEval = (318 + 6 * (mainThread->bestPreviousScore - bestValue)
                                     + 6 * (mainThread->iterValue[iterIdx] - bestValue)) / 825.0;
           fallingEval = std::clamp(fallingEval, 0.5, 1.5);
 
+          if ( mainThread->bestPreviousScore2 <= mainThread->bestPreviousScore)
+          {
+              if (mainThread->bestPreviousScore > bestValue)
+                  fallingEval *= 1.1;
+          }
+          else if (mainThread->bestPreviousScore < bestValue)
+              fallingEval *= 0.9;
+
           // If the bestMove is stable over several iterations, reduce time accordingly
           timeReduction = lastBestMoveDepth + 9 < completedDepth ? 1.92 : 0.95;
-          double reduction = (1.47 + mainThread->previousTimeReduction) / (2.32 * timeReduction);
+          double stabilityChange = (1.47 + mainThread->previousTimeReduction) / (2.32 * timeReduction);
 
           // Use part of the gained time from a previous stable move for the current move
           for (Thread* th : Threads)
@@ -487,7 +491,7 @@ void Thread::search() {
           }
           double bestMoveInstability = 1.073 + std::max(1.0, 2.25 - 9.9 / rootDepth)
                                               * totBestMoveChanges / Threads.size();
-          double totalTime = Time.optimum() * fallingEval * reduction * bestMoveInstability;
+          double totalTime = Time.optimum() * fallingEval * stabilityChange * bestMoveInstability;
 
           // Cap used time in case of a single legal move for a better viewer experience in tournaments
           // yielding correct scores and sufficiently fast moves.

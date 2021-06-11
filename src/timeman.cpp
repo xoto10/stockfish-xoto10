@@ -34,7 +34,7 @@ TimeManagement Time; // Our global time management object
 //      1) x basetime (+ z increment)
 //      2) x moves in y seconds (+ z increment)
 
-void TimeManagement::init(Search::LimitsType& limits, Color us, int ply) {
+void TimeManagement::init(Position& pos, Search::LimitsType& limits, Color us, int ply) {
 
   TimePoint moveOverhead    = TimePoint(Options["Move Overhead"]);
   TimePoint slowMover       = TimePoint(Options["Slow Mover"]);
@@ -89,6 +89,11 @@ void TimeManagement::init(Search::LimitsType& limits, Color us, int ply) {
                             0.8 * limits.time[us] / double(timeLeft));
       maxScale = std::min(6.3, 1.5 + 0.11 * mtg);
   }
+
+  // More time in blocked positions
+  if (   popcount(shift<NORTH>(pos.pieces(WHITE, PAWN)) & pos.pieces(BLACK, PAWN) & CenterFiles) > 1
+      && pos.count<ALL_PIECES>() > 21)
+      optScale *= 1.1;
 
   // Never use more than 80% of the available time for this move
   optimumTime = TimePoint(optScale * timeLeft);

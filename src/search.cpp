@@ -474,10 +474,10 @@ void Thread::search() {
           if ( mainThread->bestPreviousScore2 <= mainThread->bestPreviousScore)
           {
               if (mainThread->bestPreviousScore > bestValue)
-                  fallingEval *= 1.1;
+                  fallingEval *= 1.50;
           }
           else if (mainThread->bestPreviousScore < bestValue)
-              fallingEval *= 0.9;
+              fallingEval *= 0.67;
 
           // If the bestMove is stable over several iterations, reduce time accordingly
           timeReduction = lastBestMoveDepth + 9 < completedDepth ? 1.92 : 0.95;

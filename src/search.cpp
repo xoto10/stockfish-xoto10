@@ -146,7 +146,7 @@ namespace {
 
 } // namespace
 
-int A=318, B=300, C=300, D=275, E=240, F=167, G=192, H=190, I=294, J=232, K=292, L=225, M=198;
+int A=318, B=300, C=300, D=275, E=220, F=182, G=192, H=190, I=294, J=232, K=292, L=225, M=198;
 TUNE(A, B, C, D, E, F, G, H, I, J, K, L, M);
 
 /// Search::init() is called at startup to initialize various lookup tables

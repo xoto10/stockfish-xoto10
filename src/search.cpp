@@ -469,21 +469,21 @@ void Thread::search() {
           && !Threads.stop
           && !mainThread->stopOnPonderhit)
       {
-          double fallingEval = (A*10+ (B/5) * (mainThread->bestPreviousScore - bestValue)
-                                    + (C/5) * (mainThread->iterValue[iterIdx] - bestValue)) / (D*30.0);
+          double fallingEval = (316 + 6 * (mainThread->bestPreviousScore - bestValue)
+                                    + 6 * (mainThread->iterValue[iterIdx] - bestValue)) / 844.0;
           fallingEval = std::clamp(fallingEval, 0.5, 1.5);
 
           if ( mainThread->bestPreviousScore2 <= mainThread->bestPreviousScore)
           {
               if (mainThread->bestPreviousScore > bestValue)
-                  fallingEval *= E/200.0;
+                  fallingEval *= 1.1;
           }
           else if (mainThread->bestPreviousScore < bestValue)
-              fallingEval *= F/200.0;
+              fallingEval *= 0.92;
 
           // If the bestMove is stable over several iterations, reduce time accordingly
-          timeReduction = lastBestMoveDepth + 9 < completedDepth ? G/100.0 : H/200.0;
-          double stabilityChange = (I/200.0 + mainThread->previousTimeReduction) / (J/100.0 * timeReduction);
+          timeReduction = lastBestMoveDepth + 9 < completedDepth ? 2.01 : 0.93;
+          double stabilityChange = (1.35 + mainThread->previousTimeReduction) / (2.25 * timeReduction);
 
           // Use part of the gained time from a previous stable move for the current move
           for (Thread* th : Threads)
@@ -491,7 +491,7 @@ void Thread::search() {
               totBestMoveChanges += th->bestMoveChanges;
               th->bestMoveChanges = 0;
           }
-          double bestMoveInstability = (1.0+K/4000.0) + std::max(1.0, L/100.0 - (M/20.0) / rootDepth)
+          double bestMoveInstability = 1.075 + std::max(1.0, 2.03 - 10.5 / rootDepth)
                                               * totBestMoveChanges / Threads.size();
           double totalTime = Time.optimum() * fallingEval * stabilityChange * bestMoveInstability;
 

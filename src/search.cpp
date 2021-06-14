@@ -898,7 +898,7 @@ namespace {
 
                 pos.undo_move(move);
 
-                if (value >= probCutBeta)
+                if (value >= probCutBeta && (pos.key() & 0xB))
                 {
                     // if transposition table doesn't have equal or more deep info write probCut data into it
                     if ( !(ss->ttHit

@@ -467,21 +467,21 @@ void Thread::search() {
           && !Threads.stop
           && !mainThread->stopOnPonderhit)
       {
-          double fallingEval = (328 + 6 * (mainThread->bestPreviousScore - bestValue)
-                                    + 6 * (mainThread->iterValue[iterIdx] - bestValue)) / 829.0;
+          double fallingEval = (3315.0 + 5.6 * double(mainThread->bestPreviousScore - bestValue)
+                                       + 5.8 * double(mainThread->iterValue[iterIdx] - bestValue)) / 8101.0;
           fallingEval = std::clamp(fallingEval, 0.5, 1.5);
 
           if ( mainThread->bestPreviousScore2 <= mainThread->bestPreviousScore)
           {
               if (mainThread->bestPreviousScore > bestValue)
-                  fallingEval *= 1.14;
+                  fallingEval *= 1.15;
           }
           else if (mainThread->bestPreviousScore < bestValue)
-              fallingEval *= 0.92;
+              fallingEval *= 0.93;
 
           // If the bestMove is stable over several iterations, reduce time accordingly
-          timeReduction = lastBestMoveDepth + 9 < completedDepth ? 1.95 : 0.93;
-          double stabilityChange = (1.28 + mainThread->previousTimeReduction) / (2.24 * timeReduction);
+          timeReduction = lastBestMoveDepth + 9 < completedDepth ? 1.93 : 0.95;
+          double stabilityChange = (1.27 + mainThread->previousTimeReduction) / (2.27 * timeReduction);
 
           // Use part of the gained time from a previous stable move for the current move
           for (Thread* th : Threads)
@@ -489,7 +489,7 @@ void Thread::search() {
               totBestMoveChanges += th->bestMoveChanges;
               th->bestMoveChanges = 0;
           }
-          double bestMoveInstability = 1.072 + std::max(1.0, 2.03 - 10.9 / rootDepth)
+          double bestMoveInstability = 1.071 + std::max(1.0, 2.02 - 11.0 / rootDepth)
                                               * totBestMoveChanges / Threads.size();
           double totalTime = Time.optimum() * fallingEval * stabilityChange * bestMoveInstability;
 

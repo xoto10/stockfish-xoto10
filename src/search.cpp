@@ -467,21 +467,21 @@ void Thread::search() {
           && !Threads.stop
           && !mainThread->stopOnPonderhit)
       {
-          double fallingEval = (3352 + 55 * (mainThread->bestPreviousScore - bestValue)
-                                     + 58 * (mainThread->iterValue[iterIdx] - bestValue)) / 7872.0;
+          double fallingEval = (3309 + 56 * (mainThread->bestPreviousScore - bestValue)
+                                     + 57 * (mainThread->iterValue[iterIdx] - bestValue)) / 7961.0;
           fallingEval = std::clamp(fallingEval, 0.5, 1.5);
 
           if ( mainThread->bestPreviousScore2 <= mainThread->bestPreviousScore)
           {
               if (mainThread->bestPreviousScore > bestValue)
-                  fallingEval *= 1.15;
+                  fallingEval *= 1.17;
           }
           else if (mainThread->bestPreviousScore < bestValue)
               fallingEval *= 0.94;
 
           // If the bestMove is stable over several iterations, reduce time accordingly
-          timeReduction = lastBestMoveDepth + 9 < completedDepth ? 1.95 : 0.96;
-          double stabilityChange = (1.29 + mainThread->previousTimeReduction) / (2.22 * timeReduction);
+          timeReduction = lastBestMoveDepth + 9 < completedDepth ? 1.97 : 1.00;
+          double stabilityChange = (1.30 + mainThread->previousTimeReduction) / (2.21 * timeReduction);
 
           // Use part of the gained time from a previous stable move for the current move
           for (Thread* th : Threads)
@@ -489,7 +489,7 @@ void Thread::search() {
               totBestMoveChanges += th->bestMoveChanges;
               th->bestMoveChanges = 0;
           }
-          double bestMoveInstability = 1.071 + std::max(1.0, 1.96 - 10.8 / rootDepth)
+          double bestMoveInstability = 1.072 + std::max(1.0, 1.94 - 10.9 / rootDepth)
                                               * totBestMoveChanges / Threads.size();
           double totalTime = Time.optimum() * fallingEval * stabilityChange * bestMoveInstability;
 

@@ -159,8 +159,8 @@ namespace Stockfish::Eval::NNUE {
 
     std::size_t bucket = (pos.count<ALL_PIECES>() - 1) / 4;
 
-    if (bucket >= 5 && !(pos.key() & 0xB))
-        bucket = bucket - 1;
+    if (bucket > 1 && !(pos.key() & 0x3))
+        --bucket;
 
     const auto psqt = featureTransformer->transform(pos, transformedFeatures, bucket);
     const auto output = network[bucket]->propagate(transformedFeatures, buffer);

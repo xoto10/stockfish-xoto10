@@ -146,6 +146,8 @@ namespace {
 
 } // namespace
 
+int A=64, B=113, C=64, D=147, E=64;
+TUNE(A, B, C, D, E);
 
 /// Search::init() is called at startup to initialize various lookup tables
 
@@ -323,8 +325,8 @@ void Thread::search() {
           : ct;
 
   // Evaluation score is from the white point of view
-  contempt = (us == WHITE ?  make_score(ct, ct / 2)
-                          : -make_score(ct, ct / 2));
+  contempt = (us == WHITE ?  make_score(ct, ct * A / 128)
+                          : -make_score(ct, ct * A / 128));
 
   int searchAgainCounter = 0;
 
@@ -371,10 +373,10 @@ void Thread::search() {
               beta  = std::min(prev + delta, VALUE_INFINITE);
 
               // Adjust contempt based on root move's previousScore (dynamic contempt)
-              int dct = ct + (113 - ct / 2) * prev / (abs(prev) + 147);
+              int dct = ct + (B - ct * C / 128) * prev / (abs(prev) + D);
 
-              contempt = (us == WHITE ?  make_score(dct, dct / 2)
-                                      : -make_score(dct, dct / 2));
+              contempt = (us == WHITE ?  make_score(dct, dct * E / 128)
+                                      : -make_score(dct, dct * E / 128));
           }
 
           // Start with a small aspiration window and, in the case of a fail

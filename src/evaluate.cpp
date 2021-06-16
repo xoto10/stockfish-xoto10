@@ -549,7 +549,7 @@ namespace {
                 score -= WeakQueen;
 
             if (   mob < 6
-                && pos.count<ALL_PIECES>() < 31
+                && pos.count<ALL_PIECES>() < 29
                 && mob - popcount(b & attackedByRNB[Them]) < 2)
                 score -= TrappedQueen;
         }

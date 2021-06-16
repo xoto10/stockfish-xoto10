@@ -342,6 +342,10 @@ namespace {
     // color, including x-rays. But diagonal x-rays through pawns are not computed.
     Bitboard attackedBy2[COLOR_NB];
 
+    // attackedByRNB[color] are the squares attacked by rook, knight or bishop of a
+    // given color, including x-rays. But diagonal x-rays through pawns are not computed.
+    Bitboard attackedByRNB[COLOR_NB];
+
     // kingRing[color] are the squares adjacent to the king plus some other
     // very near squares, depending on king position.
     Bitboard kingRing[COLOR_NB];
@@ -392,6 +396,7 @@ namespace {
     attackedBy[Us][PAWN] = pe->pawn_attacks(Us);
     attackedBy[Us][ALL_PIECES] = attackedBy[Us][KING] | attackedBy[Us][PAWN];
     attackedBy2[Us] = dblAttackByPawn | (attackedBy[Us][KING] & attackedBy[Us][PAWN]);
+    attackedByRNB[Us] = 0;
 
     // Init our king safety tables
     Square s = make_square(std::clamp(file_of(ksq), FILE_B, FILE_G),
@@ -543,7 +548,7 @@ namespace {
             if (pos.slider_blockers(pos.pieces(Them, ROOK, BISHOP), s, queenPinners))
                 score -= WeakQueen;
 
-            if (mob < 6 && mob - popcount(b & attackedBy[Them][ALL_PIECES]) < 2)
+            if (mob < 6 && mob - popcount(b & attackedByRNB[Them]) < 2)
                 score -= TrappedQueen;
         }
     }
@@ -1029,8 +1034,11 @@ namespace {
     // Note that the order of evaluation of the terms is left unspecified.
     score +=  pieces<WHITE, KNIGHT>() - pieces<BLACK, KNIGHT>()
             + pieces<WHITE, BISHOP>() - pieces<BLACK, BISHOP>()
-            + pieces<WHITE, ROOK  >() - pieces<BLACK, ROOK  >()
-            + pieces<WHITE, QUEEN >() - pieces<BLACK, QUEEN >();
+            + pieces<WHITE, ROOK  >() - pieces<BLACK, ROOK  >();
+
+    attackedByRNB[WHITE] = attackedBy[WHITE][ALL_PIECES];
+    attackedByRNB[BLACK] = attackedBy[BLACK][ALL_PIECES];
+    score +=  pieces<WHITE, QUEEN >() - pieces<BLACK, QUEEN >();
 
     score += mobility[WHITE] - mobility[BLACK];
 

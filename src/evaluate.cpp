@@ -548,7 +548,9 @@ namespace {
             if (pos.slider_blockers(pos.pieces(Them, ROOK, BISHOP), s, queenPinners))
                 score -= WeakQueen;
 
-            if (mob < 6 && mob - popcount(b & attackedByRNB[Them]) < 2)
+            if (   mob < 6
+                && pos.count<ALL_PIECES>() < 31
+                && mob - popcount(b & attackedByRNB[Them]) < 2)
                 score -= TrappedQueen;
         }
     }

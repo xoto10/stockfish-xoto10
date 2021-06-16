@@ -425,7 +425,14 @@ namespace {
         else if (Pt == BISHOP && (attacks_bb<BISHOP>(s, pos.pieces(PAWN)) & kingRing[Them]))
             score += BishopOnKingRing;
 
-        int mob = popcount(b & mobilityArea[Us]);
+        int mob;
+        if (Pt == QUEEN)
+            mob = popcount(  b
+                           & mobilityArea[Us]
+                           & ~(attackedBy[Them][ROOK] | attackedBy[Them][KNIGHT] | attackedBy[Them][BISHOP]));
+        else
+            mob = popcount(b & mobilityArea[Us]);
+
         mobility[Us] += MobilityBonus[Pt - 2][mob];
 
         if (Pt == BISHOP || Pt == KNIGHT)

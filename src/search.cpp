@@ -1146,7 +1146,7 @@ moves_loop: // When in check, search starts from here
               r--;
 
           // Decrease reduction if the ttHit running average is large (~0 Elo)
-          if (thisThread->ttHitAverage > (605 - 3 * thisThread->rootDepth)
+          if (thisThread->ttHitAverage > std::clamp(605 - 3 * thisThread->rootDepth, 527, 567)
                                            * TtHitAverageResolution * TtHitAverageWindow / 1024)
               r--;
 

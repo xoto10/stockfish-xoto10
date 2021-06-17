@@ -300,7 +300,7 @@ namespace {
   constexpr Score ThreatByKing        = S( 24, 89);
   constexpr Score ThreatByPawnPush    = S( 48, 39);
   constexpr Score ThreatBySafePawn    = S(173, 94);
-  constexpr Score TrappedQueen        = S( 50, 50);
+  constexpr Score TrappedQueen        = S( 67, 67);
   constexpr Score TrappedRook         = S( 55, 13);
   constexpr Score WeakQueenProtection = S( 14,  0);
   constexpr Score WeakQueen           = S( 56, 15);
@@ -550,7 +550,7 @@ namespace {
 
             if (   mob < 6
                 && pos.count<ALL_PIECES>() < 31
-                && mob - popcount(b & attackedByRNB[Them]) < 3)
+                && mob - popcount(b & attackedByRNB[Them]) < 2)
                 score -= TrappedQueen;
         }
     }

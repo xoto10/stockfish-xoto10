@@ -550,7 +550,7 @@ namespace {
 
             if (   mob < 6
                 && pos.count<ALL_PIECES>() < 31
-                && mob - popcount(b & attackedByRNB[Them]) < 1)
+                && mob - popcount(b & attackedByRNB[Them]) < 3)
                 score -= TrappedQueen;
         }
     }

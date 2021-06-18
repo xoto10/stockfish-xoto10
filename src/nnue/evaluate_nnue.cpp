@@ -161,7 +161,7 @@ namespace Stockfish::Eval::NNUE {
 
     // Probabilistic bucketing formula
     if (   adjusted
-        && bucket < 7
+        && 1 < bucket && bucket < 7
         && (pos.key() & 8)
         && pos.count<ALL_PIECES>() % 4 == 0 )
         ++bucket;

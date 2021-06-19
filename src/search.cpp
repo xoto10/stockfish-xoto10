@@ -1158,7 +1158,8 @@ moves_loop: // When in check, search starts from here
           // Decrease reduction if moving queen early in game
           if (   (movedPiece & 7) == QUEEN
               && pos.count<ALL_PIECES>() > 26
-              && relative_rank(us, from_sq(move)) > RANK_2)
+              && popcount(attacks_bb<QUEEN>(to_sq(move), pos.pieces())) < 6)
+//            && relative_rank(us, from_sq(move)) > RANK_2)
               r--;
 
           // Increase reduction at root and non-PV nodes when the best move does not change frequently

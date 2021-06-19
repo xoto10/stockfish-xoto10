@@ -1140,7 +1140,7 @@ moves_loop: // When in check, search starts from here
               || !ss->ttPv)
           && (!PvNode || ss->ply > 1 || thisThread->id() % 4 != 3))
       {
-          Depth r = reduction(improving, depth, moveCount);
+          Depth r = 0;
 
           if (PvNode)
               r--;
@@ -1188,6 +1188,10 @@ moves_loop: // When in check, search starts from here
               if (!ss->inCheck)
                   r -= ss->statScore / 14721;
           }
+
+          if (r < -3)
+              r = -3;
+          r += reduction(improving, depth, moveCount);
 
           // In general we want to cap the LMR depth search at newDepth. But if
           // reductions are really negative and movecount is low, we allow this move

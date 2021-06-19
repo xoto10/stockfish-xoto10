@@ -1155,6 +1155,10 @@ moves_loop: // When in check, search starts from here
               && !likelyFailLow)
               r -= 2;
 
+          // Decrease reduction if moving queen early in game
+          if ( (movedPiece & 7) == QUEEN && pos.count<ALL_PIECES>() > 26)
+              r--;
+
           // Increase reduction at root and non-PV nodes when the best move does not change frequently
           if (   (rootNode || !PvNode)
               && thisThread->bestMoveChanges <= 2)

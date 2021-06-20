@@ -856,7 +856,7 @@ namespace {
     Score score = make_score(bonus * weight * weight / 16, 0);
 
     // Penalty if no pawn in Center
-    if ( !(pos.pieces(Us, PAWN) & Center) )
+    if ( pos.count<ALL_PIECES>() > 23 && !(pos.pieces(Us, PAWN) & Center) )
         score -= NoCenterPawn;
 
     if constexpr (T)

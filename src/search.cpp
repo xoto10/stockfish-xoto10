@@ -1116,7 +1116,7 @@ moves_loop: // When in check, search starts from here
       if (   type_of(movedPiece) == QUEEN
           && pos.count<ALL_PIECES>() > 26
           // && relative_rank(us, from_sq(move)) > RANK_1
-          && !(pos.key() & 3)
+          && (pos.key() & 1)
          )
           extension++;
 

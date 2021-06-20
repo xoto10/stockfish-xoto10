@@ -267,6 +267,7 @@ namespace {
   constexpr Score KnightOnQueen       = S( 16, 11);
   constexpr Score LongDiagonalBishop  = S( 45,  0);
   constexpr Score MinorBehindPawn     = S( 18,  3);
+  constexpr Score NoCenterPawn        = S( 40,  0);
   constexpr Score PassedFile          = S( 11,  8);
   constexpr Score PawnlessFlank       = S( 17, 95);
   constexpr Score ReachableOutpost    = S( 31, 22);
@@ -853,6 +854,10 @@ namespace {
     int bonus = popcount(safe) + popcount(behind & safe & ~attackedBy[Them][ALL_PIECES]);
     int weight = pos.count<ALL_PIECES>(Us) - 3 + std::min(pe->blocked_count(), 9);
     Score score = make_score(bonus * weight * weight / 16, 0);
+
+    // Penalty if no pawn in Centre
+    if ( !(pos.pieces(Us, PAWN) & Center) )
+        score -= NoCenterPawn;
 
     if constexpr (T)
         Trace::add(SPACE, Us, score);

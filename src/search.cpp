@@ -1189,8 +1189,8 @@ moves_loop: // When in check, search starts from here
                   r -= ss->statScore / 14721;
           }
 
-          if (r < -3)
-              r = -3;
+          if (r < -2)
+              r = -2;
           r += reduction(improving, depth, moveCount);
 
           // In general we want to cap the LMR depth search at newDepth. But if

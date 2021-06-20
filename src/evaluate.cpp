@@ -428,6 +428,7 @@ namespace {
         int mob = popcount(b & mobilityArea[Us]);
 
         if (   Pt == QUEEN
+            && mob > 0
             && bool(  b
                     & mobilityArea[Us]
                     & (attackedBy[Them][ROOK] | attackedBy[Them][KNIGHT] | attackedBy[Them][BISHOP])))

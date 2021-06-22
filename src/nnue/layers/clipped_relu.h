@@ -174,6 +174,7 @@ namespace Stockfish::Eval::NNUE::Layers {
   #else
       constexpr IndexType Start = 0;
   #endif
+
       if constexpr (Start < InputDimensions)
       {
         for (IndexType i = Start; i < InputDimensions; ++i) {

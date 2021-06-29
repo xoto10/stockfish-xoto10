@@ -471,7 +471,7 @@ void Thread::search() {
           double bestMoveInstability = 1.073 + std::max(1.0, 2.25 - 9.9 / rootDepth)
                                               * totBestMoveChanges / Threads.size();
           double multiplier = std::max(fallingEval * reduction * bestMoveInstability,
-                                       bestValue < -150 ? 0.8 : 0.0);
+                                       bestValue < -150 && rootPos.count<ALL_PIECES>() > 25 ? 0.4 : 0.0);
           double totalTime = Time.optimum() * multiplier;
 
           // Cap used time in case of a single legal move for a better viewer experience in tournaments

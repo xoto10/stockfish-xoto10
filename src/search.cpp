@@ -474,8 +474,8 @@ void Thread::search() {
           if (bestValue < -150 && rootPos.count<ALL_PIECES>() > 25)
           {
               bestMoveInstability -= 0.023;
-              if (multiplier < 0.4)
-                  multiplier = 0.4;
+              if (multiplier < 0.5)
+                  multiplier = 0.5;
           }
 
           double totalTime = Time.optimum() * multiplier;

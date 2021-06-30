@@ -146,6 +146,8 @@ namespace {
 
 } // namespace
 
+int A=-350, B=-150, C=25, D=23, E=40;
+TUNE(A, B, D, E, SetRange(2,31), C);
 
 /// Search::init() is called at startup to initialize various lookup tables
 
@@ -470,14 +472,14 @@ void Thread::search() {
           }
           double bestMoveInstability = 1.073 + std::max(1.0, 2.25 - 9.9 / rootDepth)
                                               * totBestMoveChanges / Threads.size();
-          double multiplier = fallingEval * reduction * bestMoveInstability;
-          if (bestValue < -150 && rootPos.count<ALL_PIECES>() > 25)
-          {
-              bestMoveInstability -= 0.023;
-              if (multiplier < 0.5)
-                  multiplier = 0.5;
-          }
 
+          double multiplier = fallingEval * reduction * bestMoveInstability;
+          if (A < bestValue && bestValue < B && rootPos.count<ALL_PIECES>() > C)
+          {
+              bestMoveInstability -= D/1000.0;
+              if (multiplier < E/100.0)
+                  multiplier = E/100.0;
+          }
           double totalTime = Time.optimum() * multiplier;
 
           // Cap used time in case of a single legal move for a better viewer experience in tournaments

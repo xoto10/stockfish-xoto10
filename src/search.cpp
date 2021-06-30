@@ -468,7 +468,7 @@ void Thread::search() {
               totBestMoveChanges += th->bestMoveChanges;
               th->bestMoveChanges = 0;
           }
-          double bestMoveInstability = 1.050 + std::max(1.0, 2.25 - 9.9 / rootDepth)
+          double bestMoveInstability = 1.073 + std::max(1.0, 2.25 - 9.9 / rootDepth)
                                               * totBestMoveChanges / Threads.size();
           double multiplier = fallingEval * reduction * bestMoveInstability;
           if (bestValue < -150 && rootPos.count<ALL_PIECES>() > 25)

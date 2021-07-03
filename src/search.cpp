@@ -146,8 +146,6 @@ namespace {
 
 } // namespace
 
-int A=881, B=16;
-TUNE(A, B);
 
 /// Search::init() is called at startup to initialize various lookup tables
 
@@ -470,8 +468,8 @@ void Thread::search() {
               totBestMoveChanges += th->bestMoveChanges;
               th->bestMoveChanges = 0;
           }
-          double bestMoveInstability = A/1000.0
-                                      + rootDepth * B/1000.0
+          double bestMoveInstability = 0.833
+                                      + std::min(40, rootDepth) * 0.016
                                       + std::max(1.0, 2.25 - 9.9 / rootDepth) * totBestMoveChanges / Threads.size();
           double totalTime = Time.optimum() * fallingEval * reduction * bestMoveInstability;
 

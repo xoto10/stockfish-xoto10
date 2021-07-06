@@ -107,7 +107,7 @@ void MovePicker::score() {
       {
           m.value =  int(PieceValue[MG][pos.piece_on(to_sq(m))]) * 6
                    + (*captureHistory)[pos.moved_piece(m)][to_sq(m)][type_of(pos.piece_on(to_sq(m)))]
-                   + 1000 * (   edge_distance(file_of(pos.square<KING>(~pos.side_to_move()))) < 2 
+                   + 1000 * (   edge_distance(file_of(pos.square<KING>(~pos.side_to_move()))) < 2
                              && distance<Square>(pos.square<KING>(~pos.side_to_move()), to_sq(m)) < 4);
       }
 

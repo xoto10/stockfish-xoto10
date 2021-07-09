@@ -19,7 +19,6 @@
 #include <algorithm>
 #include <cfloat>
 #include <cmath>
-#include <iostream>
 
 #include "search.h"
 #include "timeman.h"
@@ -27,7 +26,7 @@
 
 namespace Stockfish {
 
-int A=1680, B=1842, C=1440;
+int A=1510, B=1842, C=1440;
 TUNE(A,B,C);
 
 TimeManagement Time; // Our global time management object

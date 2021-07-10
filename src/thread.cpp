@@ -163,6 +163,7 @@ void ThreadPool::clear() {
   main()->callsCnt = 0;
   main()->bestPreviousScore = VALUE_INFINITE;
   main()->previousTimeReduction = 1.0;
+  main()->previousQuickMove = 0.0;
 }
 
 

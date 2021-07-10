@@ -260,7 +260,7 @@ void Thread::search() {
   Move  lastBestMove = MOVE_NONE;
   Depth lastBestMoveDepth = 0;
   MainThread* mainThread = (this == Threads.main() ? Threads.main() : nullptr);
-  double timeReduction = 1, totBestMoveChanges = 0;
+  double timeReduction = 1, totBestMoveChanges = 0, multiplier = 1;
   Color us = rootPos.side_to_move();
   int iterIdx = 0;
 
@@ -470,7 +470,8 @@ void Thread::search() {
           }
           double bestMoveInstability = 1.073 + std::max(1.0, 2.25 - 9.9 / rootDepth)
                                               * totBestMoveChanges / Threads.size();
-          double totalTime = Time.optimum() * fallingEval * reduction * bestMoveInstability;
+          multiplier = fallingEval * reduction * bestMoveInstability * (1 + mainThread->previousQuickMove);
+          double totalTime = Time.optimum() * multiplier;
 
           // Cap used time in case of a single legal move for a better viewer experience in tournaments
           // yielding correct scores and sufficiently fast moves.
@@ -503,6 +504,7 @@ void Thread::search() {
       return;
 
   mainThread->previousTimeReduction = timeReduction;
+  mainThread->previousQuickMove = multiplier < 0.5 ? 0.5 - multiplier : 0;
 
   // If skill level is enabled, swap best PV line with the sub-optimal one
   if (skill.enabled())

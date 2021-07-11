@@ -146,8 +146,6 @@ namespace {
 
 } // namespace
 
-int A=88, B=108, C=120;
-TUNE(A, B, C);
 
 /// Search::init() is called at startup to initialize various lookup tables
 
@@ -479,7 +477,7 @@ void Thread::search() {
                                               * totBestMoveChanges / Threads.size();
 
           planStable = mainThread->ponder2 != MOVE_NONE && mainThread->ponder2 == rootMoves[0].pv[0];
-          double planStability = (planStable ? A/100.0 : B/100.0) + mainThread->planStableAverage;
+          double planStability = 1 + mainThread->planStableAverage;
 //sync_cout << "info string pstab " << (planStable ? 0.9 : 1.1)
 //          << " pstabavg " << mainThread->planStableAverage << sync_endl;
 
@@ -516,7 +514,7 @@ void Thread::search() {
       return;
 
   mainThread->previousTimeReduction = timeReduction;
-  mainThread->planStableAverage = 0.8 * mainThread->planStableAverage + C/2000.0 * planStable;
+  mainThread->planStableAverage = 0.8 * mainThread->planStableAverage + 0.06 * planStable;
 
   // If skill level is enabled, swap best PV line with the sub-optimal one
   if (skill.enabled())

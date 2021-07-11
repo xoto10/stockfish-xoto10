@@ -87,6 +87,8 @@ struct MainThread : public Thread {
   void search() override;
   void check_time();
 
+  Move ponder2;
+  double planStableAverage;
   double previousTimeReduction;
   Value bestPreviousScore;
   Value iterValue[4];

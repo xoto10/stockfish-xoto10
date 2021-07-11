@@ -230,6 +230,10 @@ void MainThread::search() {
       bestThread = Threads.get_best_thread();
 
   bestPreviousScore = bestThread->rootMoves[0].score;
+  if (bestThread->rootMoves[0].pv.size() > 2)
+      ponder2 = bestThread->rootMoves[0].pv[2];
+  else
+      ponder2 = MOVE_NONE;
 
   // Send again PV info if we have a new best thread
   if (bestThread != this)
@@ -262,6 +266,7 @@ void Thread::search() {
   MainThread* mainThread = (this == Threads.main() ? Threads.main() : nullptr);
   double timeReduction = 1, totBestMoveChanges = 0;
   Color us = rootPos.side_to_move();
+  bool planStable;
   int iterIdx = 0;
 
   std::memset(ss-7, 0, 10 * sizeof(Stack));
@@ -470,7 +475,13 @@ void Thread::search() {
           }
           double bestMoveInstability = 1.073 + std::max(1.0, 2.25 - 9.9 / rootDepth)
                                               * totBestMoveChanges / Threads.size();
-          double totalTime = Time.optimum() * fallingEval * reduction * bestMoveInstability;
+
+          planStable = mainThread->ponder2 != MOVE_NONE && mainThread->ponder2 == rootMoves[0].pv[0];
+          double planStability = (planStable ? 0.9 : 1.1) + mainThread->planStableAverage;
+//sync_cout << "info string pstab " << (planStable ? 0.9 : 1.1)
+//          << " pstabavg " << mainThread->planStableAverage << sync_endl;
+
+          double totalTime = Time.optimum() * fallingEval * reduction * bestMoveInstability * planStability;
 
           // Cap used time in case of a single legal move for a better viewer experience in tournaments
           // yielding correct scores and sufficiently fast moves.
@@ -503,6 +514,7 @@ void Thread::search() {
       return;
 
   mainThread->previousTimeReduction = timeReduction;
+  mainThread->planStableAverage = 0.8 * mainThread->planStableAverage + 0.06 * planStable;
 
   // If skill level is enabled, swap best PV line with the sub-optimal one
   if (skill.enabled())

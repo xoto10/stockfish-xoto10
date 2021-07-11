@@ -146,8 +146,6 @@ namespace {
 
 } // namespace
 
-int A=90, B=110;
-TUNE(A, B);
 
 /// Search::init() is called at startup to initialize various lookup tables
 
@@ -478,7 +476,7 @@ void Thread::search() {
                                               * totBestMoveChanges / Threads.size();
 
           double planStable = mainThread->ponder2 != MOVE_NONE && mainThread->ponder2 == rootMoves[0].pv[0]
-                            ? A/100.0 : B/100.0;
+                            ? 0.88 : 1.09;
 
           double totalTime = Time.optimum() * fallingEval * reduction * bestMoveInstability * planStable;
 

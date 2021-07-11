@@ -476,7 +476,7 @@ void Thread::search() {
                                               * totBestMoveChanges / Threads.size();
 
           double planStable = mainThread->ponder2 != MOVE_NONE && mainThread->ponder2 == rootMoves[0].pv[0]
-                            ? 0.88 : 1.09;
+                            ? 0.88 : 1.07;
 
           double totalTime = Time.optimum() * fallingEval * reduction * bestMoveInstability * planStable;
 

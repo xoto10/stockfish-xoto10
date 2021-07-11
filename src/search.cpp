@@ -514,7 +514,7 @@ void Thread::search() {
       return;
 
   mainThread->previousTimeReduction = timeReduction;
-  mainThread->planStableAverage = 0.8 * mainThread->planStableAverage + 0.10 * planStable;
+  mainThread->planStableAverage = 0.8 * mainThread->planStableAverage + 0.04 * planStable;
 
   // If skill level is enabled, swap best PV line with the sub-optimal one
   if (skill.enabled())

@@ -478,8 +478,6 @@ void Thread::search() {
 
           planStable = mainThread->ponder2 != MOVE_NONE && mainThread->ponder2 == rootMoves[0].pv[0];
           double planStability = 1 + mainThread->planStableAverage;
-//sync_cout << "info string pstab " << (planStable ? 0.9 : 1.1)
-//          << " pstabavg " << mainThread->planStableAverage << sync_endl;
 
           double totalTime = Time.optimum() * fallingEval * reduction * bestMoveInstability * planStability;
 
@@ -514,7 +512,7 @@ void Thread::search() {
       return;
 
   mainThread->previousTimeReduction = timeReduction;
-  mainThread->planStableAverage = 0.8 * mainThread->planStableAverage + 0.03 * planStable;
+  mainThread->planStableAverage = 0.69 * mainThread->planStableAverage + 0.035 * planStable;
 
   // If skill level is enabled, swap best PV line with the sub-optimal one
   if (skill.enabled())

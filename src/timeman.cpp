@@ -26,7 +26,7 @@
 
 namespace Stockfish {
 
-int A=1547, B=1687;
+int A=1547, B=1842;
 TUNE(A,B);
 
 TimeManagement Time; // Our global time management object

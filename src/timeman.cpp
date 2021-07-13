@@ -72,9 +72,9 @@ void TimeManagement::init(Search::LimitsType& limits, Color us, int ply) {
   // Default is 100 and changing this value will probably lose elo.
   timeLeft = slowMover * timeLeft / 100;
 // sync_cout << "info string tleft " << timeLeft << sync_endl;
-// stc 14380
-// ltc 88880   88880/6 = 14813
-// 900 / timeLeft
+// stc    14380
+// ltc    88880      88880/6 = 14813
+// sufi 7689480
 
   if (initialTimeLeft == 0)
       initialTimeLeft = timeLeft;

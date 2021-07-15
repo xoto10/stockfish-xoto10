@@ -618,6 +618,10 @@ namespace {
     // Penalty if king flank is under attack, potentially moving toward the king
     score -= FlankAttacks * kingFlankAttack;
 
+    // Mg penalty if no material in centre sqs
+    int centerPcs = pos.count<ALL_PIECES>() * !(pos.pieces(Us) & Center);
+    score -= make_score(centerPcs, 0);
+
     if constexpr (T)
         Trace::add(KING, Us, score);
 

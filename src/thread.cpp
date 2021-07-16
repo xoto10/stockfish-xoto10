@@ -223,10 +223,14 @@ Thread* ThreadPool::get_best_thread() const {
         minScore = std::min(minScore, th->rootMoves[0].score);
 
     // Vote according to score and depth, and select the best thread
+    sync_cout << "info string th depths: ";
     for (Thread* th : *this)
     {
+        int cDepth = int(th->completedDepth);
+        sync_cout << cDepth << ',';
+
         votes[th->rootMoves[0].pv[0]] +=
-            (th->rootMoves[0].score - minScore + 14) * int(th->completedDepth);
+            (th->rootMoves[0].score - minScore + 14) * cDepth;
 
         if (abs(bestThread->rootMoves[0].score) >= VALUE_TB_WIN_IN_MAX_PLY)
         {
@@ -239,6 +243,7 @@ Thread* ThreadPool::get_best_thread() const {
                      && votes[th->rootMoves[0].pv[0]] > votes[bestThread->rootMoves[0].pv[0]]))
             bestThread = th;
     }
+    sync_cout << "end" << sync_endl;
 
     return bestThread;
 }

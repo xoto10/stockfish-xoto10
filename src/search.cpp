@@ -146,6 +146,8 @@ namespace {
 
 } // namespace
 
+int A=73, B=112, C=99, D= 100, E=100;
+TUNE(A,B,C,D,E);
 
 /// Search::init() is called at startup to initialize various lookup tables
 
@@ -468,9 +470,9 @@ void Thread::search() {
               totBestMoveChanges += th->bestMoveChanges;
               th->bestMoveChanges = 0;
           }
-          double bestMoveInstability = 1.073 + std::max(1.0, 2.25 - 9.9 / rootDepth)
+          double bestMoveInstability = 1.0 + (A/1000.0) + std::max(1.0, B/50.0 - (C/10.0) / rootDepth)
                                               * totBestMoveChanges / Threads.size();
-          double cached = std::max(1.0, (0.5 * TtHitAverageResolution * TtHitAverageWindow) / ttHitAverage);
+          double cached = std::max(D/100.0, ((E/200.0) * TtHitAverageResolution * TtHitAverageWindow) / ttHitAverage);
           double totalTime = Time.optimum() * fallingEval * reduction * bestMoveInstability * cached;
 
           // Cap used time in case of a single legal move for a better viewer experience in tournaments

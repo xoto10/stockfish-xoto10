@@ -146,6 +146,8 @@ namespace {
 
 } // namespace
 
+int A=100, B=100, D=150, E=73, F=112, G=99;
+TUNE(A, B, D, E, F, G);
 
 /// Search::init() is called at startup to initialize various lookup tables
 
@@ -468,10 +470,11 @@ void Thread::search() {
               totBestMoveChanges += th->bestMoveChanges;
               th->bestMoveChanges = 0;
           }
-          double bestMoveInstability = 1.073 + std::max(1.0, 2.25 - 9.9 / rootDepth)
+double M=A/50.0, N=B/50.0, Q=D/100.0, R=1+E/1000.0, S=F/50.0, T=G/10.0;
+          double bestMoveInstability = R     + std::max(1.0, S    - T   / rootDepth)
                                               * totBestMoveChanges / Threads.size();
-          double cached = std::clamp(1.5 - double(ttHitAverage) / (TtHitAverageResolution * TtHitAverageWindow),
-                                     1.0, 1.5);
+          double cached = std::clamp(M - N * double(ttHitAverage) / (TtHitAverageResolution * TtHitAverageWindow),
+                                     1.0, Q);
           double totalTime = Time.optimum() * fallingEval * reduction * bestMoveInstability * cached;
 //sync_cout << "info string scale " << TtHitAverageResolution * TtHitAverageWindow
 //          << " diff " << double(ttHitAverage) / (TtHitAverageResolution * TtHitAverageWindow / 2)

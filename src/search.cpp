@@ -470,7 +470,7 @@ void Thread::search() {
           }
           double bestMoveInstability = 1.073 + std::max(1.0, 2.25 - 9.9 / rootDepth)
                                               * totBestMoveChanges / Threads.size();
-          double cached = std::clamp(2.0 - double(ttHitAverage) / (TtHitAverageResolution * TtHitAverageWindow / 2),
+          double cached = std::clamp(1.5 - double(ttHitAverage) / (TtHitAverageResolution * TtHitAverageWindow),
                                      1.0, 1.5);
           double totalTime = Time.optimum() * fallingEval * reduction * bestMoveInstability * cached;
 //sync_cout << "info string scale " << TtHitAverageResolution * TtHitAverageWindow

@@ -468,10 +468,10 @@ void Thread::search() {
               totBestMoveChanges += th->bestMoveChanges;
               th->bestMoveChanges = 0;
           }
-          double bestMoveInstability = 1.070 + std::max(1.0, 1.96 - 9.8 / rootDepth)
+          double bestMoveInstability = 1.069 + std::max(1.0, 1.90 - 9.8 / rootDepth)
                                               * totBestMoveChanges / Threads.size();
-          double cached = std::clamp(1.86 - 2.09 * double(ttHitAverage) / (TtHitAverageResolution * TtHitAverageWindow),
-                                     1.0, 1.43);
+          double cached = std::clamp(1.93 - 2.11 * double(ttHitAverage) / (TtHitAverageResolution * TtHitAverageWindow),
+                                     1.0, 1.41);
           double totalTime = Time.optimum() * fallingEval * reduction * bestMoveInstability * cached;
 
           // Cap used time in case of a single legal move for a better viewer experience in tournaments

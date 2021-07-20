@@ -146,6 +146,8 @@ namespace {
 
 } // namespace
 
+int A=107, B=190, C=193, D=211, E=141, F=192, G=95;
+TUNE(A,B,C,D,E,F,G);
 
 /// Search::init() is called at startup to initialize various lookup tables
 
@@ -458,8 +460,9 @@ void Thread::search() {
                                     + 6 * (mainThread->iterValue[iterIdx] - bestValue)) / 825.0;
           fallingEval = std::clamp(fallingEval, 0.5, 1.5);
 
+double M=A/100.0, N=B/100.0, P=C/100.0, Q=D/100.0, R=E/100.0, S=F/100.0, T=G/100.0;
           // If the bestMove is stable over several iterations, reduce time accordingly
-          timeReduction = lastBestMoveDepth + 9 < completedDepth ? 1.92 : 0.95;
+          timeReduction = lastBestMoveDepth + 9 < completedDepth ? S    : T   ;
           double reduction = (1.47 + mainThread->previousTimeReduction) / (2.32 * timeReduction);
 
           // Use part of the gained time from a previous stable move for the current move
@@ -468,10 +471,10 @@ void Thread::search() {
               totBestMoveChanges += th->bestMoveChanges;
               th->bestMoveChanges = 0;
           }
-          double bestMoveInstability = 1.068 + std::max(1.0, 1.94 - 9.9 / rootDepth)
+          double bestMoveInstability = M     + std::max(1.0, N    - 9.9 / rootDepth)
                                               * totBestMoveChanges / Threads.size();
-          double cached = std::clamp(1.92 - 2.13 * double(ttHitAverage) / (TtHitAverageResolution * TtHitAverageWindow),
-                                     1.0, 1.39);
+          double cached = std::clamp(P    - Q    * double(ttHitAverage) / (TtHitAverageResolution * TtHitAverageWindow),
+                                     1.0, R   );
           double totalTime = Time.optimum() * fallingEval * reduction * bestMoveInstability * cached;
 
           // Cap used time in case of a single legal move for a better viewer experience in tournaments

@@ -241,6 +241,7 @@ void MainThread::search() {
       std::cout << " ponder " << UCI::move(bestThread->rootMoves[0].pv[1], rootPos.is_chess960());
 
   std::cout << sync_endl;
+//std::cout << "moveavg " << ttHitMoveAverage << "\n" << sync_endl;
 }
 
 
@@ -470,7 +471,13 @@ void Thread::search() {
           }
           double bestMoveInstability = 1.073 + std::max(1.0, 2.25 - 9.9 / rootDepth)
                                               * totBestMoveChanges / Threads.size();
-          double totalTime = Time.optimum() * fallingEval * reduction * bestMoveInstability;
+
+          double cached = 1 + mainThread->ttHitMoveAverage
+                                - double(ttHitAverage) / (TtHitAverageResolution * TtHitAverageWindow);
+//sync_cout << "info string cch " << cached
+//          << " /k " << (1024 * ttHitAverage) / TtHitAverageResolution / TtHitAverageWindow
+//          << " moveAvg " << mainThread->ttHitMoveAverage << sync_endl;
+          double totalTime = Time.optimum() * fallingEval * reduction * bestMoveInstability * cached;
 
           // Cap used time in case of a single legal move for a better viewer experience in tournaments
           // yielding correct scores and sufficiently fast moves.
@@ -503,6 +510,8 @@ void Thread::search() {
       return;
 
   mainThread->previousTimeReduction = timeReduction;
+  mainThread->ttHitMoveAverage = 0.8 * mainThread->ttHitMoveAverage
+                                + 0.2 * double(ttHitAverage) / (TtHitAverageResolution * TtHitAverageWindow);
 
   // If skill level is enabled, swap best PV line with the sub-optimal one
   if (skill.enabled())

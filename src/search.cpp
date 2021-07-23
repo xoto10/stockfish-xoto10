@@ -472,8 +472,8 @@ void Thread::search() {
           double bestMoveInstability = 1.073 + std::max(1.0, 2.25 - 9.9 / rootDepth)
                                               * totBestMoveChanges / Threads.size();
 
-          double cached = std::clamp(1 + 15 * (mainThread->ttHitMoveAverage
-                                                 - double(ttHitAverage) / TtHitAverageResolution / TtHitAverageWindow),
+          double cached = std::clamp(1 + 5 * (mainThread->ttHitMoveAverage
+                                                - double(ttHitAverage) / TtHitAverageResolution / TtHitAverageWindow),
                                      1.0, 3.3);
 //sync_cout << "info string cch " << cached
 //          << " /k " << (1024 * ttHitAverage) / TtHitAverageResolution / TtHitAverageWindow

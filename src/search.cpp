@@ -475,9 +475,9 @@ void Thread::search() {
           double cached = std::clamp(1 + 15 * (mainThread->ttHitMoveAverage
                                                  - double(ttHitAverage) / TtHitAverageResolution / TtHitAverageWindow),
                                      1.0, 3.3);
-sync_cout << "info string cch " << cached
-          << " /k " << (1024 * ttHitAverage) / TtHitAverageResolution / TtHitAverageWindow
-          << " moveAvg " << mainThread->ttHitMoveAverage << sync_endl;
+//sync_cout << "info string cch " << cached
+//          << " /k " << (1024 * ttHitAverage) / TtHitAverageResolution / TtHitAverageWindow
+//          << " moveAvg " << mainThread->ttHitMoveAverage << sync_endl;
           double totalTime = Time.optimum() * fallingEval * reduction * bestMoveInstability * cached;
 
           // Cap used time in case of a single legal move for a better viewer experience in tournaments

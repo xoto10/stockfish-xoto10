@@ -146,6 +146,8 @@ namespace {
 
 } // namespace
 
+int A=100, B=100, C=100, D=150;
+TUNE(A, B, C, D);
 
 /// Search::init() is called at startup to initialize various lookup tables
 
@@ -472,9 +474,10 @@ void Thread::search() {
           double bestMoveInstability = 1.073 + std::max(1.0, 2.25 - 9.9 / rootDepth)
                                               * totBestMoveChanges / Threads.size();
 
-          double cached = std::clamp(1 + 2 * (mainThread->ttHitMoveAverage
+double P=A/100.0, Q=B/50.0, R=C/100.0, S=D/100.0;
+          double cached = std::clamp(P + Q * (mainThread->ttHitMoveAverage
                                                 - double(ttHitAverage) / TtHitAverageResolution / TtHitAverageWindow),
-                                     1.0, 1.5);
+                                     R  , S  );
 //sync_cout << "info string cch " << cached
 //          << " /k " << (1024 * ttHitAverage) / TtHitAverageResolution / TtHitAverageWindow
 //          << " moveAvg " << mainThread->ttHitMoveAverage << sync_endl;

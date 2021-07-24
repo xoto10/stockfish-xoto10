@@ -146,6 +146,8 @@ namespace {
 
 } // namespace
 
+int A=94, B=55, C=100, D=145, E=80, F=20;
+TUNE(A, B, C, D, E, F);
 
 /// Search::init() is called at startup to initialize various lookup tables
 
@@ -471,10 +473,10 @@ void Thread::search() {
           double bestMoveInstability = 1.073 + std::max(1.0, 2.25 - 9.9 / rootDepth)
                                               * totBestMoveChanges / Threads.size();
 
-          double cached = std::clamp(0.94 + 1.09 * (  mainThread->ttHitMoveAverage
-                                                    - double(ttHitAverage)
-                                                        / (TtHitAverageResolution * TtHitAverageWindow)),
-                                     1.00, 1.45);
+double P=A/100.0, Q=B/50.0, R=C/100.0, S=D/100.0;
+          double cached = std::clamp(P + Q * (mainThread->ttHitMoveAverage
+                                                - double(ttHitAverage) / TtHitAverageResolution / TtHitAverageWindow),
+                                     R  , S  );
           double totalTime = Time.optimum() * fallingEval * reduction * bestMoveInstability * cached;
 
           // Cap used time in case of a single legal move for a better viewer experience in tournaments
@@ -508,8 +510,9 @@ void Thread::search() {
       return;
 
   mainThread->previousTimeReduction = timeReduction;
-  mainThread->ttHitMoveAverage = 0.8 * mainThread->ttHitMoveAverage
-                                + 0.2 * double(ttHitAverage) / (TtHitAverageResolution * TtHitAverageWindow);
+double T=E/100.0, U=F/100.0;
+  mainThread->ttHitMoveAverage = T   * mainThread->ttHitMoveAverage
+                                + U   * double(ttHitAverage) / (TtHitAverageResolution * TtHitAverageWindow);
 
   // If skill level is enabled, swap best PV line with the sub-optimal one
   if (skill.enabled())

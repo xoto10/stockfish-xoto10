@@ -146,8 +146,6 @@ namespace {
 
 } // namespace
 
-int A=100, B=100, C=100, D=150;
-TUNE(A, B, C, D);
 
 /// Search::init() is called at startup to initialize various lookup tables
 
@@ -243,7 +241,6 @@ void MainThread::search() {
       std::cout << " ponder " << UCI::move(bestThread->rootMoves[0].pv[1], rootPos.is_chess960());
 
   std::cout << sync_endl;
-//std::cout << "moveavg " << ttHitMoveAverage << "\n" << sync_endl;
 }
 
 
@@ -474,13 +471,10 @@ void Thread::search() {
           double bestMoveInstability = 1.073 + std::max(1.0, 2.25 - 9.9 / rootDepth)
                                               * totBestMoveChanges / Threads.size();
 
-double P=A/100.0, Q=B/50.0, R=C/100.0, S=D/100.0;
-          double cached = std::clamp(P + Q * (mainThread->ttHitMoveAverage
-                                                - double(ttHitAverage) / TtHitAverageResolution / TtHitAverageWindow),
-                                     R  , S  );
-//sync_cout << "info string cch " << cached
-//          << " /k " << (1024 * ttHitAverage) / TtHitAverageResolution / TtHitAverageWindow
-//          << " moveAvg " << mainThread->ttHitMoveAverage << sync_endl;
+          double cached = std::clamp(0.94 + 1.09 * (  mainThread->ttHitMoveAverage
+                                                    - double(ttHitAverage)
+                                                        / (TtHitAverageResolution * TtHitAverageWindow)),
+                                     1.00, 1.45);
           double totalTime = Time.optimum() * fallingEval * reduction * bestMoveInstability * cached;
 
           // Cap used time in case of a single legal move for a better viewer experience in tournaments

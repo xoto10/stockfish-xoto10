@@ -474,7 +474,7 @@ void Thread::search() {
 
           double cached = std::clamp(1 + 1 * (mainThread->ttHitMoveAverage
                                                 - double(ttHitAverage) / TtHitAverageResolution / TtHitAverageWindow),
-                                     1.0, 3.3);
+                                     1.0, 1.5);
 //sync_cout << "info string cch " << cached
 //          << " /k " << (1024 * ttHitAverage) / TtHitAverageResolution / TtHitAverageWindow
 //          << " moveAvg " << mainThread->ttHitMoveAverage << sync_endl;

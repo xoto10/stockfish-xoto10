@@ -146,7 +146,7 @@ namespace {
 
 } // namespace
 
-int A=94, B=55, C=100, D=145, E=80, F=20;
+int A=94, B=55, C=100, D=145, E=80, F=80;
 TUNE(A, B, C, D, E, F);
 
 /// Search::init() is called at startup to initialize various lookup tables
@@ -510,7 +510,7 @@ double P=A/100.0, Q=B/50.0, R=C/100.0, S=D/100.0;
       return;
 
   mainThread->previousTimeReduction = timeReduction;
-double T=E/100.0, U=F/100.0;
+double T=E/100.0, U=F/400.0;
   mainThread->ttHitMoveAverage = T   * mainThread->ttHitMoveAverage
                                 + U   * double(ttHitAverage) / (TtHitAverageResolution * TtHitAverageWindow);
 

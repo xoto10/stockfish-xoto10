@@ -146,6 +146,8 @@ namespace {
 
 } // namespace
 
+int A=93, B=57, C=101, D=138, E=79, F=82, G=192, H=95, I=107, J=112, K=99;
+TUNE(A, B, C, D, E, F, G, H, I, J, K);
 
 /// Search::init() is called at startup to initialize various lookup tables
 
@@ -459,7 +461,8 @@ void Thread::search() {
           fallingEval = std::clamp(fallingEval, 0.5, 1.5);
 
           // If the bestMove is stable over several iterations, reduce time accordingly
-          timeReduction = lastBestMoveDepth + 9 < completedDepth ? 1.92 : 0.95;
+double P=A/100.0, Q=B/50.0, R=C/100.0, S=D/100.0, T=G/100.0, U=H/100.0, V=I/100.0, W=J/50.0, X=K/10.0;
+          timeReduction = lastBestMoveDepth + 9 < completedDepth ? T    : U   ;
           double reduction = (1.47 + mainThread->previousTimeReduction) / (2.32 * timeReduction);
 
           // Use part of the gained time from a previous stable move for the current move
@@ -468,12 +471,12 @@ void Thread::search() {
               totBestMoveChanges += th->bestMoveChanges;
               th->bestMoveChanges = 0;
           }
-          double bestMoveInstability = 1.073 + std::max(1.0, 2.25 - 9.9 / rootDepth)
+          double bestMoveInstability = V     + std::max(1.0, W    - X   / rootDepth)
                                               * totBestMoveChanges / Threads.size();
 
-          double cached = std::clamp(0.93 + 1.13 * (mainThread->ttHitMoveAverage
-                                                      - double(ttHitAverage) / TtHitAverageResolution / TtHitAverageWindow),
-                                     1.01, 1.39);
+          double cached = std::clamp(P + Q * (mainThread->ttHitMoveAverage
+                                                - double(ttHitAverage) / TtHitAverageResolution / TtHitAverageWindow),
+                                     R  , S  );
           double totalTime = Time.optimum() * fallingEval * reduction * bestMoveInstability * cached;
 
           // Cap used time in case of a single legal move for a better viewer experience in tournaments
@@ -507,8 +510,9 @@ void Thread::search() {
       return;
 
   mainThread->previousTimeReduction = timeReduction;
-  mainThread->ttHitMoveAverage = 0.79 * mainThread->ttHitMoveAverage
-                                + 0.21 * double(ttHitAverage) / (TtHitAverageResolution * TtHitAverageWindow);
+double T=E/100.0, U=F/400.0;
+  mainThread->ttHitMoveAverage = T   * mainThread->ttHitMoveAverage
+                                + U   * double(ttHitAverage) / (TtHitAverageResolution * TtHitAverageWindow);
 
   // If skill level is enabled, swap best PV line with the sub-optimal one
   if (skill.enabled())

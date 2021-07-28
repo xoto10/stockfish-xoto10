@@ -168,8 +168,6 @@ top:
       ++stage;
       goto top;
 
-//  MAIN_TT, CAPTURE_INIT, GOOD_CAPTURE, REFUTATION, QUIET_INIT, QUIET, BAD_CAPTURE,
-//  1n3rk1/rp2qp1p/2p1b1p1/p1Pp3P/N5P1/2Q1PP2/PP6/2KR1B1R b - - 0 20
   case GOOD_CAPTURE:
       if (select<Best>([&](){
                        return pos.see_ge(*cur, Value(-69 * cur->value / 1024)) ?

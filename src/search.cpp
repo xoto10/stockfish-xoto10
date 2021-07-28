@@ -321,7 +321,6 @@ void Thread::search() {
          && !Threads.stop
          && !(Limits.depth && mainThread && rootDepth > Limits.depth))
   {
-//sync_cout << "info string rdtsart " << rootDepth << sync_endl;
       // Age out PV variability metric
       if (mainThread)
           totBestMoveChanges /= 2;
@@ -957,12 +956,6 @@ moves_loop: // When in check, search starts from here
     while ((move = mp.next_move(moveCountPruning)) != MOVE_NONE)
     {
       assert(is_ok(move));
-//if (depth < 3 && us == WHITE) {
-//  sync_cout << "info string newmv " << UCI::move(move, false) << " rd " << thisThread->rootDepth
-//            << " dpth " << depth
-//            << " mv-1 " << ((ss-1)->currentMove != MOVE_NULL ? UCI::move((ss-1)->currentMove, false) : "")
-//            << sync_endl;
-//}
 
       if (move == excludedMove)
           continue;
@@ -1003,10 +996,6 @@ moves_loop: // When in check, search starts from here
       {
           // Skip quiet moves if movecount exceeds our FutilityMoveCount threshold
           moveCountPruning = moveCount >= futility_move_count(improving, depth);
-//if (depth < 3 && us == WHITE) {
-//  sync_cout << "info string mcp " << moveCountPruning << " mc " << moveCount << " dpth " << depth
-//            << " fmc " << futility_move_count(improving, depth) << sync_endl;
-//}
 
           // Reduced depth of the next LMR search
           int lmrDepth = std::max(newDepth - reduction(improving, depth, moveCount), 0);

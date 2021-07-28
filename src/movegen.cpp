@@ -47,6 +47,7 @@ namespace {
 
     constexpr Color     Them     = ~Us;
     constexpr Bitboard  TRank7BB = (Us == WHITE ? Rank7BB    : Rank2BB);
+    constexpr Bitboard  TRank6BB = (Us == WHITE ? Rank6BB    : Rank3BB);
     constexpr Bitboard  TRank3BB = (Us == WHITE ? Rank3BB    : Rank6BB);
     constexpr Direction Up       = pawn_push(Us);
     constexpr Direction UpRight  = (Us == WHITE ? NORTH_EAST : SOUTH_WEST);
@@ -60,10 +61,16 @@ namespace {
     Bitboard pawnsNotOn7 = pos.pieces(Us, PAWN) & ~TRank7BB;
 
     // Single and double pawn pushes, no promotions
-    if (Type != CAPTURES)
+//  if (Type != CAPTURES)
     {
-        Bitboard b1 = shift<Up>(pawnsNotOn7)   & emptySquares;
-        Bitboard b2 = shift<Up>(b1 & TRank3BB) & emptySquares;
+        Bitboard b1;
+        Bitboard b2;
+
+        if (Type == CAPTURES)
+            b1 = shift<Up>(pawnsNotOn7) & TRank6BB & emptySquares;
+        else
+            b1 = shift<Up>(pawnsNotOn7) & ~TRank6BB & emptySquares;
+        b2 = shift<Up>(b1 & TRank3BB) & emptySquares;
 
         if (Type == EVASIONS) // Consider only blocking squares
         {

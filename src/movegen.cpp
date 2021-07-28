@@ -20,6 +20,7 @@
 
 #include "movegen.h"
 #include "position.h"
+//#include "uci.h"
 
 namespace Stockfish {
 
@@ -68,8 +69,10 @@ namespace {
 
         if (Type == CAPTURES)
             b1 = shift<Up>(pawnsNotOn7) & TRank6BB & emptySquares;
+        else if (Type == EVASIONS || Type == QUIET_CHECKS)
+            b1 = shift<Up>(pawnsNotOn7) & emptySquares;
         else
-            b1 = shift<Up>(pawnsNotOn7) & ~TRank6BB & emptySquares;
+            b1 = shift<Up>(pawnsNotOn7) & (~TRank6BB) & emptySquares;
         b2 = shift<Up>(b1 & TRank3BB) & emptySquares;
 
         if (Type == EVASIONS) // Consider only blocking squares
@@ -93,6 +96,9 @@ namespace {
         {
             Square to = pop_lsb(b1);
             *moveList++ = make_move(to - Up, to);
+//sync_cout << "info string pqgen " << (Us == WHITE ? "wh " : "bl ")
+//          << (Type == CAPTURES ? "cap" : "oth") << " to " << UCI::square(to)
+//          << sync_endl;
         }
 
         while (b2)

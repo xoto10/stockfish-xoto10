@@ -1707,9 +1707,10 @@ moves_loop: // When in check, search starts here
     if (type_of(pos.moved_piece(move)) == PAWN)
     {
         // Bonus for advanced pawns
-        if (   relative_rank(us, to_sq(move)) > RANK_5
-            && distance<File>(to_sq(move), pos.square<KING>(~us)) < 4)
-            thisThread->mainHistory[us][from_to(move)] << stat_bonus(depth - 1);
+        if (   relative_rank(us, to_sq(move)) - RANK_3 > 0
+            && distance<File>(to_sq(move), pos.square<KING>(~us)) < 3)
+            thisThread->mainHistory[us][from_to(move)] <<
+                (relative_rank(us, to_sq(move)) - RANK_3) * stat_bonus(depth - 1);
     }
     else
         // Penalty for reversed move in case of moved piece not being a pawn

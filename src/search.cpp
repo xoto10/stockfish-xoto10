@@ -1708,7 +1708,7 @@ moves_loop: // When in check, search starts here
         && relative_rank(us, to_sq(move)) > RANK_5
         && distance<File>(to_sq(move), pos.square<KING>(~us)) < 4)
         // Bonus for advanced pawns
-        thisThread->mainHistory[us][from_to(move)] << 1000 * depth;
+        thisThread->mainHistory[us][from_to(move)] << stat_bonus(depth - 1);
     else
         // Penalty for reversed move in case of moved piece not being a pawn
         thisThread->mainHistory[us][from_to(reverse_move(move))] << -bonus;

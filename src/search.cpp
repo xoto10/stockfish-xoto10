@@ -1704,17 +1704,15 @@ moves_loop: // When in check, search starts here
     thisThread->mainHistory[us][from_to(move)] << bonus;
     update_continuation_histories(ss, pos.moved_piece(move), to_sq(move), bonus);
 
-    if (type_of(pos.moved_piece(move)) == PAWN)
+    if (type_of(pos.moved_piece(move)) != PAWN)
+        // Penalty for reversed move if moved piece is not a pawn
+        thisThread->mainHistory[us][from_to(reverse_move(move))] << -bonus;
+    else
     {
         // Bonus for advanced pawns
-        if (   relative_rank(us, to_sq(move)) - RANK_3 > 0
-            && distance<File>(to_sq(move), pos.square<KING>(~us)) < 4)
-            thisThread->mainHistory[us][from_to(move)] <<
-                (relative_rank(us, to_sq(move)) - RANK_3) * stat_bonus(depth - 1);
+        thisThread->mainHistory[us][from_to(move)] <<
+            (relative_rank(us, to_sq(move)) - RANK_3) * stat_bonus(depth - 1);
     }
-    else
-        // Penalty for reversed move in case of moved piece not being a pawn
-        thisThread->mainHistory[us][from_to(reverse_move(move))] << -bonus;
 
     // Update countermove history
     if (is_ok((ss-1)->currentMove))

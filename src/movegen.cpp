@@ -47,7 +47,8 @@ namespace {
 
     constexpr Color     Them     = ~Us;
     constexpr Bitboard  TRank7BB = (Us == WHITE ? Rank7BB    : Rank2BB);
-    constexpr Bitboard  TRank6BB = (Us == WHITE ? Rank6BB    : Rank3BB);
+    constexpr Bitboard  TRank567 = (Us == WHITE ? Rank5BB | Rank6BB | Rank7BB
+                                                : Rank2BB | Rank3BB | Rank4BB);
     constexpr Bitboard  TRank3BB = (Us == WHITE ? Rank3BB    : Rank6BB);
     constexpr Direction Up       = pawn_push(Us);
     constexpr Direction Right    = (Us == WHITE ? EAST       : WEST      );
@@ -73,7 +74,7 @@ namespace {
         {
             Square to = pop_lsb(b1);
             *moveList++ = make_move(to - UpRight, to);
-            if (   (TRank6BB & to)
+            if (   (TRank567 & to)
                 && pos.piece_on(to + Left) == NO_PIECE
                 && type_of(pos.piece_on(to)) == PAWN
                 && Type != EVASIONS)
@@ -87,7 +88,7 @@ namespace {
         {
             Square to = pop_lsb(b2);
             *moveList++ = make_move(to - UpLeft, to);
-            if (   (TRank6BB & to)
+            if (   (TRank567 & to)
                 && pos.piece_on(to + Right) == NO_PIECE
                 && type_of(pos.piece_on(to)) == PAWN
                 && Type != EVASIONS)

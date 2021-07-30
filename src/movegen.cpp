@@ -17,11 +17,9 @@
 */
 
 #include <cassert>
-//#include <iostream>
 
 #include "movegen.h"
 #include "position.h"
-//#include "uci.h"
 
 namespace Stockfish {
 
@@ -45,11 +43,10 @@ namespace {
 
 
   template<Color Us, GenType Type>
-  ExtMove* generate_pawn_moves(const Position& pos, ExtMove* moveList, Bitboard target, bool pawnQuiets) {
+  ExtMove* generate_pawn_moves(const Position& pos, ExtMove* moveList, Bitboard target) {
 
     constexpr Color     Them     = ~Us;
     constexpr Bitboard  TRank7BB = (Us == WHITE ? Rank7BB    : Rank2BB);
-//  constexpr Bitboard  TRank67BB = (Us == WHITE ? Rank6BB | Rank7BB    : Rank2BB | Rank3BB);
     constexpr Bitboard  TRank6BB = (Us == WHITE ? Rank6BB    : Rank3BB);
     constexpr Bitboard  TRank3BB = (Us == WHITE ? Rank3BB    : Rank6BB);
     constexpr Direction Up       = pawn_push(Us);
@@ -132,9 +129,9 @@ namespace {
             Square to = pop_lsb(b1);
             *moveList++ = make_move(to - UpRight, to);
             if (   (TRank6BB & to)
-                && pawnQuiets
                 && pos.piece_on(to + Left) == NO_PIECE
-                && type_of(pos.piece_on(to)) == PAWN)
+                && type_of(pos.piece_on(to)) == PAWN
+                && Type != EVASIONS)
                 *moveList++ = make_move(to - UpRight, to + Left);
         }
 
@@ -143,14 +140,10 @@ namespace {
             Square to = pop_lsb(b2);
             *moveList++ = make_move(to - UpLeft, to);
             if (   (TRank6BB & to)
-                && pawnQuiets
                 && pos.piece_on(to + Right) == NO_PIECE
-                && type_of(pos.piece_on(to)) == PAWN)
-//            {
-//  sync_cout << "info string upleft " << Us << " " << UCI::square(to) << "\n" << pos << sync_endl;
-//            << UCI::move(make_move(to - UpLeft, to + Right), false) << sync_endl;
+                && type_of(pos.piece_on(to)) == PAWN
+                && Type != EVASIONS)
                 *moveList++ = make_move(to - UpLeft, to + Right);
-//            }
         }
 
         if (pos.ep_square() != SQ_NONE)
@@ -199,7 +192,7 @@ namespace {
 
 
   template<Color Us, GenType Type>
-  ExtMove* generate_all(const Position& pos, ExtMove* moveList, bool pawnQuiets) {
+  ExtMove* generate_all(const Position& pos, ExtMove* moveList) {
 
     static_assert(Type != LEGAL, "Unsupported type in generate_all()");
 
@@ -215,7 +208,7 @@ namespace {
                : Type == CAPTURES     ?  pos.pieces(~Us)
                                       : ~pos.pieces(   ); // QUIETS || QUIET_CHECKS
 
-        moveList = generate_pawn_moves<Us, Type>(pos, moveList, target, pawnQuiets);
+        moveList = generate_pawn_moves<Us, Type>(pos, moveList, target);
         moveList = generate_moves<Us, KNIGHT, Checks>(pos, moveList, target);
         moveList = generate_moves<Us, BISHOP, Checks>(pos, moveList, target);
         moveList = generate_moves<Us,   ROOK, Checks>(pos, moveList, target);
@@ -252,37 +245,37 @@ namespace {
 /// Returns a pointer to the end of the move list.
 
 template<GenType Type>
-ExtMove* generate(const Position& pos, ExtMove* moveList, bool pawnQuiets) {
+ExtMove* generate(const Position& pos, ExtMove* moveList) {
 
   static_assert(Type != LEGAL, "Unsupported type in generate()");
   assert((Type == EVASIONS) == (bool)pos.checkers());
 
   Color us = pos.side_to_move();
 
-  return us == WHITE ? generate_all<WHITE, Type>(pos, moveList, pawnQuiets)
-                     : generate_all<BLACK, Type>(pos, moveList, pawnQuiets);
+  return us == WHITE ? generate_all<WHITE, Type>(pos, moveList)
+                     : generate_all<BLACK, Type>(pos, moveList);
 }
 
 // Explicit template instantiations
-template ExtMove* generate<CAPTURES>(const Position&, ExtMove*, bool);
-template ExtMove* generate<QUIETS>(const Position&, ExtMove*, bool);
-template ExtMove* generate<EVASIONS>(const Position&, ExtMove*, bool);
-template ExtMove* generate<QUIET_CHECKS>(const Position&, ExtMove*, bool);
-template ExtMove* generate<NON_EVASIONS>(const Position&, ExtMove*, bool);
+template ExtMove* generate<CAPTURES>(const Position&, ExtMove*);
+template ExtMove* generate<QUIETS>(const Position&, ExtMove*);
+template ExtMove* generate<EVASIONS>(const Position&, ExtMove*);
+template ExtMove* generate<QUIET_CHECKS>(const Position&, ExtMove*);
+template ExtMove* generate<NON_EVASIONS>(const Position&, ExtMove*);
 
 
 /// generate<LEGAL> generates all the legal moves in the given position
 
 template<>
-ExtMove* generate<LEGAL>(const Position& pos, ExtMove* moveList, bool pawnQuiets) {
+ExtMove* generate<LEGAL>(const Position& pos, ExtMove* moveList) {
 
   Color us = pos.side_to_move();
   Bitboard pinned = pos.blockers_for_king(us) & pos.pieces(us);
   Square ksq = pos.square<KING>(us);
   ExtMove* cur = moveList;
 
-  moveList = pos.checkers() ? generate<EVASIONS    >(pos, moveList, false)
-                            : generate<NON_EVASIONS>(pos, moveList, pawnQuiets);
+  moveList = pos.checkers() ? generate<EVASIONS    >(pos, moveList)
+                            : generate<NON_EVASIONS>(pos, moveList);
   while (cur != moveList)
       if (  ((pinned && pinned & from_sq(*cur)) || from_sq(*cur) == ksq || type_of(*cur) == EN_PASSANT)
           && !pos.legal(*cur))

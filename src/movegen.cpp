@@ -61,11 +61,63 @@ namespace {
 
     Bitboard pawnsOn7    = pos.pieces(Us, PAWN) &  TRank7BB;
     Bitboard pawnsNotOn7 = pos.pieces(Us, PAWN) & ~TRank7BB;
+    Bitboard pushNotTake = 0;
+
+    // Standard and en passant captures
+    if (Type == CAPTURES || Type == EVASIONS || Type == NON_EVASIONS)
+    {
+        Bitboard b1 = shift<UpRight>(pawnsNotOn7) & enemies;
+        Bitboard b2 = shift<UpLeft >(pawnsNotOn7) & enemies;
+
+        while (b1)
+        {
+            Square to = pop_lsb(b1);
+            *moveList++ = make_move(to - UpRight, to);
+            if (   (TRank6BB & to)
+                && pos.piece_on(to + Left) == NO_PIECE
+                && type_of(pos.piece_on(to)) == PAWN
+                && Type != EVASIONS)
+            {
+                *moveList++ = make_move(to - UpRight, to + Left);
+                pushNotTake |= to - UpRight;
+            }
+        }
+
+        while (b2)
+        {
+            Square to = pop_lsb(b2);
+            *moveList++ = make_move(to - UpLeft, to);
+            if (   (TRank6BB & to)
+                && pos.piece_on(to + Right) == NO_PIECE
+                && type_of(pos.piece_on(to)) == PAWN
+                && Type != EVASIONS)
+            {
+                *moveList++ = make_move(to - UpLeft, to + Right);
+                pushNotTake |= to - UpLeft;
+            }
+        }
+
+        if (pos.ep_square() != SQ_NONE)
+        {
+            assert(rank_of(pos.ep_square()) == relative_rank(Us, RANK_6));
+
+            // An en passant capture cannot resolve a discovered check
+            if (Type == EVASIONS && (target & (pos.ep_square() + Up)))
+                return moveList;
+
+            b1 = pawnsNotOn7 & pawn_attacks_bb(Them, pos.ep_square());
+
+            assert(b1);
+
+            while (b1)
+                *moveList++ = make<EN_PASSANT>(pop_lsb(b1), pos.ep_square());
+        }
+    }
 
     // Single and double pawn pushes, no promotions
     if (Type != CAPTURES)
     {
-        Bitboard b1 = shift<Up>(pawnsNotOn7)   & emptySquares;
+        Bitboard b1 = shift<Up>(pawnsNotOn7)   & emptySquares & ~pushNotTake;
         Bitboard b2 = shift<Up>(b1 & TRank3BB) & emptySquares;
 
         if (Type == EVASIONS) // Consider only blocking squares
@@ -116,51 +168,6 @@ namespace {
 
         while (b3)
             moveList = make_promotions<Type, Up     >(moveList, pop_lsb(b3));
-    }
-
-    // Standard and en passant captures
-    if (Type == CAPTURES || Type == EVASIONS || Type == NON_EVASIONS)
-    {
-        Bitboard b1 = shift<UpRight>(pawnsNotOn7) & enemies;
-        Bitboard b2 = shift<UpLeft >(pawnsNotOn7) & enemies;
-
-        while (b1)
-        {
-            Square to = pop_lsb(b1);
-            *moveList++ = make_move(to - UpRight, to);
-            if (   (TRank6BB & to)
-                && pos.piece_on(to + Left) == NO_PIECE
-                && type_of(pos.piece_on(to)) == PAWN
-                && Type != EVASIONS)
-                *moveList++ = make_move(to - UpRight, to + Left);
-        }
-
-        while (b2)
-        {
-            Square to = pop_lsb(b2);
-            *moveList++ = make_move(to - UpLeft, to);
-            if (   (TRank6BB & to)
-                && pos.piece_on(to + Right) == NO_PIECE
-                && type_of(pos.piece_on(to)) == PAWN
-                && Type != EVASIONS)
-                *moveList++ = make_move(to - UpLeft, to + Right);
-        }
-
-        if (pos.ep_square() != SQ_NONE)
-        {
-            assert(rank_of(pos.ep_square()) == relative_rank(Us, RANK_6));
-
-            // An en passant capture cannot resolve a discovered check
-            if (Type == EVASIONS && (target & (pos.ep_square() + Up)))
-                return moveList;
-
-            b1 = pawnsNotOn7 & pawn_attacks_bb(Them, pos.ep_square());
-
-            assert(b1);
-
-            while (b1)
-                *moveList++ = make<EN_PASSANT>(pop_lsb(b1), pos.ep_square());
-        }
     }
 
     return moveList;

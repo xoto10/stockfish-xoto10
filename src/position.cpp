@@ -716,6 +716,10 @@ void Position::do_move(Move m, StateInfo& newSt, bool givesCheck) {
 
   assert(color_of(pc) == us);
   assert(captured == NO_PIECE || color_of(captured) == (type_of(m) != CASTLING ? them : us));
+//if (type_of(captured) == KING)
+//{
+//  sync_cout << "info string kingcap " << us << " " << UCI::square(to) << "\n" << *this << sync_endl;
+//}
   assert(type_of(captured) != KING);
 
   if (type_of(m) == CASTLING)

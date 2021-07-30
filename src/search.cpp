@@ -875,6 +875,11 @@ namespace {
                                                                           [pos.moved_piece(move)]
                                                                           [to_sq(move)];
 
+//sync_cout << "info string domv " << ss->ply << " " << us
+//          << " " << UCI::move((ss-2)->currentMove, false)
+//          << " " << UCI::move((ss-1)->currentMove, false)
+//          << " " << UCI::move(move, false)
+//          << sync_endl;
                 pos.do_move(move, st);
 
                 // Perform a preliminary qsearch to verify that the move holds

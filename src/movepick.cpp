@@ -162,7 +162,7 @@ top:
   case PROBCUT_INIT:
   case QCAPTURE_INIT:
       cur = endBadCaptures = moves;
-      endMoves = generate<CAPTURES>(pos, cur);
+      endMoves = generate<CAPTURES>(pos, cur, stage == CAPTURE_INIT);
 
       score<CAPTURES>();
       ++stage;
@@ -199,7 +199,7 @@ top:
       if (!skipQuiets)
       {
           cur = endBadCaptures;
-          endMoves = generate<QUIETS>(pos, cur);
+          endMoves = generate<QUIETS>(pos, cur, false);
 
           score<QUIETS>();
           partial_insertion_sort(cur, endMoves, -3000 * depth);
@@ -227,7 +227,7 @@ top:
 
   case EVASION_INIT:
       cur = moves;
-      endMoves = generate<EVASIONS>(pos, cur);
+      endMoves = generate<EVASIONS>(pos, cur, false);
 
       score<EVASIONS>();
       ++stage;
@@ -253,7 +253,7 @@ top:
 
   case QCHECK_INIT:
       cur = moves;
-      endMoves = generate<QUIET_CHECKS>(pos, cur);
+      endMoves = generate<QUIET_CHECKS>(pos, cur, false);
 
       ++stage;
       [[fallthrough]];

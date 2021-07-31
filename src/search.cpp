@@ -1710,9 +1710,8 @@ moves_loop: // When in check, search starts here
     else
     {
         // Bonus for advanced pawns
-        if ( distance<File>(to_sq(move), pos.square<KING>(~us)) < 4 )
-            thisThread->mainHistory[us][from_to(move)] <<
-                (relative_rank(us, to_sq(move)) - RANK_3) * stat_bonus(depth - 1);
+        thisThread->mainHistory[us][from_to(move)] <<
+            (relative_rank(us, to_sq(move)) - RANK_3) * stat_bonus(depth + 1);
     }
 
     // Update countermove history

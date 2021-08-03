@@ -459,7 +459,7 @@ void Thread::search() {
           fallingEval = std::clamp(fallingEval, 0.5, 1.5);
 
           // If the bestMove is stable over several iterations, reduce time accordingly
-          timeReduction = lastBestMoveDepth + 9 < completedDepth ? 1.92 : 0.95;
+          timeReduction = lastBestMoveDepth + 9 < completedDepth ? 1.95 : 0.94;
           double reduction = (1.47 + mainThread->previousTimeReduction) / (2.32 * timeReduction);
 
           // Use part of the gained time from a previous stable move for the current move
@@ -468,12 +468,12 @@ void Thread::search() {
               totBestMoveChanges += th->bestMoveChanges;
               th->bestMoveChanges = 0;
           }
-          double bestMoveInstability = 1.073 + std::max(1.0, 2.25 - 9.9 / rootDepth)
+          double bestMoveInstability = 1.07 + std::max(1.0, 2.17 - 9.9 / rootDepth)
                                               * totBestMoveChanges / Threads.size();
 
-          double cached = std::clamp(0.91 + 1.13 * (mainThread->ttHitMoveAverage
+          double cached = std::clamp(0.92 + 1.13 * (mainThread->ttHitMoveAverage
                                                       - double(ttHitAverage) / TtHitAverageResolution / TtHitAverageWindow),
-                                     1.02, 1.38);
+                                     1.04, 1.33);
           double totalTime = Time.optimum() * fallingEval * reduction * bestMoveInstability * cached;
 
           // Cap used time in case of a single legal move for a better viewer experience in tournaments

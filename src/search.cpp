@@ -1712,7 +1712,7 @@ moves_loop: // When in check, search starts here
         // Bonus for advanced pawns
         if ( distance<File>(to_sq(move), pos.square<KING>(~us)) < 4 )
             thisThread->mainHistory[us][from_to(move)] <<
-                (relative_rank(us, to_sq(move)) - RANK_3) * 150;
+                (relative_rank(us, to_sq(move)) - RANK_3) * std::max(150, depth > 14 ? 150 : 320 * depth - 1410);
     }
 
     // Update countermove history

@@ -945,6 +945,7 @@ moves_loop: // When in check, search starts here
     value = bestValue;
     singularQuietLMR = moveCountPruning = false;
     bool doubleExtension = false;
+    int quiets = 0;
 
     // Indicate PvNodes that will probably fail low if the node was searched
     // at a depth equal or greater than the current depth, and the result of this search was a fail low.
@@ -987,6 +988,8 @@ moves_loop: // When in check, search starts here
       captureOrPromotion = pos.capture_or_promotion(move);
       movedPiece = pos.moved_piece(move);
       givesCheck = pos.gives_check(move);
+      if ( !(captureOrPromotion || givesCheck) )
+          ++quiets;
 
       // Calculate new depth for this move
       newDepth = depth - 1;
@@ -998,7 +1001,7 @@ moves_loop: // When in check, search starts here
       {
           // Only process first quiet move if movecount exceeds our FutilityMoveCount threshold
           moveCountPruning = moveCount >= futility_move_count(improving, depth)
-                            && !(captureOrPromotion || givesCheck);
+                            && quiets > 2;
 
           // Reduced depth of the next LMR search
           int lmrDepth = std::max(newDepth - reduction(improving, depth, moveCount), 0);

@@ -1096,6 +1096,18 @@ Value Eval::evaluate(const Position& pos) {
 
          Value nnue = NNUE::evaluate(pos, true) * scale / 1024;
 
+         if (abs(nnue) > 200)
+         {
+             int bl = popcount(pos.pieces(WHITE, PAWN) & shift<SOUTH>(pos.pieces(BLACK, PAWN)));
+             if (bl > 2)
+             {
+                 Value nnue2;
+//int r1 = (200 + (abs(nnue) - 200) * (10 - bl) / 8);
+                 nnue = nnue * (200 + (abs(nnue) - 200) * (10 - bl) / 8) / abs(nnue);
+//sync_cout << "info string nnadj " << nnue << " bl " << bl << " new " << nnue2 << " r1 " << r1 << sync_endl;
+             }
+         }
+
          if (pos.is_chess960())
              nnue += fix_FRC(pos);
 

@@ -1131,8 +1131,9 @@ moves_loop: // When in check, search starts here
           if (PvNode)
               r--;
 
-          // Decrease reduction if the ttHit running average is large (~0 Elo)
-          if (thisThread->ttHitAverage > 537 * TtHitAverageResolution * TtHitAverageWindow / 1024)
+          // Decrease reduction on PV nodes if the ttHit running average is large (~0 Elo)
+          if (   !rootNode && PvNode
+              && thisThread->ttHitAverage > 537 * TtHitAverageResolution * TtHitAverageWindow / 1024)
               r--;
 
           // Decrease reduction if position is or has been on the PV
@@ -1140,11 +1141,6 @@ moves_loop: // When in check, search starts here
           if (   ss->ttPv
               && !likelyFailLow)
               r -= 2;
-
-          // Increase reduction at root and non-PV nodes when the best move does not change frequently
-          if (   (rootNode || !PvNode)
-              && thisThread->bestMoveChanges <= 2)
-              r++;
 
           // Decrease reduction if opponent's move count is high (~1 Elo)
           if ((ss-1)->moveCount > 13)

@@ -146,6 +146,8 @@ namespace {
 
 } // namespace
 
+int A=192, B=256, C=1280;
+TUNE(A, B, C);
 
 /// Search::init() is called at startup to initialize various lookup tables
 
@@ -1001,7 +1003,7 @@ moves_loop: // When in check, search starts here
       {
           // Only process first quiet move if movecount exceeds our FutilityMoveCount threshold
           moveCountPruning = moveCount >= futility_move_count(improving, depth)
-                            && quiets > std::min(4, depth);
+                            && (A*depth + B*quiets) > C;
 
           // Reduced depth of the next LMR search
           int lmrDepth = std::max(newDepth - reduction(improving, depth, moveCount), 0);

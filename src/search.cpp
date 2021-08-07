@@ -1713,7 +1713,7 @@ moves_loop: // When in check, search starts here
         if ( distance<File>(to_sq(move), pos.square<KING>(~us)) < 4 )
             thisThread->mainHistory[us][from_to(move)] <<
                 (relative_rank(us, to_sq(move)) - RANK_3)
-                                  * std::max(150, depth > 14 ? 150
+                                  * std::max(150, depth > 14 ? 3397
                                                              : 6 * depth * depth + 193 * depth - 848);
     }
 

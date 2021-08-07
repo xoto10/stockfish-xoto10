@@ -988,7 +988,7 @@ moves_loop: // When in check, search starts here
       captureOrPromotion = pos.capture_or_promotion(move);
       movedPiece = pos.moved_piece(move);
       givesCheck = pos.gives_check(move);
-      if ( !(captureOrPromotion || givesCheck) )
+      if ( !(captureOrPromotion || givesCheck || ss->inCheck) )
           ++quiets;
 
       // Calculate new depth for this move

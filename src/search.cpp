@@ -65,8 +65,8 @@ namespace {
   constexpr uint64_t TtHitAverageResolution = 1024;
 
   // Futility margin
-  Value futility_margin(Depth d, bool important, bool improving) {
-    return Value(214 * (d - important - improving));
+  Value futility_margin(Depth d, bool improving) {
+    return Value(214 * (d - improving));
   }
 
   // Reductions lookup table, initialized at startup
@@ -786,7 +786,7 @@ namespace {
     // The depth condition is important for mate finding.
     if (   !PvNode
         &&  depth < 9
-        &&  eval - futility_margin(depth, important, improving) >= beta
+        &&  eval - futility_margin(depth, improving) >= beta
         &&  eval < VALUE_KNOWN_WIN) // Do not return unproven wins
         return eval;
 
@@ -796,7 +796,7 @@ namespace {
         && (ss-1)->statScore < 23767
         &&  eval >= beta
         &&  eval >= ss->staticEval
-        &&  ss->staticEval >= beta - 20 * depth - 22 * improving + 168 * ss->ttPv + 159
+        &&  ss->staticEval >= beta - 20 * depth - 22 * improving + 80 * important + 168 * ss->ttPv + 159
         && !excludedMove
         &&  pos.non_pawn_material(us)
         && (ss->ply >= thisThread->nmpMinPly || us != thisThread->nmpColor))

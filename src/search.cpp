@@ -65,8 +65,9 @@ namespace {
   constexpr uint64_t TtHitAverageResolution = 1024;
 
   // Futility margin
-  Value futility_margin(Depth d, bool improving) {
-    return Value(214 * (d - improving));
+  Value futility_margin(Depth d, Value v, bool improving) {
+    bool important = 156 < abs(v) && abs(v) < 312;
+    return Value(214 * (d + important - improving));
   }
 
   // Reductions lookup table, initialized at startup
@@ -783,7 +784,7 @@ namespace {
     // The depth condition is important for mate finding.
     if (   !PvNode
         &&  depth < 9
-        &&  eval - futility_margin(depth, improving) >= beta
+        &&  eval - futility_margin(depth, eval, improving) >= beta
         &&  eval < VALUE_KNOWN_WIN) // Do not return unproven wins
         return eval;
 

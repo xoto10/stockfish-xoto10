@@ -840,7 +840,7 @@ namespace {
         }
     }
 
-    probCutBeta = beta + 209 + 120 * important - 44 * improving;
+    probCutBeta = beta + 209 - 44 * improving;
 
     // Step 9. ProbCut (~4 Elo)
     // If we have a good enough capture and a reduced search returns a value
@@ -1003,7 +1003,7 @@ moves_loop: // When in check, search starts here
           moveCountPruning = moveCount >= futility_move_count(improving, depth);
 
           // Reduced depth of the next LMR search
-          int lmrDepth = std::max(newDepth - reduction(improving, depth, moveCount), 0);
+          int lmrDepth = std::max(newDepth + important - reduction(improving, depth, moveCount), 0);
 
           if (   captureOrPromotion
               || givesCheck)

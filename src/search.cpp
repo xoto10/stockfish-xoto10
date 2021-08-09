@@ -1126,7 +1126,10 @@ moves_loop: // When in check, search starts here
               || !ss->ttPv)
           && (!PvNode || ss->ply > 1 || thisThread->id() % 4 != 3))
       {
-          Depth r = reduction(improving, depth, moveCount);
+          int rnd = thisThread->nodes % 8 == 7 ? 1
+                                               : thisThread->nodes % 8 == 6 ? -1
+                                                                            :  0;
+          Depth r = reduction(improving, depth, moveCount) + rnd;
 
           if (PvNode)
               r--;

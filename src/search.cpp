@@ -779,9 +779,6 @@ namespace {
                ? ss->staticEval > (ss-4)->staticEval || (ss-4)->staticEval == VALUE_NONE
                : ss->staticEval > (ss-2)->staticEval;
 
-    // Set up important flag that is used in various pruning heuristics
-    important = 156 < abs(eval) && abs(eval) < 312;
-
     // Step 7. Futility pruning: child node (~50 Elo).
     // The depth condition is important for mate finding.
     if (   !PvNode
@@ -990,6 +987,7 @@ moves_loop: // When in check, search starts here
       captureOrPromotion = pos.capture_or_promotion(move);
       movedPiece = pos.moved_piece(move);
       givesCheck = pos.gives_check(move);
+      important = 156 < abs(bestValue) && abs(bestValue) < 312;
 
       // Calculate new depth for this move
       newDepth = depth - 1;

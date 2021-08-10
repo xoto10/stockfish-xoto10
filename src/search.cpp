@@ -1155,9 +1155,9 @@ moves_loop: // When in check, search starts here
           if (singularQuietLMR)
               r--;
 
-          // Decrease reduction if important
+          // Increase reduction if important
           if (important)
-              r--;
+              r++;
 
           // Increase reduction for cut nodes (~3 Elo)
           if (cutNode && move != ss->killers[0])

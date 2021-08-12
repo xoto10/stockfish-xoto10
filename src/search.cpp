@@ -146,8 +146,6 @@ namespace {
 
 } // namespace
 
-int A=150, B=14, C=3397, D=6, E=193, F=848;
-TUNE(A, B, C, D, E, F);
 
 /// Search::init() is called at startup to initialize various lookup tables
 
@@ -1715,8 +1713,8 @@ moves_loop: // When in check, search starts here
         if ( distance<File>(to_sq(move), pos.square<KING>(~us)) < 4 )
             thisThread->mainHistory[us][from_to(move)] <<
                 (relative_rank(us, to_sq(move)) - RANK_3)
-                                  * std::max(A, depth > B ? C
-                                                             : D * depth * depth + E * depth - F);
+                                  * std::max(145, depth > 14 ? 3316
+                                                             : 6 * depth * depth + 195 * depth - 857);
     }
 
     // Update countermove history

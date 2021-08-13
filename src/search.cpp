@@ -988,7 +988,7 @@ moves_loop: // When in check, search starts here
       captureOrPromotion = pos.capture_or_promotion(move);
       movedPiece = pos.moved_piece(move);
       givesCheck = pos.gives_check(move);
-      if ( !(captureOrPromotion || givesCheck || ss->inCheck) )
+      if ( !(captureOrPromotion || givesCheck) )
           ++quiets;
 
       // Calculate new depth for this move
@@ -1001,7 +1001,7 @@ moves_loop: // When in check, search starts here
       {
           // Only process first quiet move if movecount exceeds our FutilityMoveCount threshold
           moveCountPruning = moveCount >= futility_move_count(improving, depth)
-                            && (abs(bestValue) < 150 || 300 < abs(bestValue) || (79*depth + 112*quiets) > 516);
+                            && depth + quiets > 4;
 
           // Reduced depth of the next LMR search
           int lmrDepth = std::max(newDepth - reduction(improving, depth, moveCount), 0);

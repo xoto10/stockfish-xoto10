@@ -191,6 +191,9 @@ using namespace Trace;
 
 namespace {
 
+int A=990, B=768, C=37, D=6560, E=33;
+TUNE(A, B, C, D, E);
+
   // Threshold for lazy and space evaluation
   constexpr Value LazyThreshold1    =  Value(3130);
   constexpr Value LazyThreshold2    =  Value(2204);
@@ -1094,9 +1097,9 @@ Value Eval::evaluate(const Position& pos) {
       {
          Value ue = Value( std::clamp(abs(NNUE::evaluate(pos, true)), 0, 200) );
          int np = pos.count<PAWN>() + pos.non_pawn_material() / 1024;
-         int scale =   990 - ue / 2
-                     + (768 + 37 * ue) * np / 256
-                     + (6560 - 33 * ue) * np * np / 8192;
+         int scale =   A   - ue / 2
+                     + (B   + C  * ue) * np / 256
+                     + (D    - E  * ue) * np * np / 8192;
 
          Value nnue = NNUE::evaluate(pos, true) * scale / 1024;
 

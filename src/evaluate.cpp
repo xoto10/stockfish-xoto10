@@ -191,9 +191,6 @@ using namespace Trace;
 
 namespace {
 
-int A=1052, B=3235, C=158, D=28249, E=125, F=200;
-TUNE(A, B, C, D, E, F);
-
   // Threshold for lazy and space evaluation
   constexpr Value LazyThreshold1    =  Value(3130);
   constexpr Value LazyThreshold2    =  Value(2204);
@@ -1095,14 +1092,13 @@ Value Eval::evaluate(const Position& pos) {
       // Scale and shift NNUE for compatibility with search and classical evaluation
       auto  adjusted_NNUE = [&]()
       {
-         Value nn = NNUE::evaluate(pos, true);
-         Value ue = Value( std::clamp(abs(nn), 0, F  ) );
+         Value ue = Value( std::clamp(abs(NNUE::evaluate(pos, true)), 0, 200) );
          int np = pos.count<PAWN>() + pos.non_pawn_material() / 1024;
-         int scale =   A   - ue / 2
-                     + (B   + C  * ue) * np / 1024
-                     + (D    - E  * ue) * np * np / 32768;
+         int scale =   1052 - ue / 2
+                     + (3235 + 158 * ue) * np / 1024
+                     + (28249 - 125 * ue) * np * np / 32768;
 
-         Value nnue = nn * scale / 1024;
+         Value nnue = NNUE::evaluate(pos, true) * scale / 1024;
 
          if (pos.is_chess960())
              nnue += fix_FRC(pos);

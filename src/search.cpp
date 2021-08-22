@@ -470,10 +470,10 @@ void Thread::search() {
           }
           double bestMoveInstability = 1.073 + std::max(1.0, 2.25 - 9.9 / rootDepth)
                                               * totBestMoveChanges / Threads.size();
-          double chances =  0.924
+          double chances =  0.936
                           + std::max(0, rootPos.count<ALL_PIECES>() - 24)
                               * std::min(8, abs(bestValue / 32))
-                              * 0.0061;
+                              * 0.00621;
 
           double totalTime = Time.optimum() * fallingEval * reduction * bestMoveInstability * chances;
 

@@ -1238,8 +1238,8 @@ moves_loop: // When in check, search starts here
 
           if (   Threads.main()->bestPreviousScore2 < value - 10
               && abs(value) < 2000
-              && value > alpha)
-              value += std::max(0, (numPieces - 24) / 2);
+              && (moveCount == 1 || value > alpha))
+              value += std::max(0, (numPieces - 24)) * 2;
 
           // PV move or new best move?
           if (moveCount == 1 || value > alpha)

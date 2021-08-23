@@ -1117,8 +1117,8 @@ Value Eval::evaluate(const Position& pos) {
 
   // Bonus for many pieces if score is improving over last 2 moves
   int flip = (pos.this_thread()->rootColor == pos.side_to_move()) ? 1 : -1;
-  int inc = std::clamp(int(flip * v - Threads.main()->bestPreviousScore2), 0, 10);
-  v += flip * std::max(0, (pos.count<ALL_PIECES>() - 24)) * inc;
+  if (v * flip > Threads.main()->bestPreviousScore2 + 10)
+      v += flip * std::max(0, (pos.count<ALL_PIECES>() - 24)) * 4;
 
   // Guarantee evaluation does not hit the tablebase range
   v = std::clamp(v, VALUE_TB_LOSS_IN_MAX_PLY + 1, VALUE_TB_WIN_IN_MAX_PLY - 1);

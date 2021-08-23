@@ -229,6 +229,7 @@ void MainThread::search() {
       && rootMoves[0].pv[0] != MOVE_NONE)
       bestThread = Threads.get_best_thread();
 
+  bestPreviousScore2 = bestPreviousScore;
   bestPreviousScore = bestThread->rootMoves[0].score;
 
   // Send again PV info if we have a new best thread
@@ -1255,6 +1256,9 @@ moves_loop: // When in check, search starts here
               // move position in the list is preserved - just the PV is pushed up.
               rm.score = -VALUE_INFINITE;
       }
+
+      if (Threads.main()->bestPreviousScore2 < value)
+         value += std::max(0, pos.count<ALL_PIECES>() - 24);
 
       if (value > bestValue)
       {

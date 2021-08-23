@@ -75,6 +75,7 @@ public:
   CapturePieceToHistory captureHistory;
   ContinuationHistory continuationHistory[2][2];
   Score trend;
+  Color rootColor;
 };
 
 
@@ -89,6 +90,7 @@ struct MainThread : public Thread {
 
   double previousTimeReduction;
   Value bestPreviousScore;
+  Value bestPreviousScore2;
   Value iterValue[4];
   int callsCnt;
   bool stopOnPonderhit;

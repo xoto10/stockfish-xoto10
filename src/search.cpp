@@ -229,6 +229,7 @@ void MainThread::search() {
       && rootMoves[0].pv[0] != MOVE_NONE)
       bestThread = Threads.get_best_thread();
 
+  bestPreviousScore2 = bestPreviousScore;
   bestPreviousScore = bestThread->rootMoves[0].score;
 
   // Send again PV info if we have a new best thread
@@ -263,6 +264,8 @@ void Thread::search() {
   double timeReduction = 1, totBestMoveChanges = 0;
   Color us = rootPos.side_to_move();
   int iterIdx = 0;
+
+  rootColor = us;
 
   std::memset(ss-7, 0, 10 * sizeof(Stack));
   for (int i = 7; i > 0; i--)

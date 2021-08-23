@@ -1115,6 +1115,11 @@ Value Eval::evaluate(const Position& pos) {
   // Damp down the evaluation linearly when shuffling
   v = v * (100 - pos.rule50_count()) / 100;
 
+  // Bonus for many pieces if score is improving over last 2 moves
+  int flip = (pos.this_thread()->rootColor == pos.side_to_move()) ? 1 : -1;
+  if (Threads.main()->bestPreviousScore2 < flip * v - 10)
+      v += flip * std::max(0, (pos.count<ALL_PIECES>() - 24) * 8);
+
   // Guarantee evaluation does not hit the tablebase range
   v = std::clamp(v, VALUE_TB_LOSS_IN_MAX_PLY + 1, VALUE_TB_WIN_IN_MAX_PLY - 1);
 

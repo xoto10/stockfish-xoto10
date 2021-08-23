@@ -1257,8 +1257,8 @@ moves_loop: // When in check, search starts here
               rm.score = -VALUE_INFINITE;
       }
 
-      if (Threads.main()->bestPreviousScore2 < value)
-         value += std::max(0, pos.count<ALL_PIECES>() - 24);
+      if (Threads.main()->bestPreviousScore2 < value - 10)
+         value += std::max(0, (pos.count<ALL_PIECES>() - 24) / 2);
 
       if (value > bestValue)
       {

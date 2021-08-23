@@ -1217,6 +1217,9 @@ moves_loop: // When in check, search starts here
       }
 
       // Step 18. Undo move
+      int numPieces = 0;
+      if (rootNode)
+          numPieces = pos.count<ALL_PIECES>();
       pos.undo_move(move);
 
       assert(value > -VALUE_INFINITE && value < VALUE_INFINITE);
@@ -1232,6 +1235,11 @@ moves_loop: // When in check, search starts here
       {
           RootMove& rm = *std::find(thisThread->rootMoves.begin(),
                                     thisThread->rootMoves.end(), move);
+
+          if (   Threads.main()->bestPreviousScore2 < value - 10
+              && abs(value) < 2000
+              && value > alpha)
+              value += std::max(0, (numPieces - 24) / 2);
 
           // PV move or new best move?
           if (moveCount == 1 || value > alpha)
@@ -1256,9 +1264,6 @@ moves_loop: // When in check, search starts here
               // move position in the list is preserved - just the PV is pushed up.
               rm.score = -VALUE_INFINITE;
       }
-
-      if (Threads.main()->bestPreviousScore2 < value - 10)
-         value += std::max(0, (pos.count<ALL_PIECES>() - 24) / 2);
 
       if (value > bestValue)
       {

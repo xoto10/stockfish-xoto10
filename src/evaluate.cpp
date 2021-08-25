@@ -1093,10 +1093,10 @@ Value Eval::evaluate(const Position& pos) {
       auto  adjusted_NNUE = [&]()
       {
          Value nn = NNUE::evaluate(pos, true);
-         int   sc = std::clamp(int(nn / 25 + 24), 16, 32);
+         int   sc = std::clamp(int(nn), -200, 200) * 330 / 4096 + 16;
 
-         int scale =   883
-                     + 20 * (32 - sc)
+         int scale =   1523
+                     - 20 * sc
                      + sc * pos.count<PAWN>()
                      + sc * pos.non_pawn_material() / 1024;
 

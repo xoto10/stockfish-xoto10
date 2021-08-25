@@ -1093,7 +1093,7 @@ Value Eval::evaluate(const Position& pos) {
       auto  adjusted_NNUE = [&]()
       {
          Value nn = NNUE::evaluate(pos, true);
-         int   sc = std::clamp(int(nn / 10 + 20), 0, 40);
+         int   sc = std::clamp(int(nn / 25 + 24), 16, 32);
 
          int scale =   883
                      + sc * pos.count<PAWN>()

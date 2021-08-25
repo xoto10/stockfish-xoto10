@@ -1096,6 +1096,7 @@ Value Eval::evaluate(const Position& pos) {
          int   sc = std::clamp(int(nn / 25 + 24), 16, 32);
 
          int scale =   883
+                     + 20 * (32 - sc)
                      + sc * pos.count<PAWN>()
                      + sc * pos.non_pawn_material() / 1024;
 

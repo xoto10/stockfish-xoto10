@@ -191,8 +191,6 @@ using namespace Trace;
 
 namespace {
 
-int A=165, B=24, C=160, D=160;
-TUNE(A, B, C, D);
 
   // Threshold for lazy and space evaluation
   constexpr Value LazyThreshold1    =  Value(3130);

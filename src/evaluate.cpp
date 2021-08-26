@@ -1094,7 +1094,7 @@ Value Eval::evaluate(const Position& pos) {
       auto  adjusted_NNUE = [&]()
       {
          Value nn = NNUE::evaluate(pos, true);
-         int   sc = std::clamp(int(nn), -240, 240) * 21 / 512 + 26;
+         int   sc = std::clamp(int(nn), -200, 200) * 21 / 512 + 26;
 
          int scale =   1573
                      - 20 * sc

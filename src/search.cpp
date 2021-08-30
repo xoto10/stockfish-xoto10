@@ -62,16 +62,16 @@ namespace {
   // Net weights and biases of a small neural network for time management
   int nw[2][2][2] =
   {
-    {{3,3},{1,1}},
-    {{3,3},{1,1}}
+    {{0,0},{0,0}},
+    {{0,0},{0,0}}
   };
   int nb[2][2] =
   {
-    {157,177},
-    {2,5}
+    {0,0},
+    {0,0}
   };
-  int nwo[2] = {2,2};
-  int nbo = 7;
+  int nwo[2] = {0,0};
+  int nbo = 0;
   int npmw = 128;
   int nn_scale = 1650;
   int lower_clamp = 50;

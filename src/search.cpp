@@ -22,6 +22,7 @@
 #include <cstring>   // For std::memset
 #include <iostream>
 #include <sstream>
+#include <numeric>
 
 #include "evaluate.h"
 #include "misc.h"
@@ -57,6 +58,32 @@ using Eval::evaluate;
 using namespace Search;
 
 namespace {
+
+  // Net weights and biases of a small neural network for time management
+  int nw[2][2][2] =
+  {
+    {{3,3},{1,1}},
+    {{3,3},{1,1}}
+  };
+  int nb[2][2] =
+  {
+    {157,177},
+    {2,5}
+  };
+  int nwo[2] = {2,2};
+  int nbo = 7;
+  int npmw = 128;
+  int nn_scale = 1650;
+  int lower_clamp = 50;
+  int upper_clamp = 150;
+
+  //TUNE(SetRange(-10, 10),nw);
+  auto myfunc = [](int m){return std::pair<int, int>(m - 250, m + 250);};
+  TUNE(SetRange(myfunc), nb);
+  TUNE(SetRange(-5, 5),nwo);
+  TUNE(SetRange(-1500, 1500),nbo);
+  TUNE(SetRange(0,256), npmw);
+  TUNE(nn_scale,lower_clamp,upper_clamp);
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
@@ -470,7 +497,20 @@ void Thread::search() {
           }
           double bestMoveInstability = 1.073 + std::max(1.0, 2.25 - 9.9 / rootDepth)
                                               * totBestMoveChanges / Threads.size();
-          double totalTime = Time.optimum() * fallingEval * reduction * bestMoveInstability;
+
+          // Inputs of the neural network
+          int ft[2]={completedDepth, rootPos.count<PAWN>() + rootPos.non_pawn_material(us) * npmw / 32768 };
+          // Matrix multiplication (layers)
+          for (size_t m = 0; m < 2; ++m)
+          {
+              int temp[2] = {0};
+              for (size_t i = 0; i < 2; ++i)
+                  temp[i]= std::max(0, std::inner_product(ft, ft+2, nw[i][m], 0) + nb[m][i]); // ReLU activation function
+              for (size_t n = 0; n < 2; ++n)
+                  ft[n] = temp[n];
+          }
+          double nn = std::clamp((std::inner_product(ft, ft+2, nwo, 0) + nbo) / (nn_scale * 1.0), lower_clamp/100.0, upper_clamp/100.0);
+          double totalTime = Time.optimum() * fallingEval * reduction * nn * bestMoveInstability;
 
           // Cap used time in case of a single legal move for a better viewer experience in tournaments
           // yielding correct scores and sufficiently fast moves.

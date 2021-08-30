@@ -77,7 +77,7 @@ namespace {
   int lower_clamp = 50;
   int upper_clamp = 150;
 
-  //TUNE(SetRange(-10, 10),nw);
+  TUNE(SetRange(-10, 10),nw);
   auto myfunc = [](int m){return std::pair<int, int>(m - 250, m + 250);};
   TUNE(SetRange(myfunc), nb);
   TUNE(SetRange(-5, 5),nwo);

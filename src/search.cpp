@@ -62,28 +62,29 @@ namespace {
   // Net weights and biases of a small neural network for time management
   int nw[2][2][2] =
   {
-    {{ 2,-1},{-1, 2}},
-    {{-1,-1},{ 1,-1}}
+    {{ 4, 7},{ 3, 6}},
+    {{ 3, 4},{ 7, 4}}
   };
   int nb[2][2] =
   {
-    { -4,  8},
-    {-13, -5}
+    { 21, 34},
+    {-23,  3}
   };
-  int nwo[2] = {0,0};
-  int nbo = 21;
+  int nwo[2] = {1,1};
+  int nbo = 144;
   int npmw = 126;
-  int nn_scale = 1712;
-  int lower_clamp = 50;
-  int upper_clamp = 150;
+  int nn_scale = 6500;
+  int lower_clamp = 30;
+  int upper_clamp = 300;
 
-  TUNE(SetRange(-40, 40),nw);
-  auto myfunc = [](int m){return std::pair<int, int>(m - 250, m + 250);};
-  TUNE(SetRange(myfunc), nb);
-  TUNE(SetRange(-5, 5),nwo);
-  TUNE(SetRange(-1500, 1500),nbo);
+TUNE(SetRange(-40, 40),nw);
+auto myfunc = [](int m){return std::pair<int, int>(m - 250, m + 250);};
+TUNE(SetRange(myfunc), nb);
+TUNE(SetRange(-5, 5),nwo);
+TUNE(SetRange(-1500, 1500),nbo);
+TUNE(SetDefaultRange, nn_scale);
 //TUNE(SetRange(0,256), npmw);
-//TUNE(nn_scale,lower_clamp,upper_clamp);
+//TUNE(lower_clamp,upper_clamp);
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };

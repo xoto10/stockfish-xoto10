@@ -62,28 +62,28 @@ namespace {
   // Net weights and biases of a small neural network for time management
   int nw[2][2][2] =
   {
-    {{0,0},{0,0}},
-    {{0,0},{0,0}}
+    {{ 2,-1},{-1, 2}},
+    {{-1,-1},{ 1,-1}}
   };
   int nb[2][2] =
   {
-    {0,0},
-    {0,0}
+    { -4,  8},
+    {-13, -5}
   };
   int nwo[2] = {0,0};
-  int nbo = 0;
-  int npmw = 128;
-  int nn_scale = 1650;
+  int nbo = 21;
+  int npmw = 126;
+  int nn_scale = 1712;
   int lower_clamp = 50;
   int upper_clamp = 150;
 
-  TUNE(SetRange(-10, 10),nw);
+  TUNE(SetRange(-40, 40),nw);
   auto myfunc = [](int m){return std::pair<int, int>(m - 250, m + 250);};
   TUNE(SetRange(myfunc), nb);
   TUNE(SetRange(-5, 5),nwo);
   TUNE(SetRange(-1500, 1500),nbo);
-  TUNE(SetRange(0,256), npmw);
-  TUNE(nn_scale,lower_clamp,upper_clamp);
+//TUNE(SetRange(0,256), npmw);
+//TUNE(nn_scale,lower_clamp,upper_clamp);
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
@@ -511,7 +511,7 @@ void Thread::search() {
           }
           double nn = std::clamp((std::inner_product(ft, ft+2, nwo, 0) + nbo) / (nn_scale * 1.0), lower_clamp/100.0, upper_clamp/100.0);
           double totalTime = Time.optimum() * fallingEval * reduction * nn * bestMoveInstability;
-
+sync_cout << "info string nntim " << nn << sync_endl;
           // Cap used time in case of a single legal move for a better viewer experience in tournaments
           // yielding correct scores and sufficiently fast moves.
           if (rootMoves.size() == 1)

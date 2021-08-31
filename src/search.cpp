@@ -511,7 +511,7 @@ void Thread::search() {
           }
           double nn = std::clamp((std::inner_product(ft, ft+2, nwo, 0) + nbo) / (nn_scale * 1.0), lower_clamp/100.0, upper_clamp/100.0);
           double totalTime = Time.optimum() * fallingEval * reduction * nn * bestMoveInstability;
-sync_cout << "info string nntim " << nn << sync_endl;
+//sync_cout << "info string nntim " << nn << sync_endl;
           // Cap used time in case of a single legal move for a better viewer experience in tournaments
           // yielding correct scores and sufficiently fast moves.
           if (rootMoves.size() == 1)

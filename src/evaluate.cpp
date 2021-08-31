@@ -1095,7 +1095,7 @@ Value Eval::evaluate(const Position& pos) {
          int scale =   883
                      + 35 * pos.count<PAWN>()
                      + 35 * pos.non_pawn_material() / 1024;
-         int shift = -5;
+         int shift = -3;
 
          Value nnue = (NNUE::evaluate(pos, true) + shift) * scale / 1024 - shift;
 

@@ -63,17 +63,17 @@ namespace {
   int nw[2][2][2] =
   {
     {{ 7, 3},{ 4, 7}},
-    {{10, 4},{ 5, 8}}
+    {{11, 5},{ 5, 9}}
   };
   int nb[2][2] =
   {
-    { 25, 44},
-    {-16, -3}
+    { 24, 49},
+    {-14,  1}
   };
   int nwo[2] = {1,1};
-  int nbo = 124;
+  int nbo = 152;
   int npmw = 126;
-  int nn_scale = 6726;
+  int nn_scale = 6775;
   int lower_clamp = 25;
   int upper_clamp = 400;
 

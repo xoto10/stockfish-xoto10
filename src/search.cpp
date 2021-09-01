@@ -62,27 +62,30 @@ namespace {
   // Net weights and biases of a small neural network for time management
   int nw[2][2][2] =
   {
-    {{ 7, 3},{ 4, 7}},
-    {{11, 5},{ 5, 9}}
+    {{ 7, 3},{ 4, 8}},
+    {{10, 4},{ 6, 8}}
   };
   int nb[2][2] =
   {
-    { 24, 49},
-    {-14,  1}
+    { 30, 42},
+    {-17,-11}
   };
   int nwo[2] = {1,1};
-  int nbo = 152;
+  int nbo = 222;
   int npmw = 126;
-  int nn_scale = 6775;
+  int nn_scale = 6725;
   int lower_clamp = 30;
-  int upper_clamp = 300;
+  int upper_clamp = 302;
 
-TUNE(SetRange(-30, 30),nw);
-auto myfunc = [](int m){return std::pair<int, int>(m - 250, m + 250);};
-TUNE(SetRange(myfunc), nb);
-TUNE(SetRange(-5, 5),nwo);
-TUNE(SetRange(-1500, 1500),nbo);
-TUNE(SetRange(0, 25000), nn_scale);
+auto f20 = [](int m){return Range(m - 20, m + 20);};
+auto f75 = [](int m){return Range(m - 75, m + 75);};
+auto f200 = [](int m){return Range(m - 200, m + 200);};
+
+TUNE(SetRange(f20), nw);
+TUNE(SetRange(f75), nb);
+TUNE(SetRange(f20), nwo);
+TUNE(SetRange(f200), nbo);
+TUNE(SetRange(1, 25000), nn_scale);
 TUNE(SetRange(0, 256), npmw);
 TUNE(SetDefaultRange, lower_clamp, upper_clamp);
 

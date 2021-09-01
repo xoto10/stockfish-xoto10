@@ -60,29 +60,29 @@ using namespace Search;
 namespace {
 
   // Net weights and biases of a small neural network for time management
-  int nw[2][2][2] =
+  constexpr int nw[2][2][2] =
   {
-    {{ 4, 7},{ 3, 6}},
-    {{ 3, 4},{ 7, 4}}
+    {{ 7, 3},{ 4, 7}},
+    {{10, 4},{ 5, 8}}
   };
-  int nb[2][2] =
+  constexpr int nb[2][2] =
   {
-    { 21, 34},
-    {-23,  3}
+    { 25, 44},
+    {-16, -3}
   };
-  int nwo[2] = {1,1};
-  int nbo = 144;
-  int npmw = 126;
-  int nn_scale = 6500;
-  int lower_clamp = 30;
-  int upper_clamp = 300;
+  constexpr int nwo[2] = {1,1};
+  constexpr int nbo = 124;
+  constexpr int npmw = 126;
+  constexpr int nn_scale = 6726;
+  constexpr int lower_clamp = 30;
+  constexpr int upper_clamp = 300;
 
-TUNE(SetRange(-40, 40),nw);
-auto myfunc = [](int m){return std::pair<int, int>(m - 250, m + 250);};
-TUNE(SetRange(myfunc), nb);
-TUNE(SetRange(-5, 5),nwo);
-TUNE(SetRange(-1500, 1500),nbo);
-TUNE(SetDefaultRange, nn_scale);
+//TUNE(SetRange(-40, 40),nw);
+//auto myfunc = [](int m){return std::pair<int, int>(m - 250, m + 250);};
+//TUNE(SetRange(myfunc), nb);
+//TUNE(SetRange(-5, 5),nwo);
+//TUNE(SetRange(-1500, 1500),nbo);
+//TUNE(SetDefaultRange, nn_scale);
 //TUNE(SetRange(0,256), npmw);
 //TUNE(lower_clamp,upper_clamp);
 

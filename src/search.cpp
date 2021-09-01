@@ -74,17 +74,17 @@ namespace {
   int nbo = 152;
   int npmw = 126;
   int nn_scale = 6775;
-  int lower_clamp = 25;
-  int upper_clamp = 400;
+  int lower_clamp = 30;
+  int upper_clamp = 300;
 
-TUNE(SetRange(-40, 40),nw);
+TUNE(SetRange(-30, 30),nw);
 auto myfunc = [](int m){return std::pair<int, int>(m - 250, m + 250);};
 TUNE(SetRange(myfunc), nb);
 TUNE(SetRange(-5, 5),nwo);
 TUNE(SetRange(-1500, 1500),nbo);
 TUNE(SetRange(0, 25000), nn_scale);
-TUNE(SetRange(0,256), npmw);
-//TUNE(lower_clamp,upper_clamp);
+TUNE(SetRange(0, 256), npmw);
+TUNE(SetDefaultRange, lower_clamp, upper_clamp);
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };

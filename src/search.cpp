@@ -74,8 +74,8 @@ namespace {
   constexpr int nbo = 124;
   constexpr int npmw = 126;
   constexpr int nn_scale = 6726;
-  constexpr int lower_clamp = 30;
-  constexpr int upper_clamp = 300;
+  constexpr int lower_clamp = 70;
+  constexpr int upper_clamp = 140;
 
 //TUNE(SetRange(-40, 40),nw);
 //auto myfunc = [](int m){return std::pair<int, int>(m - 250, m + 250);};

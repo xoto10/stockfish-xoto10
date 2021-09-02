@@ -73,7 +73,7 @@ namespace {
   constexpr int nwo[2] = {3, 3};
   constexpr int nbo = 248;
   constexpr int npmw = 132;
-  constexpr int nn_scale = 7275;
+  constexpr int nn_scale = 27000;
   constexpr int lower_clamp = 30;
   constexpr int upper_clamp = 300;
 

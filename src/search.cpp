@@ -70,10 +70,10 @@ namespace {
     { 30, 43},
     {-14,-11}
   };
-  constexpr int nwo[2] = {3, 3};
+  constexpr int nwo[2] = {11, 10};
   constexpr int nbo = 248;
   constexpr int npmw = 132;
-  constexpr int nn_scale = 27000;
+  constexpr int nn_scale = 95000;
   constexpr int lower_clamp = 30;
   constexpr int upper_clamp = 300;
 
@@ -85,8 +85,8 @@ namespace {
 //TUNE(SetRange(f75), nb);
 //TUNE(SetRange(f20), nwo);
 //TUNE(SetRange(f200), nbo);
-//TUNE(SetRange(1, 25000), nn_scale);
 //TUNE(SetRange(0, 256), npmw);
+//TUNE(SetDefaultRange, nn_scale);
 //TUNE(SetDefaultRange, lower_clamp, upper_clamp);
 
   // Different node types, used as a template parameter

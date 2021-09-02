@@ -60,33 +60,33 @@ using namespace Search;
 namespace {
 
   // Net weights and biases of a small neural network for time management
-  constexpr int nw[2][2][2] =
+  int nw[2][2][2] =
   {
-    {{ 8, 2},{ 4, 7}},
-    {{ 9, 4},{ 3, 8}}
+    {{ 7, 3},{ 4, 8}},
+    {{10, 4},{ 6, 8}}
   };
-  constexpr int nb[2][2] =
+  int nb[2][2] =
   {
-    { 28, 42},
-    {-14,-10}
+    { 30, 42},
+    {-16,-11}
   };
-  constexpr int nwo[2] = {3, 3};
-  constexpr int nbo = 232;
-  constexpr int npmw = 129;
-  constexpr int nn_scale = 6753;
-  constexpr int lower_clamp = 33;
-  constexpr int upper_clamp = 197;
+  int nwo[2] = {2, 2};
+  int nbo = 222;
+  int npmw = 126;
+  int nn_scale = 6725;
+  int lower_clamp = 30;
+  int upper_clamp = 300;
 
-//auto f20 = [](int m){return Range(m - 20, m + 20);};
-//auto f75 = [](int m){return Range(m - 75, m + 75);};
-//auto f200 = [](int m){return Range(m - 200, m + 200);};
+auto f20 = [](int m){return Range(m - 20, m + 20);};
+auto f40 = [](int m){return Range(m - 40, m + 40);};
+auto f200 = [](int m){return Range(m - 200, m + 200);};
 
-//TUNE(SetRange(f20), nw);
-//TUNE(SetRange(f75), nb);
-//TUNE(SetRange(f20), nwo);
-//TUNE(SetRange(f200), nbo);
-//TUNE(SetRange(1, 25000), nn_scale);
-//TUNE(SetRange(0, 256), npmw);
+TUNE(SetRange(f20), nw);
+TUNE(SetRange(f40), nb);
+TUNE(SetRange(f20), nwo);
+TUNE(SetRange(f200), nbo);
+TUNE(SetRange(1, 25000), nn_scale);
+TUNE(SetRange(0, 256), npmw);
 //TUNE(SetDefaultRange, lower_clamp, upper_clamp);
 
   // Different node types, used as a template parameter
@@ -515,7 +515,7 @@ void Thread::search() {
           }
           double nn = std::clamp((std::inner_product(ft, ft+2, nwo, 0) + nbo) / (nn_scale * 1.0), lower_clamp/100.0, upper_clamp/100.0);
           double totalTime = Time.optimum() * fallingEval * reduction * nn * bestMoveInstability;
-sync_cout << "info string nntim " << nn << sync_endl;
+//sync_cout << "info string nntim " << nn << sync_endl;
           // Cap used time in case of a single legal move for a better viewer experience in tournaments
           // yielding correct scores and sufficiently fast moves.
           if (rootMoves.size() == 1)

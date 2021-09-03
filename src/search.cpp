@@ -62,17 +62,17 @@ namespace {
   // Net weights and biases of a small neural network for time management
   constexpr int nw[2][2][2] =
   {
-    {{ 0, 6},{ 4, 5}},
-    {{ 4, 5},{ 4, 5}}
+    {{ 1, 6},{ 3, 5}},
+    {{ 4, 6},{ 4, 5}}
   };
   constexpr int nb[2][2] =
   {
-    {  5, 13},
-    { -2, 12}
+    {  4, 14},
+    { -2, 11}
   };
   constexpr int nwo[2] = {4, 6};
-  constexpr int nbo = 10;
-  constexpr int nn_scale = 8617;
+  constexpr int nbo = 13;
+  constexpr int nn_scale = 8905;
   constexpr int lower_clamp = 30;
   constexpr int upper_clamp = 300;
 
@@ -84,7 +84,7 @@ namespace {
 //TUNE(SetRange(f20), nw);
 //TUNE(SetRange(f40), nb);
 //TUNE(SetRange(f20), nwo);
-//TUNE(SetRange(f200), nbo);
+//TUNE(SetRange(f40), nbo);
 //TUNE(SetRange(times4), nn_scale);
 //TUNE(SetDefaultRange, lower_clamp, upper_clamp);
 

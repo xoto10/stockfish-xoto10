@@ -60,32 +60,32 @@ using namespace Search;
 namespace {
 
   // Net weights and biases of a small neural network for time management
-  int nw[2][2][2] =
+  constexpr int nw[2][2][2] =
   {
-    {{ 1, 1},{ 1, 1}},
-    {{ 1, 1},{ 1, 1}}
+    {{ 0, 6},{ 4, 5}},
+    {{ 4, 5},{ 4, 5}}
   };
-  int nb[2][2] =
+  constexpr int nb[2][2] =
   {
-    {  3,  3},
-    {  3,  3}
+    {  5, 13},
+    { -2, 12}
   };
-  int nwo[2] = {2, 2};
-  int nbo = 10;
-  int nn_scale = 6775;
-  int lower_clamp = 30;
-  int upper_clamp = 300;
+  constexpr int nwo[2] = {4, 6};
+  constexpr int nbo = 10;
+  constexpr int nn_scale = 8617;
+  constexpr int lower_clamp = 30;
+  constexpr int upper_clamp = 300;
 
-auto f20 = [](int m){return Range(m - 20, m + 20);};
-auto f40 = [](int m){return Range(m - 40, m + 40);};
-auto f200 = [](int m){return Range(m - 200, m + 200);};
-auto times4 = [](int m){return Range(0, m * 4);};
+//auto f20 = [](int m){return Range(m - 20, m + 20);};
+//auto f40 = [](int m){return Range(m - 40, m + 40);};
+//auto f200 = [](int m){return Range(m - 200, m + 200);};
+//auto times4 = [](int m){return Range(0, m * 4);};
 
-TUNE(SetRange(f20), nw);
-TUNE(SetRange(f40), nb);
-TUNE(SetRange(f20), nwo);
-TUNE(SetRange(f200), nbo);
-TUNE(SetRange(times4), nn_scale);
+//TUNE(SetRange(f20), nw);
+//TUNE(SetRange(f40), nb);
+//TUNE(SetRange(f20), nwo);
+//TUNE(SetRange(f200), nbo);
+//TUNE(SetRange(times4), nn_scale);
 //TUNE(SetDefaultRange, lower_clamp, upper_clamp);
 
   // Different node types, used as a template parameter

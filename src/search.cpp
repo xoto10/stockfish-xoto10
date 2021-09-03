@@ -22,6 +22,7 @@
 #include <cstring>   // For std::memset
 #include <iostream>
 #include <sstream>
+#include <numeric>
 
 #include "evaluate.h"
 #include "misc.h"
@@ -57,6 +58,35 @@ using Eval::evaluate;
 using namespace Search;
 
 namespace {
+
+  // Net weights and biases of a small neural network for time management
+  int nw[2][2][2] =
+  {
+    {{ 1, 1},{ 1, 1}},
+    {{ 1, 1},{ 1, 1}}
+  };
+  int nb[2][2] =
+  {
+    {  3,  3},
+    {  3,  3}
+  };
+  int nwo[2] = {2, 2};
+  int nbo = 10;
+  int nn_scale = 6775;
+  int lower_clamp = 30;
+  int upper_clamp = 300;
+
+auto f20 = [](int m){return Range(m - 20, m + 20);};
+auto f40 = [](int m){return Range(m - 40, m + 40);};
+auto f200 = [](int m){return Range(m - 200, m + 200);};
+auto times4 = [](int m){return Range(0, m * 4);};
+
+TUNE(SetRange(f20), nw);
+TUNE(SetRange(f40), nb);
+TUNE(SetRange(f20), nwo);
+TUNE(SetRange(f200), nbo);
+TUNE(SetRange(times4), nn_scale);
+//TUNE(SetDefaultRange, lower_clamp, upper_clamp);
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
@@ -470,7 +500,23 @@ void Thread::search() {
           }
           double bestMoveInstability = 1.073 + std::max(1.0, 2.25 - 9.9 / rootDepth)
                                               * totBestMoveChanges / Threads.size();
-          double totalTime = Time.optimum() * fallingEval * reduction * bestMoveInstability;
+
+          // Inputs of the neural network
+          int ft[2]={rootDepth, std::clamp(int(bestMoveInstability * 10), 0, 100)};
+          // Matrix multiplication (layers)
+          for (size_t m = 0; m < 2; ++m)
+          {
+              int temp[2] = {0};
+              for (size_t i = 0; i < 2; ++i)
+                  temp[i]= std::max(0, std::inner_product(ft, ft+2, nw[i][m], 0) + nb[m][i]); // ReLU activation function
+              for (size_t n = 0; n < 2; ++n)
+                  ft[n] = temp[n];
+          }
+          double nn = std::clamp((std::inner_product(ft, ft+2, nwo, 0) + nbo) / double(nn_scale),
+                                 lower_clamp/100.0, upper_clamp/100.0);
+
+          double totalTime = Time.optimum() * fallingEval * reduction * nn * bestMoveInstability;
+//sync_cout << "info string nntim " << nn << sync_endl;
 
           // Cap used time in case of a single legal move for a better viewer experience in tournaments
           // yielding correct scores and sufficiently fast moves.

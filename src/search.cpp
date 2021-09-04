@@ -60,32 +60,29 @@ using namespace Search;
 namespace {
 
   // Net weights and biases of a small neural network for time management
-  constexpr int nw[2][2][2] =
+  int nw[2][2][2] =
   {
-    {{ 1, 6},{ 3, 5}},
-    {{ 4, 6},{ 4, 5}}
+    {{ 3, 12},{ 6, 10}},
+    {{ 8, 13},{ 9, 13}}
   };
-  constexpr int nb[2][2] =
+  int nb[2][2] =
   {
-    {  4, 14},
-    { -2, 11}
+    {  9, 26},
+    { -3, 20}
   };
-  constexpr int nwo[2] = {4, 6};
-  constexpr int nbo = 13;
-  constexpr int nn_scale = 8905;
+  int nwo[2] = {8, 13};
+  int nbo = 26;
   constexpr int lower_clamp = 30;
   constexpr int upper_clamp = 300;
 
 //auto f20 = [](int m){return Range(m - 20, m + 20);};
 //auto f40 = [](int m){return Range(m - 40, m + 40);};
-//auto f200 = [](int m){return Range(m - 200, m + 200);};
-//auto times4 = [](int m){return Range(0, m * 4);};
+//auto f90 = [](int m){return Range(m - 90, m + 90);};
 
 //TUNE(SetRange(f20), nw);
 //TUNE(SetRange(f40), nb);
 //TUNE(SetRange(f20), nwo);
 //TUNE(SetRange(f40), nbo);
-//TUNE(SetRange(times4), nn_scale);
 //TUNE(SetDefaultRange, lower_clamp, upper_clamp);
 
   // Different node types, used as a template parameter
@@ -512,7 +509,7 @@ void Thread::search() {
               for (size_t n = 0; n < 2; ++n)
                   ft[n] = temp[n];
           }
-          double nn = std::clamp((std::inner_product(ft, ft+2, nwo, 0) + nbo) / double(nn_scale),
+          double nn = std::clamp((std::inner_product(ft, ft+2, nwo, 0) + nbo) / 100000.0,
                                  lower_clamp/100.0, upper_clamp/100.0);
 
           double totalTime = Time.optimum() * fallingEval * reduction * nn * bestMoveInstability;

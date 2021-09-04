@@ -510,8 +510,8 @@ void Thread::search() {
               for (size_t n = 0; n < 2; ++n)
                   ft[n] = temp[n];
           }
-          double nn = 1.0 + std::clamp((std::inner_product(ft, ft+2, nwo, 0) + nbo) / 1000000.0,
-                                       lower_clamp/100.0, upper_clamp/100.0);
+          double nn = std::clamp(1.0 + (std::inner_product(ft, ft+2, nwo, 0) + nbo) / 1000000.0,
+                                 lower_clamp/100.0, upper_clamp/100.0);
 
           double totalTime = Time.optimum() * fallingEval * reduction * nn * bestMoveInstability;
 //sync_cout << "info string nntim " << nn << sync_endl;

@@ -60,27 +60,27 @@ using namespace Search;
 namespace {
 
   // Net weights and biases of a small neural network for time management
-  constexpr int nw[2][2][2] =
+  int nw[2][2][2] =
   {
     {{-4, -10},{-2, -4}},
     {{-6,  -3},{ 5, -3}}
   };
-  constexpr int nb[2][2] =
+  int nb[2][2] =
   {
     { 4, -2},
     { 5,  6}
   };
-  constexpr int nwo[2] = { 2,  2};
-  constexpr int nbo = -14;
+  int nwo[2] = { 2,  2};
+  int nbo = -14;
 
 //auto f40 = [](int m){return Range(m - 40, m + 40);};
-//auto f90 = [](int m){return Range(m - 90, m + 90);};
-//auto f200 = [](int m){return Range(m - 200, m + 200);};
+auto f90 = [](int m){return Range(m - 90, m + 90);};
+auto f200 = [](int m){return Range(m - 200, m + 200);};
 
-//TUNE(SetRange(f90), nw);
-//TUNE(SetRange(f90), nb);
-//TUNE(SetRange(f90), nwo);
-//TUNE(SetRange(f200), nbo);
+TUNE(SetRange(f90), nw);
+TUNE(SetRange(f90), nb);
+TUNE(SetRange(f90), nwo);
+TUNE(SetRange(f200), nbo);
 
   constexpr int lower_clamp = 30;
   constexpr int upper_clamp = 300;
@@ -501,7 +501,7 @@ void Thread::search() {
 
           // Inputs of the neural network
           int ft[2] = { std::clamp(rootDepth, 0, 100),
-                        std::clamp(int(20 * totBestMoveChanges / Threads.size()), 0, 100) };
+                        std::clamp(int(20.0 * totBestMoveChanges / Threads.size()), 0, 100) };
           // Matrix multiplication (layers)
           for (size_t m = 0; m < 2; ++m)
           {
@@ -511,7 +511,7 @@ void Thread::search() {
               for (size_t n = 0; n < 2; ++n)
                   ft[n] = temp[n];
           }
-          double nn = std::clamp(1.0 + (std::inner_product(ft, ft+2, nwo, 0) + nbo) / 10000.0,
+          double nn = std::clamp(1.0 + (std::inner_product(ft, ft+2, nwo, 0) + nbo) / 100.0,
                                  lower_clamp/100.0, upper_clamp/100.0);
 
           double totalTime = Time.optimum() * fallingEval * reduction * nn * bestMoveInstability;

@@ -62,16 +62,16 @@ namespace {
   // Net weights and biases of a small neural network for time management
   int nw[2][2][2] =
   {
-    {{ 1,  1},{ 1,  1}},
-    {{ 1,  1},{ 1,  1}}
+    {{ 0, -4},{ 2,  2}},
+    {{ 3, -2},{ 1,  0}}
   };
   int nb[2][2] =
   {
-    { 3, 3},
-    { 3, 3}
+    { 5, -4},
+    { 1,  6}
   };
-  int nwo[2] = { 2,  2};
-  int nbo = 4;
+  int nwo[2] = { 3,  5};
+  int nbo = -4;
 
 auto f40 = [](int m){return Range(m - 40, m + 40);};
 auto f90 = [](int m){return Range(m - 90, m + 90);};
@@ -510,7 +510,7 @@ void Thread::search() {
               for (size_t n = 0; n < 2; ++n)
                   ft[n] = temp[n];
           }
-          double nn = std::clamp(1.0 + (std::inner_product(ft, ft+2, nwo, 0) + nbo) / 1000000.0,
+          double nn = std::clamp(1.0 + (std::inner_product(ft, ft+2, nwo, 0) + nbo) / 10000.0,
                                  lower_clamp/100.0, upper_clamp/100.0);
 
           double totalTime = Time.optimum() * fallingEval * reduction * nn * bestMoveInstability;

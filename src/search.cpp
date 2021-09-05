@@ -62,24 +62,25 @@ namespace {
   // Net weights and biases of a small neural network for time management
   int nw[2][2][2] =
   {
-    {{29, 29},{29, 29}},
-    {{-29,29},{29,-29}}
+    {{ 29,18},{37, 31}},
+    {{-46,35},{36,-44}}
   };
   int nb[2][2] =
   {
-    { 30,-30},
-    { 30, 30}
+    { 40,-61},
+    { 41, 51}
   };
-  int nwo[2] = {31, 31};
-  int nbo = 32;
+  int nwo[2] = {32, 36};
+  int nbo = 47;
 
 //auto f40 = [](int m){return Range(m - 40, m + 40);};
-//auto f90 = [](int m){return Range(m - 90, m + 90);};
+auto f90 = [](int m){return Range(m - 90, m + 90);};
+auto f200 = [](int m){return Range(m - 200, m + 200);};
 
-TUNE(SetRange(-100,100), nw);
-TUNE(SetRange(-200,200), nb);
-TUNE(SetRange(-100,100), nwo);
-TUNE(SetRange(-400,400), nbo);
+TUNE(SetRange(f200), nw);
+TUNE(SetRange(f200), nb);
+TUNE(SetRange(f90),  nwo);
+TUNE(SetRange(f200), nbo);
 
   constexpr int lower_clamp = 30;
   constexpr int upper_clamp = 300;

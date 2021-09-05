@@ -62,16 +62,16 @@ namespace {
   // Net weights and biases of a small neural network for time management
   int nw[2][2][2] =
   {
-    {{ 5,  5},{ 5,  5}},
-    {{ 5,  5},{ 5,  5}}
+    {{ 1,  1},{ 1,  1}},
+    {{ 1,  1},{ 1,  1}}
   };
   int nb[2][2] =
   {
-    { 10, 10},
-    { 10, 10}
+    {  3,  3},
+    {  3,  3}
   };
-  int nwo[2] = { 6,  6};
-  int nbo = 12;
+  int nwo[2] = { 2,  2};
+  int nbo =  4;
 
 auto f40 = [](int m){return Range(m - 40, m + 40);};
 auto f90 = [](int m){return Range(m - 90, m + 90);};

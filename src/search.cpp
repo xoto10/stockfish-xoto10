@@ -62,24 +62,24 @@ namespace {
   // Net weights and biases of a small neural network for time management
   int nw[2][2][2] =
   {
-    {{ 1,  1},{ 1,  1}},
-    {{ 1,  1},{ 1,  1}}
+    {{29, 29},{29, 29}},
+    {{-29,29},{29,-29}}
   };
   int nb[2][2] =
   {
-    {  3,  3},
-    {  3,  3}
+    { 30,-30},
+    { 30, 30}
   };
-  int nwo[2] = { 2,  2};
-  int nbo =  4;
+  int nwo[2] = {31, 31};
+  int nbo = 32;
 
-auto f40 = [](int m){return Range(m - 40, m + 40);};
-auto f90 = [](int m){return Range(m - 90, m + 90);};
+//auto f40 = [](int m){return Range(m - 40, m + 40);};
+//auto f90 = [](int m){return Range(m - 90, m + 90);};
 
-TUNE(SetRange(f40), nw);
-TUNE(SetRange(f40), nb);
-TUNE(SetRange(f40), nwo);
-TUNE(SetRange(f90), nbo);
+TUNE(SetRange(-100,100), nw);
+TUNE(SetRange(-200,200), nb);
+TUNE(SetRange(-100,100), nwo);
+TUNE(SetRange(-400,400), nbo);
 
   constexpr int lower_clamp = 30;
   constexpr int upper_clamp = 300;
@@ -510,11 +510,12 @@ void Thread::search() {
               for (size_t n = 0; n < 2; ++n)
                   ft[n] = temp[n];
           }
+//int prod = std::inner_product(ft, ft+2, nwo, 0) + nbo;
           double nn = std::clamp((std::inner_product(ft, ft+2, nwo, 0) + nbo) / 1000000.0,
                                  lower_clamp/100.0, upper_clamp/100.0);
 
           double totalTime = Time.optimum() * fallingEval * reduction * nn * bestMoveInstability;
-//sync_cout << "info string nntim " << nn << sync_endl;
+//sync_cout << "info string nntim " << nn << " prod " << prod << sync_endl;
 
           // Cap used time in case of a single legal move for a better viewer experience in tournaments
           // yielding correct scores and sufficiently fast moves.

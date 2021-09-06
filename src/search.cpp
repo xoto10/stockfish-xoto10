@@ -168,6 +168,8 @@ void Search::clear() {
   Tablebases::init(Options["SyzygyPath"]); // Free mapped files
 }
 
+int A=97, B=50;
+TUNE(A, B);
 
 /// MainThread::search() is started when the program receives the UCI 'go'
 /// command. It searches from the root position and outputs the "bestmove".
@@ -371,7 +373,7 @@ void Thread::search() {
           int failedHighCnt = 0;
           while (true)
           {
-              numMoves[BLACK] = numMoves[WHITE] = 0;
+              numMoves = 0;
 
               Depth adjustedDepth = std::max(1, rootDepth - failedHighCnt - searchAgainCounter);
               bestValue = Stockfish::search<Root>(rootPos, ss, alpha, beta, adjustedDepth, false);
@@ -472,7 +474,7 @@ void Thread::search() {
           }
           double bestMoveInstability = 1.073 + std::max(1.0, 2.25 - 9.9 / rootDepth)
                                               * totBestMoveChanges / Threads.size();
-          double choices = 0.97 + 0.005 * mainThread->numMoves[us];
+          double choices = A/100.0 + B/10000.0 * mainThread->numMoves;
 //sync_cout << "info string moves " << " us " << mainThread->numMoves[us] << " ch " << choices << sync_endl;
 
           double totalTime = Time.optimum() * fallingEval * reduction * bestMoveInstability * choices;
@@ -1126,9 +1128,9 @@ moves_loop: // When in check, search starts here
                                                                 [movedPiece]
                                                                 [to_sq(move)];
 
-      // Record number of moves (not quite right for ply == 1)
-      if (ss->ply ==0 || (ss->ply == 1 && (ss-1)->moveCount == 1))
-        thisThread->numMoves[us]++;
+      // Record number of moves at ply 0
+      if (ss->ply == 0)
+        thisThread->numMoves++;
 
       // Step 15. Make the move
       pos.do_move(move, st, givesCheck);

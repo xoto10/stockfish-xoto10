@@ -472,7 +472,7 @@ void Thread::search() {
           }
           double bestMoveInstability = 1.073 + std::max(1.0, 2.25 - 9.9 / rootDepth)
                                               * totBestMoveChanges / Threads.size();
-          double choices = 0.95 + 0.003 * (mainThread->numMoves[us] + mainThread->numMoves[~us]);
+          double choices = 0.95 + 0.004 * (mainThread->numMoves[us] + mainThread->numMoves[~us]);
 //sync_cout << "info string moves " << " us " << mainThread->numMoves[us] << " ch " << choices << sync_endl;
 
           double totalTime = Time.optimum() * fallingEval * reduction * bestMoveInstability * choices;

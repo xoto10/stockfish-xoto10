@@ -62,16 +62,16 @@ namespace {
   // Net weights and biases of a small neural network for time management
   constexpr int nw[2][2][2] =
   {
-    {{ 28,70},{29, 40}},
-    {{-20,-7},{54,-24}}
+    {{ 20,102},{ 24, 46}},
+    {{ 57, -2},{ 68,-32}}
   };
   constexpr int nb[2][2] =
   {
-    {112,-92},
-    { 62, 33}
+    {123,-70},
+    { 75,-15}
   };
-  constexpr int nwo[2] = {32, 21};
-  constexpr int nbo = 43;
+  constexpr int nwo[2] = {22, 11};
+  constexpr int nbo = 46;
 
 //auto f40 = [](int m){return Range(m - 40, m + 40);};
 //auto f90 = [](int m){return Range(m - 90, m + 90);};
@@ -82,8 +82,8 @@ namespace {
 //TUNE(SetRange(f90),  nwo);
 //TUNE(SetRange(f200), nbo);
 
-  constexpr int lower_clamp = 80;
-  constexpr int upper_clamp = 120;
+  constexpr int lower_clamp = 30;
+  constexpr int upper_clamp = 300;
 //TUNE(SetDefaultRange, lower_clamp, upper_clamp);
 
   // Different node types, used as a template parameter

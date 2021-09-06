@@ -60,30 +60,29 @@ using namespace Search;
 namespace {
 
   // Net weights and biases of a small neural network for time management
-  constexpr int nw[2][2][2] =
+  int nw[2][2][2] =
   {
     {{ 20,102},{ 24, 46}},
     {{ 57, -2},{ 68,-32}}
   };
-  constexpr int nb[2][2] =
+  int nb[2][2] =
   {
     {123,-70},
     { 75,-15}
   };
-  constexpr int nwo[2] = {22, 11};
-  constexpr int nbo = 46;
+  int nwo[2] = {22, 11};
+  int nbo = 46;
 
-//auto f40 = [](int m){return Range(m - 40, m + 40);};
-//auto f90 = [](int m){return Range(m - 90, m + 90);};
-//auto f200 = [](int m){return Range(m - 200, m + 200);};
+auto f50 = [](int m){return Range(m - 50, m + 50);};
+auto f100 = [](int m){return Range(m - 100, m + 100);};
 
-//TUNE(SetRange(f200), nw);
-//TUNE(SetRange(f200), nb);
-//TUNE(SetRange(f90),  nwo);
-//TUNE(SetRange(f200), nbo);
+TUNE(SetRange(f100), nw);
+TUNE(SetRange(f100), nb);
+TUNE(SetRange(f50),  nwo);
+TUNE(SetRange(f100), nbo);
 
-  constexpr int lower_clamp = 50;
-  constexpr int upper_clamp = 150;
+  constexpr int lower_clamp = 30;
+  constexpr int upper_clamp = 300;
 //TUNE(SetDefaultRange, lower_clamp, upper_clamp);
 
   // Different node types, used as a template parameter

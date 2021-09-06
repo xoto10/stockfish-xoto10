@@ -371,6 +371,8 @@ void Thread::search() {
           int failedHighCnt = 0;
           while (true)
           {
+              numMoves[BLACK] = numMoves[WHITE] = 0;
+
               Depth adjustedDepth = std::max(1, rootDepth - failedHighCnt - searchAgainCounter);
               bestValue = Stockfish::search<Root>(rootPos, ss, alpha, beta, adjustedDepth, false);
 
@@ -470,7 +472,10 @@ void Thread::search() {
           }
           double bestMoveInstability = 1.073 + std::max(1.0, 2.25 - 9.9 / rootDepth)
                                               * totBestMoveChanges / Threads.size();
-          double totalTime = Time.optimum() * fallingEval * reduction * bestMoveInstability;
+          double choices = 0.9 + 0.005 * mainThread->numMoves[us];
+//sync_cout << "info string moves " << " us " << mainThread->numMoves[us] << " ch " << choices << sync_endl;
+
+          double totalTime = Time.optimum() * fallingEval * reduction * bestMoveInstability * choices;
 
           // Cap used time in case of a single legal move for a better viewer experience in tournaments
           // yielding correct scores and sufficiently fast moves.
@@ -1120,6 +1125,10 @@ moves_loop: // When in check, search starts here
                                                                 [captureOrPromotion]
                                                                 [movedPiece]
                                                                 [to_sq(move)];
+
+      // Record number of moves (not quite right for ply == 1)
+      if (ss->ply ==0 || (ss->ply == 1 && (ss-1)->moveCount == 1))
+        thisThread->numMoves[us]++;
 
       // Step 15. Make the move
       pos.do_move(move, st, givesCheck);

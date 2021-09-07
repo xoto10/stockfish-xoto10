@@ -82,8 +82,8 @@ namespace {
 //TUNE(SetRange(f50),  nwo);
 //TUNE(SetRange(f25), nbo);
 
-  constexpr int lower_clamp = 30;
-  constexpr int upper_clamp = 300;
+  constexpr int lower_clamp = 50;
+  constexpr int upper_clamp = 150;
 //TUNE(SetDefaultRange, lower_clamp, upper_clamp);
 
   // Different node types, used as a template parameter

@@ -997,13 +997,15 @@ moves_loop: // When in check, search starts here
           && bestValue > VALUE_TB_LOSS_IN_MAX_PLY)
       {
           int futInc = 0;
-          if (ss->ply == 1)
-              futInc = (thisThread->id() & 7) == 6;
-          else if (ss->ply == 2)
+          if (depth == 4 || depth == 5)
               futInc = (thisThread->id() & 7) == 7;
 
           // Skip quiet moves if movecount exceeds our FutilityMoveCount threshold
           moveCountPruning = moveCount >= futility_move_count(improving, depth) + futInc;
+//if (thisThread->rootDepth > 10 && futInc && moveCount == futility_move_count(improving, depth))
+//{
+//    sync_cout << "info string extra d " << depth << " ply " << ss->ply << " mc " << moveCount << sync_endl;
+//}
 
           // Reduced depth of the next LMR search
           int lmrDepth = std::max(newDepth - reduction(improving, depth, moveCount), 0);

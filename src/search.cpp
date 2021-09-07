@@ -996,8 +996,14 @@ moves_loop: // When in check, search starts here
           && pos.non_pawn_material(us)
           && bestValue > VALUE_TB_LOSS_IN_MAX_PLY)
       {
+          int futInc = 0;
+          if (ss->ply == 1)
+              futInc = (thisThread->id() & 7) == 6;
+          else if (ss->ply == 2)
+              futInc = (thisThread->id() & 7) == 7;
+
           // Skip quiet moves if movecount exceeds our FutilityMoveCount threshold
-          moveCountPruning = moveCount >= futility_move_count(improving, depth);
+          moveCountPruning = moveCount >= futility_move_count(improving, depth) + futInc;
 
           // Reduced depth of the next LMR search
           int lmrDepth = std::max(newDepth - reduction(improving, depth, moveCount), 0);

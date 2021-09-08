@@ -515,7 +515,7 @@ void Thread::search() {
           }
 //int prod = std::inner_product(ft, ft+TMN, nwo, 0) + nbo;
           double nn = std::clamp((std::inner_product(ft, ft+TMN, nwo, 0) + nbo) / 1000000.0,
-                                 0.5, 1.5);
+                                 0.1, 9.0);
 
 //sync_cout << "info string nntim " << nn << " prod " << prod << sync_endl;
 

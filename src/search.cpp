@@ -62,27 +62,27 @@ namespace {
   constexpr int TMN = 3; // Number of inputs to TM neural network
 
   // Net weights and biases of a small neural network for time management
-  int nw[TMN][2][TMN] =
+  constexpr int nw[TMN][2][TMN] =
   { // Hidden Layer 1 weights        // Hidden Layer 2 weights
-    {{ 11,  11,  11},                { 11,  11,  11}},
-    {{ 11,  11,  11},                { 11,  11,  11}},
-    {{ 11,  11,  11},                { 11,  11,  11}}
+    {{ 58, -54,   8},                { 19,  14,  19}},
+    {{ 81, -48, -13},                { 39,  35,  22}},
+    {{ 14,  21,  -3},                {  9,  19,  26}}
   };
-  int nb[2][TMN] =
+  constexpr int nb[2][TMN] =
   {
-    {  9,   9,  9},  // Hidden Layer 1 biases
-    {  9,   9,  9}   // Hidden Layer 2 biases
+    {-30,  11, -13},  // Hidden Layer 1 biases
+    {-60,  79,  98}   // Hidden Layer 2 biases
   };
-  int nwo[TMN] = {10, 10, 10}; // Output Layer weights
-  int nbo = 11;                // Output Layer bias
+  constexpr int nwo[TMN] = {11, 12,  9}; // Output Layer weights
+  constexpr int nbo = -5;                // Output Layer bias
 
-auto f90 = [](int m){return std::pair<int, int>(m - 90, m + 90);};
-auto f200 = [](int m){return std::pair<int, int>(m - 200, m + 200);};
+//auto f90 = [](int m){return std::pair<int, int>(m - 90, m + 90);};
+//auto f200 = [](int m){return std::pair<int, int>(m - 200, m + 200);};
 
-  TUNE(SetRange(f200), nw);
-  TUNE(SetRange(f200), nb);
-  TUNE(SetRange(f90),  nwo);
-  TUNE(SetRange(f200), nbo);
+//TUNE(SetRange(f200), nw);
+//TUNE(SetRange(f200), nb);
+//TUNE(SetRange(f90),  nwo);
+//TUNE(SetRange(f200), nbo);
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };

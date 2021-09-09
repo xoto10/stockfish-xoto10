@@ -996,16 +996,8 @@ moves_loop: // When in check, search starts here
           && pos.non_pawn_material(us)
           && bestValue > VALUE_TB_LOSS_IN_MAX_PLY)
       {
-          int futInc = 0;
-          if (depth == 4 || depth == 5)
-              futInc = (thisThread->id() & 7) == 7;
-
           // Skip quiet moves if movecount exceeds our FutilityMoveCount threshold
-          moveCountPruning = moveCount >= futility_move_count(improving, depth) + futInc;
-//if (thisThread->rootDepth > 10 && futInc && moveCount == futility_move_count(improving, depth))
-//{
-//    sync_cout << "info string extra d " << depth << " ply " << ss->ply << " mc " << moveCount << sync_endl;
-//}
+          moveCountPruning = moveCount >= futility_move_count(improving, depth);
 
           // Reduced depth of the next LMR search
           int lmrDepth = std::max(newDepth - reduction(improving, depth, moveCount), 0);
@@ -1035,7 +1027,7 @@ moves_loop: // When in check, search starts here
               // Futility pruning: parent node (~5 Elo)
               if (   !ss->inCheck
                   && lmrDepth < 7
-                  && ss->staticEval + 174 + 157 * lmrDepth <= alpha)
+                  && ss->staticEval <= alpha - 174 - 157 * lmrDepth - 210 * ((thisThread->id() & 7) == 7) )
                   continue;
 
               // Prune moves with negative SEE (~20 Elo)

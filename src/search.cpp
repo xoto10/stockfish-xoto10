@@ -62,27 +62,27 @@ namespace {
   const int TMN = 3; // Number of inputs to TM neural network
 
   // Net weights and biases of a small neural network for time management
-  constexpr int nw[TMN][2][TMN] =
+  int nw[TMN][2][TMN] =
   { // Hidden Layer 1 weights        // Hidden Layer 2 weights
     {{ 53, -51,   7},                { 14,  11,  13}},
     {{ 84, -49, -17},                { 37,  42,  29}},
     {{ 25,  25,  -4},                {  9,  26,  21}}
   };
-  constexpr int nb[2][TMN] =
+  int nb[2][TMN] =
   {
     {-18,  16, -15},  // Hidden Layer 1 biases
     {-55,  71, 109}   // Hidden Layer 2 biases
   };
-  constexpr int nwo[TMN] = {13, 11,  4}; // Output Layer weights
-  constexpr int nbo = -11;               // Output Layer bias
+  int nwo[TMN] = {13, 11,  4}; // Output Layer weights
+  int nbo = -11;               // Output Layer bias
 
-//auto f50 = [](int m){return Range(m - 50, m + 50);};
-//auto f90 = [](int m){return Range(m - 90, m + 90);};
+auto f30 = [](int m){return Range(m - 30, m + 30);};
+auto f50 = [](int m){return Range(m - 50, m + 50);};
 
-//TUNE(SetRange(f90), nw);
-//TUNE(SetRange(f90), nb);
-//TUNE(SetRange(f50), nwo);
-//TUNE(SetRange(f90), nbo);
+TUNE(SetRange(f50), nw);
+TUNE(SetRange(f50), nb);
+TUNE(SetRange(f30), nwo);
+TUNE(SetRange(f50), nbo);
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };

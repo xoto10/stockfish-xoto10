@@ -1247,7 +1247,14 @@ moves_loop: // When in check, search starts here
                                     thisThread->rootMoves.end(), move);
 
           // PV move or new best move?
-          if (moveCount == 1 || value > alpha)
+          if (   moveCount == 1
+              || (   value > alpha
+                  && !(   value <= VALUE_TB_LOSS_IN_MAX_PLY
+                       && (type_of(movedPiece) == PAWN || captureOrPromotion)
+                       && (type_of(pos.piece_on(from_sq(rm.pv[0]))) != PAWN && !pos.capture_or_promotion(rm.pv[0]))
+                      )
+                 )
+             )
           {
               rm.score = value;
               rm.selDepth = thisThread->selDepth;

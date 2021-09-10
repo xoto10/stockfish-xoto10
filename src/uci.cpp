@@ -305,6 +305,9 @@ string UCI::value(Value v) {
 
   stringstream ss;
 
+  if (v * 100 / PawnValueEg > 390)
+      v = 395 * PawnValueEg / 100;  // avoid early game adjudication in fishtest
+
   if (abs(v) < VALUE_MATE_IN_MAX_PLY)
       ss << "cp " << v * 100 / PawnValueEg;
   else

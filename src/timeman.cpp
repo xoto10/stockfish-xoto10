@@ -71,6 +71,9 @@ void TimeManagement::init(Search::LimitsType& limits, Color us, int ply) {
   // A user may scale time usage by setting UCI option "Slow Mover"
   // Default is 100 and changing this value will probably lose elo.
   timeLeft = slowMover * timeLeft / 100;
+//sync_cout << "info string tl " << timeLeft << sync_endl;
+// stc 14380
+// ltc 88880 diff 74500
 
   // x basetime (+ z increment)
   // If there is a healthy increment, timeLeft can exceed actual available
@@ -91,7 +94,7 @@ void TimeManagement::init(Search::LimitsType& limits, Color us, int ply) {
   }
 
   // Never use more than 80% of the available time for this move
-  optimumTime = TimePoint(optScale * timeLeft);
+  optimumTime = TimePoint(optScale * (timeLeft + std::max(TimePoint(-4000), timeLeft - 14380) / 8.382));
   maximumTime = TimePoint(std::min(0.8 * limits.time[us] - moveOverhead, maxScale * optimumTime));
 
   if (Options["Ponder"])

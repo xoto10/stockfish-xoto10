@@ -146,8 +146,6 @@ namespace {
 
 } // namespace
 
-int A=159, B=209, C=174;
-TUNE(SetRange(90,270), A, B, C);
 
 /// Search::init() is called at startup to initialize various lookup tables
 
@@ -795,7 +793,7 @@ namespace {
         && (ss-1)->statScore < 23767
         &&  eval >= beta
         &&  eval >= ss->staticEval
-        &&  ss->staticEval >= beta - 20 * depth - 22 * improving + 168 * ss->ttPv + A
+        &&  ss->staticEval >= beta - 20 * depth - 22 * improving + 168 * ss->ttPv + 170
         && !excludedMove
         &&  pos.non_pawn_material(us)
         && (ss->ply >= thisThread->nmpMinPly || us != thisThread->nmpColor))
@@ -839,7 +837,7 @@ namespace {
         }
     }
 
-    probCutBeta = beta + B   - 44 * improving;
+    probCutBeta = beta + 211 - 44 * improving;
 
     // Step 9. ProbCut (~4 Elo)
     // If we have a good enough capture and a reduced search returns a value
@@ -1034,7 +1032,7 @@ moves_loop: // When in check, search starts here
               // Futility pruning: parent node (~5 Elo)
               if (   !ss->inCheck
                   && lmrDepth < 7
-                  && ss->staticEval + C   + 157 * lmrDepth <= alpha)
+                  && ss->staticEval + 166 + 157 * lmrDepth <= alpha)
                   continue;
 
               // Prune moves with negative SEE (~20 Elo)

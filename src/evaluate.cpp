@@ -191,6 +191,10 @@ using namespace Trace;
 
 namespace {
 
+int A=883, B=128, C=128, D=850, E=100, F=100;
+auto f = [](int m){return Range(m / 2, m * 3 / 2);};
+TUNE(SetRange(f), A, B, C, D, E, F);
+
   // Threshold for lazy and space evaluation
   constexpr Value LazyThreshold1    =  Value(3130);
   constexpr Value LazyThreshold2    =  Value(2204);
@@ -1092,9 +1096,9 @@ Value Eval::evaluate(const Position& pos) {
       // Scale and shift NNUE for compatibility with search and classical evaluation
       auto  adjusted_NNUE = [&]()
       {
-         int scale =   883
-                     + 32 * pos.count<PAWN>()
-                     + 32 * pos.non_pawn_material() / 1024;
+         int scale =   A
+                     + B   * pos.count<PAWN>() / 4
+                     + C   * pos.non_pawn_material() / 4096;
 
          Value nnue = NNUE::evaluate(pos, true) * scale / 1024;
 
@@ -1108,7 +1112,7 @@ Value Eval::evaluate(const Position& pos) {
       // NNUE eval faster when shuffling or if the material on the board is high.
       int r50 = pos.rule50_count();
       Value psq = Value(abs(eg_value(pos.psq_score())));
-      bool classical = psq * 5 > (850 + pos.non_pawn_material() / 64) * (5 + r50);
+      bool classical = psq * E > (D   + pos.non_pawn_material() / 64) * (F + 20 * r50);
 
       v = classical ? Evaluation<NO_TRACE>(pos).value()  // classical
                     : adjusted_NNUE();                   // NNUE

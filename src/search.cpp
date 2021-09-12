@@ -1249,7 +1249,7 @@ moves_loop: // When in check, search starts here
           // PV move or new best move?
           if (   moveCount == 1
               || (   value > alpha
-                  && !(   value <= VALUE_TB_LOSS_IN_MAX_PLY
+                  && !(   value <= -VALUE_KNOWN_WIN
                        && (type_of(movedPiece) == PAWN || captureOrPromotion)
                        && (type_of(pos.piece_on(from_sq(rm.pv[0]))) != PAWN && !pos.capture_or_promotion(rm.pv[0]))
                       )

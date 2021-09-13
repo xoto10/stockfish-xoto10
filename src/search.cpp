@@ -359,7 +359,7 @@ void Thread::search() {
               beta  = std::min(prev + delta, VALUE_INFINITE);
 
               // Adjust trend based on root move's previousScore (dynamic contempt)
-              int tr = 110 * prev / (abs(prev) + 148);
+              int tr = 113 * prev / (abs(prev) + 147);
 
               trend = (us == WHITE ?  make_score(tr, tr / 2)
                                    : -make_score(tr, tr / 2));

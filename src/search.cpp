@@ -37,11 +37,6 @@
 
 namespace Stockfish {
 
-auto f = [](int m){return Range(m / 2, m * 3 / 2);};
-
-int A=534, B=113, C=147, D=155;
-TUNE(SetRange(f), A, B, C, D);
-
 namespace Search {
 
   LimitsType Limits;
@@ -79,7 +74,7 @@ namespace {
 
   Depth reduction(bool i, Depth d, int mn) {
     int r = Reductions[d] * Reductions[mn];
-    return (r + A  ) / 1024 + (!i && r > 904);
+    return (r + 542) / 1024 + (!i && r > 904);
   }
 
   constexpr int futility_move_count(bool improving, Depth depth) {
@@ -364,7 +359,7 @@ void Thread::search() {
               beta  = std::min(prev + delta, VALUE_INFINITE);
 
               // Adjust trend based on root move's previousScore (dynamic contempt)
-              int tr = B   * prev / (abs(prev) + C  );
+              int tr = 112 * prev / (abs(prev) + 152);
 
               trend = (us == WHITE ?  make_score(tr, tr / 2)
                                    : -make_score(tr, tr / 2));
@@ -1465,7 +1460,7 @@ moves_loop: // When in check, search starts here
         if (PvNode && bestValue > alpha)
             alpha = bestValue;
 
-        futilityBase = bestValue + D  ;
+        futilityBase = bestValue + 151;
     }
 
     const PieceToHistory* contHist[] = { (ss-1)->continuationHistory, (ss-2)->continuationHistory,

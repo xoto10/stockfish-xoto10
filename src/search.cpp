@@ -146,6 +146,10 @@ namespace {
 
 } // namespace
 
+auto f = [](int m){if (m<30) return Range(m-20,m+20); else return Range(m / 2, m * 3 / 2);};
+
+int A=20, B=22, C=168, D=177, E=172, F=157;
+TUNE(SetRange(f), A, B, C, D, E, F);
 
 /// Search::init() is called at startup to initialize various lookup tables
 
@@ -793,7 +797,7 @@ namespace {
         && (ss-1)->statScore < 23767
         &&  eval >= beta
         &&  eval >= ss->staticEval
-        &&  ss->staticEval >= beta - 20 * depth - 22 * improving + 168 * ss->ttPv + 177
+        &&  ss->staticEval >= beta - A  * depth - B  * improving + C   * ss->ttPv + D
         && !excludedMove
         &&  pos.non_pawn_material(us)
         && (ss->ply >= thisThread->nmpMinPly || us != thisThread->nmpColor))
@@ -1032,7 +1036,7 @@ moves_loop: // When in check, search starts here
               // Futility pruning: parent node (~5 Elo)
               if (   !ss->inCheck
                   && lmrDepth < 7
-                  && ss->staticEval + 172 + 157 * lmrDepth <= alpha)
+                  && ss->staticEval + E   + F   * lmrDepth <= alpha)
                   continue;
 
               // Prune moves with negative SEE (~20 Elo)

@@ -146,10 +146,11 @@ namespace {
 
 } // namespace
 
-auto f = [](int m){if (m<30) return Range(m-20,m+20); else return Range(m / 2, m * 3 / 2);};
+auto f1 = [](int m){if (m<30) return Range(m-20,m+20); else return Range(m / 2, m * 3 / 2);};
+auto f2 = [](int m){if (m<30) return Range(m-20,m+20); else return Range(m * 3 / 4, m * 5 / 4);};
 
 int A=20, B=22, C=168, D=177, E=172, F=157;
-TUNE(SetRange(f), A, B, C, D, E, F);
+TUNE(SetRange(f1), A, B, C, F, SetRange(f2), D, E);
 
 /// Search::init() is called at startup to initialize various lookup tables
 

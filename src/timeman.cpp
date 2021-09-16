@@ -26,6 +26,11 @@
 
 namespace Stockfish {
 
+auto f = [](int m){if (m<30) return Range(m-20,m+20); else return Range(m / 2, m * 3 / 2);};
+
+int A=100, B=100, C=110;
+TUNE(SetRange(f), A, B, C);
+
 TimeManagement Time; // Our global time management object
 
 
@@ -69,7 +74,7 @@ void TimeManagement::init(Search::LimitsType& limits, Color us, int ply) {
       limits.time[us] + limits.inc[us] * (mtg - 1) - moveOverhead * (2 + mtg));
 
   // Use extra time with larger increments
-  double optExtra = std::clamp(1.0 + 10.0 * limits.inc[us] / limits.time[us], 1.0, 1.12);
+  double optExtra = std::clamp(1.0 + A/10.0 * limits.inc[us] / limits.time[us], B/100.0, C/100.0);
 
   // A user may scale time usage by setting UCI option "Slow Mover"
   // Default is 100 and changing this value will probably lose elo.

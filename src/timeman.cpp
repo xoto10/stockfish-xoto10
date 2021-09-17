@@ -71,7 +71,7 @@ void TimeManagement::init(Search::LimitsType& limits, Color us, Position& pos) {
       limits.time[us] + limits.inc[us] * (mtg - 1) - moveOverhead * (2 + mtg));
 
   // Use extra time with larger increments
-  double optExtra = std::clamp(1.0 + 0.0005 * int(pos.non_pawn_material()) * limits.inc[us] / limits.time[us],
+  double optExtra = std::clamp(1.0 + 0.00045 * int(pos.non_pawn_material()) * limits.inc[us] / limits.time[us],
                                1.0, 1.078);
 
   // A user may scale time usage by setting UCI option "Slow Mover"

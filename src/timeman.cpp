@@ -71,7 +71,8 @@ void TimeManagement::init(Search::LimitsType& limits, Color us, Position& pos) {
       limits.time[us] + limits.inc[us] * (mtg - 1) - moveOverhead * (2 + mtg));
 
   // Use extra time with larger increments
-  double optExtra = std::clamp(1.0 + 0.6 * pos.count<ALL_PIECES>() * limits.inc[us] / limits.time[us], 1.0, 1.075);
+  double optExtra = std::clamp(1.0 + 0.25 * pos.count<ALL_PIECES>() * limits.inc[us] / limits.time[us],
+                               1.0, 1.075);
 //sync_cout << "info string t " << limits.time[us] << " inc " << limits.inc[us]
 //          << " pcs " << pos.count<ALL_PIECES>() << " extra " << optExtra << sync_endl;
 

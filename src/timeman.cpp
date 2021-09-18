@@ -20,6 +20,7 @@
 #include <cfloat>
 #include <cmath>
 
+#include "position.h"
 #include "search.h"
 #include "timeman.h"
 #include "uci.h"
@@ -34,11 +35,12 @@ TimeManagement Time; // Our global time management object
 //      1) x basetime (+ z increment)
 //      2) x moves in y seconds (+ z increment)
 
-void TimeManagement::init(Search::LimitsType& limits, Color us, int ply) {
+void TimeManagement::init(Search::LimitsType& limits, Color us, Position& pos) {
 
   TimePoint moveOverhead    = TimePoint(Options["Move Overhead"]);
   TimePoint slowMover       = TimePoint(Options["Slow Mover"]);
   TimePoint npmsec          = TimePoint(Options["nodestime"]);
+  int ply = pos.game_ply();
 
   // optScale is a percentage of available time to use for the current move.
   // maxScale is a multiplier applied to optimumTime.
@@ -69,7 +71,8 @@ void TimeManagement::init(Search::LimitsType& limits, Color us, int ply) {
       limits.time[us] + limits.inc[us] * (mtg - 1) - moveOverhead * (2 + mtg));
 
   // Use extra time with larger increments
-  double optExtra = std::clamp(1.0 + 10.0 * limits.inc[us] / limits.time[us], 1.0, 1.1);
+  double optExtra = std::clamp(1.0 + 0.833 * std::max(0, 144 - pos.game_ply()) * limits.inc[us] / limits.time[us],
+                               1.0, 1.078);
 
   // A user may scale time usage by setting UCI option "Slow Mover"
   // Default is 100 and changing this value will probably lose elo.

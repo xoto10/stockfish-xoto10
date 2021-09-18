@@ -72,7 +72,7 @@ void TimeManagement::init(Search::LimitsType& limits, Color us, Position& pos) {
 
   // Use extra time with larger increments
   double optExtra = std::clamp(1.0 + 0.00045 * int(pos.non_pawn_material()) * limits.inc[us] / limits.time[us],
-                               1.0, 1.078);
+                               1.0, 1.12);
 
   // A user may scale time usage by setting UCI option "Slow Mover"
   // Default is 100 and changing this value will probably lose elo.

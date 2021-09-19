@@ -905,7 +905,7 @@ namespace {
 
     // Step 10. If the position is not in TT, decrease depth by 2 or 1 depending on node type
     if (   PvNode
-        && depth >= 7
+        && depth >= 5
         && !ss->ttHit)
         depth -= 2;
 

@@ -27,7 +27,7 @@
 
 namespace Stockfish {
 
-int A=80, B=120;
+int A=80, B=60, C=98;
 TUNE(SetRange(40,120), A, SetRange(60,180), B);
 
 TimeManagement Time; // Our global time management object
@@ -74,11 +74,13 @@ void TimeManagement::init(Search::LimitsType& limits, Color us, Position& pos) {
       limits.time[us] + limits.inc[us] * (mtg - 1) - moveOverhead * (2 + mtg));
 
   // Use extra time with larger increments
-  double optExtra = std::clamp(1.0 + A/10.0 * limits.inc[us] / limits.time[us], 1.0, 1.0 + A/1000.0)
-                   + (limits.inc[us] > 0) * (B/100000000.0) * int(pos.non_pawn_material());
-sync_cout << "info string t " << limits.time[us] << " inc " << limits.inc[us]
-          << " npm " << pos.non_pawn_material() << " b " << (B/100000000.0) * int(pos.non_pawn_material())
-          << " extra " << optExtra << sync_endl;
+  double optExtra = C/100.0
+                   + std::clamp(A/10.0 * limits.inc[us] / limits.time[us], 0.0, A/1000.0)
+                   + (limits.inc[us] > 0) * (B/10000000.0) * int(pos.non_pawn_material());
+//sync_cout << "info string t " << limits.time[us] << " inc " << limits.inc[us]
+//          << " a " << std::clamp(A/10.0 * limits.inc[us] / limits.time[us], 0.0, A/1000.0)
+//          << " npm " << pos.non_pawn_material() << " b " << (B/10000000.0) * int(pos.non_pawn_material())
+//          << " extra " << optExtra << sync_endl;
 
   // A user may scale time usage by setting UCI option "Slow Mover"
   // Default is 100 and changing this value will probably lose elo.

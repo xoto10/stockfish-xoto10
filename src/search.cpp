@@ -915,6 +915,7 @@ namespace {
         depth--;
     else if (cutNode 
         && depth >= 7
+        && thisThread->nodes % 2
         && !ttMove)
         depth--;
 

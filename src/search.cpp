@@ -905,9 +905,14 @@ namespace {
 
     // Step 10. If the position is not in TT, decrease depth by 2 or 1 depending on node type
     if (   PvNode
-        && depth >= 6
-        && !ttMove)
+        && depth >= 7
+        && !ss->ttHit)
         depth -= 2;
+
+    else if (   PvNode
+        && depth >= 3
+        && !ttMove)
+        depth--;
 
     if (   cutNode
         && depth >= 9
@@ -1057,7 +1062,7 @@ moves_loop: // When in check, search starts here
           && (tte->bound() & BOUND_LOWER)
           &&  tte->depth() >= depth - 3)
       {
-          Value singularBeta = ttValue - 3 * depth;
+          Value singularBeta = ttValue - 2 * depth;
           Depth singularDepth = (depth - 1) / 2;
 
           ss->excludedMove = move;

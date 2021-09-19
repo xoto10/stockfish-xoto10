@@ -905,11 +905,16 @@ namespace {
 
     // Step 10. If the position is not in TT, decrease depth by 2 or 1 depending on node type
     if (   PvNode
-        && !ss->ttHit)
-        depth = std::max(depth - 2, 1);
+        && depth >= 6
+        && !ttMove)
+        depth -= 2;
 
     if (   cutNode
         && depth >= 9
+        && !ss->ttHit)
+        depth--;
+    else if (cutNode 
+        && depth >= 7
         && !ttMove)
         depth--;
 

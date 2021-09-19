@@ -911,11 +911,6 @@ namespace {
 
     if (   cutNode
         && depth >= 9
-        && !ss->ttHit)
-        depth--;
-    else if (cutNode 
-        && depth >= 7
-        && thisThread->nodes % 2
         && !ttMove)
         depth--;
 
@@ -1062,7 +1057,7 @@ moves_loop: // When in check, search starts here
           && (tte->bound() & BOUND_LOWER)
           &&  tte->depth() >= depth - 3)
       {
-          Value singularBeta = ttValue - 2 * depth;
+          Value singularBeta = ttValue - 3 * depth;
           Depth singularDepth = (depth - 1) / 2;
 
           ss->excludedMove = move;

@@ -914,11 +914,6 @@ namespace {
         && !ttMove)
         depth--;
 
-    if (   !PvNode && !cutNode
-        && depth >= 11
-        && !ss->ttHit)
-        depth--;
-
 moves_loop: // When in check, search starts here
 
     ttCapture = ttMove && pos.capture_or_promotion(ttMove);
@@ -1062,7 +1057,7 @@ moves_loop: // When in check, search starts here
           && (tte->bound() & BOUND_LOWER)
           &&  tte->depth() >= depth - 3)
       {
-          Value singularBeta = ttValue - 2 * depth;
+          Value singularBeta = ttValue - (2 + ttCapture) * depth;
           Depth singularDepth = (depth - 1) / 2;
 
           ss->excludedMove = move;

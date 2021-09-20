@@ -27,6 +27,11 @@
 
 namespace Stockfish {
 
+auto f = [](int m){if (m<30) return Range(m-20,m+20); else return Range(m / 2, m * 3 / 2);};
+
+int A=80, B=180, C=94;
+TUNE(SetRange(f), A, B, C);
+
 TimeManagement Time; // Our global time management object
 
 
@@ -71,9 +76,9 @@ void TimeManagement::init(Search::LimitsType& limits, Color us, Position& pos) {
       limits.time[us] + limits.inc[us] * (mtg - 1) - moveOverhead * (2 + mtg));
 
   // Use extra time with larger increments
-  double optExtra = 0.98
-                   + std::clamp(8.2 * limits.inc[us] / limits.time[us], 0.0, 0.082)
-                   + (limits.inc[us] > 0) * (0.0000064) * int(pos.non_pawn_material());
+  double optExtra = C/100.0
+                   + std::clamp(A/10.0 * limits.inc[us] / limits.time[us], 0.0, A/1000.0)
+                   + (limits.inc[us] > 0) * (B/10000000.0) * int(pos.non_pawn_material());
 //sync_cout << "info string t " << limits.time[us] << " inc " << limits.inc[us]
 //          << " a " << std::clamp(A/10.0 * limits.inc[us] / limits.time[us], 0.0, A/1000.0)
 //          << " npm " << pos.non_pawn_material() << " b " << (B/10000000.0) * int(pos.non_pawn_material())

@@ -58,9 +58,6 @@ using namespace Search;
 
 namespace {
 
-int A=768, B=0, C=256;
-TUNE(SetRange(384,1152), A, SetRange(-200,200), B, SetRange(128,384), C);
-
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
 
@@ -80,8 +77,8 @@ TUNE(SetRange(384,1152), A, SetRange(-200,200), B, SetRange(128,384), C);
     return (r + 534) / 1024 + (!i && r > 904);
   }
 
-            int futility_move_count(bool improving, Depth depth) {
-    return (A + B * depth + C * depth * depth) / 256 / (2 - improving);
+  constexpr int futility_move_count(bool improving, Depth depth) {
+    return (797 - 7 * depth + 274 * depth * depth) / 256 / (2 - improving);
   }
 
   // History and stats update bonus, based on depth
@@ -148,6 +145,7 @@ TUNE(SetRange(384,1152), A, SetRange(-200,200), B, SetRange(128,384), C);
   }
 
 } // namespace
+
 
 /// Search::init() is called at startup to initialize various lookup tables
 

@@ -78,7 +78,7 @@ namespace {
   }
 
   constexpr int futility_move_count(bool improving, Depth depth) {
-    return (3 + depth * depth) / (2 - improving);
+    return (823 - 20 * depth + 271 * depth * depth) / 256 / (2 - improving);
   }
 
   // History and stats update bonus, based on depth
@@ -145,7 +145,6 @@ namespace {
   }
 
 } // namespace
-
 
 /// Search::init() is called at startup to initialize various lookup tables
 

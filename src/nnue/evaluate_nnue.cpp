@@ -34,9 +34,6 @@
 
 namespace Stockfish::Eval::NNUE {
 
-int E=7, F=128, G=128;
-TUNE(E, SetRange(64,192), F, G);
-
   // Input feature converter
   LargePagePtr<FeatureTransformer> featureTransformer;
 
@@ -170,10 +167,10 @@ TUNE(E, SetRange(64,192), F, G);
     int materialist = psqt;
     int positional  = output[0];
     int delta_npm = abs(pos.non_pawn_material(WHITE) - pos.non_pawn_material(BLACK));
-    int entertainment = (adjusted && delta_npm <= RookValueMg - BishopValueMg ? E : 0);
+    int entertainment = (adjusted && delta_npm <= RookValueMg - BishopValueMg ? 5 : 0);
 
-    int A = F   - entertainment;
-    int B = G   + entertainment;
+    int A = 127 - entertainment;
+    int B = 125 + entertainment;
 
     int sum = (A * materialist + B * positional) / 128;
 

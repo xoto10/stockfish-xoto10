@@ -27,12 +27,6 @@
 
 namespace Stockfish {
 
-//auto f1 = [](int m){if (m<30) return Range(m-20,m+20); else return Range(m / 2, m * 3 / 2);};
-auto f2 = [](int m){if (m<30) return Range(m-20,m+20); else return Range(m * 3 / 4, m * 5 / 4);};
-
-int A=84, B=152, C=81;
-TUNE(SetRange(f2), A, B, C);
-
 TimeManagement Time; // Our global time management object
 
 
@@ -77,12 +71,12 @@ void TimeManagement::init(Search::LimitsType& limits, Color us, Position& pos) {
       limits.time[us] + limits.inc[us] * (mtg - 1) - moveOverhead * (2 + mtg));
 
   // Use extra time with larger increments
-  double optExtra = C/100.0
-                   + std::clamp(A/10.0 * limits.inc[us] / limits.time[us], 0.0, A/1000.0)
-                   + (limits.inc[us] > 0) * (B/10000000.0) * int(pos.non_pawn_material());
+  double optExtra = 0.82
+                   + std::clamp(8.5 * limits.inc[us] / limits.time[us], 0.0, 0.085)
+                   + (limits.inc[us] > 0) * (0.0000154) * int(pos.non_pawn_material());
 //sync_cout << "info string t " << limits.time[us] << " inc " << limits.inc[us]
-//          << " a " << std::clamp(A/10.0 * limits.inc[us] / limits.time[us], 0.0, A/1000.0)
-//          << " npm " << pos.non_pawn_material() << " b " << (B/10000000.0) * int(pos.non_pawn_material())
+//          << " a " << std::clamp(8.1 * limits.inc[us] / limits.time[us], 0.0, 0.08)
+//          << " npm " << pos.non_pawn_material() << " npm " << (0.00001570) * int(pos.non_pawn_material())
 //          << " extra " << optExtra << sync_endl;
 
   // A user may scale time usage by setting UCI option "Slow Mover"

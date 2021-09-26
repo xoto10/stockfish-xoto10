@@ -497,7 +497,11 @@ void Thread::search() {
           }
           double bestMoveInstability = 1.073 + std::max(1.0, 2.25 - 9.9 / rootDepth)
                                               * totBestMoveChanges / Threads.size();
-          double totalTime = Time.optimum() * fallingEval * reduction * bestMoveInstability;
+          double nonFirst = 0.96 + nonFirstMoves / double(rootDepth);
+//if (rootDepth > 12)
+//sync_cout << "info string nf " << nonFirst << sync_endl;
+
+          double totalTime = Time.optimum() * fallingEval * reduction * bestMoveInstability * nonFirst;
 
           // Cap used time in case of a single legal move for a better viewer experience in tournaments
           // yielding correct scores and sufficiently fast moves.
@@ -639,6 +643,7 @@ namespace {
     ss->nonFirstMoves    = PvNode ? 0 : (ss-1)->nonFirstMoves + ((ss-1)->moveCount != 1);
     ss->depth            = depth;
     Square prevSq        = to_sq((ss-1)->currentMove);
+    thisThread->nonFirstMoves = ss->nonFirstMoves;
 
     // Update the running average statistics for double extensions
     thisThread->doubleExtensionAverage[us].update(ss->depth > (ss-1)->depth);
@@ -1189,9 +1194,6 @@ moves_loop: // When in check, search starts here
           Depth r = reduction(improving, depth, moveCount, rangeReduction > 2);
 
           if (PvNode)
-              r--;
-
-          if (ss->nonFirstMoves == 1)
               r--;
 
           // Decrease reduction if the ttHit running average is large (~0 Elo)

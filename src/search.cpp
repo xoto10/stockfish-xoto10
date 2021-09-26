@@ -1157,8 +1157,6 @@ moves_loop: // When in check, search starts here
                && move == ss->killers[0]
                && (*contHist[0])[movedPiece][to_sq(move)] >= 10000)
           extension = 1;
-      else if ( !PvNode && ss->nonFirstMoves == 0)
-          extension = 1;
 
       // Add extension to new depth
       newDepth += extension;
@@ -1192,6 +1190,9 @@ moves_loop: // When in check, search starts here
 
           if (PvNode)
               r--;
+
+          if (ss->nonFirstMoves == 1)
+              r++;
 
           // Decrease reduction if the ttHit running average is large (~0 Elo)
           if (thisThread->ttHitAverage.is_greater(537, 1024))

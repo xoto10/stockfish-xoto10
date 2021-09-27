@@ -301,10 +301,10 @@ void Thread::search() {
   {
       if (mainThread->bestPreviousScore == VALUE_INFINITE)
           for (int i = 0; i < 4; ++i)
-              mainThread->iterValue[i] = VALUE_ZERO;
+              iterValue[i] = VALUE_ZERO;
       else
           for (int i = 0; i < 4; ++i)
-              mainThread->iterValue[i] = mainThread->bestPreviousScore;
+              iterValue[i] = mainThread->bestPreviousScore;
   }
 
   std::copy(&lowPlyHistory[2][0], &lowPlyHistory.back().back() + 1, &lowPlyHistory[0][0]);
@@ -469,6 +469,18 @@ void Thread::search() {
           && VALUE_MATE - bestValue <= 2 * Limits.mate)
           Threads.stop = true;
 
+      if (rootDepth > 5)
+{
+          totEvalChange += abs(bestValue - iterValue[(iterIdx + 3) & 3]);
+//if (rootDepth > 6)
+//{
+//  sync_cout << "info string prev " << bestValue << " now " << iterValue[(iterIdx + 3) & 3]
+//            << " tot " << totEvalChange << " avg " << double(totEvalChange) / (rootDepth - 5) << sync_endl;
+//}
+}
+      iterValue[iterIdx] = bestValue;
+      iterIdx = (iterIdx + 1) & 3;
+
       if (!mainThread)
           continue;
 
@@ -482,7 +494,7 @@ void Thread::search() {
           && !mainThread->stopOnPonderhit)
       {
           double fallingEval = (318 + 6 * (mainThread->bestPreviousScore - bestValue)
-                                    + 6 * (mainThread->iterValue[iterIdx] - bestValue)) / 825.0;
+                                    + 6 * (iterValue[iterIdx] - bestValue)) / 825.0;
           fallingEval = std::clamp(fallingEval, 0.5, 1.5);
 
           // If the bestMove is stable over several iterations, reduce time accordingly
@@ -521,9 +533,6 @@ void Thread::search() {
           else
                    Threads.increaseDepth = true;
       }
-
-      mainThread->iterValue[iterIdx] = bestValue;
-      iterIdx = (iterIdx + 1) & 3;
   }
 
   if (!mainThread)
@@ -875,6 +884,14 @@ namespace {
     }
 
     probCutBeta = beta + 209 - 44 * improving;
+    if (thisThread->completedDepth > 6)
+{
+        probCutBeta += 2 * (thisThread->totEvalChange / (thisThread->completedDepth - 5) - 40);
+//if (thisThread->completedDepth >= 7 && thisThread->completedDepth <= 8 && (thisThread->nodes & 15) == 15) {
+//  sync_cout << "info string adjust " << thisThread->totEvalChange / (thisThread->completedDepth - 5) - 40
+//            << sync_endl;
+//}
+}
 
     // Step 9. ProbCut (~4 Elo)
     // If we have a good enough capture and a reduced search returns a value

@@ -79,6 +79,8 @@ public:
   CapturePieceToHistory captureHistory;
   ContinuationHistory continuationHistory[2][2];
   Score trend;
+  Value iterValue[4];
+  Value totEvalChange;
 };
 
 
@@ -93,7 +95,6 @@ struct MainThread : public Thread {
 
   double previousTimeReduction;
   Value bestPreviousScore;
-  Value iterValue[4];
   int callsCnt;
   bool stopOnPonderhit;
   std::atomic_bool ponder;

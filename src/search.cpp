@@ -470,14 +470,7 @@ void Thread::search() {
           Threads.stop = true;
 
       if (rootDepth > 5)
-{
           totEvalChange += abs(bestValue - iterValue[(iterIdx + 3) & 3]);
-//if (rootDepth > 6)
-//{
-//  sync_cout << "info string prev " << bestValue << " now " << iterValue[(iterIdx + 3) & 3]
-//            << " tot " << totEvalChange << " avg " << double(totEvalChange) / (rootDepth - 5) << sync_endl;
-//}
-}
       iterValue[iterIdx] = bestValue;
       iterIdx = (iterIdx + 1) & 3;
 
@@ -885,13 +878,7 @@ namespace {
 
     probCutBeta = beta + 209 - 44 * improving;
     if (thisThread->completedDepth > 6)
-{
-        probCutBeta += std::min(60, int(thisThread->totEvalChange) / (thisThread->completedDepth - 5)) - 30;
-//if (thisThread->completedDepth >= 7 && thisThread->completedDepth <= 8 && (thisThread->nodes & 15) == 15) {
-//  sync_cout << "info string adjust " << thisThread->totEvalChange / (thisThread->completedDepth - 5) - 40
-//            << sync_endl;
-//}
-}
+        probCutBeta += std::min(60, int(thisThread->totEvalChange) / (thisThread->completedDepth - 5)) - 50;
 
     // Step 9. ProbCut (~4 Elo)
     // If we have a good enough capture and a reduced search returns a value

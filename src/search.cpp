@@ -497,7 +497,7 @@ void Thread::search() {
           }
           double bestMoveInstability = 1.073 + std::max(1.0, 2.25 - 9.9 / rootDepth)
                                               * totBestMoveChanges / Threads.size();
-          double nonFirst = std::min(1.20, 0.98 + 0.5 * nonFirstMoves / rootDepth);
+          double nonFirst = std::min(1.14, 0.98 + 0.5 * nonFirstMoves / rootDepth);
 //if (rootDepth > 12)
 //sync_cout << "info string nf " << nonFirst << sync_endl;
 

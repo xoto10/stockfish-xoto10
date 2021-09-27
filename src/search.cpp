@@ -886,7 +886,7 @@ namespace {
     probCutBeta = beta + 209 - 44 * improving;
     if (thisThread->completedDepth > 6)
 {
-        probCutBeta += std::min(60, int(thisThread->totEvalChange) / (thisThread->completedDepth - 5)) - 40;
+        probCutBeta += std::min(60, int(thisThread->totEvalChange) / (thisThread->completedDepth - 5)) - 30;
 //if (thisThread->completedDepth >= 7 && thisThread->completedDepth <= 8 && (thisThread->nodes & 15) == 15) {
 //  sync_cout << "info string adjust " << thisThread->totEvalChange / (thisThread->completedDepth - 5) - 40
 //            << sync_endl;

@@ -886,7 +886,7 @@ namespace {
     probCutBeta = beta + 209 - 44 * improving;
     if (thisThread->completedDepth > 6)
 {
-        probCutBeta += 2 * (thisThread->totEvalChange / (thisThread->completedDepth - 5) - 40);
+        probCutBeta += (thisThread->totEvalChange / (thisThread->completedDepth - 5) - 40);
 //if (thisThread->completedDepth >= 7 && thisThread->completedDepth <= 8 && (thisThread->nodes & 15) == 15) {
 //  sync_cout << "info string adjust " << thisThread->totEvalChange / (thisThread->completedDepth - 5) - 40
 //            << sync_endl;

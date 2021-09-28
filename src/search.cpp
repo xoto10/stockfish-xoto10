@@ -878,7 +878,7 @@ namespace {
 
     probCutBeta = beta + 209 - 44 * improving;
     if (thisThread->completedDepth > 6)
-        probCutBeta -= std::min(60, int(thisThread->totEvalChange) / (thisThread->completedDepth - 5)) - 40;
+        probCutBeta -= std::min(60, int(thisThread->totEvalChange) / (thisThread->completedDepth - 5)) - 20;
 
     // Step 9. ProbCut (~4 Elo)
     // If we have a good enough capture and a reduced search returns a value

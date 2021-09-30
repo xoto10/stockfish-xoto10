@@ -28,6 +28,8 @@ namespace Stockfish {
 
 TimeManagement Time; // Our global time management object
 
+int A=100;
+TUNE(SetRange(50,150), A);
 
 /// TimeManagement::init() is called at the beginning of the search and calculates
 /// the bounds of time allowed for the current game ply. We currently support:
@@ -69,7 +71,7 @@ void TimeManagement::init(Search::LimitsType& limits, Color us, int ply) {
       limits.time[us] + limits.inc[us] * (mtg - 1) - moveOverhead * (2 + mtg));
 
   // Use extra time with larger increments
-  double optExtra = std::clamp(1.0 + 12.0 * limits.inc[us] / limits.time[us], 1.0, 1.12);
+  double optExtra = std::clamp(A/100.0 + 12.0 * limits.inc[us] / limits.time[us], 1.0, 1.12);
 
   // A user may scale time usage by setting UCI option "Slow Mover"
   // Default is 100 and changing this value will probably lose elo.

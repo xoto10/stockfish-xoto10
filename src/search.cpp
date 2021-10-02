@@ -58,11 +58,6 @@ using namespace Search;
 
 namespace {
 
-auto f1 = [](int m){if (m<30) return Range(m-20,m+20); else return Range(m / 2, m * 3 / 2);};
-
-int A=218, B=300, C=300, D=172, E=145, F=21, G=21;
-TUNE(SetRange(f1), A, B, C, D, E, F, G);
-
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
 
@@ -1058,7 +1053,7 @@ moves_loop: // When in check, search starts here
                   && captureHistory[movedPiece][to_sq(move)][type_of(pos.piece_on(to_sq(move)))] < 0)
                   continue;
               // SEE based pruning
-              if (!pos.see_ge(move, Value(-A) * depth)) // (~25 Elo)
+              if (!pos.see_ge(move, Value(-223) * depth)) // (~25 Elo)
                   continue;
           }
           else
@@ -1067,17 +1062,17 @@ moves_loop: // When in check, search starts here
               if (lmrDepth < 5
                   && (*contHist[0])[movedPiece][to_sq(move)]
                   + (*contHist[1])[movedPiece][to_sq(move)]
-                  + (*contHist[3])[movedPiece][to_sq(move)] < -B*10 * depth + C*10)
+                  + (*contHist[3])[movedPiece][to_sq(move)] < -3201 * depth + 2973)
                   continue;
 
               // Futility pruning: parent node (~5 Elo)
               if (   !ss->inCheck
                   && lmrDepth < 8
-                  && ss->staticEval + D   + E   * lmrDepth <= alpha)
+                  && ss->staticEval + 167 + 136 * lmrDepth <= alpha)
                   continue;
 
               // Prune moves with negative SEE (~20 Elo)
-              if (!pos.see_ge(move, Value(-F  * lmrDepth * lmrDepth - G  * lmrDepth)))
+              if (!pos.see_ge(move, Value(-23 * lmrDepth * lmrDepth - 20 * lmrDepth)))
                   continue;
           }
       }

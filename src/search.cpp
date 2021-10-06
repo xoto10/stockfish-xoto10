@@ -80,7 +80,7 @@ namespace {
 
   // History and stats update bonus, based on depth
   constexpr int stat_bonus(Depth d) {
-    return ((-8 * d + 2500) * d - 30) * d / 10000 + 10;
+    return ((-5 * d + 1562) * d - 19) * d / 10000 + 1714;
   }
   static_assert(stat_bonus(MAX_PLY)<=4000);
 

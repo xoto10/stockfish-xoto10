@@ -79,10 +79,11 @@ namespace {
   }
 
   // History and stats update bonus, based on depth
+  int sb[10] = { 10, 20, 267, 526, 797, 1080, 1375, 1682, 2000, 2000};
+  TUNE(sb);
   constexpr int stat_bonus(Depth d) {
-    return ((-5 * d + 1562) * d - 19) * d / 10000 + 1714;
+    return sb[std::min(9, d)];
   }
-  static_assert(stat_bonus(MAX_PLY)<=4000);
 
   // Add a small random component to draw evaluations to avoid 3-fold blindness
   Value value_draw(Thread* thisThread) {

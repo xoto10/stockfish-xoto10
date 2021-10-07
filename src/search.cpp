@@ -81,7 +81,7 @@ namespace {
   // History and stats update bonus, based on depth
   int sb[10] = { 10, 20, 267, 526, 797, 1080, 1375, 1682, 2000, 2000};
   TUNE(sb);
-  constexpr int stat_bonus(Depth d) {
+            int stat_bonus(Depth d) {
     return sb[std::min(9, d)];
   }
 

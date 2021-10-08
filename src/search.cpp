@@ -79,9 +79,9 @@ namespace {
   }
 
   // History and stats update bonus, based on depth
-  constexpr int sb[10] = { 10, 19, 277, 552, 878, 1069, 1312, 1679, 2024, 1923};
+  constexpr int sb[9] = { 10, 19, 277, 552, 878, 1069, 1312, 1679, 1579};
   constexpr int stat_bonus(Depth d) {
-    return sb[std::min(9, d)];
+    return sb[std::min(8, d)];
   }
 
   // Add a small random component to draw evaluations to avoid 3-fold blindness

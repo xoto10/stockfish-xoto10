@@ -79,11 +79,8 @@ namespace {
   }
 
   // History and stats update bonus, based on depth
-  int sb[10] = { 10, 19, 277, 552, 878, 1069, 1312, 1679, 2024, 1923};
-auto f1 = [](int m){if (m<30) return Range(m-20,m+20); else return Range(m / 2, m * 3 / 2);};
-TUNE(SetRange(f1), sb);
-
-  int stat_bonus(Depth d) {
+  constexpr int sb[10] = { 10, 16, 298, 597, 817, 1087, 1271, 1518, 1936, 2018};
+  constexpr int stat_bonus(Depth d) {
     return sb[std::min(9, d)];
   }
 

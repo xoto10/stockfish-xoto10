@@ -78,14 +78,10 @@ namespace {
     return (3 + depth * depth) / (2 - improving);
   }
 
-auto f1 = [](int m){if (m<30) return Range(m-20,m+20); else return Range(m / 2, m * 3 / 2);};
-int A=253, B=208, C=13, E=2500;
-TUNE(SetRange(f1), A, B, C, E);
 
-int D=13*9 + 1926 - C*9;
   // History and stats update bonus, based on depth
-  int stat_bonus(Depth d) {
-    return std::min(d < 10 ? A   * d - B   : C  * d + D   , E   );
+  constexpr int stat_bonus(Depth d) {
+    return std::min(d < 10 ? 252 * d - 207 : 14 * d + 1917, 2467);
   }
 
   // Add a small random component to draw evaluations to avoid 3-fold blindness

@@ -507,7 +507,7 @@ void Thread::search() {
           double oneMove = 1.0;
           if (   rootDepth > 10
               && mainThread->prevGap > 90)
-              oneMove = 1.1;
+              oneMove = 0.9;
 
           double totalTime = Time.optimum() * fallingEval * reduction * bestMoveInstability * oneMove;
 

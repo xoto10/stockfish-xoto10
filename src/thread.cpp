@@ -160,6 +160,10 @@ void ThreadPool::clear() {
   for (Thread* th : *this)
       th->clear();
 
+  for (auto i=0; i<4; ++i)
+      main()->prevValue[i] = VALUE_NONE;
+
+  main()->prevIdx = 0;
   main()->callsCnt = 0;
   main()->bestPreviousScore = VALUE_INFINITE;
   main()->previousTimeReduction = 1.0;

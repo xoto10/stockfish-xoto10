@@ -385,7 +385,9 @@ void Thread::search() {
               beta  = std::min(prev + delta, VALUE_INFINITE);
 
               // Adjust trend based on root move's previousScore (dynamic contempt)
-              int tr = 113 * prev / (abs(prev) + 147);
+              int moveDiff = bestValue - mainThread->prevValue[mainThread->prevIdx];
+              int tr =  75 * prev / (abs(prev) + 147)
+                      + 75 * moveDiff / (abs(moveDiff) + 38);
 
               trend = (us == WHITE ?  make_score(tr, tr / 2)
                                    : -make_score(tr, tr / 2));
@@ -529,6 +531,9 @@ void Thread::search() {
       return;
 
   mainThread->previousTimeReduction = timeReduction;
+
+  mainThread->prevValue[mainThread->prevIdx] = bestValue;
+  mainThread->prevIdx = (mainThread->prevIdx + 1) & 3;
 
   // If skill level is enabled, swap best PV line with the sub-optimal one
   if (skill.enabled())

@@ -256,6 +256,7 @@ void MainThread::search() {
   if (bestThread != this)
       sync_cout << UCI::pv(bestThread->rootPos, bestThread->completedDepth, -VALUE_INFINITE, VALUE_INFINITE) << sync_endl;
 
+//sync_cout << "info string gap " << prevGap << sync_endl;
   sync_cout << "bestmove " << UCI::move(bestThread->rootMoves[0].pv[0], rootPos.is_chess960());
 
   if (bestThread->rootMoves[0].pv.size() > 1 || bestThread->rootMoves[0].extract_ponder_from_tt(rootPos))
@@ -339,6 +340,8 @@ void Thread::search() {
   nodesLastNormal    = nodes;
   state = EXPLOSION_NONE;
   trend = SCORE_ZERO;
+  // Eval gap to next move is generally 0/1, ~20% 20/30/40, ~5% 100s (very rough guesses)
+  prevGap = bestGap = VALUE_ZERO;
 
   int searchAgainCounter = 0;
 
@@ -455,7 +458,10 @@ void Thread::search() {
       }
 
       if (!Threads.stop)
+      {
           completedDepth = rootDepth;
+          prevGap = bestGap;
+      }
 
       if (rootMoves[0].pv[0] != lastBestMove) {
          lastBestMove = rootMoves[0].pv[0];
@@ -496,7 +502,14 @@ void Thread::search() {
           }
           double bestMoveInstability = 1.073 + std::max(1.0, 2.25 - 9.9 / rootDepth)
                                               * totBestMoveChanges / Threads.size();
-          double totalTime = Time.optimum() * fallingEval * reduction * bestMoveInstability;
+
+          // More time if one move much better than the others
+          double oneMove = 1.0;
+          if (   rootDepth > 10
+              && mainThread->prevGap > 90)
+              oneMove = 1.1;
+
+          double totalTime = Time.optimum() * fallingEval * reduction * bestMoveInstability * oneMove;
 
           // Cap used time in case of a single legal move for a better viewer experience in tournaments
           // yielding correct scores and sufficiently fast moves.
@@ -1294,12 +1307,19 @@ moves_loop: // When in check, search starts here
               if (   moveCount > 1
                   && !thisThread->pvIdx)
                   ++thisThread->bestMoveChanges;
+
+              if (moveCount > 1)
+                  thisThread->bestGap = value - alpha;
           }
           else
+          {
               // All other moves but the PV are set to the lowest value: this
               // is not a problem when sorting because the sort is stable and the
               // move position in the list is preserved - just the PV is pushed up.
               rm.score = -VALUE_INFINITE;
+              if (alpha - value < thisThread->bestGap)
+                  thisThread->bestGap = alpha - value;
+          }
       }
 
       if (value > bestValue)

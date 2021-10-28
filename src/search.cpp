@@ -1146,7 +1146,7 @@ moves_loop: // When in check, search starts here
       else if (   PvNode
                && ss->ply > 10
                && depth > 6
-               && thisThread->prevGap > 19)
+               && thisThread->prevGap > 90)
           extension = 1;
 
       // Add extension to new depth

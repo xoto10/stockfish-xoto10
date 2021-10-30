@@ -1084,8 +1084,14 @@ Value Eval::evaluate(const Position& pos) {
   // Deciding between classical and NNUE eval: for high PSQ imbalance we use classical,
   // but we switch to NNUE during long shuffling or with high material on the board.
 
+  Value bv = pos.this_thread()->bestValue / 10;
+  if (pos.this_thread()->rootColor == BLACK)
+      bv = -bv;
+//dbg_mean_of(abs(eg_value(pos.psq_score()) - bv) * 5 > (826 + pos.non_pawn_material() / 64) * (5 + pos.rule50_count()));
+// master 0.171
+
   if (  !useNNUE
-      || abs(eg_value(pos.psq_score())) * 5 > (850 + pos.non_pawn_material() / 64) * (5 + pos.rule50_count()))
+      || abs(eg_value(pos.psq_score()) - bv) * 5 > (826 + pos.non_pawn_material() / 64) * (5 + pos.rule50_count()))
       v = Evaluation<NO_TRACE>(pos).value();          // classical
   else
   {

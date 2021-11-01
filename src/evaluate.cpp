@@ -150,6 +150,10 @@ namespace Eval {
 
 namespace Trace {
 
+auto f1 = [](int m){if (m<30) return Range(m-20,m+20); else return Range(m / 2, m * 3 / 2);};
+int A=900, B=96, C=22;
+TUNE(SetRange(f1), A, B, C);
+
   enum Tracing { NO_TRACE, TRACE };
 
   enum Term { // The first 8 entries are reserved for PieceType
@@ -1089,7 +1093,7 @@ Value Eval::evaluate(const Position& pos) {
       bv = -bv;
 
   if (  !useNNUE
-      || abs(eg_value(pos.psq_score()) - bv) * 100 > (898 + pos.non_pawn_material() / 64) * (96 + 22 * pos.rule50_count()))
+      || abs(eg_value(pos.psq_score()) - bv) * 100 > (A   + pos.non_pawn_material() / 64) * (B + C * pos.rule50_count()))
       v = Evaluation<NO_TRACE>(pos).value();          // classical
   else
   {

@@ -175,9 +175,6 @@ namespace {
 
 } // namespace
 
-int A=170;
-TUNE(SetRange(140,210), A);
-
 /// Search::init() is called at startup to initialize various lookup tables
 
 void Search::init() {
@@ -1282,7 +1279,7 @@ moves_loop: // When in check, search starts here
           RootMove& rm = *std::find(thisThread->rootMoves.begin(),
                                     thisThread->rootMoves.end(), move);
 
-          rm.averageScore = rm.averageScore != -VALUE_INFINITE ? (A * value + (256-A) * rm.averageScore) / 256 : value;
+          rm.averageScore = rm.averageScore != -VALUE_INFINITE ? (8 * value + 3 * rm.averageScore) / 8 : value;
 
           // PV move or new best move?
           if (moveCount == 1 || value > alpha)

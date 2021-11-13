@@ -58,6 +58,9 @@ using namespace Search;
 
 namespace {
 
+int A=150, B=150, C=0;
+TUNE(SetRange(100,220), A, B, SetRange(-100,100), C);
+
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
 
@@ -1280,9 +1283,8 @@ moves_loop: // When in check, search starts here
           RootMove& rm = *std::find(thisThread->rootMoves.begin(),
                                     thisThread->rootMoves.end(), move);
 
-          rm.averageScore = rm.averageScore == -VALUE_INFINITE ? value :
-                            value <= rm.averageScore           ? (3 * value + rm.averageScore) / 4
-                                                               : (value + 3 * rm.averageScore) / 4;
+          rm.averageScore = value <= rm.averageScore + C       ? (A * value + (256-A) * rm.averageScore) / 256 :
+                            rm.averageScore != -VALUE_INFINITE ? ((256-B) * value + B * rm.averageScore) / 256 : value;
 
           // PV move or new best move?
           if (moveCount == 1 || value > alpha)

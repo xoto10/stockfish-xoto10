@@ -58,10 +58,6 @@ using namespace Search;
 
 namespace {
 
-auto f1 = [](int m){if (m<30) return Range(m-20,m+20); else return Range(m / 2, m * 3 / 2);};
-int A=25, B=0, C=0, D=0, E=147, F=113, G=1, H=0, I=25, J=147, K=14464, L=256;
-TUNE(SetRange(f1), A, B, C, D, E, F, G, H, I, J, K, L);
-
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
 
@@ -340,8 +336,8 @@ void Thread::search() {
   nodesLastNormal    = nodes;
   state              = EXPLOSION_NONE;
   trend              = SCORE_ZERO;
-  optimism[ us]      = Value(A );
-  optimism[~us]      = -optimism[us] + B;
+  optimism[ us]      = Value(26);
+  optimism[~us]      = -optimism[us];
 
   int searchAgainCounter = 0;
 
@@ -388,11 +384,11 @@ void Thread::search() {
               beta  = std::min(prev + delta, VALUE_INFINITE);
 
               // Adjust trend and optimism based on root move's previousScore
-              int tr = sigmoid(prev, C, D, E  , F  , G);
+              int tr = sigmoid(prev, -1, 0, 143, 115, 3);
               trend = (us == WHITE ?  make_score(tr, tr / 2)
                                    : -make_score(tr, tr / 2));
 
-              int opt = sigmoid(prev, H, I , J  , K    , L  );
+              int opt = sigmoid(prev, 3, 25, 153, 14412, 266);
               optimism[ us] = Value(opt);
               optimism[~us] = -optimism[us];
           }

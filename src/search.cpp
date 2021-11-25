@@ -336,7 +336,7 @@ void Thread::search() {
   nodesLastNormal    = nodes;
   state              = EXPLOSION_NONE;
   trend              = SCORE_ZERO;
-  optimism[ us]      = Value(26);
+  optimism[ us]      = Value(25);
   optimism[~us]      = -optimism[us];
 
   int searchAgainCounter = 0;
@@ -384,11 +384,11 @@ void Thread::search() {
               beta  = std::min(prev + delta, VALUE_INFINITE);
 
               // Adjust trend and optimism based on root move's previousScore
-              int tr = sigmoid(prev, -1, 0, 143, 115, 3);
+              int tr = sigmoid(prev, 0, 0, 147, 113, 1);
               trend = (us == WHITE ?  make_score(tr, tr / 2)
                                    : -make_score(tr, tr / 2));
 
-              int opt = sigmoid(prev, 3, 25, 153, 14412, 266);
+              int opt = sigmoid(prev, 0, 25, 147, 14464, 266);
               optimism[ us] = Value(opt);
               optimism[~us] = -optimism[us];
           }

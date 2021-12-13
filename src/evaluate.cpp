@@ -190,6 +190,9 @@ namespace Trace {
 using namespace Trace;
 
 namespace {
+auto f1 = [](int m){if (m<30) return Range(m-20,m+20); else return Range(m / 2, m * 3 / 2);};
+int A=1049, B=8, C=20;
+TUNE(SetRange(f1), A, B, C);
 
   // Threshold for lazy and space evaluation
   constexpr Value LazyThreshold1    =  Value(3130);
@@ -1091,9 +1094,9 @@ Value Eval::evaluate(const Position& pos) {
       v = Evaluation<NO_TRACE>(pos).value();          // classical
   else
   {
-       int scale = 1049
-                   +  8 * pos.count<PAWN>()
-                   + 20 * pos.non_pawn_material() / 1024;
+       int scale =    A
+                   +  B * pos.count<PAWN>()
+                   +  C * pos.non_pawn_material() / 1024;
 
        Value nnue     = NNUE::evaluate(pos, true);     // NNUE
        Color stm      = pos.side_to_move();

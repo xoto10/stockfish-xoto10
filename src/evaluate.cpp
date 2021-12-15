@@ -1091,9 +1091,9 @@ Value Eval::evaluate(const Position& pos) {
       v = Evaluation<NO_TRACE>(pos).value();          // classical
   else
   {
-       int scale = 1045
+       int scale = 1040
                    +  9 * pos.count<PAWN>()
-                   + 21 * pos.non_pawn_material() / 1024;
+                   + 22 * pos.non_pawn_material() / 1024;
 
        Value nnue     = NNUE::evaluate(pos, true);     // NNUE
        Color stm      = pos.side_to_move();

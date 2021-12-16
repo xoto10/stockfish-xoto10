@@ -1091,8 +1091,8 @@ Value Eval::evaluate(const Position& pos) {
       v = Evaluation<NO_TRACE>(pos).value();          // classical
   else
   {
-       int scale = 1030
-                   + 10 * pos.count<PAWN>()
+       int scale = 1048
+                   +  8 * pos.count<PAWN>()
                    + 22 * pos.non_pawn_material() / 1024;
 
        Value nnue     = NNUE::evaluate(pos, true);     // NNUE

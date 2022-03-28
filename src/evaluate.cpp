@@ -192,6 +192,10 @@ using namespace Trace;
 
 namespace {
 
+auto f1 = [](int m){return m == 0 ? Range(0, 0) : Range(m - 20, m + 20);};
+int A=35, B=45;
+TUNE(SetRange(f1), A, B);
+
   // Threshold for lazy and space evaluation
   constexpr Value LazyThreshold1    =  Value(3631);
   constexpr Value LazyThreshold2    =  Value(2084);
@@ -1102,9 +1106,9 @@ Value Eval::evaluate(const Position& pos) {
        Color stm      = pos.side_to_move();
        Value optimism = pos.this_thread()->optimism[stm];
        Value psq      = (stm == WHITE ? 1 : -1) * eg_value(pos.psq_score());
-       int complexity = 35 * abs(nnue - psq) / 256;
+       int complexity = B + abs(nnue - psq) * A / 256;
 
-       optimism = optimism * (44 + complexity) / 31;
+       optimism = optimism * complexity / 32;
        v = (nnue + optimism) * scale / 1024 - optimism;
 
        if (pos.is_chess960())

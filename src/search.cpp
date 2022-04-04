@@ -58,10 +58,6 @@ using namespace Search;
 
 namespace {
 
-auto f2 = [](int m){return Range(m/2, m*3/2);};
-int C=8, D=17, E=144, F=13966, G=183;
-TUNE(SetRange(f2), C, D, E, F, G);
-
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
 
@@ -362,7 +358,7 @@ void Thread::search() {
               trend = (us == WHITE ?  make_score(tr, tr / 2)
                                    : -make_score(tr, tr / 2));
 
-              int opt = sigmoid(prev, C, D, E, F, G);
+              int opt = sigmoid(prev, 11, 14, 157, 14424, 175);
               optimism[ us] = Value(opt);
               optimism[~us] = -optimism[us];
           }

@@ -151,6 +151,9 @@ namespace {
 
 } // namespace
 
+auto f1 = [](int m){return Range(m/2, m*3/2);};
+int A=162, B=180, C=240, D=97, E=73, F=100, G=60;
+TUNE(SetRange(f1), A, B, C, D, E, F, G);
 
 /// Search::init() is called at startup to initialize various lookup tables
 
@@ -465,13 +468,12 @@ void Thread::search() {
 
           // If the bestMove is stable over several iterations, reduce time accordingly
           timeReduction = lastBestMoveDepth + 10 < completedDepth ? 1.63 : 0.73;
-          double reduction = (1.62 + mainThread->previousTimeReduction) / (1.87 * timeReduction);
-          double bestMoveInstability = 1.073 + std::max(1.0, 2.41 - 9.6 / rootDepth)
+          double reduction = (A/100.0 + mainThread->previousTimeReduction) / (B/100.0 * timeReduction);
+          double bestMoveInstability = 1.0+E/1000.0 + std::max(F/100.0, C/100.0 - D/10.0 / rootDepth)
                                               * totBestMoveChanges / Threads.size();
           int complexity = mainThread->complexityAverage.value();
           double complexPosition = std::clamp(1.0 + (complexity - 326) / 1618.1, 0.5, 1.5);
-	  double obvious = totBestMoveChanges < Threads.size() + 0.001 ? 0.5 : 1.0;
-
+	  double obvious = totBestMoveChanges < Threads.size() + 0.001 ? G/100.0 : 1.0;
           double totalTime = Time.optimum() * fallingEval * reduction * bestMoveInstability * complexPosition * obvious;
 
           // Cap used time in case of a single legal move for a better viewer experience in tournaments

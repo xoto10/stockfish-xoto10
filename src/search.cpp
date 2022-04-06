@@ -465,8 +465,8 @@ void Thread::search() {
 
           // If the bestMove is stable over several iterations, reduce time accordingly
           timeReduction = lastBestMoveDepth + 10 < completedDepth ? 1.63 : 0.73;
-          double reduction = (1.58 + mainThread->previousTimeReduction) / (1.93 * timeReduction);
-          double bestMoveInstability = 1.073 + std::max(1.0, 2.34 - 9.8 / rootDepth)
+          double reduction = (1.62 + mainThread->previousTimeReduction) / (1.87 * timeReduction);
+          double bestMoveInstability = 1.073 + std::max(1.0, 2.41 - 9.6 / rootDepth)
                                               * totBestMoveChanges / Threads.size();
           int complexity = mainThread->complexityAverage.value();
           double complexPosition = std::clamp(1.0 + (complexity - 326) / 1618.1, 0.5, 1.5);

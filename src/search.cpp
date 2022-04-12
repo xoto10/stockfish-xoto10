@@ -500,6 +500,11 @@ void Thread::search() {
       iterIdx = (iterIdx + 1) & 3;
   }
 
+  if (bestValue > mainThread->lowValue)
+      mainThread->lowValue = bestValue, mainThread->lastLowValueMoves = 0;
+  else
+      ++mainThread->lastLowValueMoves;
+
   if (!mainThread)
       return;
 
@@ -1256,6 +1261,11 @@ moves_loop: // When in check, search starts here
       {
           RootMove& rm = *std::find(thisThread->rootMoves.begin(),
                                     thisThread->rootMoves.end(), move);
+
+          if (   value < 0
+              && static_cast<MainThread*>(thisThread)->lastLowValueMoves > 8
+              && (type_of(movedPiece) == PAWN || capture))
+              value = value - 1;
 
           rm.averageScore = rm.averageScore != -VALUE_INFINITE ? (2 * value + rm.averageScore) / 3 : value;
 

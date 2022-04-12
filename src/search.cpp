@@ -1261,7 +1261,7 @@ moves_loop: // When in check, search starts here
           if (   value < 0
               && static_cast<MainThread*>(thisThread)->lastLowValueMoves > 8
               && (type_of(movedPiece) == PAWN || capture))
-              value = value - 1;
+              value = value - 20;
 
           rm.averageScore = rm.averageScore != -VALUE_INFINITE ? (2 * value + rm.averageScore) / 3 : value;
 

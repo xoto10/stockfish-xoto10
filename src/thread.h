@@ -92,8 +92,6 @@ struct MainThread : public Thread {
   Value bestPreviousScore;
   Value bestPreviousAverageScore;
   Value iterValue[4];
-  Value lowValue;
-  int lastLowValueMoves;
   int callsCnt;
   bool stopOnPonderhit;
   std::atomic_bool ponder;

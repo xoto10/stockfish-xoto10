@@ -530,7 +530,7 @@ namespace {
         && alpha < VALUE_DRAW
         && pos.has_game_cycle(ss->ply))
     {
-        alpha = value_draw(pos.this_thread());
+        alpha = value_draw(pos.this_thread()) + 2;
         if (alpha >= beta)
             return alpha;
     }

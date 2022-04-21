@@ -1252,7 +1252,8 @@ moves_loop: // When in check, search starts here
       if (Threads.stop.load(std::memory_order_relaxed))
           return VALUE_ZERO;
 
-      if (   ss->ply % 2 == 0
+      if (   pos.rule50_count() > 20
+	  && ss->ply % 2 == 0
           && value < 0
           && (type_of(movedPiece) == PAWN || capture))
           value = value - 1;

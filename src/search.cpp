@@ -1257,7 +1257,7 @@ moves_loop: // When in check, search starts here
           RootMove& rm = *std::find(thisThread->rootMoves.begin(),
                                     thisThread->rootMoves.end(), move);
 
-          if (value < 0 && (type_of(movedPiece) == PAWN || capture))
+          if (value < -100 && (type_of(movedPiece) == PAWN || capture))
               value = value - 1;
 
           rm.averageScore = rm.averageScore != -VALUE_INFINITE ? (2 * value + rm.averageScore) / 3 : value;

@@ -467,11 +467,8 @@ void Thread::search() {
           timeReduction = lastBestMoveDepth + 10 < completedDepth ? 1.63 : 0.73;
           double reduction = (1.56 + mainThread->previousTimeReduction) / (2.20 * timeReduction);
           if (totBestMoveChanges < 0.1)
-          {
               totBestMoveChanges -= 0.01 / (totBestMoveChanges + 0.0207) + 0.083;
-//sync_cout << "info string bmc " << totBestMoveChanges << " bmc2 " << totBestMoveChanges2 << sync_endl;
-          }
-          double bestMoveInstability = 1.273 + std::max(1.0, 2.25 - 9.9 / rootDepth)
+          double bestMoveInstability = 1.323 + std::max(1.0, 2.25 - 9.9 / rootDepth)
                                               * totBestMoveChanges / Threads.size();
           int complexity = mainThread->complexityAverage.value();
           double complexPosition = std::clamp(1.0 + (complexity - 326) / 1618.1, 0.5, 1.5);

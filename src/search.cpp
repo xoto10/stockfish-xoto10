@@ -151,11 +151,6 @@ namespace {
 
 } // namespace
 
-auto f1 = [](int m){return Range(m/2, m*3/2);};
-int A=200, B=30, C=50;
-TUNE(SetRange(f1), A, B, C);
-
-double W = B / 10000.0, X = A/1000.0 / (1/W - 1/(0.1+W)), Y = X / (0.1+W), Z = C / 1000.0;
 
 /// Search::init() is called at startup to initialize various lookup tables
 
@@ -472,8 +467,8 @@ void Thread::search() {
           timeReduction = lastBestMoveDepth + 10 < completedDepth ? 1.63 : 0.73;
           double reduction = (1.56 + mainThread->previousTimeReduction) / (2.20 * timeReduction);
           if (totBestMoveChanges < 0.1)
-              totBestMoveChanges -= X / (totBestMoveChanges + W) + Y;
-          double bestMoveInstability = 1.073 + Z + std::max(1.0, 2.25 - 9.9 / rootDepth)
+              totBestMoveChanges -= 0.000556 / (totBestMoveChanges + 0.003) + 0.0054;
+          double bestMoveInstability = 1.122 + std::max(1.0, 2.25 - 9.9 / rootDepth)
                                               * totBestMoveChanges / Threads.size();
           int complexity = mainThread->complexityAverage.value();
           double complexPosition = std::clamp(1.0 + (complexity - 326) / 1618.1, 0.5, 1.5);

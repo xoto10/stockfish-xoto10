@@ -469,8 +469,9 @@ void Thread::search() {
           double bestMoveInstability = 1 + 1.7 * totBestMoveChanges / Threads.size();
           int complexity = mainThread->complexityAverage.value();
           double complexPosition = std::clamp(1.0 + (complexity - 326) / 1618.1, 0.5, 1.5);
+          double choice = std::clamp((double) rootMoves.size() / 16, 0.25, 1.);
 
-          double totalTime = Time.optimum() * fallingEval * reduction * bestMoveInstability * complexPosition;
+          double totalTime = Time.optimum() * fallingEval * reduction * bestMoveInstability * complexPosition * choice;
 
           // Cap used time in case of a single legal move for a better viewer experience in tournaments
           // yielding correct scores and sufficiently fast moves.

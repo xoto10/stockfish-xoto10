@@ -192,6 +192,10 @@ using namespace Trace;
 
 namespace {
 
+auto f1 = [](int m){return Range(m / 2, m * 3 / 2);};
+int A=1036, B=220, C=144, D=45, E=1000;
+TUNE(SetRange(f1), A, B, C, D, E);
+
   // Threshold for lazy and space evaluation
   constexpr Value LazyThreshold1    =  Value(3631);
   constexpr Value LazyThreshold2    =  Value(2084);
@@ -1099,14 +1103,14 @@ Value Eval::evaluate(const Position& pos) {
   if (useNNUE && !useClassical)
   {
        Value nnue     = NNUE::evaluate(pos, true);     // NNUE
-       int scale      = 1036 + 22 * pos.non_pawn_material() / 1024;
+       int scale      = A    + B  * pos.non_pawn_material() / 10240;
        Color stm      = pos.side_to_move();
        Value optimism = pos.this_thread()->optimism[stm];
        Value psq      = (stm == WHITE ? 1 : -1) * eg_value(pos.psq_score());
-       int complexity = 35 * abs(nnue - psq) / 256;
+       int complexity = C  * abs(nnue - psq) / 1024;
 
-       optimism = optimism * (44 + complexity) / 31;
-       v = (nnue + optimism) * scale / 1024 - optimism;
+       optimism = optimism * (D  + complexity) / 32;
+       v = (nnue * scale + optimism * (scale - E   )) / 1024;
 
        if (pos.is_chess960())
            v += fix_FRC(pos);

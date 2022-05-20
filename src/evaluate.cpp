@@ -1107,7 +1107,7 @@ Value Eval::evaluate(const Position& pos) {
        int complexity = 35 * abs(nnue - psq) / 256;
 
        optimism =  optimism * (32 + complexity) / 32
-                 + Value(pos.this_thread()->nodes & 15) - 7;
+                 + Value(pos.this_thread()->nodes & 7) - 3;
        v = (nnue * scale + optimism * (scale - 846)) / 1024;
 
        if (pos.is_chess960())

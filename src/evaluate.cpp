@@ -1083,7 +1083,7 @@ make_v:
 
 Value Eval::evaluate(const Position& pos) {
 
-  Value v;
+  Value v, vc = VALUE_NONE;
   bool useClassical = false;
 
   // Deciding between classical and NNUE eval (~10 Elo): for high PSQ imbalance we use classical,
@@ -1092,7 +1092,7 @@ Value Eval::evaluate(const Position& pos) {
       || ((pos.this_thread()->depth > 9 || pos.count<ALL_PIECES>() > 7) &&
           abs(eg_value(pos.psq_score())) * 5 > (856 + pos.non_pawn_material() / 64) * (10 + pos.rule50_count())))
   {
-      v = Evaluation<NO_TRACE>(pos).value();          // classical
+      vc = v = Evaluation<NO_TRACE>(pos).value();          // classical
       useClassical = abs(v) >= 297;
   }
 
@@ -1111,6 +1111,9 @@ Value Eval::evaluate(const Position& pos) {
 
        if (pos.is_chess960())
            v += fix_FRC(pos);
+
+       if (vc != VALUE_NONE)
+           v = (vc + 3 * v) / 4;
   }
 
   // Damp down the evaluation linearly when shuffling

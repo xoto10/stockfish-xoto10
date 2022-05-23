@@ -193,8 +193,8 @@ using namespace Trace;
 namespace {
 
 auto f1 = [](int m){return m < 20 ? Range(m / 5, m * 9 / 5) : Range(m / 2, m * 3 / 2);};
-int A=9, B=7, C=100, D=856, E=200;
-TUNE(SetRange(f1), A, B, C, D, E);
+int A=9, B=7, C=100, D=856, E=200, F=297;
+TUNE(SetRange(f1), A, B, C, D, E, F);
 
   // Threshold for lazy and space evaluation
   constexpr Value LazyThreshold1    =  Value(3631);
@@ -1096,7 +1096,7 @@ Value Eval::evaluate(const Position& pos) {
           abs(eg_value(pos.psq_score())) * C > (D + pos.non_pawn_material() / 64) * (E + 20 * pos.rule50_count())))
   {
       v = Evaluation<NO_TRACE>(pos).value();          // classical
-      useClassical = abs(v) >= 297;
+      useClassical = abs(v) >= F;
   }
 
   // If result of a classical evaluation is much lower than threshold fall back to NNUE

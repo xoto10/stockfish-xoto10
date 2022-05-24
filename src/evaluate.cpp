@@ -192,9 +192,6 @@ using namespace Trace;
 
 namespace {
 
-auto f1 = [](int m){return m < 20 ? Range(m / 5, m * 9 / 5) : Range(m / 2, m * 3 / 2);};
-int A=9, B=7, C=100, D=856, E=200, F=297;
-TUNE(SetRange(f1), A, B, C, D, E, F);
 
   // Threshold for lazy and space evaluation
   constexpr Value LazyThreshold1    =  Value(3631);
@@ -1092,11 +1089,11 @@ Value Eval::evaluate(const Position& pos) {
   // Deciding between classical and NNUE eval (~10 Elo): for high PSQ imbalance we use classical,
   // but we switch to NNUE during long shuffling or with high material on the board.
   if (  !useNNUE
-      || ((pos.this_thread()->depth > A || pos.count<ALL_PIECES>() > B) &&
-          abs(eg_value(pos.psq_score())) * C > (D + pos.non_pawn_material() / 64) * (E + 20 * pos.rule50_count())))
+      || ((pos.this_thread()->depth > 10 || pos.count<ALL_PIECES>() > 7) &&
+          abs(eg_value(pos.psq_score())) * 103 > (837 + pos.non_pawn_material() / 64) * (200 + 20 * pos.rule50_count())))
   {
       v = Evaluation<NO_TRACE>(pos).value();          // classical
-      useClassical = abs(v) >= F;
+      useClassical = abs(v) >= 297;
   }
 
   // If result of a classical evaluation is much lower than threshold fall back to NNUE

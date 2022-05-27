@@ -63,7 +63,9 @@ namespace {
 
   // Futility margin
   Value futility_margin(Depth d, bool improving) {
-    return Value(160 * (d - improving));
+//dbg_mean_of(164 * (d - improving)); 262.5
+//dbg_mean_of(32 + 144 * (d - improving)); 262.3
+    return Value(32 + 144 * (d - improving));
   }
 
   // Reductions lookup table, initialized at startup

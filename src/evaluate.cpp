@@ -1101,7 +1101,7 @@ Value Eval::evaluate(const Position& pos) {
   {
        int complexity;
        Value nnue     = NNUE::evaluate(pos, true, &complexity);     // NNUE
-       complexity     = 35 * complexity / 256;
+       complexity     = 70 * complexity / 256;
        int scale      = 1014 + 21 * pos.non_pawn_material() / 1024;
        Color stm      = pos.side_to_move();
        Value optimism = pos.this_thread()->optimism[stm];

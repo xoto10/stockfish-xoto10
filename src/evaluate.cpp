@@ -1090,10 +1090,10 @@ Value Eval::evaluate(const Position& pos) {
   // but we switch to NNUE during long shuffling or with high material on the board.
   if (  !useNNUE
       || ((pos.this_thread()->depth > 10 || pos.count<ALL_PIECES>() > 6) &&
-          abs(eg_value(pos.psq_score())) * 100 > (854 + pos.non_pawn_material() / 64) * (197 + 20 * pos.rule50_count())))
+          abs(eg_value(pos.psq_score())) * 103 > (831 + pos.non_pawn_material() / 64) * (195 + 20 * pos.rule50_count())))
   {
       v = Evaluation<NO_TRACE>(pos).value();          // classical
-      useClassical = abs(v) >= 297;
+      useClassical = abs(v) >= 298;
   }
 
   // If result of a classical evaluation is much lower than threshold fall back to NNUE

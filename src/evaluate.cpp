@@ -1099,13 +1099,14 @@ Value Eval::evaluate(const Position& pos) {
   // If result of a classical evaluation is much lower than threshold fall back to NNUE
   if (useNNUE && !useClassical)
   {
-       Value nnue     = NNUE::evaluate(pos, true);     // NNUE
+       int complexity;
        int scale      = 1080 + 110 * pos.non_pawn_material() / 5120;
        Color stm      = pos.side_to_move();
        Value optimism = pos.this_thread()->optimism[stm];
        Value psq      = (stm == WHITE ? 1 : -1) * eg_value(pos.psq_score());
-       int complexity = (278 * abs(nnue - psq)) / 256;
+       Value nnue     = NNUE::evaluate(pos, true, &complexity);     // NNUE
 
+       complexity = (139 * complexity + 139 * abs(nnue - psq)) / 256;
        optimism = optimism * (251 + complexity) / 256;
        v = (nnue * scale + optimism * (scale - 852)) / 1024;
 

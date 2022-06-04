@@ -58,14 +58,18 @@ using namespace Search;
 
 namespace {
 
+auto f1 = [](int m){return Range(m - 20, m + 20);};
+int A=-32, B=-4, C=4;
+TUNE(SetRange(f1), A, B, C);
+
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
 
   // Futility margin
   Value futility_margin(Thread* th, Depth d, bool improving) {
-    int c =   th->rootDepth < 18 ? -32
-            : th->rootDepth < 23 ? -4
-            :                       4;
+    int c =   th->rootDepth < 18 ? A
+            : th->rootDepth < 23 ? B
+            :                      C;
     return Value(168 * (d - improving) + c);
   }
 

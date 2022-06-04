@@ -63,7 +63,10 @@ namespace {
 
   // Futility margin
   Value futility_margin(Thread* th, Depth d, bool improving) {
-    return Value(168 * (d - improving) + int(th->nodes & 63) - 32);
+    int c =   th->rootDepth < 18 ? -32
+            : th->rootDepth < 23 ? -4
+            :                       4;
+    return Value(168 * (d - improving) + c);
   }
 
   // Reductions lookup table, initialized at startup

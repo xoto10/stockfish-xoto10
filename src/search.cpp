@@ -58,19 +58,12 @@ using namespace Search;
 
 namespace {
 
-auto f1 = [](int m){return Range(m - 20, m + 20);};
-int A=18, B=23;
-TUNE(SetRange(f1), A, B);
-
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
 
   // Futility margin
   Value futility_margin(Thread* th, Depth d, bool improving) {
-    int c =   th->rootDepth < A  ? -32
-            : th->rootDepth < B  ? -4
-            :                       4;
-    return Value(168 * (d - improving) + c);
+    return Value(168 * (d - improving) - int(th->nodes & 31));
   }
 
   // Reductions lookup table, initialized at startup

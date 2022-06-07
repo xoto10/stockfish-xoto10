@@ -63,7 +63,7 @@ namespace {
 
   // Futility margin
   Value futility_margin(Thread* th, Depth d, bool improving) {
-    int c = th->rootDepth < 18 ? -32 : -4;
+    int c = th->rootDepth < 22 ? -32 : 0;
     return Value(168 * (d - improving) - c);
   }
 

@@ -59,8 +59,9 @@ using namespace Search;
 namespace {
 
 auto f1 = [](int m){return Range(1, m * 2);};
-int A=5260, B=92359, C=18;
-TUNE(SetRange(f1), A, B, C);
+auto f2 = [](int m){return Range(m / 2, m * 3 / 2);};
+int A=5000, B=103000, C=20;
+TUNE(SetRange(f1), A, C, SetRange(f2), B);
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };

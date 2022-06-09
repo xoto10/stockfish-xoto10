@@ -1026,7 +1026,7 @@ moves_loop: // When in check, search starts here
                   continue;
 
               // SEE based pruning (~9 Elo)
-              if (!pos.see_ge(move, Value(-203) * depth))
+              if (!pos.see_ge(move, Value(-203) * depth + moveCount))
                   continue;
           }
           else
@@ -1045,7 +1045,7 @@ moves_loop: // When in check, search starts here
               // Futility pruning: parent node (~9 Elo)
               if (   !ss->inCheck
                   && lmrDepth < 11
-                  && ss->staticEval + 122 + 138 * lmrDepth + history / 60 - moveCount <= alpha)
+                  && ss->staticEval + 122 + 138 * lmrDepth + history / 60 <= alpha)
                   continue;
 
               // Prune moves with negative SEE (~3 Elo)

@@ -1026,7 +1026,7 @@ moves_loop: // When in check, search starts here
                   continue;
 
               // SEE based pruning (~9 Elo)
-              if (!pos.see_ge(move, Value(-203) * depth + 6 * moveCount))
+              if (!pos.see_ge(move, Value(-203) * depth + 12 * moveCount))
                   continue;
           }
           else

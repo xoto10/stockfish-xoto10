@@ -59,15 +59,15 @@ using namespace Search;
 namespace {
 
 auto f1 = [](int m){return Range(1, m * 2);};
-int A=256, B=256, C=20;
-TUNE(SetRange(f1), A, B, C);
+int A=256, B=256;
+TUNE(SetRange(f1), A, B);
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
 
   // Futility margin
   Value futility_margin(Depth d, bool improving) {
-    return Value(A*20 - (B*400) / (C + d - improving));
+    return Value(A*20 - (B*400) / (20 + d - improving));
   }
 
   // Reductions lookup table, initialized at startup

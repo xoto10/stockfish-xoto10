@@ -152,9 +152,6 @@ namespace {
 
 } // namespace
 
-auto f1 = [](int m){return Range(1, m * 2);};
-int A=8, B=64;
-TUNE(SetRange(f1), A, B);
 
 /// Search::init() is called at startup to initialize various lookup tables
 
@@ -1248,9 +1245,11 @@ moves_loop: // When in check, search starts here
           RootMove& rm = *std::find(thisThread->rootMoves.begin(),
                                     thisThread->rootMoves.end(), move);
 
-          int weightValue = 2 * depth + A;
-          int weightAverage = depth + B;
-          rm.averageScore = rm.averageScore != -VALUE_INFINITE ? (weightValue * value + weightAverage * rm.averageScore) / (weightValue + weightAverage) : value;
+          int weightValue = 2 * depth + 8;
+          int weightAverage = depth + 64;
+          rm.averageScore = rm.averageScore != -VALUE_INFINITE
+                              ? (weightValue * value + weightAverage * rm.averageScore) / (weightValue + weightAverage)
+                              : value;
 
           // PV move or new best move?
           if (moveCount == 1 || value > alpha)

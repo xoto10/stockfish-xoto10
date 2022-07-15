@@ -1246,7 +1246,7 @@ moves_loop: // When in check, search starts here
                                     thisThread->rootMoves.end(), move);
 
           int weightValue = 24 * depth + 3;
-          int weightAverage = 8 * depth + 582;
+          int weightAverage = 8 * depth + 592;
           rm.averageScore = rm.averageScore != -VALUE_INFINITE
                               ? (weightValue * value + weightAverage * rm.averageScore) / (weightValue + weightAverage)
                               : value;

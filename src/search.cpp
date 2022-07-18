@@ -1245,8 +1245,8 @@ moves_loop: // When in check, search starts here
           RootMove& rm = *std::find(thisThread->rootMoves.begin(),
                                     thisThread->rootMoves.end(), move);
 
-          int weightValue = 26 * depth + 1;
-          int weightAverage = 8 * depth + 661;
+          int weightValue = 25 * depth + 2;
+          int weightAverage = 8 * depth + 629;
           rm.averageScore = rm.averageScore != -VALUE_INFINITE
                               ? (weightValue * value + weightAverage * rm.averageScore) / (weightValue + weightAverage)
                               : value;

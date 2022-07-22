@@ -314,12 +314,16 @@ void Thread::search() {
   optimism[~us] = -optimism[us];
 
   int searchAgainCounter = 0;
+  TimePoint iterElapsed = 0, iterStartTime;
+  Threads.main()->totalTime = Time.maximum();
 
   // Iterative deepening loop until requested to stop or the target depth is reached
   while (   ++rootDepth < MAX_PLY
          && !Threads.stop
          && !(Limits.depth && mainThread && rootDepth > Limits.depth))
   {
+      iterStartTime = now();
+
       // Age out PV variability metric
       if (mainThread)
           totBestMoveChanges /= 2;
@@ -332,7 +336,7 @@ void Thread::search() {
       size_t pvFirst = 0;
       pvLast = 0;
 
-      if (!Threads.increaseDepth)
+      if (!Threads.increaseDepth && iterElapsed > 0.20 * Threads.main()->totalTime)
          searchAgainCounter++;
 
       // MultiPV loop. We perform a full root search for each PV line
@@ -476,15 +480,17 @@ void Thread::search() {
           int complexity = mainThread->complexityAverage.value();
           double complexPosition = std::min(1.0 + (complexity - 277) / 1819.1, 1.5);
 
-          double totalTime = Time.optimum() * fallingEval * reduction * bestMoveInstability * complexPosition;
+          double totTime = Time.optimum() * fallingEval * reduction * bestMoveInstability * complexPosition;
 
           // Cap used time in case of a single legal move for a better viewer experience in tournaments
           // yielding correct scores and sufficiently fast moves.
           if (rootMoves.size() == 1)
-              totalTime = std::min(500.0, totalTime);
+              totTime = std::min(500.0, totTime);
+
+          mainThread->totalTime = totTime;
 
           // Stop the search if we have exceeded the totalTime
-          if (Time.elapsed() > totalTime)
+          if (Time.elapsed() > totTime)
           {
               // If we are allowed to ponder do not stop the search now but
               // keep pondering until the GUI sends "ponderhit" or "stop".
@@ -495,7 +501,7 @@ void Thread::search() {
           }
           else if (   Threads.increaseDepth
                    && !mainThread->ponder
-                   && Time.elapsed() > totalTime * 0.43)
+                   && Time.elapsed() > totTime * 0.43)
                    Threads.increaseDepth = false;
           else
                    Threads.increaseDepth = true;
@@ -503,6 +509,7 @@ void Thread::search() {
 
       mainThread->iterValue[iterIdx] = bestValue;
       iterIdx = (iterIdx + 1) & 3;
+      iterElapsed = now() - iterStartTime;
   }
 
   if (!mainThread)

@@ -336,7 +336,7 @@ void Thread::search() {
       size_t pvFirst = 0;
       pvLast = 0;
 
-      if (!Threads.increaseDepth && iterElapsed > 0.20 * Threads.main()->totalTime)
+      if (!Threads.increaseDepth && iterElapsed > 0.28 * Threads.main()->totalTime)
          searchAgainCounter++;
 
       // MultiPV loop. We perform a full root search for each PV line

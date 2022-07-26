@@ -1276,8 +1276,7 @@ moves_loop: // When in check, search starts here
       if (value > bestValue)
       {
           bestValue = value;
-          if (ss->ply == 1)
-             ++oppChoices;
+          ++oppChoices;
 
           if (value > alpha)
           {
@@ -1323,7 +1322,7 @@ moves_loop: // When in check, search starts here
     }
 
     // Prefer positions with multiple choices if opponent is losing
-    if (ss->ply == 1 && bestValue < VALUE_DRAW - 1)
+    if (ss->ply == 1 && bestValue < VALUE_DRAW - 40)
         bestValue -= oppChoices;
 
     // The following condition would detect a stop only after move loop has been

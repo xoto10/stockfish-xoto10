@@ -569,7 +569,8 @@ namespace {
     ss->inCheck        = pos.checkers();
     priorCapture       = pos.captured_piece();
     Color us           = pos.side_to_move();
-    moveCount          = captureCount = quietCount = ss->moveCount = oppChoices = 0;
+    moveCount          = captureCount = quietCount = ss->moveCount = 0;
+    oppChoices         = -1;
     bestValue          = -VALUE_INFINITE;
     maxValue           = VALUE_INFINITE;
 

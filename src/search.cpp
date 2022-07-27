@@ -1323,8 +1323,8 @@ moves_loop: // When in check, search starts here
     }
 
     // Prefer positions with multiple choices if opponent is losing
-    if (ss->ply == 3 && depth > 5 && bestValue < VALUE_DRAW - 40)
-        bestValue -= oppChoices / 2;
+    if (ss->ply == 1 && depth > 5 && bestValue < VALUE_DRAW - 40)
+        bestValue -= oppChoices / 2 - 1;
 
     // The following condition would detect a stop only after move loop has been
     // completed. But in this case bestValue is valid because we have fully

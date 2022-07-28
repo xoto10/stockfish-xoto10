@@ -561,7 +561,7 @@ namespace {
     bool givesCheck, improving, didLMR, priorCapture;
     bool capture, doFullDepthSearch, moveCountPruning, ttCapture;
     Piece movedPiece;
-    int moveCount, captureCount, quietCount, improvement, complexity;
+    int moveCount, captureCount, quietCount, improvement, complexity, oppChoices;
 
     // Step 1. Initialize node
     Thread* thisThread = pos.this_thread();
@@ -570,6 +570,7 @@ namespace {
     priorCapture       = pos.captured_piece();
     Color us           = pos.side_to_move();
     moveCount          = captureCount = quietCount = ss->moveCount = 0;
+    oppChoices         = -1;
     bestValue          = -VALUE_INFINITE;
     maxValue           = VALUE_INFINITE;
 
@@ -1276,6 +1277,7 @@ moves_loop: // When in check, search starts here
       if (value > bestValue)
       {
           bestValue = value;
+          ++oppChoices;
 
           if (value > alpha)
           {
@@ -1319,6 +1321,10 @@ moves_loop: // When in check, search starts here
               quietsSearched[quietCount++] = move;
       }
     }
+
+    // Prefer positions with multiple choices if opponent is losing
+    if (ss->ply == 1 && depth > 5 && bestValue < VALUE_DRAW - 40)
+        bestValue -= oppChoices;
 
     // The following condition would detect a stop only after move loop has been
     // completed. But in this case bestValue is valid because we have fully

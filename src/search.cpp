@@ -152,9 +152,6 @@ namespace {
 
 } // namespace
 
-int A=80, B=8;
-TUNE(SetRange(0,160), A);
-TUNE(SetRange(0,16), B);
 
 /// Search::init() is called at startup to initialize various lookup tables
 
@@ -1326,7 +1323,7 @@ moves_loop: // When in check, search starts here
     }
 
     // Prefer positions with multiple choices if opponent is losing
-    if (ss->ply == 1 && depth > 5 && bestValue < Value(A) - B * thisThread->rootDepth)
+    if (ss->ply == 1 && depth > 5 && bestValue < 30 - 6 * thisThread->rootDepth)
         bestValue -= oppChoices / 2 - 1;
 
     // The following condition would detect a stop only after move loop has been

@@ -570,7 +570,7 @@ namespace {
     priorCapture       = pos.captured_piece();
     Color us           = pos.side_to_move();
     moveCount          = captureCount = quietCount = ss->moveCount = 0;
-    oppChoices         = 0;
+    oppChoices         = -1;
     bestValue          = -VALUE_INFINITE;
     maxValue           = VALUE_INFINITE;
 
@@ -1323,7 +1323,7 @@ moves_loop: // When in check, search starts here
     }
 
     // Prefer positions with multiple choices if opponent is losing
-    if (ss->ply == 1 && depth > 5 && bestValue < VALUE_ZERO - 40)
+    if (ss->ply == 1 && bestValue < VALUE_ZERO - 40)
         bestValue -= (6 * oppChoices) / thisThread->rootDepth;
 
     // The following condition would detect a stop only after move loop has been

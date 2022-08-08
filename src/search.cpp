@@ -476,7 +476,7 @@ void Thread::search() {
           int complexity = mainThread->complexityAverage.value();
           double complexPosition = std::min(1.0 + (complexity - 277) / 1819.1, 1.5);
           double predicted = rootMoves[0].pv[0] == mainThread->followingMove || bestValue > mainThread->bestPreviousScore
-                                                     ? 0.9 : 1.3;
+                                                     ? 0.96 : 1.12;
 
           double totalTime = Time.optimum() * fallingEval * reduction * bestMoveInstability * complexPosition * predicted;
 

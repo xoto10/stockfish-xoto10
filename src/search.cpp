@@ -152,8 +152,6 @@ namespace {
 
 } // namespace
 
-int A=4, B=180, C=130;
-TUNE(A, B, C);
 
 /// Search::init() is called at startup to initialize various lookup tables
 
@@ -778,8 +776,8 @@ namespace {
     // Step 7. Razoring.
     // If eval is really low check with qsearch if it can exceed alpha, if it can't,
     // return a fail low.
-    if (   depth <= 7 - A * PvNode
-        && eval < alpha - (348 + B * PvNode) - (258 + C * PvNode) * depth * depth)
+    if (   depth <= 7 - 5 * PvNode
+        && eval < alpha - (348 + 170 * PvNode) - (258 + 130 * PvNode) * depth * depth)
     {
         value = qsearch<NonPV>(pos, ss, alpha - 1, alpha);
         if (value < alpha)

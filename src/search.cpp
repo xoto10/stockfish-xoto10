@@ -776,7 +776,7 @@ namespace {
     // Step 7. Razoring.
     // If eval is really low check with qsearch if it can exceed alpha, if it can't,
     // return a fail low.
-    if (   depth <= 7 - 5 * PvNode
+    if (   depth <= 7 - 4 * PvNode
         && eval < alpha - (348 + 60 * PvNode) - (258 + 50 * PvNode) * depth * depth)
     {
         value = qsearch<NonPV>(pos, ss, alpha - 1, alpha);

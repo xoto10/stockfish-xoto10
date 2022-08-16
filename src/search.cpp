@@ -780,7 +780,7 @@ namespace {
         && depth <= 7
         && alpha - 348 - 258 * depth * depth - eval > 0)
     {
-        if (alpha - 348 - 258 * depth * depth - eval > 6000 && (thisThread->nodes & 0x1))
+        if (alpha - 348 - 258 * depth * depth - eval > 6000 && (thisThread->nodes & 3) == 3)
             return eval;
 
         value = qsearch<NonPV>(pos, ss, alpha - 1, alpha);

@@ -152,6 +152,9 @@ namespace {
 
 } // namespace
 
+auto f1 = [](int m){return Range(m - 40, m + 40);};
+int A=4;
+TUNE(SetRange(f1), A);
 
 /// Search::init() is called at startup to initialize various lookup tables
 
@@ -1532,7 +1535,7 @@ moves_loop: // When in check, search starts here
 
       // Do not search moves with negative SEE values (~5 Elo)
       if (    bestValue > VALUE_TB_LOSS_IN_MAX_PLY
-          && !pos.see_ge(move))
+          && !pos.see_ge(move, VALUE_ZERO + A))
           continue;
 
       // Speculative prefetch as early as possible

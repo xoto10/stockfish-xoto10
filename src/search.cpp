@@ -57,13 +57,16 @@ using Eval::evaluate;
 using namespace Search;
 
 namespace {
+auto f1 = [](int m){return Range(m / 2, m * 3 / 2);};
+int A=168;
+TUNE(SetRange(f1), A);
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
 
   // Futility margin
   Value futility_margin(Depth d, bool improving) {
-    return Value(168 * (d - improving));
+    return Value(A   * (d - improving));
   }
 
   // Reductions lookup table, initialized at startup
@@ -790,7 +793,7 @@ namespace {
     if (   !ss->ttPv
         &&  depth < 8
         &&  eval - futility_margin(depth, improving) - (ss-1)->statScore / 256 >= beta
-        &&  eval >= beta + 32
+        &&  eval >= beta + 16
         &&  eval < 26305) // larger than VALUE_KNOWN_WIN, but smaller than TB wins.
         return eval;
 

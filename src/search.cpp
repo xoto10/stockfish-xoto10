@@ -63,7 +63,7 @@ namespace {
 
   // Futility margin
   Value futility_margin(Depth d, bool improving) {
-    return Value(164 * (d - improving));
+    return Value(162 * (d - improving));
   }
 
   // Reductions lookup table, initialized at startup
@@ -790,7 +790,7 @@ namespace {
     if (   !ss->ttPv
         &&  depth < 8
         &&  eval - futility_margin(depth, improving) - (ss-1)->statScore / 256 >= beta
-        &&  eval >= beta + 8
+        &&  eval >= beta + 16
         &&  eval < 26305) // larger than VALUE_KNOWN_WIN, but smaller than TB wins.
         return eval;
 

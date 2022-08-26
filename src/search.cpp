@@ -57,13 +57,15 @@ using Eval::evaluate;
 using namespace Search;
 
 namespace {
+int A=672;
+TUNE(SetRange(472,872), A);
 
   // Different node types, used as a template parameter
   enum NodeType { NonPV, PV, Root };
 
   // Futility margin
   Value futility_margin(Depth d, bool improving) {
-    return Value(168 * (d - improving));
+    return Value(A   * (d - improving) / 4);
   }
 
   // Reductions lookup table, initialized at startup

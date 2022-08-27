@@ -776,12 +776,9 @@ namespace {
     // Step 7. Razoring.
     // If eval is really low check with qsearch if it can exceed alpha, if it can't,
     // return a fail low.
-//dbg_mean_of(   !PvNode && depth <= 7 && eval < alpha - 348 - 258 * depth * depth); .0271
-//dbg_mean_of(   !PvNode && depth <= 7 && eval < alpha + 200 * improving - 348 - 258 * depth * depth); .0284
-//dbg_mean_of(   !PvNode && depth <= 7 && eval < alpha + 200 * improving - 356 - 263 * depth * depth); .0275
     if (   !PvNode
         && depth <= 7
-        && eval < alpha + 200 * improving - 356 - 263 * depth * depth)
+        && eval < alpha - 356 - 263 * depth * (depth - improving))
     {
         value = qsearch<NonPV>(pos, ss, alpha - 1, alpha);
         if (value < alpha)

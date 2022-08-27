@@ -1159,7 +1159,7 @@ moves_loop: // When in check, search starts here
 
           // Increase reduction if we're improving, but only 50% of the time.
           if (improving && depth >= 4)
-              r += (thisThread->nodes & 2);
+              r += (thisThread->nodes & 1);
 
           // Decrease reduction for PvNodes based on depth
           if (PvNode)

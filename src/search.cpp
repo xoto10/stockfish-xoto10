@@ -152,6 +152,9 @@ namespace {
 
 } // namespace
 
+auto f1 = [](int m){return Range(m / 2, m * 3 / 2);};
+int A=259, B=184, C=165;
+TUNE(SetRange(f1), A, B, C);
 
 /// Search::init() is called at startup to initialize various lookup tables
 
@@ -1009,7 +1012,7 @@ moves_loop: // When in check, search starts here
                   && !PvNode
                   && lmrDepth < 6
                   && !ss->inCheck
-                  && ss->staticEval + 249 + 186 * improving + 166 * lmrDepth + PieceValue[EG][pos.piece_on(to_sq(move))]
+                  && ss->staticEval + A   + B   * improving + C   * lmrDepth + PieceValue[EG][pos.piece_on(to_sq(move))]
                    + captureHistory[movedPiece][to_sq(move)][type_of(pos.piece_on(to_sq(move)))] / 6 < alpha)
                   continue;
 

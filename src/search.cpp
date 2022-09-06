@@ -152,6 +152,10 @@ namespace {
 
 } // namespace
 
+int A=-20, B=9, C=-2, D=2, E=203;
+TUNE(SetRange(-400,400), A, B);
+TUNE(SetRange(-40,40), C, D);
+TUNE(SetRange(103,303), E);
 
 /// Search::init() is called at startup to initialize various lookup tables
 
@@ -1014,7 +1018,7 @@ moves_loop: // When in check, search starts here
                   continue;
 
               // SEE based pruning (~9 Elo)
-              if (!pos.see_ge(move, Value(-203) * depth - 10 + 9 * improving - 2 * moveCount + delta))
+              if (!pos.see_ge(move, Value(-E  ) * depth + A + B * improving + C * moveCount + D * delta))
                   continue;
           }
           else

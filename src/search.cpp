@@ -152,6 +152,9 @@ namespace {
 
 } // namespace
 
+auto f1 = [](int m){return Range(m / 2, m * 3 / 2);};
+int A=400, B=256, C=160;
+TUNE(SetRange(f1), A, B, C);
 
 /// Search::init() is called at startup to initialize various lookup tables
 
@@ -1037,7 +1040,7 @@ moves_loop: // When in check, search starts here
                   continue;
 
               // Prune moves with negative SEE (~3 Elo)
-              if (!pos.see_ge(move, Value(-25 * lmrDepth * lmrDepth - 18 * lmrDepth - 10 * improving)))
+              if (!pos.see_ge(move, Value(-A   * lmrDepth * lmrDepth - B   * lmrDepth - C   * improving)/16))
                   continue;
           }
       }

@@ -1098,8 +1098,11 @@ moves_loop: // When in check, search starts here
           // Check extensions (~1 Elo)
           else if (   givesCheck
                    && depth > 9
-                   && abs(ss->staticEval) > 82)
+                   && (abs(ss->staticEval) > 85 || abs(eval) > 85))
+          {
+//dbg_mean_of( abs(eval) > 82 ); Total 6344 Mean 0.937421 orig
               extension = 1;
+          }
 
           // Quiet ttMove extensions (~0 Elo)
           else if (   PvNode

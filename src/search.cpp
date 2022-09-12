@@ -152,9 +152,6 @@ namespace {
 
 } // namespace
 
-auto f1 = [](int m){return Range(m / 2, m * 3 / 2);};
-int A=85, B=85;
-TUNE(SetRange(f1), A, B);
 
 /// Search::init() is called at startup to initialize various lookup tables
 
@@ -1101,7 +1098,7 @@ moves_loop: // When in check, search starts here
           // Check extensions (~1 Elo)
           else if (   givesCheck
                    && depth > 9
-                   && (abs(ss->staticEval) > A || abs(eval) > B))
+                   && (abs(ss->staticEval) > 89 || abs(eval) > 87))
               extension = 1;
 
           // Quiet ttMove extensions (~0 Elo)

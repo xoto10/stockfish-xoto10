@@ -152,6 +152,9 @@ namespace {
 
 } // namespace
 
+auto f1 = [](int m){return Range(m / 2, m * 3 / 2);};
+int A=1280, B=14728;
+TUNE(SetRange(f1), A, B);
 
 /// Search::init() is called at startup to initialize various lookup tables
 
@@ -1175,7 +1178,7 @@ moves_loop: // When in check, search starts here
                          - 4433;
 
           // Decrease/increase reduction for moves with a good/bad history (~30 Elo)
-          r -= (ss->statScore + 5 * eval ) / 14728;
+          r -= (ss->statScore + A    * eval / 256 ) / B    ;
 
           // In general we want to cap the LMR depth search at newDepth, but when
           // reduction is negative, we allow this move a limited search extension

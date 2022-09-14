@@ -153,7 +153,7 @@ namespace {
 } // namespace
 
 auto f1 = [](int m){return Range(1, m * 2);};
-int A=1280, B=16000;
+int A=1280, B=13500 + 2*A;
 TUNE(SetRange(f1), A);
 
 /// Search::init() is called at startup to initialize various lookup tables

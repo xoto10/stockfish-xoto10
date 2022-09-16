@@ -725,7 +725,8 @@ namespace {
     if (ss->inCheck)
     {
         // Skip early pruning when in check
-        ss->staticEval = eval = VALUE_NONE;
+        ss->staticEval = VALUE_NONE;
+        eval = VALUE_ZERO;
         improving = false;
         improvement = 0;
         complexity = 0;

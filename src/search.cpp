@@ -725,8 +725,7 @@ namespace {
     if (ss->inCheck)
     {
         // Skip early pruning when in check
-        ss->staticEval = VALUE_NONE;
-        eval = VALUE_ZERO;
+        ss->staticEval = eval = VALUE_NONE;
         improving = false;
         improvement = 0;
         complexity = 0;
@@ -1175,7 +1174,7 @@ moves_loop: // When in check, search starts here
                          - 4433;
 
           // Decrease/increase reduction for moves with a good/bad history (~30 Elo)
-          r -= (ss->statScore + 6 * eval) / 16500;
+          r -= (ss->statScore + 5 * alpha) / 15728;
 
           // In general we want to cap the LMR depth search at newDepth, but when
           // reduction is negative, we allow this move a limited search extension

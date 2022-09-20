@@ -152,6 +152,8 @@ namespace {
 
 } // namespace
 
+int A=0, B=1;
+TUNE(SetRange(-15,15), A, B);
 
 /// Search::init() is called at startup to initialize various lookup tables
 
@@ -743,14 +745,14 @@ namespace {
         // ttValue can be used as a better position evaluation (~4 Elo)
         if (ttValue != VALUE_NONE)
         {
-            if (tte->bound() & BOUND_UPPER)
+            if (tte->bound() & BOUND_LOWER)
             {
-                if (ttValue <= eval + 2)
+                if (ttValue >= eval - A)
                     eval = ttValue;
             }
-            else// (tte->bound() & BOUND_LOWER)
+            else// (tte->bound() & BOUND_UPPER)
             {
-                if (ttValue > eval)
+                if (ttValue <= eval + B)
                     eval = ttValue;
             }
         }

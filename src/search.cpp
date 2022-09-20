@@ -152,8 +152,6 @@ namespace {
 
 } // namespace
 
-int A=2, B=2;
-TUNE(SetRange(-20,20), A, B);
 
 /// Search::init() is called at startup to initialize various lookup tables
 
@@ -747,12 +745,12 @@ namespace {
         {
             if (tte->bound() & BOUND_LOWER)
             {
-                if (ttValue >= eval - A)
+                if (ttValue > eval)
                     eval = ttValue;
             }
             else// (tte->bound() & BOUND_UPPER)
             {
-                if (ttValue <= eval + B)
+                if (ttValue <= eval + 2)
                     eval = ttValue;
             }
         }

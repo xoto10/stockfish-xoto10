@@ -152,6 +152,8 @@ namespace {
 
 } // namespace
 
+int A=2, B=2;
+TUNE(SetRange(-20,20), A, B);
 
 /// Search::init() is called at startup to initialize various lookup tables
 
@@ -741,9 +743,19 @@ namespace {
             complexity = abs(ss->staticEval - pos.psq_eg_stm());
 
         // ttValue can be used as a better position evaluation (~4 Elo)
-        if (    ttValue != VALUE_NONE
-            && (tte->bound() & (ttValue >= eval - 2 ? BOUND_LOWER : BOUND_UPPER)))
-            eval = ttValue;
+        if (ttValue != VALUE_NONE)
+        {
+            if (tte->bound() & BOUND_LOWER)
+            {
+                if (ttValue >= eval - A)
+                    eval = ttValue;
+            }
+            else// (tte->bound() & BOUND_UPPER)
+            {
+                if (ttValue <= eval + B)
+                    eval = ttValue;
+            }
+        }
     }
     else
     {

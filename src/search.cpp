@@ -743,14 +743,14 @@ namespace {
         // ttValue can be used as a better position evaluation (~4 Elo)
         if (ttValue != VALUE_NONE)
         {
-            if (tte->bound() & BOUND_LOWER)
-            {
-                if (ttValue > eval)
-                    eval = ttValue;
-            }
-            else// (tte->bound() & BOUND_UPPER)
+            if (tte->bound() & BOUND_UPPER)
             {
                 if (ttValue <= eval + 2)
+                    eval = ttValue;
+            }
+            else// (tte->bound() & BOUND_LOWER)
+            {
+                if (ttValue > eval)
                     eval = ttValue;
             }
         }

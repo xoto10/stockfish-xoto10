@@ -741,9 +741,18 @@ namespace {
             complexity = abs(ss->staticEval - pos.psq_eg_stm());
 
         // ttValue can be used as a better position evaluation (~4 Elo)
-        if (    ttValue != VALUE_NONE
-            && (tte->bound() & (ttValue >= eval - 6 ? BOUND_LOWER : BOUND_UPPER)))
-            eval = ttValue;
+        if (ttValue != VALUE_NONE)
+        {
+            if ((tte->bound() & BOUND_LOWER) && ttValue > eval)
+            {
+                eval = ttValue;
+            }
+            else if (tte->bound() & BOUND_UPPER)
+            {
+                if (ttValue <= eval + 2)
+                    eval = ttValue;
+            }
+        }
     }
     else
     {

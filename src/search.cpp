@@ -1449,12 +1449,12 @@ moves_loop: // When in check, search starts here
             {
                 if (tte->bound() & BOUND_LOWER)
                 {
-                    if (ttValue > bestValue)
+                    if (ttValue >= bestValue - 2)
                         bestValue = ttValue;
                 }
                 else// (tte->bound() & BOUND_UPPER)
                 {
-                    if (ttValue <= bestValue + 2)
+                    if (ttValue <= bestValue)
                         bestValue = ttValue;
                 }
             }

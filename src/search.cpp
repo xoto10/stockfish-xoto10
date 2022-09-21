@@ -1445,9 +1445,19 @@ moves_loop: // When in check, search starts here
                 ss->staticEval = bestValue = evaluate(pos);
 
             // ttValue can be used as a better position evaluation (~7 Elo)
-            if (    ttValue != VALUE_NONE
-                && (tte->bound() & (ttValue > bestValue ? BOUND_LOWER : BOUND_UPPER)))
-                bestValue = ttValue;
+            if (ttValue != VALUE_NONE)
+            {
+                if (tte->bound() & BOUND_LOWER)
+                {
+                    if (ttValue > bestValue)
+                        bestValue = ttValue;
+                }
+                else// (tte->bound() & BOUND_UPPER)
+                {
+                    if (ttValue <= bestValue + 2)
+                        bestValue = ttValue;
+                }
+            }
         }
         else
             // In case of null move search use previous static eval with a different sign

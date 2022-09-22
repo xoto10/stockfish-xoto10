@@ -1510,7 +1510,7 @@ moves_loop: // When in check, search starts here
           &&  type_of(move) != PROMOTION)
       {
 
-          if (moveCount + !(thisThread->nodes & 127) > 2)
+          if (moveCount + !(thisThread->nodes & 512) > 2)
               continue;
 
           futilityValue = futilityBase + PieceValue[EG][pos.piece_on(to_sq(move))];

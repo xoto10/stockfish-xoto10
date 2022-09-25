@@ -152,6 +152,8 @@ namespace {
 
 } // namespace
 
+int A=0, B=0;
+TUNE(SetRange(-50,50), A, B);
 
 /// Search::init() is called at startup to initialize various lookup tables
 
@@ -880,12 +882,12 @@ namespace {
                 value = -qsearch<NonPV>(pos, ss+1, -probCutBeta, -probCutBeta+1);
 
                 // If the qsearch held, perform the regular search
-                if (value >= probCutBeta)
+                if (value >= probCutBeta + A)
                     value = -search<NonPV>(pos, ss+1, -probCutBeta, -probCutBeta+1, depth - 4, !cutNode);
 
                 pos.undo_move(move);
 
-                if (value >= probCutBeta)
+                if (value >= probCutBeta + B)
                 {
                     // Save ProbCut data into transposition table
                     tte->save(posKey, value_to_tt(value, ss->ply), ss->ttPv, BOUND_LOWER, depth - 3, move, ss->staticEval);

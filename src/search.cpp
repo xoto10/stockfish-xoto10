@@ -480,7 +480,7 @@ void Thread::search() {
           int complexity = mainThread->complexityAverage.value();
           double complexPosition = std::min(1.0 + (complexity - 261) / 1738.7, 1.5);
           int flatEma = (7 * mainThread->scoreDiffEma + 8 * abs(mainThread->bestPreviousScore - bestValue) - 8) / 8;
-          double flatline = rootPos.game_ply() > 8 && flatEma < 40 ? 0.6 + flatEma / 100.0 : 1.0;
+          double flatline = abs(bestValue > 50) && rootPos.game_ply() > 8 && flatEma < 40 ? 0.6 + flatEma / 100.0 : 1.0;
           //sync_cout << "info string flatema " << flatEma << sync_endl;
           double totalTime = Time.optimum() * fallingEval * reduction * bestMoveInstability * complexPosition * flatline;
 

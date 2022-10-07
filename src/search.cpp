@@ -236,6 +236,11 @@ void MainThread::search() {
       && rootMoves[0].pv[0] != MOVE_NONE)
       bestThread = Threads.get_best_thread();
 
+  if (bestPreviousScore != VALUE_INFINITE)
+  {
+    //sync_cout << "info string bprsc " << bestPreviousScore << " rmsc " << bestThread->rootMoves[0].score << sync_endl;
+    scoreDiffEma = (7 * scoreDiffEma + 8 * abs(bestPreviousScore - bestThread->rootMoves[0].score) - 8) / 8;
+  }
   bestPreviousScore = bestThread->rootMoves[0].score;
   bestPreviousAverageScore = bestThread->rootMoves[0].averageScore;
 
@@ -474,8 +479,12 @@ void Thread::search() {
           double bestMoveInstability = 1 + 1.7 * totBestMoveChanges / Threads.size();
           int complexity = mainThread->complexityAverage.value();
           double complexPosition = std::min(1.0 + (complexity - 261) / 1738.7, 1.5);
-
-          double totalTime = Time.optimum() * fallingEval * reduction * bestMoveInstability * complexPosition;
+          int flatEma = (7 * mainThread->scoreDiffEma
+                        + 8 * abs(mainThread->bestPreviousScore - mainThread->rootMoves[0].score)
+                        - 8) / 8;
+          double flatline = rootPos.game_ply() > 8 && flatEma < 40 ? 0.6 + flatEma / 100.0 : 1.0;
+          //sync_cout << "info string flatema " << flatEma << sync_endl;
+          double totalTime = Time.optimum() * fallingEval * reduction * bestMoveInstability * complexPosition * flatline;
 
           // Cap used time in case of a single legal move for a better viewer experience in tournaments
           // yielding correct scores and sufficiently fast moves.

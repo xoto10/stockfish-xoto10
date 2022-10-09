@@ -1065,7 +1065,7 @@ Value Eval::evaluate(const Position& pos, int* complexity) {
       int nnueComplexity;
       int scale = 1064 + 106 * pos.non_pawn_material() / 5120;
       Value optimism = pos.this_thread()->optimism[stm];
-      
+
       int stmSign = stm == pos.this_thread()->rootColor ? 1 : -1;
 
       Value nnue = NNUE::evaluate(pos, true, &nnueComplexity);
@@ -1074,12 +1074,21 @@ Value Eval::evaluate(const Position& pos, int* complexity) {
       if (complexity) // Return hybrid NNUE complexity to caller
           *complexity = nnueComplexity;
 
+//    Value optstart = optimism;
+//    Value optold = optimism * (269 + nnueComplexity) / 256;
+//    Value vold = (nnue * scale + optold * (scale - 754)) / 1024;
+//    int fixed=0;
+
       v = nnue * scale;
-      if (-200 < v * stmSign && v * stmSign < 0)
-          optimism = optimism * 512;
+      if (-204800 < v * stmSign && v * stmSign < 0)
+          /*fixed=1, */optimism = optimism * 512;
       else
           optimism = (optimism * (269 + nnueComplexity) * (scale - 754) / 256);
       v = (v + optimism) / 1024;
+//if ((pos.this_thread()->nodes & 15) == 15) {
+//  sync_cout << "info string fixed " << fixed << " oldv " << vold << ":" << (optold * (scale - 754) / 1024)
+//            << " opt " << optstart << " newv " << v << ":" << (optimism/1024) << sync_endl;
+//}
   }
 
   // Damp down the evaluation linearly when shuffling

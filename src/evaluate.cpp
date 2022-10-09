@@ -188,10 +188,6 @@ namespace Trace {
   }
 }
 
-auto f1 = [](int m){return Range(m / 2, m * 3 / 2);};
-int A=266, B=200, C=256, D=269, E=310, F=106;
-TUNE(SetRange(f1), A, B, C, D, E, F);
-
 using namespace Trace;
 
 namespace {
@@ -1067,10 +1063,8 @@ Value Eval::evaluate(const Position& pos, int* complexity) {
   else
   {
       int nnueComplexity;
-      int scale = F   * pos.non_pawn_material() / 5120;
+      int scale = 1064 + 106 * pos.non_pawn_material() / 5120;
       Value optimism = pos.this_thread()->optimism[stm];
-      Color rootstm = pos.this_thread()->rootPos.side_to_move();
-      int stmSign = stm == rootstm ? 1 : -1;
 
       Value nnue = NNUE::evaluate(pos, true, &nnueComplexity);
       // Blend nnue complexity with (semi)classical complexity
@@ -1078,11 +1072,11 @@ Value Eval::evaluate(const Position& pos, int* complexity) {
       if (complexity) // Return hybrid NNUE complexity to caller
           *complexity = nnueComplexity;
 
-      v = nnue * (A*4  + scale);
-      if (-B   < v * stmSign && v * stmSign < 0)
-          optimism = optimism * C*2;
+      v = nnue * scale;
+      if (-200 < v && v < 0)
+          optimism = optimism * 512;
       else
-          optimism = (optimism * (D   + nnueComplexity) * (E   + scale) / 256);
+          optimism = (optimism * (269 + nnueComplexity) * (scale - 754) / 256);
       v = (v + optimism) / 1024;
   }
 

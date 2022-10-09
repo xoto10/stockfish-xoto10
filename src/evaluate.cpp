@@ -1065,6 +1065,8 @@ Value Eval::evaluate(const Position& pos, int* complexity) {
       int nnueComplexity;
       int scale = 1064 + 106 * pos.non_pawn_material() / 5120;
       Value optimism = pos.this_thread()->optimism[stm];
+      
+      int stmSign = stm == pos.this_thread()->rootColor ? 1 : -1;
 
       Value nnue = NNUE::evaluate(pos, true, &nnueComplexity);
       // Blend nnue complexity with (semi)classical complexity
@@ -1073,7 +1075,7 @@ Value Eval::evaluate(const Position& pos, int* complexity) {
           *complexity = nnueComplexity;
 
       v = nnue * scale;
-      if (-200 < v && v < 0)
+      if (-200 < v * stmSign && v * stmSign < 0)
           optimism = optimism * 512;
       else
           optimism = (optimism * (269 + nnueComplexity) * (scale - 754) / 256);

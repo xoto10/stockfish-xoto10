@@ -1072,8 +1072,8 @@ Value Eval::evaluate(const Position& pos, int* complexity) {
       if (complexity) // Return hybrid NNUE complexity to caller
           *complexity = nnueComplexity;
 
-      optimism = optimism * (269 + nnueComplexity) / 256;
-      v = (nnue * scale + optimism * (scale - 754)) / 1024;
+      optimism = (optimism * (269 + nnueComplexity) * (scale - 754) / 256);
+      v = (nnue * scale + optimism) / 1024;
   }
 
   // Damp down the evaluation linearly when shuffling

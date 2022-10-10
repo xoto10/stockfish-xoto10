@@ -69,7 +69,6 @@ public:
   Position rootPos;
   StateInfo rootState;
   Search::RootMoves rootMoves;
-  Color rootColor;
   Depth rootDepth, completedDepth, previousDepth;
   Value rootDelta;
   CounterMoveHistory counterMoves;

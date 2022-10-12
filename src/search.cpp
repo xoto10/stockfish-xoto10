@@ -363,7 +363,7 @@ void Thread::search() {
 
               int opt;
               if (-200 <= prev && prev < 0)
-                  opt = int(prev) * int(prev) * int(prev) / 125000;
+                  opt = - int(prev) * int(prev) / 625;
               else
                   opt = 118 * prev / (std::abs(prev) + 169);
               optimism[ us] = Value(opt);

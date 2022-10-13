@@ -362,7 +362,7 @@ void Thread::search() {
                                    : -make_score(tr, tr / 2));
 
               int opt;
-              if (-200 <= prev && prev < 0)
+              if (-200 <= prev && prev < 200)
                   opt = prev / 3;
               else
                   opt = 118 * prev / (std::abs(prev) + 169);

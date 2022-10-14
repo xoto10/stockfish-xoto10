@@ -152,9 +152,6 @@ namespace {
 
 } // namespace
 
-int A=115;
-auto f1 = [](int m){return Range(m / 2, m * 3 / 2);};
-TUNE(SetRange(f1), A);
 
 /// Search::init() is called at startup to initialize various lookup tables
 
@@ -365,11 +362,8 @@ void Thread::search() {
                                    : -make_score(tr, tr / 2));
 
               int opt;
-              if (prev < 0)
-              {
-                  int k = 118 * A / (2 * A + 169);
-                  opt = 118 * (prev + A) / (std::abs(2 * (prev + A)) + 169) - k;
-              }
+              if (-140 <= prev && prev < 0)
+                  opt = - int(prev) * int(prev) / 370;
               else
                   opt = 118 * prev / (std::abs(prev) + 169);
               optimism[ us] = Value(opt);

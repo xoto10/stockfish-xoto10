@@ -192,12 +192,6 @@ using namespace Trace;
 
 namespace {
 
-auto f1 = [](int m){return Range(m * 3 / 4, m * 5 / 4);};
-auto f2 = [](int m){return Range(m - 50, m + 50);};
-int A=418, B=426, C=416, D=411, E=5, F=0, G=-3, H=264, I=774;
-TUNE(SetRange(f1), A, B, C, D, H, I);
-TUNE(SetRange(f2), E, F, G);
-
   // Threshold for lazy and space evaluation
   constexpr Value LazyThreshold1    =  Value(3631);
   constexpr Value LazyThreshold2    =  Value(2084);
@@ -1077,18 +1071,18 @@ Value Eval::evaluate(const Position& pos, int* complexity) {
       Value nnue = NNUE::evaluate(pos, true, &nnueComplexity);
 
       // Blend nnue complexity with (semi)classical complexity
-      nnueComplexity = (  (optimism  > 0 ? A * nnueComplexity : B * nnueComplexity)                // nnue complexity
-                        + (optimism  > 0 ? F * int(optimism) : G * int(optimism))                  // optimism
-                        + (optimism  > 0 ? C * abs(psq - nnue) : D * abs(psq - nnue))              // pos OR mat adv
-                        + (optimism  > 0 ? int(optimism) * int(psq - nnue) : E * int(nnue - psq))  // pos if winning
+      nnueComplexity = (  (optimism  > 0 ? 397 * nnueComplexity : 453 * nnueComplexity)            // nnue complexity
+                        + (optimism  > 0 ? -8 * int(optimism) : -5 * int(optimism))                // optimism
+                        + (optimism  > 0 ? 385 * abs(psq - nnue) : 390 * abs(psq - nnue))          // pos OR mat adv
+                        + (optimism  > 0 ? int(optimism) * int(psq - nnue) : 4 * int(nnue - psq))  // mat if winning
                         ) / 1024;
 
       // Return hybrid NNUE complexity to caller
       if (complexity)
           *complexity = nnueComplexity;
 
-      optimism = optimism * (H   + nnueComplexity) / 256;
-      v = (nnue * scale + optimism * (scale - I  )) / 1024;
+      optimism = optimism * (257 + nnueComplexity) / 256;
+      v = (nnue * scale + optimism * (scale - 819)) / 1024;
   }
 
   // Damp down the evaluation linearly when shuffling

@@ -1062,11 +1062,11 @@ Value Eval::evaluate(const Position& pos, int* complexity) {
       v = Evaluation<NO_TRACE>(pos).value();
   else
   {
-      int nnueComplexity;
-      int scale = 1064 + 106 * pos.non_pawn_material() / 5120;
-
       Color stm = pos.side_to_move();
       Value optimism = pos.this_thread()->optimism[stm];
+      int scale = optimism > 0 ? 1064 + 148 * pos.non_pawn_material() / 5120
+                               : 1064 +  74 * pos.non_pawn_material() / 5120;
+      int nnueComplexity;
 
       Value nnue = NNUE::evaluate(pos, true, &nnueComplexity);
 

@@ -192,6 +192,15 @@ using namespace Trace;
 
 namespace {
 
+auto f1 = [](int m){return Range(m * 3 / 4, m * 5 / 4);};
+auto f2 = [](int m){return Range(m - 50, m + 50);};
+auto f3 = [](int m){return Range(m - 200, m + 200);};
+int A=418, B=426, C=416, D=411, E=160, F=-32, G=-32, H=264, I=774, J=0, K=0, L=0, M=0;
+int N=0, P=1014, Q=148, R=1119, T=74, U=16, V=0, W=264, X=774;
+TUNE(SetRange(f1), A, B, C, D, H, I, W, X);
+TUNE(SetRange(f2), Q, T, U);
+TUNE(SetRange(f3), E, F, G, J, K, L, M, N, P, R, V);
+
   // Threshold for lazy and space evaluation
   constexpr Value LazyThreshold1    =  Value(3631);
   constexpr Value LazyThreshold2    =  Value(2084);
@@ -1062,26 +1071,36 @@ Value Eval::evaluate(const Position& pos, int* complexity) {
       v = Evaluation<NO_TRACE>(pos).value();
   else
   {
-      int nnueComplexity;
-      int scale = 1064 + 106 * pos.non_pawn_material() / 5120;
-
       Color stm = pos.side_to_move();
       Value optimism = pos.this_thread()->optimism[stm];
+
+      int scale = optimism > N ? P    + Q   * pos.non_pawn_material() / 5120
+                               : R    + T   * pos.non_pawn_material() / 5120;
+      int nnueComplexity;
 
       Value nnue = NNUE::evaluate(pos, true, &nnueComplexity);
 
       // Blend nnue complexity with (semi)classical complexity
-      nnueComplexity = (  416 * nnueComplexity
-                        + 424 * abs(psq - nnue)
-                        + (optimism  > -2 ? int(optimism) * int(psq - nnue) : 9 * int(nnue - psq))  // mat if winning
+      nnueComplexity = (  (optimism  > J ? A * nnueComplexity : B * nnueComplexity)                         // nnue complexity
+                        + (optimism  > K ? F * int(optimism) / 16 : G * int(optimism) / 16)                 // optimism
+                        + (optimism  > L ? C * abs(psq - nnue) : D * abs(psq - nnue))                       // pos OR mat adv
+                        + (optimism  > M ? int(optimism) * int(psq - nnue) * U/16: E * int(nnue - psq)/16)  // mat if winning
                         ) / 1024;
 
       // Return hybrid NNUE complexity to caller
       if (complexity)
           *complexity = nnueComplexity;
 
-      optimism = optimism * (269 + nnueComplexity) / 256;
-      v = (nnue * scale + optimism * (scale - 754)) / 1024;
+      if (optimism > V)
+      {
+          optimism = optimism * (H   + nnueComplexity) / 256;
+          v = (nnue * scale + optimism * (scale - I  )) / 1024;
+      }
+      else
+      {
+          optimism = optimism * (W   + nnueComplexity) / 256;
+          v = (nnue * scale + optimism * (scale - X  )) / 1024;
+      }
   }
 
   // Damp down the evaluation linearly when shuffling

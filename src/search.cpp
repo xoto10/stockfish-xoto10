@@ -152,9 +152,6 @@ namespace {
 
 } // namespace
 
-auto f1 = [](int m){return Range(1, m * 2);};
-int A=261, B=219, C=150;
-TUNE(SetRange(f1), A, B, C);
 
 /// Search::init() is called at startup to initialize various lookup tables
 
@@ -476,7 +473,7 @@ void Thread::search() {
           double reduction = (1.4 + mainThread->previousTimeReduction) / (2.15 * timeReduction);
           double bestMoveInstability = 1 + 1.7 * totBestMoveChanges / Threads.size();
           int complexity = mainThread->complexityAverage.value();
-          double complexPosition = std::min(1.0 + (complexity - A  ) / (1300.0+2.0*B), C/100.0);
+          double complexPosition = std::min(1.0 + (complexity - 280) / 1729.0, 1.47);
 
           double totalTime = Time.optimum() * fallingEval * reduction * bestMoveInstability * complexPosition;
 

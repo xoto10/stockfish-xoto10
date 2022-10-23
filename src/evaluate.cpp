@@ -193,7 +193,7 @@ using namespace Trace;
 namespace {
 
 auto f1 = [](int m){return Range(m - 20, m + 20);};
-int A=22, B=15, C=10;
+int A=22, B=17, C=10;
 TUNE(SetRange(f1), A, B, C);
 
   // Threshold for lazy and space evaluation

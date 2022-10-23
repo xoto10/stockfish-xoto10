@@ -193,7 +193,7 @@ using namespace Trace;
 namespace {
 
 auto f1 = [](int m){return Range(m - 20, m + 20);};
-int A=22, B=17, C=10;
+int A=22, B=17, C=10, D=20;
 TUNE(SetRange(f1), A, B, C);
 
   // Threshold for lazy and space evaluation
@@ -1075,9 +1075,9 @@ Value Eval::evaluate(const Position& pos, int* complexity) {
       Value nnue = NNUE::evaluate(pos, true, &nnueComplexity);
 
       // Blend nnue complexity with (semi)classical complexity
-      nnueComplexity = (  (optimism  > 0 ? 420 * nnueComplexity : A*20 * nnueComplexity)             // nnue complexity
-                        + (optimism  > 0 ? 407 * abs(psq - nnue) : B*20 * abs(psq - nnue))           // pos OR mat adv
-                        + (optimism  > 0 ? int(optimism) * int(psq - nnue) : C  * int(nnue - psq))  // mat if winning
+      nnueComplexity = (  (optimism  > 0 ? 420 * nnueComplexity : A*20 * nnueComplexity)    // nnue complexity
+                        + (optimism  > 0 ? 407 * abs(psq - nnue) : B*20 * abs(psq - nnue))  // pos OR mat adv
+                        + (optimism  > 0 ? D*2 * int(psq - nnue) : C  * int(nnue - psq))    // mat if winning
                         ) / 1024;
 
       // Return hybrid NNUE complexity to caller

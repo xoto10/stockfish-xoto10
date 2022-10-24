@@ -193,8 +193,10 @@ using namespace Trace;
 namespace {
 
 auto f1 = [](int m){return Range(m - 20, m + 20);};
-int A=22, B=17, C=10, D=20;
-TUNE(SetRange(f1), A, B, C);
+auto f2 = [](int m){return Range(m / 2, m * 3 / 2);};
+int A=22, B=17, C=10, D=20, E=259, F=794;
+TUNE(SetRange(f1), A, B, C, D);
+TUNE(SetRange(f2), E, F);
 
   // Threshold for lazy and space evaluation
   constexpr Value LazyThreshold1    =  Value(3631);
@@ -1084,8 +1086,8 @@ Value Eval::evaluate(const Position& pos, int* complexity) {
       if (complexity)
           *complexity = nnueComplexity;
 
-      optimism = optimism * (259 + nnueComplexity) / 256;
-      v = (nnue * scale + optimism * (scale - 794)) / 1024;
+      optimism = optimism * (E   + nnueComplexity) / 256;
+      v = (nnue * scale + optimism * (scale - F  )) / 1024;
   }
 
   // Damp down the evaluation linearly when shuffling

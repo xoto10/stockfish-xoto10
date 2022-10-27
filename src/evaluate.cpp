@@ -1069,6 +1069,18 @@ Value Eval::evaluate(const Position& pos, int* complexity) {
       Value optimism = pos.this_thread()->optimism[stm];
 
       Value nnue = NNUE::evaluate(pos, true, &nnueComplexity);
+//dbg_mean_of(nnueComplexity);                                           // 811 (0..4000?)
+//if (nnueComplexity >= 1000) dbg_mean_of(nnueComplexity); // 2245
+//dbg_mean_of(nnue-psq);                                                 // 151 (-2500..+2500?)
+//if (nnue-psq >= 0) dbg_mean_of(nnue-psq); // 587
+//if (nnue-psq >= 587) dbg_mean_of(nnue-psq); // 1132
+//if (nnue-psq <= 0) dbg_mean_of(nnue-psq); // -525
+//if (nnue-psq <= -525) dbg_mean_of(nnue-psq); // -1039
+
+//if (nnueComplexity > 811) dbg_mean_of(660+nnue-psq - nnueComplexity);  // -995
+//if (nnueComplexity < 811) dbg_mean_of(660+nnue-psq - nnueComplexity);  // +433
+//if (nnueComplexity > 811) dbg_mean_of(962+psq-nnue - nnueComplexity);  // -1355
+//if (nnueComplexity < 811) dbg_mean_of(962+psq-nnue - nnueComplexity);  // +591
 
       // Blend nnue complexity with (semi)classical complexity
       nnueComplexity = (  416 * nnueComplexity

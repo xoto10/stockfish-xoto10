@@ -192,16 +192,6 @@ using namespace Trace;
 
 namespace {
 
-auto f1 = [](int m){return Range(m - 20, m + 20);};
-auto f2 = [](int m){return Range(m / 2, m * 3 / 2);};
-auto f3 = [](int m){return Range(m * 3 / 4, m * 5 / 4);};
-auto f4 = [](int m){return Range(m - 10, m + 10);};
-int A=20, B=14, C=10, D=24, E=248, F=755;
-TUNE(SetRange(f1), A, B, D);
-TUNE(SetRange(f2), F);
-TUNE(SetRange(f3), E);
-TUNE(SetRange(f4), C);
-
   // Threshold for lazy and space evaluation
   constexpr Value LazyThreshold1    =  Value(3631);
   constexpr Value LazyThreshold2    =  Value(2084);
@@ -1081,17 +1071,17 @@ Value Eval::evaluate(const Position& pos, int* complexity) {
       Value nnue = NNUE::evaluate(pos, true, &nnueComplexity);
 
       // Blend nnue complexity with (semi)classical complexity
-      nnueComplexity = (  (optimism  > 0 ? 420 * nnueComplexity : A*20 * nnueComplexity)    // nnue complexity
-                        + (optimism  > 0 ? 407 * abs(psq - nnue) : B*20 * abs(psq - nnue))  // pos OR mat adv
-                        + (optimism  > 0 ? D*2 * int(psq - nnue) : C  * int(nnue - psq))    // mat if winning
+      nnueComplexity = (  (optimism  > 0 ? 420 * nnueComplexity : 436 * nnueComplexity)    // nnue complexity
+                        + (optimism  > 0 ? 407 * abs(psq - nnue) : 270 * abs(psq - nnue))  // pos OR mat adv
+                        + (optimism  > 0 ? 52 * int(psq - nnue) : 9 * int(nnue - psq))    // mat if winning
                         ) / 1024;
 
       // Return hybrid NNUE complexity to caller
       if (complexity)
           *complexity = nnueComplexity;
 
-      optimism = optimism * (E   + nnueComplexity) / 256;
-      v = (nnue * scale + optimism * (scale - F  )) / 1024;
+      optimism = optimism * (248 + nnueComplexity) / 256;
+      v = (nnue * scale + optimism * (scale - 749)) / 1024;
   }
 
   // Damp down the evaluation linearly when shuffling

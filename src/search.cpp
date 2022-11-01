@@ -1238,7 +1238,7 @@ moves_loop: // When in check, search starts here
                                     thisThread->rootMoves.end(), move);
 
           if (value > alpha)
-              value = Value( (value & ~1UL) | (thisThread->nodes & 1) );
+              value = Value( (value & ~1UL) | (thisThread->nodes & 1) ); // Is this reliable?
 
           rm.averageScore = rm.averageScore != -VALUE_INFINITE ? (2 * value + rm.averageScore) / 3 : value;
 

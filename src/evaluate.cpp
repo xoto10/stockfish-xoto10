@@ -1095,7 +1095,7 @@ Value Eval::evaluate(const Position& pos, int* complexity) {
       *complexity = abs(v - psq);
 
   // Randomise eval slightly
-  Value v2 = Value( (v & ~1UL) | (pos.this_thread()->nodes & 1) );
+  v = Value(v ^ (pos.this_thread()->nodes & 1));
 
   return v;
 }

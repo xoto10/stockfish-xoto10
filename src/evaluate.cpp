@@ -1071,17 +1071,17 @@ Value Eval::evaluate(const Position& pos, int* complexity) {
       Value nnue = NNUE::evaluate(pos, true, &nnueComplexity);
 
       // Blend nnue complexity with (semi)classical complexity
-      nnueComplexity = (  (optimism  > 0 ? 420 * nnueComplexity : 436 * nnueComplexity)    // nnue complexity
-                        + (optimism  > 0 ? 407 * abs(psq - nnue) : 276 * abs(psq - nnue))  // pos OR mat adv
-                        + (optimism  > 0 ? 52 * int(psq - nnue) : 10 * int(nnue - psq))    // mat if winning
+      nnueComplexity = (  (optimism  > 0 ? 420 * nnueComplexity : 448 * nnueComplexity)    // nnue complexity
+                        + (optimism  > 0 ? 407 * abs(psq - nnue) : 272 * abs(psq - nnue))  // pos OR mat adv
+                        + (optimism  > 0 ? 51 * int(psq - nnue) : 10 * int(nnue - psq))    // mat if winning
                         ) / 1024;
 
       // Return hybrid NNUE complexity to caller
       if (complexity)
           *complexity = nnueComplexity;
 
-      optimism = optimism * (250 + nnueComplexity) / 256;
-      v = (nnue * scale + optimism * (scale - 754)) / 1024;
+      optimism = optimism * (249 + nnueComplexity) / 256;
+      v = (nnue * scale + optimism * (scale - 753)) / 1024;
   }
 
   // Damp down the evaluation linearly when shuffling

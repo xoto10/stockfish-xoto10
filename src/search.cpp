@@ -943,9 +943,11 @@ moves_loop: // When in check, search starts here
 
     // Step 13. Loop through all pseudo-legal moves until no moves remain
     // or a beta cutoff occurs.
+    int i = 0;
     while ((move = mp.next_move(moveCountPruning)) != MOVE_NONE)
     {
       assert(is_ok(move));
+      ++i;
 
       if (move == excludedMove)
           continue;
@@ -960,6 +962,10 @@ moves_loop: // When in check, search starts here
 
       // Check for legality
       if (!rootNode && !pos.legal(move))
+          continue;
+
+      // When multi-threading occasionally skip a move to create wider search
+      if (Threads.size() > 2 && !((thisThread->nodes + i) & 255))
           continue;
 
       ss->moveCount = ++moveCount;

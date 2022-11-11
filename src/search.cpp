@@ -355,7 +355,11 @@ void Thread::search() {
               alpha = std::max(prev - delta,-VALUE_INFINITE);
               beta  = std::min(prev + delta, VALUE_INFINITE);
 
+//if ( abs(bestValue - mainThread->bestPreviousAverageScore) < 300 ) {
+//  dbg_mean_of( abs(bestValue - mainThread->bestPreviousAverageScore) );
+//}
               // Adjust optimism based on root move's previousScore
+              prev += std::clamp(int(bestValue - mainThread->bestPreviousAverageScore) / 4, -40, 40);
               int opt = 118 * prev / (std::abs(prev) + 169);
               optimism[ us] = Value(opt);
               optimism[~us] = -optimism[us];

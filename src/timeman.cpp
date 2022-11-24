@@ -26,6 +26,10 @@
 
 namespace Stockfish {
 
+auto f1 = [](int m){return Range(m / 2, m * 3 / 2);};
+int A=256;
+TUNE(SetRange(f1), A);
+
 TimeManagement Time; // Our global time management object
 
 
@@ -66,7 +70,7 @@ void TimeManagement::init(Search::LimitsType& limits, Color us, int ply) {
 
   // Make sure timeLeft is > 0 since we may use it as a divisor
   TimePoint timeLeft =  std::max(TimePoint(1),
-      limits.time[us] + limits.inc[us] * (mtg - 1) - moveOverhead * (2 + mtg));
+      limits.time[us] + limits.inc[us] * (mtg - 1) * A / 256 - moveOverhead * (2 + mtg));
 
   // Use extra time with larger increments
   double optExtra = std::clamp(1.0 + 12.0 * limits.inc[us] / limits.time[us], 1.0, 1.12);

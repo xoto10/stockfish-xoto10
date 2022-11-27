@@ -965,7 +965,7 @@ moves_loop: // When in check, search starts here
           continue;
 
       // When multi-threading occasionally skip a move to create wider search
-      if (depth < 6 && Threads.size() > 2 && !((thisThread->nodes + i) & 255))
+      if (depth < 4 && Threads.size() > 2 && !((thisThread->nodes + i) & 255))
           continue;
 
       ss->moveCount = ++moveCount;

@@ -240,12 +240,8 @@ void MainThread::search() {
       && rootMoves[0].pv[0] != MOVE_NONE)
       bestThread = Threads.get_best_thread();
 
-  bestPreviousScore = bestThread->rootMoves[0].score;
-  bestPreviousAverageScore = bestThread->rootMoves[0].averageScore;
-
-  // Send again PV info if we have a new best thread
-  if (bestThread != this)
-      sync_cout << UCI::pv(bestThread->rootPos, bestThread->completedDepth) << sync_endl;
+  // Send PV with avg of current and prev score
+  sync_cout << UCI::pv(bestThread->rootPos, bestThread->completedDepth, bestPreviousScore) << sync_endl;
 
   sync_cout << "bestmove " << UCI::move(bestThread->rootMoves[0].pv[0], rootPos.is_chess960());
 
@@ -253,6 +249,9 @@ void MainThread::search() {
       std::cout << " ponder " << UCI::move(bestThread->rootMoves[0].pv[1], rootPos.is_chess960());
 
   std::cout << sync_endl;
+
+  bestPreviousScore = bestThread->rootMoves[0].score;
+  bestPreviousAverageScore = bestThread->rootMoves[0].averageScore;
 }
 
 
@@ -396,7 +395,7 @@ void Thread::search() {
                   && multiPV == 1
                   && (bestValue <= alpha || bestValue >= beta)
                   && Time.elapsed() > 3000)
-                  sync_cout << UCI::pv(rootPos, rootDepth) << sync_endl;
+                  sync_cout << UCI::pv(rootPos, rootDepth, VALUE_NONE) << sync_endl;
 
               // In case of failing low/high increase aspiration window and
               // re-search, otherwise exit the loop.
@@ -427,7 +426,7 @@ void Thread::search() {
 
           if (    mainThread
               && (Threads.stop || pvIdx + 1 == multiPV || Time.elapsed() > 3000))
-              sync_cout << UCI::pv(rootPos, rootDepth) << sync_endl;
+              sync_cout << UCI::pv(rootPos, rootDepth, VALUE_NONE) << sync_endl;
       }
 
       if (!Threads.stop)
@@ -1870,7 +1869,7 @@ void MainThread::check_time() {
 /// UCI::pv() formats PV information according to the UCI protocol. UCI requires
 /// that all (if any) unsearched PV lines are sent using a previous search score.
 
-string UCI::pv(const Position& pos, Depth depth) {
+string UCI::pv(const Position& pos, Depth depth, Value u) {
 
   std::stringstream ss;
   TimePoint elapsed = Time.elapsed() + 1;
@@ -1892,6 +1891,9 @@ string UCI::pv(const Position& pos, Depth depth) {
 
       if (v == -VALUE_INFINITE)
           v = VALUE_ZERO;
+
+      if (u != VALUE_NONE)
+          v = (u + v) / 2;
 
       bool tb = TB::RootInTB && abs(v) < VALUE_MATE_IN_MAX_PLY;
       v = tb ? rootMoves[i].tbScore : v;

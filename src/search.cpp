@@ -156,10 +156,9 @@ namespace {
 
 } // namespace
 
-auto f1 = [](int m){return Range(m / 2, m * 3 / 2);};
-auto f2 = [](int m){return Range(0, m * 2);};
-int C=50, D=300, E=120;
-TUNE(SetRange(f2), C, D, E);
+auto f1 = [](int m){return Range(0, m * 2);};
+int E=128;
+TUNE(SetRange(f1), E);
 
 /// Search::init() is called at startup to initialize various lookup tables
 
@@ -366,8 +365,7 @@ void Thread::search() {
               // Adjust optimism based on root move's previousScore
               int opt = 120 * prev / (std::abs(prev) + 161)
                         + (mainThread->bestPreviousAverageScore != VALUE_INFINITE
-                             ? std::clamp(int(bestValue) - mainThread->bestPreviousAverageScore, -C  , D  ) * E  / 1024 : 0);
-dbg_mean_of(opt);
+                             ? std::clamp(int(bestValue) - mainThread->bestPreviousAverageScore, 0, 300) * E  / 1024 : 0);
               optimism[ us] = Value(opt);
               optimism[~us] = -optimism[us];
           }

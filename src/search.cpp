@@ -166,7 +166,7 @@ void Search::init() {
 }
 
 auto f1 = [](int m){return m < 20 ? Range(0, m * 2) : Range(m / 2, m * 3 / 2);};
-int A=103, B=138, C=8, D=8;
+int A=103, B=1104, C=64, D=64;
 TUNE(SetRange(f1), A, B, C, D);
 
 /// Search::clear() resets search state to its initial value
@@ -1058,7 +1058,7 @@ moves_loop: // When in check, search starts here
               // Futility pruning: parent node (~13 Elo)
               if (   !ss->inCheck
                   && lmrDepth < 13
-                  && ss->staticEval + A   + (B   - C * (PvNode && !ttMove) + D * (PvNode && ttMove)) * lmrDepth <= alpha)
+                  && ss->staticEval + A   + (B   - C * (PvNode && !ttMove) + D * (PvNode && ttMove)) * lmrDepth / 8 <= alpha)
                   continue;
 
               lmrDepth = std::max(lmrDepth, 0);

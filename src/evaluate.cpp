@@ -190,6 +190,10 @@ using namespace Trace;
 
 namespace {
 
+auto f1 = [](int m){return m < 20 ? Range(m - 20, m + 20) : Range(m / 2, m * 3 / 2);};
+int A=406, B=424, C=272;
+TUNE(SetRange(f1), A, B, C);
+
   // Threshold for lazy and space evaluation
   constexpr Value LazyThreshold1    =  Value(3622);
   constexpr Value LazyThreshold2    =  Value(1962);
@@ -1061,7 +1065,7 @@ Value Eval::evaluate(const Position& pos, int* complexity) {
   else
   {
       int nnueComplexity;
-      int scale = 3003 + 15 * pos.count<PAWN>() + 181 * pos.non_pawn_material() / 4096;
+      int scale = 1001 + 5 * pos.count<PAWN>() + 61 * pos.non_pawn_material() / 4096;
 
       Color stm = pos.side_to_move();
       Value optimism = pos.this_thread()->optimism[stm];
@@ -1069,15 +1073,18 @@ Value Eval::evaluate(const Position& pos, int* complexity) {
       Value nnue = NNUE::evaluate(pos, true, &nnueComplexity);
 
       // Blend nnue complexity with (semi)classical complexity
-      nnueComplexity = (  406 * nnueComplexity
-                        + (424 + optimism) * abs(psq - nnue)
+      nnueComplexity = (  A   * nnueComplexity
+                        + (B   + optimism) * abs(psq - nnue)
                         ) / 1024;
 
       // Return hybrid NNUE complexity to caller
       if (complexity)
           *complexity = nnueComplexity;
 
-      v = (nnue * scale + optimism * (scale - 2244)) / 1024;
+      if (optimism > 0)
+          optimism = optimism * (C   + nnueComplexity) / 256;
+
+      v = (nnue * scale + optimism * (scale - 748)) / 1024;
   }
 
   // Damp down the evaluation linearly when shuffling

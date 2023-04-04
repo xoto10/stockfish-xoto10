@@ -1077,8 +1077,13 @@ Value Eval::evaluate(const Position& pos, int* complexity) {
       if (complexity)
           *complexity = nnueComplexity;
 
-      if (optimism > 0)
-          optimism = optimism * (528 + nnueComplexity) / 512;
+//dbg_mean_of((nnueComplexity)); // 471
+//if (nnueComplexity>1000) {dbg_mean_of((nnueComplexity));}//1605
+      if (optimism > 0) {
+          optimism = optimism * (528 + nnueComplexity) / 256;
+//dbg_mean_of((272 + nnueComplexity)); // 802
+//dbg_mean_of((528 + nnueComplexity) / 2); // 567
+      }
 
       v = (nnue * scale + optimism * (scale - 748)) / 1024;
   }

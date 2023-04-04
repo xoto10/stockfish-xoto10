@@ -1061,7 +1061,7 @@ Value Eval::evaluate(const Position& pos, int* complexity) {
   else
   {
       int nnueComplexity;
-      int scale = 1001 + 5 * pos.count<PAWN>() + 61 * pos.non_pawn_material() / 4096;
+      int scale = 3003 + 15 * pos.count<PAWN>() + 181 * pos.non_pawn_material() / 4096;
 
       Color stm = pos.side_to_move();
       Value optimism = pos.this_thread()->optimism[stm];
@@ -1077,7 +1077,7 @@ Value Eval::evaluate(const Position& pos, int* complexity) {
       if (complexity)
           *complexity = nnueComplexity;
 
-      v = (nnue * scale + optimism * (scale - 748)) / 1024;
+      v = (nnue * scale + optimism * (scale - 2244)) / 1024;
   }
 
   // Damp down the evaluation linearly when shuffling

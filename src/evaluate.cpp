@@ -192,7 +192,7 @@ namespace {
 
 auto f1 = [](int m){return m < 20 ? Range(m - 256, m + 256) : Range(m / 2, m * 3 / 2);};
 int A=406, B=424, C=272, D=0;
-TUNE(SetRange(f1), A, B, C);
+TUNE(SetRange(f1), A, B, C, D);
 
   // Threshold for lazy and space evaluation
   constexpr Value LazyThreshold1    =  Value(3622);

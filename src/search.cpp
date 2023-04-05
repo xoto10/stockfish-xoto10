@@ -165,6 +165,10 @@ void Search::init() {
       Reductions[i] = int((19.47 + std::log(Threads.size()) / 2) * std::log(i));
 }
 
+auto f1 = [](int m){return m < 80 ? Range(m - 100, m + 100) : Range(m / 2, m * 3 / 2);};
+int A=-7, B=65, C=122, D=165;
+TUNE(SetRange(-57,43), A);
+TUNE(SetRange(f1), B, C, D);
 
 /// Search::clear() resets search state to its initial value
 
@@ -365,7 +369,7 @@ void Thread::search() {
               beta  = std::min(prev + delta, VALUE_INFINITE);
 
               // Adjust optimism based on root move's previousScore
-              int opt = (prev < -14 ? 70 : 124) * prev / (std::abs(prev) + 169);
+              int opt = (prev < A ? B  : C  ) * prev / (std::abs(prev) + D  );
               optimism[ us] = Value(opt);
               optimism[~us] = -optimism[us];
           }

@@ -189,9 +189,6 @@ namespace Trace {
 using namespace Trace;
 
 namespace {
-auto f1 = [](int m){return m < 20 ? Range(m - 256, m + 256) : Range(m / 2, m * 3 / 2);};
-int A=0, B=406, C=424, D=272, E=406, F=424, G=528; 
-TUNE(SetRange(f1), A, B, C, D, E, F, G);
 
   // Threshold for lazy and space evaluation
   constexpr Value LazyThreshold1    =  Value(3622);
@@ -1071,31 +1068,31 @@ Value Eval::evaluate(const Position& pos, int* complexity) {
 
       Value nnue = NNUE::evaluate(pos, true, &nnueComplexity);
 
-      if (optimism > A)
+      if (optimism > 2)
       {
           // Blend nnue complexity with (semi)classical complexity
-          nnueComplexity = (  B   * nnueComplexity
-                            + (C   + optimism) * abs(psq - nnue)
+          nnueComplexity = (  397 * nnueComplexity
+                            + (428 + optimism) * abs(psq - nnue)
                             ) / 1024;
 
           // Return hybrid NNUE complexity to caller
           if (complexity)
               *complexity = nnueComplexity;
 
-          optimism = optimism * (D   + nnueComplexity) / 256;
+          optimism = optimism * (271 + nnueComplexity) / 256;
       }
       else
       {
           // Blend nnue complexity with (semi)classical complexity
-          nnueComplexity = (  E   * nnueComplexity
-                            + (F   + optimism) * abs(psq - nnue)
+          nnueComplexity = (  411 * nnueComplexity
+                            + (415 + optimism) * abs(psq - nnue)
                             ) / 1024;
 
           // Return hybrid NNUE complexity to caller
           if (complexity)
               *complexity = nnueComplexity;
 
-          optimism = optimism * (G   + nnueComplexity) / 512;
+          optimism = optimism * (517 + nnueComplexity) / 512;
       }
 
       v = (nnue * scale + optimism * (scale - 748)) / 1024;

@@ -165,9 +165,6 @@ void Search::init() {
       Reductions[i] = int((19.47 + std::log(Threads.size()) / 2) * std::log(i));
 }
 
-auto f1 = [](int m){return m < 20 ? Range(m - 20, m + 20) : Range(-m, m * 3);};
-int A=140;
-TUNE(SetRange(f1), A);
 
 /// Search::clear() resets search state to its initial value
 
@@ -482,7 +479,7 @@ void Thread::search() {
           double bestMoveInstability = 1 + 1.8 * totBestMoveChanges / Threads.size();
           double timeMult = fallingEval * reduction * bestMoveInstability * mainThread->complexity;
           if (-394 < bestValue && bestValue < -236)
-              timeMult = std::max(A/100.0, timeMult);
+              timeMult = std::max(0.9, timeMult);
 
           double totalTime = Time.optimum() * timeMult;
 

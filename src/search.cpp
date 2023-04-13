@@ -478,8 +478,8 @@ void Thread::search() {
           double reduction = (1.4 + mainThread->previousTimeReduction) / (2.08 * timeReduction);
           double bestMoveInstability = 1 + 1.8 * totBestMoveChanges / Threads.size();
           double timeMult = fallingEval * reduction * bestMoveInstability * mainThread->complexity;
-          if (-394 < bestValue && bestValue < -236)
-              timeMult = std::max(0.55, timeMult);
+          if (-352 < bestValue && bestValue < -253)
+              timeMult = std::max(0.54, timeMult);
 
           double totalTime = Time.optimum() * timeMult;
 

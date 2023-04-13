@@ -165,12 +165,6 @@ void Search::init() {
       Reductions[i] = int((19.47 + std::log(Threads.size()) / 2) * std::log(i));
 }
 
-auto f1 = [](int m){return m < 20 ? Range(m - 20, m + 20) : Range(1, m * 2);};
-auto f2 = [](int m){return m < 20 ? Range(m - 20, m + 20) : Range(-m, m * 3);};
-int A=220, B=197, C=236;
-int D=69, E=13, F=6196, G=157, H=65, I=140, J=208, K=180;
-TUNE(SetRange(f1), A, D, E, F, G, H, I, J, K);
-TUNE(SetRange(f2), B, C);
 
 /// Search::clear() resets search state to its initial value
 
@@ -475,17 +469,17 @@ void Thread::search() {
           && !Threads.stop
           && !mainThread->stopOnPonderhit)
       {
-          double fallingEval = (D  + E  * (mainThread->bestPreviousAverageScore - bestValue)
-                                    +  6 * (mainThread->iterValue[iterIdx] - bestValue)) / F/10.0;
+          double fallingEval = (69 + 13 * (mainThread->bestPreviousAverageScore - bestValue)
+                                    +  6 * (mainThread->iterValue[iterIdx] - bestValue)) / 619.6;
           fallingEval = std::clamp(fallingEval, 0.5, 1.5);
 
           // If the bestMove is stable over several iterations, reduce time accordingly
-          timeReduction = lastBestMoveDepth + 8 < completedDepth ? G/100.0 : H/100.0;
-          double reduction = (I/100.0 + mainThread->previousTimeReduction) / (J/100.0 * timeReduction);
-          double bestMoveInstability = 1 + K/100.0 * totBestMoveChanges / Threads.size();
+          timeReduction = lastBestMoveDepth + 8 < completedDepth ? 1.57 : 0.65;
+          double reduction = (1.4 + mainThread->previousTimeReduction) / (2.08 * timeReduction);
+          double bestMoveInstability = 1 + 1.8 * totBestMoveChanges / Threads.size();
           double timeMult = fallingEval * reduction * bestMoveInstability * mainThread->complexity;
-          if (-B*2 < bestValue && bestValue < -C  )
-              timeMult = std::max(A/400.0, timeMult);
+          if (-394 < bestValue && bestValue < -236)
+              timeMult = std::max(0.55, timeMult);
 
           double totalTime = Time.optimum() * timeMult;
 

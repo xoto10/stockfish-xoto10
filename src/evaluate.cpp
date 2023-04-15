@@ -1066,7 +1066,8 @@ Value Eval::evaluate(const Position& pos, int* complexity) {
       Value optimism = pos.this_thread()->optimism[stm];
 
       int nnueComplexity;
-      int scale = 1001 + pos.this_thread()->optimismScale[stm] * pos.non_pawn_material() / 8096;
+      int scale = pos.this_thread()->optimismScaleBase[stm]
+                  + pos.this_thread()->optimismScaleMult[stm] * pos.non_pawn_material() / 8096;
 
       Value nnue = NNUE::evaluate(pos, true, &nnueComplexity);
 

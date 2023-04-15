@@ -63,7 +63,7 @@ public:
   std::atomic<uint64_t> nodes, tbHits, bestMoveChanges;
   int selDepth, nmpMinPly;
   Value bestValue, optimism[COLOR_NB];
-  int optimismInteresting[COLOR_NB];
+  int optimismNnueComplexity[COLOR_NB];
 
   Position rootPos;
   StateInfo rootState;

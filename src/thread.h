@@ -64,6 +64,7 @@ public:
   int selDepth, nmpMinPly;
   Value bestValue, optimism[COLOR_NB];
   int optimismNnueComplexity[COLOR_NB];
+  int optimismNnueInteresting[COLOR_NB];
 
   Position rootPos;
   StateInfo rootState;

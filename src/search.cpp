@@ -292,6 +292,7 @@ void Thread::search() {
   beta = VALUE_INFINITE;
   optimism[WHITE] = optimism[BLACK] = VALUE_ZERO;
   optimismNnueComplexity[WHITE] = optimismNnueComplexity[BLACK] = 406;
+  optimismNnueInteresting[WHITE] = optimismNnueInteresting[BLACK] = 424;
 
   if (mainThread)
   {
@@ -371,6 +372,8 @@ void Thread::search() {
               optimism[~us] = -optimism[us];
               optimismNnueComplexity[ us] = prev < 0 ? 609 : 406;
               optimismNnueComplexity[~us] = prev < 0 ? 406 : 609;
+              optimismNnueInteresting[ us] = prev < 0 ? 300 : 424;
+              optimismNnueInteresting[~us] = prev < 0 ? 424 : 300;
           }
 
           // Start with a small aspiration window and, in the case of a fail

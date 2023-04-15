@@ -369,8 +369,8 @@ void Thread::search() {
               int opt = 120 * prev / (std::abs(prev) + 161);
               optimism[ us] = Value(opt);
               optimism[~us] = -optimism[us];
-              optimismScale[ us] = prev < 0 ? 160 : 128;
-              optimismScale[~us] = prev < 0 ? 128 : 160;
+              optimismScale[ us] = prev < 0 ? 112 : 128;
+              optimismScale[~us] = prev < 0 ? 128 : 112;
           }
 
           // Start with a small aspiration window and, in the case of a fail

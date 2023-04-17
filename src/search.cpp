@@ -291,8 +291,7 @@ void Thread::search() {
   bestValue = delta = alpha = -VALUE_INFINITE;
   beta = VALUE_INFINITE;
   optimism[WHITE] = optimism[BLACK] = VALUE_ZERO;
-  optimismScaleBase[WHITE] = optimismScaleBase[BLACK] = 1001;
-  optimismScaleMult[WHITE] = optimismScaleMult[BLACK] = 128;
+  optimismInteresting[WHITE] = optimismInteresting[BLACK] = 424;
 
   if (mainThread)
   {
@@ -370,10 +369,8 @@ void Thread::search() {
               int opt = 120 * prev / (std::abs(prev) + 161);
               optimism[ us] = Value(opt);
               optimism[~us] = -optimism[us];
-              optimismScaleBase[ us] = prev < 0 ? 1020 : 1001;
-              optimismScaleBase[~us] = prev < 0 ? 1001 : 1020;
-              optimismScaleMult[ us] = prev < 0 ? 112 : 128;
-              optimismScaleMult[~us] = prev < 0 ? 128 : 112;
+              optimismInteresting[ us] = prev < 0 ?   0 : 424;
+              optimismInteresting[~us] = prev < 0 ? 424 :   0;
           }
 
           // Start with a small aspiration window and, in the case of a fail

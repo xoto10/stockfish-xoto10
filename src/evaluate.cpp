@@ -1064,13 +1064,7 @@ Value Eval::evaluate(const Position& pos) {
   {
       int scale = 1001 + pos.non_pawn_material() / 64;
 
-      Color stm = pos.side_to_move();
-      Value optimism = pos.this_thread()->optimism[stm];
-
-      Value nnue = NNUE::evaluate(pos, true);
-
-      optimism = optimism * (272 + (424 + optimism) * abs(psq - nnue) / 1024) / 256;
-      v = (nnue * scale + optimism * (scale - 748)) / 1024;
+      v = NNUE::evaluate(pos, true) * scale / 1024;
   }
 
   // Damp down the evaluation linearly when shuffling
@@ -1101,8 +1095,6 @@ std::string Eval::trace(Position& pos) {
 
   // Reset any global variable used in eval
   pos.this_thread()->bestValue       = VALUE_ZERO;
-  pos.this_thread()->optimism[WHITE] = VALUE_ZERO;
-  pos.this_thread()->optimism[BLACK] = VALUE_ZERO;
 
   v = Evaluation<TRACE>(pos).value();
 

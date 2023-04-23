@@ -1071,9 +1071,9 @@ Value Eval::evaluate(const Position& pos) {
       Value optimism = pos.this_thread()->optimism[stm];
 
       Value nnue = NNUE::evaluate(pos, true, &nnueComplexity);
-      optimism = optimism * (A*256 + B   * nnueComplexity) / 65536;
+      optimism = optimism * (1129 + 3 * nnueComplexity) / 1024;
 
-      v = (nnue * scale + optimism * (scale - C  )) / 1024;
+      v = (nnue * scale + optimism * (scale - 804)) / 1024;
   }
 
   // Damp down the evaluation linearly when shuffling

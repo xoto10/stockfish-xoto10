@@ -189,7 +189,7 @@ namespace Trace {
 using namespace Trace;
 
 namespace {
-int A=256, B=256;
+int A=270, B=140;
 TUNE(A, B);
 
   // Threshold for lazy and space evaluation

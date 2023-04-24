@@ -189,8 +189,9 @@ namespace Trace {
 using namespace Trace;
 
 namespace {
+auto f1 = [](int m){return Range(m / 2, m * 3 / 2);};
 int A=270, B=140;
-TUNE(A, B);
+TUNE(SetRange(f1), A, B);
 
   // Threshold for lazy and space evaluation
   constexpr Value LazyThreshold1    =  Value(3622);

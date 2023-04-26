@@ -1070,7 +1070,7 @@ Value Eval::evaluate(const Position& pos) {
       Value nnue = NNUE::evaluate(pos, true, &nnueComplexity);
 
       v = nnue * scale / 1024
-        + optimism * (1040000 + 11 * nnueComplexity * (scale - 873)) / (4096*1024);
+        + optimism * (1046000 + 11 * nnueComplexity * (scale - 915)) / (4096*1024);
   }
 
   // Damp down the evaluation linearly when shuffling

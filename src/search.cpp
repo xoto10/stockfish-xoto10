@@ -772,7 +772,7 @@ namespace {
     // The depth condition is important for mate finding.
     if (   !ss->ttPv
         &&  depth < 9
-        &&  eval >= beta + futility_margin(depth, improving) + (ss-1)->statScore / 280 + (int(thisThread->nodes & 127) - 63)
+        &&  eval >= beta + futility_margin(depth, improving) + (ss-1)->statScore / 280 + (int(thisThread->nodes & 60) - 30)
         &&  eval >= beta
         &&  eval < 25128) // larger than VALUE_KNOWN_WIN, but smaller than TB wins
         return eval;

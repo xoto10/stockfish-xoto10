@@ -57,10 +57,6 @@ using std::string;
 using Eval::evaluate;
 using namespace Search;
 
-auto f1 = [](int m){return Range(m / 2, m * 3 / 2);};
-int A=170, B=204;
-TUNE(SetRange(f1), A, B);
-
 namespace {
 
   // Different node types, used as a template parameter
@@ -68,7 +64,7 @@ namespace {
 
   // Futility margin
   Value futility_margin(Depth d, bool improving) {
-    return Value(A   * (d - improving));
+    return Value(190 * (d - improving));
   }
 
   // Reductions lookup table, initialized at startup
@@ -775,7 +771,7 @@ namespace {
     // The depth condition is important for mate finding.
     if (   !ss->ttPv
         &&  depth < 9
-        &&  eval >= beta + futility_margin(depth, improving) + (ss-1)->statScore * B   / 65536
+        &&  eval >= beta + futility_margin(depth, improving) + (ss-1)->statScore * 204 / 65536
         &&  eval >= beta
         &&  eval < 25128) // larger than VALUE_KNOWN_WIN, but smaller than TB wins
         return eval;

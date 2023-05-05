@@ -156,6 +156,9 @@ namespace {
 
 } // namespace
 
+auto f1 = [](int m){return Range(m / 2, m * 3 / 2);};
+int A=240, B=172;
+TUNE(SetRange(f1), A, B);
 
 /// Search::init() is called at startup to initialize various lookup tables
 
@@ -475,7 +478,7 @@ void Thread::search() {
           timeReduction = lastBestMoveDepth + 8 < completedDepth ? 1.57 : 0.65;
           double reduction = (1.4 + mainThread->previousTimeReduction) / (2.08 * timeReduction);
           double bestMoveInstability = 1 + 1.8 * totBestMoveChanges / Threads.size();
-          double predictedOpponentMove = mainThread->predictedPositionKey == rootPos.key() ? 0.903 : 1.167;
+          double predictedOpponentMove = mainThread->predictedPositionKey == rootPos.key() ? 1.0-A/2500.0 : 1.0+B*A/250000.0;
 
           double totalTime = Time.optimum() * fallingEval * reduction * bestMoveInstability * predictedOpponentMove;
 

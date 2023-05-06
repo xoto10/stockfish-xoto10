@@ -165,6 +165,9 @@ void Search::init() {
       Reductions[i] = int((19.47 + std::log(Threads.size()) / 2) * std::log(i));
 }
 
+auto f1 = [](int m){return Range(m / 2, m * 3 / 2);};
+int A=200, B=200;
+TUNE(SetRange(f1), A, B);
 
 /// Search::clear() resets search state to its initial value
 
@@ -476,7 +479,7 @@ void Thread::search() {
           double reduction = (1.4 + mainThread->previousTimeReduction) / (2.08 * timeReduction);
           double bestMoveInstability = 1 + 1.8 * totBestMoveChanges / Threads.size();
           double predictedOpponentMove = mainThread->predictedPositionKey == rootPos.key()
-                                         || bestValue > mainThread->bestPreviousAverageScore ? 0.903 : 1.167;
+                                         || bestValue > mainThread->bestPreviousAverageScore ? 1.0-A/2500.0 : 1.0+B*A/250000.0;
 
           double totalTime = Time.optimum() * fallingEval * reduction * bestMoveInstability * predictedOpponentMove;
 

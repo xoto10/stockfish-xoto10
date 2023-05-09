@@ -476,7 +476,7 @@ void Thread::search() {
           double reduction = (1.4 + mainThread->previousTimeReduction) / (2.08 * timeReduction);
           double bestMoveInstability = 1 + 1.8 * totBestMoveChanges / Threads.size();
           double predictedOpponentMove = mainThread->predictedPositionKey == rootPos.key()
-                                         || bestValue > mainThread->bestPreviousAverageScore ? 0.915 : 1.165;
+                                         || bestValue > mainThread->bestPreviousAverageScore ? 0.940 : 1.143;
 
           double totalTime = Time.optimum() * fallingEval * reduction * bestMoveInstability * predictedOpponentMove;
 

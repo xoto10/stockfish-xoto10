@@ -189,9 +189,6 @@ namespace Trace {
 using namespace Trace;
 
 namespace {
-auto f1 = [](int m){return Range(m / 2, m * 3 / 2);};
-int A=967, B=1220, C=860;
-TUNE(SetRange(f1), A, B, C);
 
   // Threshold for lazy and space evaluation
   constexpr Value LazyThreshold1    =  Value(3622);
@@ -1067,11 +1064,11 @@ Value Eval::evaluate(const Position& pos) {
   {
       Color stm = pos.side_to_move();
       int nnueComplexity;
-      int scale = A   + pos.non_pawn_material() / 64;
+      int scale = 944 + pos.non_pawn_material() / 64;
 
       Value nnue = NNUE::evaluate(pos, true, &nnueComplexity);
       Value optimism = pos.this_thread()->optimism[stm]
-                       * (B *1000 + 11 * nnueComplexity * (scale - C  ));
+                       * (1150000 + 11 * nnueComplexity * (scale - 857));
 
       v = nnue * scale / 1024 + optimism / (4096*1024);
   }

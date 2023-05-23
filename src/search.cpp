@@ -156,9 +156,6 @@ namespace {
 
 } // namespace
 
-auto f1 = [](int m){return m < 20 ? Range(m - 20, m + 20) : Range(m / 2, m * 3 / 2);};
-int A=116;
-TUNE(SetRange(f1), A);
 
 /// Search::init() is called at startup to initialize various lookup tables
 
@@ -356,7 +353,7 @@ void Thread::search() {
           beta  = std::min(prev + delta, VALUE_INFINITE);
 
           // Adjust optimism based on root move's previousScore
-          int opt = A   * prev / (std::abs(prev) + 143);
+          int opt = 113 * prev / (std::abs(prev) + 143);
           optimism[ us] = Value(opt);
           optimism[~us] = -optimism[us];
 

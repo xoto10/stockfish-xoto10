@@ -82,6 +82,9 @@ namespace Stockfish::Eval::NNUE {
 
   }  // namespace Detail
 
+int A=24;
+TUNE(A);
+
   // Initialize the evaluation function parameters
   static void initialize() {
 
@@ -148,7 +151,7 @@ namespace Stockfish::Eval::NNUE {
     // overaligning stack variables with alignas() doesn't work correctly.
 
     constexpr uint64_t alignment = CacheLineSize;
-    constexpr int delta = 24;
+    int delta = A;
 
 #if defined(ALIGNAS_ON_STACK_VARIABLES_BROKEN)
     TransformedFeatureType transformedFeaturesUnaligned[

@@ -1062,17 +1062,18 @@ Value Eval::evaluate(const Position& pos) {
       v = Evaluation<NO_TRACE>(pos).value();
   else
   {
-      int nnueComplexity;
+      int nnPsq, nnPos, nnueComplexity;
       int npm = pos.non_pawn_material() / 64;
 
       Color stm = pos.side_to_move();
       Value optimism = pos.this_thread()->optimism[stm];
 
-      Value nnue = NNUE::evaluate(pos, true, &nnueComplexity);
+      Value nnue = NNUE::evaluate(pos, true, &nnPsq, &nnPos);
 
       // Blend nnue complexity with (semi)classical complexity
-      nnueComplexity = (  397 * nnueComplexity
-                        + 477 * abs(psq - nnue)
+      nnueComplexity = (  397 * abs(nnPsq - nnPos)
+                        + 238 * abs(psq - nnPsq)
+                        + 238 * abs(psq - nnPos)
                         ) / 1024;
 
       optimism += optimism * nnueComplexity / 256;

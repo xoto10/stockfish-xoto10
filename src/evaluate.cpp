@@ -189,8 +189,6 @@ namespace Trace {
 using namespace Trace;
 
 namespace {
-int A=397, B=239, C=238, D=174;
-TUNE(A, B, C, D);
 
   // Threshold for lazy and space evaluation
   constexpr Value LazyThreshold1    =  Value(3622);
@@ -1073,13 +1071,13 @@ Value Eval::evaluate(const Position& pos) {
       Value nnue = NNUE::evaluate(pos, true, &nnPsq, &nnPos);
 
       // Blend nnue complexity with (semi)classical complexity
-      nnueComplexity = (  A   * abs(nnPsq - nnPos)
-                        + B   * abs(psq - nnPsq)
-                        + C   * abs(psq - nnPos)
+      nnueComplexity = (  374 * abs(nnPsq - nnPos)
+                        + 223 * abs(psq - nnPsq)
+                        + 241 * abs(psq - nnPos)
                         ) / 1024;
 
       optimism += optimism * nnueComplexity / 256;
-      v = (nnue * (945 + npm) + optimism * (D   + npm)) / 1024;
+      v = (nnue * (945 + npm) + optimism * (162 + npm)) / 1024;
   }
 
   // Damp down the evaluation linearly when shuffling

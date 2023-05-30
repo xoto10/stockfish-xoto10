@@ -166,8 +166,7 @@ namespace Stockfish::Eval::NNUE {
     const auto psqt = featureTransformer->transform(pos, transformedFeatures, bucket);
     const auto positional = network[bucket]->propagate(transformedFeatures);
 
-    if (complexity)
-        *complexity = abs(psqt - positional) / OutputScale;
+    *complexity = abs(psqt - positional) / OutputScale;
 
     // Give more value to positional evaluation when adjusted flag is set
     if (adjusted)
@@ -292,7 +291,8 @@ namespace Stockfish::Eval::NNUE {
 
     // We estimate the value of each piece by doing a differential evaluation from
     // the current base eval, simulating the removal of the piece from its square.
-    Value base = evaluate(pos);
+    int notUsed;
+    Value base = evaluate(pos, false, &notUsed);
     base = pos.side_to_move() == WHITE ? base : -base;
 
     for (File f = FILE_A; f <= FILE_H; ++f)
@@ -310,7 +310,7 @@ namespace Stockfish::Eval::NNUE {
           st->accumulator.computed[WHITE] = false;
           st->accumulator.computed[BLACK] = false;
 
-          Value eval = evaluate(pos);
+          Value eval = evaluate(pos, false, &notUsed);
           eval = pos.side_to_move() == WHITE ? eval : -eval;
           v = base - eval;
 

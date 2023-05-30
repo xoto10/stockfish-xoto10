@@ -1144,7 +1144,8 @@ std::string Eval::trace(Position& pos) {
   ss << "\nClassical evaluation   " << to_cp(v) << " (white side)\n";
   if (Eval::useNNUE)
   {
-      v = NNUE::evaluate(pos, false);
+      int nnueComplexity;
+      v = NNUE::evaluate(pos, false, &nnueComplexity);
       v = pos.side_to_move() == WHITE ? v : -v;
       ss << "NNUE evaluation        " << to_cp(v) << " (white side)\n";
   }

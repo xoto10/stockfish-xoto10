@@ -82,6 +82,9 @@ namespace Stockfish::Eval::NNUE {
 
   }  // namespace Detail
 
+int F=200;
+TUNE(F);
+
   // Initialize the evaluation function parameters
   static void initialize() {
 
@@ -167,7 +170,7 @@ namespace Stockfish::Eval::NNUE {
     const auto positional = network[bucket]->propagate(transformedFeatures);
 
     if (complexity)
-        *complexity = abs(psqt + 3000 - positional) / OutputScale;
+        *complexity = abs(psqt + 10*F - positional) / OutputScale;
 
     // Give more value to positional evaluation when adjusted flag is set
     if (adjusted)

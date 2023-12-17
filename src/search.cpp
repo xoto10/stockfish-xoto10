@@ -519,6 +519,10 @@ void Thread::search() {
 
 namespace {
 
+//auto f1 = [](int m){return m < 20 ? Range(m - 20, m + 20) : Range(m / 2, m * 3 / 2);};
+int A=110, B=140;
+TUNE(A, B);
+
 // Main search function for both PV and non-PV nodes
 template<NodeType nodeType>
 Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, bool cutNode) {
@@ -782,7 +786,7 @@ Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, boo
              >= beta
         && eval >= beta && eval < 29008  // smaller than TB wins
         && (!ttMove || ttCapture))
-        return (110 * std::min(eval, beta+420) + 146 * beta) / 256;
+        return (A * std::min(eval, beta+3*B) + (256-A) * beta) / 256;
 
     // Step 9. Null move search with verification search (~35 Elo)
     if (!PvNode && (ss - 1)->currentMove != MOVE_NULL && (ss - 1)->statScore < 17496 && eval >= beta

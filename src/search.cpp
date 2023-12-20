@@ -782,7 +782,7 @@ Value search(Position& pos, Stack* ss, Value alpha, Value beta, Depth depth, boo
              >= beta
         && eval >= beta && eval < 29008  // smaller than TB wins
         && (!ttMove || ttCapture))
-        return (106 * std::min(eval, beta+384) + 150 * beta) / 256;
+        return (106 * std::min(eval, beta+250) + 150 * beta) / 256;
 
     // Step 9. Null move search with verification search (~35 Elo)
     if (!PvNode && (ss - 1)->currentMove != MOVE_NULL && (ss - 1)->statScore < 17496 && eval >= beta

@@ -437,9 +437,11 @@ void Search::Worker::iterative_deepening() {
             timeReduction    = lastBestMoveDepth + 8 < completedDepth ? 1.495 : 0.687;
             double reduction = (1.48 + mainThread->previousTimeReduction) / (2.17 * timeReduction);
             double bestMoveInstability = 1 + 1.88 * totBestMoveChanges / threads.size();
+            double uncertain = std::max(1.0, (440.0 - std::abs(100 - std::abs(UCI::to_cp(bestValue)))) / 400.0);
+//sync_cout << "info cp " << UCI::to_cp(bestValue) << " uncrt " << uncertain << sync_endl;
 
             double totalTime =
-              mainThread->tm.optimum() * fallingEval * reduction * bestMoveInstability;
+              mainThread->tm.optimum() * fallingEval * reduction * bestMoveInstability * uncertain;
 
             // Cap used time in case of a single legal move for a better viewer experience
             if (rootMoves.size() == 1)

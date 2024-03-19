@@ -127,6 +127,10 @@ void update_all_stats(const Position& pos,
 
 }  // namespace
 
+//auto f1 = [](int m){return m < 20 ? Range(m - 20, m + 20) : Range(m / 2, m * 3 / 2);};
+int A=400, B=400;
+TUNE(A, B);
+
 Search::Worker::Worker(SharedState&                    sharedState,
                        std::unique_ptr<ISearchManager> sm,
                        size_t                          thread_id) :
@@ -437,10 +441,9 @@ void Search::Worker::iterative_deepening() {
             timeReduction    = lastBestMoveDepth + 8 < completedDepth ? 1.495 : 0.687;
             double reduction = (1.48 + mainThread->previousTimeReduction) / (2.17 * timeReduction);
             double bestMoveInstability = 1 + 1.88 * totBestMoveChanges / threads.size();
-            double uncertain = std::max(1.0, (4.4 * NormalizeToPawnValue
+            double uncertain = std::max(1.0, ((A/100.0 + B/1000.0) * NormalizeToPawnValue
                                               - std::abs(NormalizeToPawnValue - std::abs(bestValue)))
-                                             / (4.0 * NormalizeToPawnValue));
-//sync_cout << "info cp " << UCI::to_cp(bestValue) << " uncrt " << uncertain << sync_endl;
+                                             / ((A/100.0) * NormalizeToPawnValue));
 
             double totalTime =
               mainThread->tm.optimum() * fallingEval * reduction * bestMoveInstability * uncertain;

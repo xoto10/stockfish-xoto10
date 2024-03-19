@@ -36,6 +36,8 @@ class Move;
 enum Square : int;
 using Value = int;
 
+constexpr int  NormalizeToPawnValue = 356;
+
 class UCI {
    public:
     UCI(int argc, char** argv);

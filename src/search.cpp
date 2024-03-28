@@ -53,8 +53,8 @@ using namespace Search;
 
 namespace {
 
-static constexpr double EvalLevel[10] = {1.043, 1.017, 0.952, 1.009, 0.971,
-                                         1.002, 0.992, 0.947, 1.046, 1.001};
+static constexpr double EvalLevel[10] = {1.044, 1.016, 0.960, 1.002, 0.988,
+                                         0.980, 1.007, 0.950, 1.051, 1.010};
 
 // Futility margin
 Value futility_margin(Depth d, bool noTtCutNode, bool improving, bool oppWorsening) {

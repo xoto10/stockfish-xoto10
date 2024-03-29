@@ -53,8 +53,8 @@ using namespace Search;
 
 namespace {
 
-static constexpr double EvalLevel[10] = {1.044, 1.016, 0.960, 1.002, 0.988,
-                                         0.980, 1.007, 0.950, 1.051, 1.010};
+static constexpr double EvalLevel[10] = {1.043, 1.017, 0.952, 1.009, 0.971,
+                                         1.002, 0.992, 0.947, 1.046, 1.001};
 
 // Futility margin
 Value futility_margin(Depth d, bool noTtCutNode, bool improving, bool oppWorsening) {
@@ -441,10 +441,14 @@ void Search::Worker::iterative_deepening() {
             timeReduction    = lastBestMoveDepth + 8 < completedDepth ? 1.495 : 0.687;
             double reduction = (1.48 + mainThread->previousTimeReduction) / (2.17 * timeReduction);
             double bestMoveInstability = 1 + 1.88 * totBestMoveChanges / threads.size();
-            int    el                  = std::clamp((bestValue + 750) / 150, 0, 9);
+
+            div_t  el = div(std::clamp(bestValue, -675, 674) + 675, 150);
+            double l1 = EvalLevel[el.quot], l2 = EvalLevel[el.quot+1];
+            double evalAdjust = ((150-el.rem) * l1 + el.rem * l2) / 150;
+// sync_cout << "info bv " << bestValue << " evalAdjust " << evalAdjust << sync_endl;
 
             double totalTime = mainThread->tm.optimum() * fallingEval * reduction
-                             * bestMoveInstability * EvalLevel[el];
+                             * bestMoveInstability * evalAdjust;
 
             // Cap used time in case of a single legal move for a better viewer experience
             if (rootMoves.size() == 1)

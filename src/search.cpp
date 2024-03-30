@@ -53,8 +53,14 @@ using namespace Search;
 
 namespace {
 
-static constexpr double EvalLevel[10] = {1.043, 1.017, 0.952, 1.009, 0.971,
-                                         1.002, 0.992, 0.947, 1.046, 1.001};
+//static constexpr double EvalLevel[10] = {1.043, 1.017, 0.952, 1.009, 0.971,
+//                                         1.002, 0.992, 0.947, 1.046, 1.001};
+//double evalGroup[10] = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0};
+auto f1 = [](int m){return m < 20 ? Range(m - 20, m + 20) : Range(m / 2, m * 3 / 2);};
+int ET[36] = {1043, 1043, 1043,  1043, 1043, 1034,  1026, 1017,  996,  974,  952,  971,
+               990, 1009,  996,   984,  971,  981,   992, 1002,  999,  995,  992,  977,
+               962,  947,  980,  1013, 1046, 1031,  1016, 1001, 1001, 1001, 1001, 1001};
+TUNE(SetRange(f1), ET);
 
 // Futility margin
 Value futility_margin(Depth d, bool noTtCutNode, bool improving, bool oppWorsening) {
@@ -441,10 +447,11 @@ void Search::Worker::iterative_deepening() {
             timeReduction    = lastBestMoveDepth + 8 < completedDepth ? 1.495 : 0.687;
             double reduction = (1.48 + mainThread->previousTimeReduction) / (2.17 * timeReduction);
             double bestMoveInstability = 1 + 1.88 * totBestMoveChanges / threads.size();
-            int    el                  = std::clamp((bestValue + 750) / 150, 0, 9);
+            int    el                  = std::clamp((bestValue + 900) / 50, 0, 35);
+//sync_cout << "info bv " << bestValue << " ET[el] " << ET[el] << sync_endl;
 
             double totalTime = mainThread->tm.optimum() * fallingEval * reduction
-                             * bestMoveInstability * EvalLevel[el];
+                             * bestMoveInstability * ET[el];
 
             // Cap used time in case of a single legal move for a better viewer experience
             if (rootMoves.size() == 1)

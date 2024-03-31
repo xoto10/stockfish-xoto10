@@ -53,15 +53,10 @@ using namespace Search;
 
 namespace {
 
-//static constexpr double EvalLevel[10] = {1.043, 1.017, 0.952, 1.009, 0.971,
-//                                         1.002, 0.992, 0.947, 1.046, 1.001};
-auto f1 = [](int m){return m < 20 ? Range(m - 20, m + 20) : Range(m / 2, m * 3 / 2);};
-int A=1067, B=223, C= 97, D=580, E=1667, F=1495, G=687, H=148, I=217, J=188;
-int ET[36] = {1058, 1040, 1058,  1049, 1021, 1037,  1037, 1024, 1000,  971,  957,  974,
-               991, 1020, 1012,   989,  973,  979,   985, 1013, 1005, 1000, 1010,  962,
-               962,  937,  981,  1027, 1053, 1036,  1018, 1015,  995,  997, 1002, 1002};
-TUNE(SetRange(f1), A, B, C, D, E, F, G, H, I, J);
-TUNE(SetRange(f1), ET);
+static constexpr double EvalLevel[36]
+           = {1.045, 1.013, 1.060,  1.072, 1.024, 1.020,  1.052, 1.020, 1.007, 0.992, 0.943, 0.988,
+              0.989, 0.980, 0.985,  0.973, 0.986, 0.981,  0.979, 1.014, 0.984, 1.007, 0.989, 0.981,
+              0.982, 0.913, 0.966,  1.046, 1.043, 1.058,  1.010, 1.023, 0.997, 0.993, 0.999, 1.025};
 
 // Futility margin
 Value futility_margin(Depth d, bool noTtCutNode, bool improving, bool oppWorsening) {
@@ -439,20 +434,20 @@ void Search::Worker::iterative_deepening() {
         {
             int nodesEffort = rootMoves[0].effort * 100 / std::max(size_t(1), size_t(nodes));
 
-            double fallingEval = (   A +   B * (mainThread->bestPreviousAverageScore - bestValue)
-                                  +  C * (mainThread->iterValue[iterIdx] - bestValue))
+            double fallingEval = (1078 + 223 * (mainThread->bestPreviousAverageScore - bestValue)
+                                  + 95 * (mainThread->iterValue[iterIdx] - bestValue))
                                / 10000.0;
-            fallingEval = std::clamp(fallingEval, D/1000.0, E/1000.0);
+            fallingEval = std::clamp(fallingEval, 0.569, 1.636);
 
             // If the bestMove is stable over several iterations, reduce time accordingly
-            timeReduction    = lastBestMoveDepth + 8 < completedDepth ? F/1000.0 : G/1000.0;
-            double reduction = (H/100.0 + mainThread->previousTimeReduction) / (I/100.0 * timeReduction);
-            double bestMoveInstability = 1 + J/100.0 * totBestMoveChanges / threads.size();
+            timeReduction    = lastBestMoveDepth + 8 < completedDepth ? 1.499 : 0.688;
+            double reduction = (1.51 + mainThread->previousTimeReduction) / (2.21 * timeReduction);
+            double bestMoveInstability = 1 + 1.88 * totBestMoveChanges / threads.size();
             int    el                  = std::clamp((bestValue + 900) / 50, 0, 35);
-//sync_cout << "info bv " << bestValue << " ET[el] " << ET[el] << sync_endl;
+//sync_cout << "info bv " << bestValue << " ET[el] " << EvalLevel[el] << sync_endl;
 
             double totalTime = mainThread->tm.optimum() * fallingEval * reduction
-                             * bestMoveInstability * ET[el];
+                             * bestMoveInstability * EvalLevel[el];
 
             // Cap used time in case of a single legal move for a better viewer experience
             if (rootMoves.size() == 1)

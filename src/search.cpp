@@ -53,8 +53,10 @@ using namespace Search;
 
 namespace {
 
-static constexpr double EvalLevel[10] = {1.043, 1.017, 0.952, 1.009, 0.971,
-                                         1.002, 0.992, 0.947, 1.046, 1.001};
+static constexpr double EvalLevel[36]
+           = {1.061, 1.056, 1.049,  1.039, 1.032, 1.021,  1.025, 1.011, 0.989, 0.953, 0.970, 0.982,
+              1.000, 1.008, 1.007,  0.991, 0.975, 0.957,  0.984, 1.003, 1.003, 1.005, 0.985, 0.976,
+              0.950, 0.930, 0.980,  1.022, 1.041, 1.039,  1.027, 1.007, 1.000, 0.990, 0.993, 1.003};
 
 // Futility margin
 Value futility_margin(Depth d, bool noTtCutNode, bool improving, bool oppWorsening) {
@@ -432,16 +434,17 @@ void Search::Worker::iterative_deepening() {
         {
             int nodesEffort = rootMoves[0].effort * 100 / std::max(size_t(1), size_t(nodes));
 
-            double fallingEval = (1078 + 223 * (mainThread->bestPreviousAverageScore - bestValue)
-                                  + 95 * (mainThread->iterValue[iterIdx] - bestValue))
+            double fallingEval = (1067 + 223 * (mainThread->bestPreviousAverageScore - bestValue)
+                                  + 97 * (mainThread->iterValue[iterIdx] - bestValue))
                                / 10000.0;
-            fallingEval = std::clamp(fallingEval, 0.569, 1.636);
+            fallingEval = std::clamp(fallingEval, 0.580, 1.667);
 
             // If the bestMove is stable over several iterations, reduce time accordingly
-            timeReduction    = lastBestMoveDepth + 8 < completedDepth ? 1.499 : 0.688;
-            double reduction = (1.51 + mainThread->previousTimeReduction) / (2.21 * timeReduction);
+            timeReduction    = lastBestMoveDepth + 8 < completedDepth ? 1.495 : 0.687;
+            double reduction = (1.48 + mainThread->previousTimeReduction) / (2.17 * timeReduction);
             double bestMoveInstability = 1 + 1.88 * totBestMoveChanges / threads.size();
-            int    el                  = std::clamp((bestValue + 750) / 150, 0, 9);
+            int    el                  = std::clamp((bestValue + 900) / 50, 0, 35);
+//sync_cout << "info bv " << bestValue << " ET[el] " << EvalLevel[el] << sync_endl;
 
             double totalTime = mainThread->tm.optimum() * fallingEval * reduction
                              * bestMoveInstability * EvalLevel[el];

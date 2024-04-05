@@ -52,6 +52,9 @@ constexpr int  MaxHashMB = Is64Bit ? 33554432 : 2048;
 namespace NN = Eval::NNUE;
 
 
+static Square capSq;
+
+
 UCI::UCI(int argc, char** argv) :
     networks(NN::Networks(
       NN::NetworkBig({EvalFileDefaultNameBig, "None", ""}, NN::EmbeddedNNUEType::BIG),
@@ -191,6 +194,7 @@ Search::LimitsType UCI::parse_limits(const Position& pos, std::istream& is) {
     std::string        token;
 
     limits.startTime = now();  // The search starts as early as possible
+    limits.capSq     = capSq;
 
     while (is >> token)
         if (token == "searchmoves")  // Needs to be the last command on the line
@@ -340,7 +344,13 @@ void UCI::position(Position& pos, std::istringstream& is, StateListPtr& states) 
     {
         states->emplace_back();
         pos.do_move(m, states->back());
+
+        capSq = SQ_NONE;
+        DirtyPiece& dp = states->back().dirtyPiece;
+        if (dp.dirty_num > 1 && dp.to[1] == SQ_NONE)
+            capSq = m.to_sq();
     }
+//  sync_cout << "info uci capsq " << (capSq == SQ_NONE ? "--" : UCI::square(capSq)) << sync_endl;
 }
 
 namespace {

@@ -443,8 +443,13 @@ void Search::Worker::iterative_deepening() {
             double bestMoveInstability = 1 + 1.88 * totBestMoveChanges / threads.size();
             int    el                  = std::clamp((bestValue + 750) / 150, 0, 9);
 
+            double recapture = limits.capSq != SQ_NONE && limits.capSq == rootMoves[0].pv[0].to_sq()
+                               ? 0.9 : 1.0;
+//sync_cout << "info lim capsq " << (limits.capSq == SQ_NONE ? "--" : UCI::square(limits.capSq))
+//          << " recap " << recapture << sync_endl;
+
             double totalTime = mainThread->tm.optimum() * fallingEval * reduction
-                             * bestMoveInstability * EvalLevel[el];
+                             * bestMoveInstability * EvalLevel[el] * recapture;
 
             // Cap used time in case of a single legal move for a better viewer experience
             if (rootMoves.size() == 1)

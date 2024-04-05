@@ -54,6 +54,8 @@ namespace {
 
 static constexpr double EvalLevel[10] = {1.043, 1.017, 0.952, 1.009, 0.971,
                                          1.002, 0.992, 0.947, 1.046, 1.001};
+static Move ponderMove;
+static bool ponderMatch;
 
 // Futility margin
 Value futility_margin(Depth d, bool noTtCutNode, bool improving, bool oppWorsening) {
@@ -152,6 +154,10 @@ void Search::Worker::start_searching() {
 
     main_manager()->tm.init(limits, rootPos.side_to_move(), rootPos.game_ply(), options);
     tt.new_search();
+    ponderMatch = ponderMove != Move::none() && ponderMove == limits.prevMove;
+//sync_cout << "info start searching: prvmv " << UCI::move(limits.prevMove, false)
+//          << " ponmv " << UCI::move(ponderMove, false)
+//          << " ponmatch " << ponderMatch << sync_endl;
 
     if (rootMoves.empty())
     {
@@ -205,7 +211,11 @@ void Search::Worker::start_searching() {
 
     if (bestThread->rootMoves[0].pv.size() > 1
         || bestThread->rootMoves[0].extract_ponder_from_tt(tt, rootPos))
-        ponder = UCIEngine::move(bestThread->rootMoves[0].pv[1], rootPos.is_chess960());
+    {
+        ponderMove = bestThread->rootMoves[0].pv[1];
+        ponder = UCIEngine::move(ponderMove, rootPos.is_chess960());
+        std::cout << " ponder " << ponder;
+    }
 
     auto bestmove = UCIEngine::move(bestThread->rootMoves[0].pv[0], rootPos.is_chess960());
     main_manager()->updates.onBestmove(bestmove, ponder);
@@ -440,9 +450,10 @@ void Search::Worker::iterative_deepening() {
             double reduction = (1.48 + mainThread->previousTimeReduction) / (2.17 * timeReduction);
             double bestMoveInstability = 1 + 1.88 * totBestMoveChanges / threads.size();
             int    el                  = std::clamp((bestValue + 750) / 150, 0, 9);
+            double matched = ponderMatch ? 0.97 : 1.09;
 
             double totalTime = mainThread->tm.optimum() * fallingEval * reduction
-                             * bestMoveInstability * EvalLevel[el];
+                             * bestMoveInstability * EvalLevel[el] * matched;
 
             // Cap used time in case of a single legal move for a better viewer experience
             if (rootMoves.size() == 1)

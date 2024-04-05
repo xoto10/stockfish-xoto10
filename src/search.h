@@ -122,11 +122,12 @@ struct LimitsType {
 
     bool use_time_management() const { return time[WHITE] || time[BLACK]; }
 
-    std::vector<std::string> searchmoves;
-    TimePoint                time[COLOR_NB], inc[COLOR_NB], npmsec, movetime, startTime;
-    int                      movestogo, depth, mate, perft, infinite;
-    uint64_t                 nodes;
-    bool                     ponderMode;
+    std::vector<Move> searchmoves;
+    TimePoint         time[COLOR_NB], inc[COLOR_NB], npmsec, movetime, startTime;
+    int               movestogo, depth, mate, perft, infinite;
+    uint64_t          nodes;
+    bool              ponderMode;
+    Move              prevMove;
 };
 
 

@@ -52,6 +52,9 @@ struct overload: Ts... {
 template<typename... Ts>
 overload(Ts...) -> overload<Ts...>;
 
+static Move   prevMove;
+
+
 UCIEngine::UCIEngine(int argc, char** argv) :
     engine(argv[0]),
     cli(argc, argv) {
@@ -218,7 +221,9 @@ Search::LimitsType UCIEngine::parse_limits(std::istream& is) {
 
 void UCIEngine::go(std::istringstream& is) {
 
-    Search::LimitsType limits = parse_limits(is);
+    Search::LimitsType limits = parse_limits(pos, is);
+    limits.prevMove = prevMove;
+
     engine.go(limits);
 }
 
@@ -310,6 +315,8 @@ void UCIEngine::position(std::istringstream& is) {
     {
         moves.push_back(token);
     }
+    prevMove = m;
+//sync_cout << "info uci prvmv " << UCI::move(prevMove, false) << sync_endl;
 
     engine.set_position(fen, moves);
 }

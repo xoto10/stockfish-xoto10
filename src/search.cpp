@@ -52,6 +52,10 @@ using namespace Search;
 
 namespace {
 
+auto f1 = [](int m){return m < 20 ? Range(m - 20, m + 20) : Range(m / 2, m * 3 / 2);};
+int A=912, B=1049;
+TUNE(SetRange(f1), A, B);
+
 static constexpr double EvalLevel[10] = {1.043, 1.017, 0.952, 1.009, 0.971,
                                          1.002, 0.992, 0.947, 1.046, 1.001};
 static Move ponderMove;
@@ -155,6 +159,9 @@ void Search::Worker::start_searching() {
     main_manager()->tm.init(limits, rootPos.side_to_move(), rootPos.game_ply(), options);
     tt.new_search();
     ponderMatch = ponderMove != Move::none() && ponderMove == limits.prevMove;
+//sync_cout << "info start searching: prvmv " << UCI::move(limits.prevMove, false)
+//          << " ponmv " << UCI::move(ponderMove, false)
+//          << " ponmatch " << ponderMatch << sync_endl;
 
     if (rootMoves.empty())
     {
@@ -447,7 +454,7 @@ void Search::Worker::iterative_deepening() {
             double reduction = (1.48 + mainThread->previousTimeReduction) / (2.17 * timeReduction);
             double bestMoveInstability = 1 + 1.88 * totBestMoveChanges / threads.size();
             int    el                  = std::clamp((bestValue + 750) / 150, 0, 9);
-            double matched = ponderMatch ? 0.917 : 1.065;
+            double matched = ponderMatch ? A/1000.0 : B/1000.0;
 
             double totalTime = mainThread->tm.optimum() * fallingEval * reduction
                              * bestMoveInstability * EvalLevel[el] * matched;

@@ -53,10 +53,6 @@ using namespace Search;
 
 namespace {
 
-auto f1 = [](int m){return Range(m / 2, m * 3 / 2);};
-int A=900, B=1000;
-TUNE(SetRange(f1), A, B);
-
 static constexpr double EvalLevel[10] = {1.043, 1.017, 0.952, 1.009, 0.971,
                                          1.002, 0.992, 0.947, 1.046, 1.001};
 
@@ -448,7 +444,7 @@ void Search::Worker::iterative_deepening() {
             int    el                  = std::clamp((bestValue + 750) / 150, 0, 9);
 
             double recapture = limits.capSq != SQ_NONE && limits.capSq == rootMoves[0].pv[0].to_sq()
-                               ? A/1000.0 : B/1000.0;
+                               ? 0.898 : 0.945;
 //sync_cout << "info lim capsq " << (limits.capSq == SQ_NONE ? "--" : UCI::square(limits.capSq))
 //          << " recap " << recapture << sync_endl;
 

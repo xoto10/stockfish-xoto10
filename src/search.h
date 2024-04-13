@@ -217,6 +217,8 @@ class SearchManager: public ISearchManager {
     double               previousTimeReduction;
     Value                bestPreviousScore;
     Value                bestPreviousAverageScore;
+    Move                 ponderMove;
+    bool                 ponderMatch;
     bool                 stopOnPonderhit;
 
     size_t id;

@@ -220,6 +220,7 @@ void ThreadPool::start_thinking(const OptionsMap&  options,
         th->worker->rootDepth = th->worker->completedDepth = 0;
         th->worker->rootMoves                              = rootMoves;
         th->worker->rootPos.set(pos.fen(), pos.is_chess960(), &th->worker->rootState);
+        th->worker->rootPos.set_last_fen_move(pos.last_fen_move());
         th->worker->rootState = setupStates->back();
         th->worker->tbConfig  = tbConfig;
     }

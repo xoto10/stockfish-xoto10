@@ -79,6 +79,7 @@ class Engine {
 
     void        trace_eval() const;
     OptionsMap& get_options();
+    Move        last_fen_move() const;
     std::string fen() const;
     void        flip();
     std::string visualize() const;

@@ -161,10 +161,8 @@ void Search::Worker::start_searching() {
     tt.new_search();
     bool match = main_manager()->ponderMove != Move::none()
                  && main_manager()->ponderMove == rootPos.last_fen_move();
-    main_manager()->ponderMatch = std::clamp((main_manager()->ponderMatch + 1) * (match), 0, 20);
-    main_manager()->predictable = std::clamp(1.0 + (main_manager()->ponderMatch - 10) / 100.0, 1.0, 1.1);
-
-//sync_cout << "info pmatch " << main_manager()->ponderMatch << sync_endl;
+    main_manager()->ponderMatch = (main_manager()->ponderMatch + 1) * match;
+    main_manager()->predictable = std::clamp(1.0 + (main_manager()->ponderMatch - 3) / 100.0, 1.0, 1.1);
 
     if (rootMoves.empty())
     {

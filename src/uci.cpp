@@ -330,6 +330,7 @@ void UCIEngine::position(std::istringstream& is) {
     }
 
     engine.set_position(fen, moves);
+//sync_cout << "info uci lastfenmv " << UCIEngine::move(engine.last_fen_move(), false) << sync_endl;
 }
 
 namespace {

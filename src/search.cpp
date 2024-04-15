@@ -159,6 +159,11 @@ void Search::Worker::start_searching() {
 
     main_manager()->tm.init(limits, rootPos.side_to_move(), rootPos.game_ply(), options);
     tt.new_search();
+    bool match = main_manager()->ponderMove != Move::none()
+                 && main_manager()->ponderMove == rootPos.last_fen_move();
+    main_manager()->ponderMatch = std::clamp((main_manager()->ponderMatch + 1) * (match), 0, 20);
+                                  
+sync_cout << "info pmatch " << main_manager()->ponderMatch << sync_endl;
 
     if (rootMoves.empty())
     {
@@ -212,7 +217,10 @@ void Search::Worker::start_searching() {
 
     if (bestThread->rootMoves[0].pv.size() > 1
         || bestThread->rootMoves[0].extract_ponder_from_tt(tt, rootPos))
+    {
+        main_manager()->ponderMove = bestThread->rootMoves[0].pv[1];
         ponder = UCIEngine::move(bestThread->rootMoves[0].pv[1], rootPos.is_chess960());
+    }
 
     auto bestmove = UCIEngine::move(bestThread->rootMoves[0].pv[0], rootPos.is_chess960());
     main_manager()->updates.onBestmove(bestmove, ponder);
@@ -446,9 +454,10 @@ void Search::Worker::iterative_deepening() {
             double reduction = (1.48 + mainThread->previousTimeReduction) / (2.17 * timeReduction);
             double bestMoveInstability = 1 + 1.88 * totBestMoveChanges / threads.size();
             int    el                  = std::clamp((bestValue + 750) / 150, 0, 9);
+            double predicted           = 1.0 + main_manager()->ponderMatch / 100.0;
 
             double totalTime = mainThread->tm.optimum() * fallingEval * reduction
-                             * bestMoveInstability * EvalLevel[el];
+                             * bestMoveInstability * EvalLevel[el] * predicted;
 
             // Cap used time in case of a single legal move for a better viewer experience
             if (rootMoves.size() == 1)

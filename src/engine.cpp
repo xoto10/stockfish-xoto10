@@ -65,6 +65,7 @@ void Engine::go(const Search::LimitsType& limits) {
     assert(limits.perft == 0);
     verify_networks();
 
+//sync_cout << "info enggo lastfenmv " << UCIEngine::move(pos.last_fen_move(), false) << sync_endl;
     threads.start_thinking(options, pos, states, limits);
 }
 void Engine::stop() { threads.stop = true; }
@@ -102,9 +103,11 @@ void Engine::set_position(const std::string& fen, const std::vector<std::string>
     states = StateListPtr(new std::deque<StateInfo>(1));
     pos.set(fen, options["UCI_Chess960"], &states->back());
 
+    Move m = Move::none();
+
     for (const auto& move : moves)
     {
-        auto m = UCIEngine::to_move(pos, move);
+        m = UCIEngine::to_move(pos, move);
 
         if (m == Move::none())
             break;
@@ -112,6 +115,7 @@ void Engine::set_position(const std::string& fen, const std::vector<std::string>
         states->emplace_back();
         pos.do_move(m, states->back());
     }
+    pos.set_last_fen_move(m);
 }
 
 // modifiers
@@ -161,6 +165,8 @@ void Engine::trace_eval() const {
 }
 
 OptionsMap& Engine::get_options() { return options; }
+
+Move Engine::last_fen_move() const { return pos.last_fen_move(); }
 
 std::string Engine::fen() const { return pos.fen(); }
 

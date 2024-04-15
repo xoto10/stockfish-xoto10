@@ -134,6 +134,7 @@ class Position {
     bool  gives_check(Move m) const;
     Piece moved_piece(Move m) const;
     Piece captured_piece() const;
+    void set_last_fen_move(Move m);
 
     // Doing and undoing moves
     void do_move(Move m, StateInfo& newSt);
@@ -161,6 +162,7 @@ class Position {
     int   rule50_count() const;
     Value non_pawn_material(Color c) const;
     Value non_pawn_material() const;
+    Move  last_fen_move() const;
 
     // Position consistency check, for debugging
     bool pos_is_ok() const;
@@ -193,6 +195,7 @@ class Position {
     int        castlingRightsMask[SQUARE_NB];
     Square     castlingRookSquare[CASTLING_RIGHT_NB];
     Bitboard   castlingPath[CASTLING_RIGHT_NB];
+    Move       lastFenMove;
     StateInfo* st;
     int        gamePly;
     Color      sideToMove;
@@ -302,6 +305,10 @@ inline Value Position::non_pawn_material(Color c) const { return st->nonPawnMate
 inline Value Position::non_pawn_material() const {
     return non_pawn_material(WHITE) + non_pawn_material(BLACK);
 }
+
+inline void Position::set_last_fen_move(Move m) { lastFenMove = m; }
+
+inline Move Position::last_fen_move() const { return lastFenMove; }
 
 inline int Position::game_ply() const { return gamePly; }
 

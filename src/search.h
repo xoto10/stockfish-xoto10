@@ -220,6 +220,7 @@ class SearchManager: public ISearchManager {
     Value                bestPreviousAverageScore;
     Move                 ponderMove;
     int                  ponderMatch;
+    double               predictable;
     bool                 stopOnPonderhit;
 
     size_t id;

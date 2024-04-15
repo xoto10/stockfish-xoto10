@@ -162,8 +162,9 @@ void Search::Worker::start_searching() {
     bool match = main_manager()->ponderMove != Move::none()
                  && main_manager()->ponderMove == rootPos.last_fen_move();
     main_manager()->ponderMatch = std::clamp((main_manager()->ponderMatch + 1) * (match), 0, 20);
-                                  
-sync_cout << "info pmatch " << main_manager()->ponderMatch << sync_endl;
+    main_manager()->predictable = std::clamp(1.0 + (main_manager()->ponderMatch - 10) / 100.0, 1.0, 1.1);
+
+//sync_cout << "info pmatch " << main_manager()->ponderMatch << sync_endl;
 
     if (rootMoves.empty())
     {
@@ -454,10 +455,9 @@ void Search::Worker::iterative_deepening() {
             double reduction = (1.48 + mainThread->previousTimeReduction) / (2.17 * timeReduction);
             double bestMoveInstability = 1 + 1.88 * totBestMoveChanges / threads.size();
             int    el                  = std::clamp((bestValue + 750) / 150, 0, 9);
-            double predicted           = 1.0 + main_manager()->ponderMatch / 100.0;
 
             double totalTime = mainThread->tm.optimum() * fallingEval * reduction
-                             * bestMoveInstability * EvalLevel[el] * predicted;
+                             * bestMoveInstability * EvalLevel[el] * main_manager()->predictable;
 
             // Cap used time in case of a single legal move for a better viewer experience
             if (rootMoves.size() == 1)

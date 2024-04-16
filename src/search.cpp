@@ -55,7 +55,7 @@ using namespace Search;
 namespace {
 
 auto f1 = [](int m){return Range(m / 2, m * 3 / 2);};
-int A=97, B=100, C=10;
+int A=94, B=95, C=10;
 TUNE(SetRange(f1), A, B);
 TUNE(C);
 

@@ -162,7 +162,7 @@ void Search::Worker::start_searching() {
     bool match = main_manager()->ponderMove != Move::none()
                  && main_manager()->ponderMove == rootPos.last_fen_move();
     main_manager()->ponderMatch = (main_manager()->ponderMatch + 1) * match;
-    main_manager()->predictable = std::clamp(0.89 + main_manager()->ponderMatch / 100.0, 0.96, 1.06);
+    main_manager()->predictable = std::clamp(0.89 + main_manager()->ponderMatch / 100.0, 0.92, 1.02);
 
     if (rootMoves.empty())
     {

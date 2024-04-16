@@ -54,11 +54,6 @@ using namespace Search;
 
 namespace {
 
-auto f1 = [](int m){return Range(m / 2, m * 3 / 2);};
-int A=94, B=95, C=10;
-TUNE(SetRange(f1), A, B);
-TUNE(C);
-
 static constexpr double EvalLevel[10] = {1.043, 1.017, 0.952, 1.009, 0.971,
                                          1.002, 0.992, 0.947, 1.046, 1.001};
 
@@ -167,8 +162,7 @@ void Search::Worker::start_searching() {
     bool match = main_manager()->ponderMove != Move::none()
                  && main_manager()->ponderMove == rootPos.last_fen_move();
     main_manager()->ponderMatch = (main_manager()->ponderMatch + 1) * match;
-    main_manager()->predictable = std::clamp(A/100.0 + main_manager()->ponderMatch / 100.0,
-                                             B/100.0, (B+C)/100.0);
+    main_manager()->predictable = std::clamp(0.89 + main_manager()->ponderMatch / 100.0, 0.96, 1.06);
 
     if (rootMoves.empty())
     {

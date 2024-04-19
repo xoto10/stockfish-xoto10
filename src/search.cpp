@@ -54,10 +54,11 @@ using namespace Search;
 
 namespace {
 
-auto f1 = [](int m){return Range(m / 2, m * 3 / 2);};
-int A=45, B=914, C=100, D=100;
-TUNE(SetRange(f1), B);
-TUNE(A, C, D);
+//auto f1 = [](int m){return Range(m / 2, m * 3 / 2);};
+int A=30, B=920, C=100, D=40;
+//TUNE(SetRange(f1), B);
+//TUNE(A, C);
+TUNE(D);
 
 static constexpr double EvalLevel[10] = {1.043, 1.017, 0.952, 1.009, 0.971,
                                          1.002, 0.992, 0.947, 1.046, 1.001};

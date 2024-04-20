@@ -470,11 +470,8 @@ void Search::Worker::iterative_deepening() {
                 threads.increaseDepth = mainThread->ponder || elapsedTime <= totalTime * 0.506;
 
             if (threads.stop)
-            {
-                TimePoint spare = 0.94 * mainThread->tm.optimum()
-                                  - mainThread->tm.elapsed(threads.nodes_searched());
-                main_manager()->extraTime = (main_manager()->extraTime + spare) * (spare > 0); 
-            }
+                main_manager()->extraTime += 0.94 * mainThread->tm.optimum()
+                                             - mainThread->tm.elapsed(threads.nodes_searched());
         }
 
         mainThread->iterValue[iterIdx] = bestValue;

@@ -439,7 +439,7 @@ void Search::Worker::iterative_deepening() {
             double reduction = (1.48 + mainThread->previousTimeReduction) / (2.17 * timeReduction);
             double bestMoveInstability = 1 + 1.88 * totBestMoveChanges / threads.size();
             int    el                  = std::clamp((bestValue + 750) / 150, 0, 9);
-            int    extra               = std::max(0, int(main_manager()->extraTime * 25 / 256));
+            int    extra               = std::max(0, int(main_manager()->extraTime * 13 / 256));
             main_manager()->extraTime -= extra;
 
             double totalTime = mainThread->tm.optimum() * fallingEval * reduction

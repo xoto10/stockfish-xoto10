@@ -52,11 +52,6 @@ using namespace Search;
 
 namespace {
 
-auto f1 = [](int m){return Range(m / 2, m * 3 / 2);};
-int A=100, B=94;
-TUNE(A);
-TUNE(SetRange(f1), B);
-
 static constexpr double EvalLevel[10] = {1.043, 1.017, 0.952, 1.009, 0.971,
                                          1.002, 0.992, 0.947, 1.046, 1.001};
 
@@ -440,16 +435,16 @@ void Search::Worker::iterative_deepening() {
             fallingEval = std::clamp(fallingEval, 0.580, 1.667);
 
             // If the bestMove is stable over several iterations, reduce time accordingly
-            timeReduction    = lastBestMoveDepth + 8 < completedDepth ? 1.495 : 0.687;
-            double reduction = (1.48 + mainThread->previousTimeReduction) / (2.17 * timeReduction);
+            TimePoint optimum = mainThread->tm.optimum();
+            timeReduction     = lastBestMoveDepth + 8 < completedDepth ? 1.495 : 0.687;
+            double reduction  = (1.48 + mainThread->previousTimeReduction) / (2.17 * timeReduction);
             double bestMoveInstability = 1 + 1.88 * totBestMoveChanges / threads.size();
             int    el                  = std::clamp((bestValue + 750) / 150, 0, 9);
-            int    extra               = std::max(0, int(main_manager()->extraTime * A / 2000));
+            int    extra               = std::max(0, int(main_manager()->extraTime / 32));
             main_manager()->extraTime -= extra;
 
-            double totalTime = mainThread->tm.optimum() * fallingEval * reduction
-                             * bestMoveInstability * EvalLevel[el]
-                             + extra;
+            double totalTime = optimum * fallingEval * reduction * bestMoveInstability * EvalLevel[el]
+                               + extra;
 
             // Cap used time in case of a single legal move for a better viewer experience
             if (rootMoves.size() == 1)
@@ -475,8 +470,7 @@ void Search::Worker::iterative_deepening() {
                 threads.increaseDepth = mainThread->ponder || elapsedTime <= totalTime * 0.506;
 
             if (threads.stop)
-                main_manager()->extraTime += B/100.0 * mainThread->tm.optimum()
-                                             - mainThread->tm.elapsed(threads.nodes_searched());
+                main_manager()->extraTime += 0.96 * optimum - elapsedTime;
         }
 
         mainThread->iterValue[iterIdx] = bestValue;

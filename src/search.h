@@ -217,6 +217,7 @@ class SearchManager: public ISearchManager {
     double               previousTimeReduction;
     Value                bestPreviousScore;
     Value                bestPreviousAverageScore;
+    TimePoint            extraTime;
     bool                 stopOnPonderhit;
 
     size_t id;

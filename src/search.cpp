@@ -484,7 +484,7 @@ void Search::Worker::iterative_deepening() {
                 threads.increaseDepth = mainThread->ponder || elapsedTime <= totalTime * 0.506;
 
             if (threads.stop)
-                main_manager()->extraTime += 0.96 * optimum - elapsedTime;
+                main_manager()->extraTime += totalTime - elapsedTime;
         }
 
         mainThread->iterValue[iterIdx] = bestValue;

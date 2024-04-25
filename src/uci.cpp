@@ -97,6 +97,7 @@ UCIEngine::UCIEngine(int argc, char** argv) :
 void UCIEngine::loop() {
 
     std::string token, cmd;
+    Square      capSq = SQ_NONE;
 
     for (int i = 1; i < cli.argc; ++i)
         cmd += std::string(cli.argv[i]) + " ";
@@ -129,9 +130,9 @@ void UCIEngine::loop() {
         else if (token == "setoption")
             setoption(is);
         else if (token == "go")
-            go(is);
+            go(is, capSq);
         else if (token == "position")
-            position(is);
+            capSq = position(is);
         else if (token == "ucinewgame")
             engine.search_clear();
         else if (token == "isready")
@@ -177,11 +178,12 @@ void UCIEngine::loop() {
     } while (token != "quit" && cli.argc == 1);  // The command-line arguments are one-shot
 }
 
-Search::LimitsType UCIEngine::parse_limits(std::istream& is) {
+Search::LimitsType UCIEngine::parse_limits(std::istream& is, Square capSq) {
     Search::LimitsType limits;
     std::string        token;
 
     limits.startTime = now();  // The search starts as early as possible
+    limits.capSq     = capSq;
 
     while (is >> token)
         if (token == "searchmoves")  // Needs to be the last command on the line
@@ -216,9 +218,9 @@ Search::LimitsType UCIEngine::parse_limits(std::istream& is) {
     return limits;
 }
 
-void UCIEngine::go(std::istringstream& is) {
+void UCIEngine::go(std::istringstream& is, Square capSq) {
 
-    Search::LimitsType limits = parse_limits(is);
+    Search::LimitsType limits = parse_limits(is, capSq);
 
     if (limits.perft)
         perft(limits);
@@ -255,7 +257,7 @@ void UCIEngine::bench(std::istream& args) {
                       << std::endl;
             if (token == "go")
             {
-                Search::LimitsType limits = parse_limits(is);
+                Search::LimitsType limits = parse_limits(is, SQ_NONE);
 
                 if (limits.perft)
                     nodes = perft(limits);
@@ -306,7 +308,7 @@ std::uint64_t UCIEngine::perft(const Search::LimitsType& limits) {
     return nodes;
 }
 
-void UCIEngine::position(std::istringstream& is) {
+Square UCIEngine::position(std::istringstream& is) {
     std::string token, fen;
 
     is >> token;
@@ -320,7 +322,7 @@ void UCIEngine::position(std::istringstream& is) {
         while (is >> token && token != "moves")
             fen += token + " ";
     else
-        return;
+        return SQ_NONE;
 
     std::vector<std::string> moves;
 
@@ -329,7 +331,7 @@ void UCIEngine::position(std::istringstream& is) {
         moves.push_back(token);
     }
 
-    engine.set_position(fen, moves);
+    return engine.set_position(fen, moves);
 }
 
 namespace {

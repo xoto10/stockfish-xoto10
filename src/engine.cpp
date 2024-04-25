@@ -97,11 +97,12 @@ void Engine::set_on_bestmove(std::function<void(std::string_view, std::string_vi
 
 void Engine::wait_for_search_finished() { threads.main_thread()->wait_for_search_finished(); }
 
-void Engine::set_position(const std::string& fen, const std::vector<std::string>& moves) {
+Square Engine::set_position(const std::string& fen, const std::vector<std::string>& moves) {
     // Drop the old state and create a new one
     states = StateListPtr(new std::deque<StateInfo>(1));
     pos.set(fen, options["UCI_Chess960"], &states->back());
 
+    Square capSq = SQ_NONE;
     for (const auto& move : moves)
     {
         auto m = UCIEngine::to_move(pos, move);
@@ -111,7 +112,13 @@ void Engine::set_position(const std::string& fen, const std::vector<std::string>
 
         states->emplace_back();
         pos.do_move(m, states->back());
+
+        capSq          = SQ_NONE;
+        DirtyPiece& dp = states->back().dirtyPiece;
+        if (dp.dirty_num > 1 && dp.to[1] == SQ_NONE)
+            capSq = m.to_sq();
     }
+    return capSq;
 }
 
 // modifiers

@@ -50,7 +50,7 @@ class UCIEngine {
     static std::string to_lower(std::string str);
     static Move        to_move(const Position& pos, std::string str);
 
-    static Search::LimitsType parse_limits(std::istream& is);
+    static Search::LimitsType parse_limits(std::istream& is, Square capSq);
 
     auto& engine_options() { return engine.get_options(); }
 
@@ -58,10 +58,10 @@ class UCIEngine {
     Engine      engine;
     CommandLine cli;
 
-    void          go(std::istringstream& is);
+    void          go(std::istringstream& is, Square capSq);
     void          bench(std::istream& args);
-    void          position(std::istringstream& is);
     void          setoption(std::istringstream& is);
+    Square        position(std::istringstream& is);
     std::uint64_t perft(const Search::LimitsType&);
 
     static void on_update_no_moves(const Engine::InfoShort& info);

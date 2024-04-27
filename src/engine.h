@@ -50,15 +50,14 @@ class Engine {
     std::uint64_t perft(const std::string& fen, Depth depth, bool isChess960);
 
     // non blocking call to start searching
-    void go(const Search::LimitsType&);
+    void go(Search::LimitsType&);
     // non blocking call to stop searching
     void stop();
 
     // blocking call to wait for search to finish
     void wait_for_search_finished();
     // set a new position, moves are in UCI format
-    // If last of moves is a capture, the capture square is returned
-    Square set_position(const std::string& fen, const std::vector<std::string>& moves);
+    void set_position(const std::string& fen, const std::vector<std::string>& moves);
 
     // modifiers
 
@@ -93,6 +92,7 @@ class Engine {
 
     Position     pos;
     StateListPtr states;
+    Square       capSq;
 
     OptionsMap           options;
     ThreadPool           threads;

@@ -53,6 +53,7 @@ Engine::Engine(std::string path) :
       NN::NetworkBig({EvalFileDefaultNameBig, "None", ""}, NN::EmbeddedNNUEType::BIG),
       NN::NetworkSmall({EvalFileDefaultNameSmall, "None", ""}, NN::EmbeddedNNUEType::SMALL))) {
     pos.set(StartFEN, false, &states->back());
+    capSq = SQ_NONE;
 }
 
 std::uint64_t Engine::perft(const std::string& fen, Depth depth, bool isChess960) {
@@ -61,9 +62,10 @@ std::uint64_t Engine::perft(const std::string& fen, Depth depth, bool isChess960
     return Benchmark::perft(fen, depth, isChess960);
 }
 
-void Engine::go(const Search::LimitsType& limits) {
+void Engine::go(Search::LimitsType& limits) {
     assert(limits.perft == 0);
     verify_networks();
+    limits.capSq = capSq;
 
     threads.start_thinking(options, pos, states, limits);
 }
@@ -97,12 +99,12 @@ void Engine::set_on_bestmove(std::function<void(std::string_view, std::string_vi
 
 void Engine::wait_for_search_finished() { threads.main_thread()->wait_for_search_finished(); }
 
-Square Engine::set_position(const std::string& fen, const std::vector<std::string>& moves) {
+void Engine::set_position(const std::string& fen, const std::vector<std::string>& moves) {
     // Drop the old state and create a new one
     states = StateListPtr(new std::deque<StateInfo>(1));
     pos.set(fen, options["UCI_Chess960"], &states->back());
 
-    Square capSq = SQ_NONE;
+    capSq = SQ_NONE;
     for (const auto& move : moves)
     {
         auto m = UCIEngine::to_move(pos, move);
@@ -118,7 +120,6 @@ Square Engine::set_position(const std::string& fen, const std::vector<std::strin
         if (dp.dirty_num > 1 && dp.to[1] == SQ_NONE)
             capSq = m.to_sq();
     }
-    return capSq;
 }
 
 // modifiers

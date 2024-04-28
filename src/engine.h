@@ -34,6 +34,7 @@
 #include "syzygy/tbprobe.h"  // for Stockfish::Depth
 #include "thread.h"
 #include "tt.h"
+#include "types.h"
 #include "ucioption.h"
 
 namespace Stockfish {

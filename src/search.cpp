@@ -450,8 +450,8 @@ void Search::Worker::iterative_deepening() {
 
             timeMult = fallingEval * reduction * bestMoveInstability * EvalLevel[el] * recapture;
 
-            if (mainThread->timeMultAvg < 0.70 && bestValue > 0)
-                timeMult *= 1.3;
+            if (mainThread->timeMultAvg < 0.60 && bestValue < 0)
+                timeMult *= 1.2;
 
             double totalTime = mainThread->tm.optimum() * timeMult;
 
@@ -487,9 +487,7 @@ void Search::Worker::iterative_deepening() {
         return;
 
     mainThread->previousTimeReduction = timeReduction;
-//sync_cout << "info tmu " << timeMult << sync_endl;
     mainThread->timeMultAvg = (90 * mainThread->timeMultAvg + 10 * timeMult) / 100.0;
-//sync_cout << "info tma " << mainThread->timeMultAvg << sync_endl;
 
     // If the skill level is enabled, swap the best PV line with the sub-optimal one
     if (skill.enabled())

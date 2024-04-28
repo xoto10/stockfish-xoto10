@@ -54,10 +54,6 @@ using namespace Search;
 
 namespace {
 
-//auto f1 = [](int m){return m < 20 ? Range(m - 20, m + 20) : Range(m / 2, m * 3 / 2);};
-int A=1000, B=1370;
-TUNE(A, B);
-
 static constexpr double EvalLevel[10] = {0.981, 0.956, 0.895, 0.949, 0.913,
                                          0.942, 0.933, 0.890, 0.984, 0.941};
 
@@ -459,8 +455,8 @@ void Search::Worker::iterative_deepening() {
             timeReduction = lastBestMoveDepth + 8 < completedDepth ? 1.495 : 0.687;
             // Avoid very quick moves if extraTime has been accumulated
             if (   timeReduction > mainThread->previousTimeReduction
-                && main_manager()->extraTime > A/1000.0 * totalTime)
-                extra = B/1000.0;
+                && main_manager()->extraTime > 1.025 * totalTime)
+                extra = 1.43;
             reduction  = extra * (1.48 + mainThread->previousTimeReduction) / (2.17 * timeReduction);
 
             totalTime *= reduction;

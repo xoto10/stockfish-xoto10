@@ -452,7 +452,7 @@ void Search::Worker::iterative_deepening() {
 
             timeMult = fallingEval * reduction * bestMoveInstability * EvalLevel[el] * recapture;
 
-            if (mainThread->timeMultAvg < A/100.0 && bestValue < B)
+            if (mainThread->timeMultAvg < A/100.0 && bestValue > B)
                 timeMult *= C/100.0;
 
             double totalTime = mainThread->tm.optimum() * timeMult;

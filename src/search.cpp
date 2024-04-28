@@ -449,8 +449,12 @@ void Search::Worker::iterative_deepening() {
             double recapture =
               limits.capSq != SQ_NONE && limits.capSq == rootMoves[0].pv[0].to_sq() ? 0.955 : 1.005;
 
-            double totalTime = mainThread->tm.optimum() * fallingEval * reduction
-                             * bestMoveInstability * EvalLevel[el] * recapture;
+            double totalTime = fallingEval * reduction * bestMoveInstability * EvalLevel[el] * recapture;
+
+            // Encourage a bit more time use if winning and moving quickly
+            if (totalTime < 0.6 && bestValue > 100)
+                totalTime = 0.6;
+            totalTime *= mainThread->tm.optimum();
 
             // Cap used time in case of a single legal move for a better viewer experience
             if (rootMoves.size() == 1)

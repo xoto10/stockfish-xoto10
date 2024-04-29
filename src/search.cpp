@@ -54,6 +54,11 @@ using namespace Search;
 
 namespace {
 
+//auto f1 = [](int m){return m < 20 ? Range(m - 20, m + 20) : Range(m / 2, m * 3 / 2);};
+int A=65, C=112, D=90;
+TUNE(A, C, D);
+//TUNE(SetRange(-500,500), B);
+
 static constexpr double EvalLevel[10] = {0.981, 0.956, 0.895, 0.949, 0.913,
                                          0.942, 0.933, 0.890, 0.984, 0.941};
 
@@ -447,8 +452,8 @@ void Search::Worker::iterative_deepening() {
 
             timeMult = fallingEval * reduction * bestMoveInstability * EvalLevel[el] * recapture;
 
-            if (mainThread->timeMultAvg < 0.65)
-                timeMult *= 1.1;
+            if (mainThread->timeMultAvg < A/100.0) // && bestValue > B)
+                timeMult *= C/100.0;
 
             double totalTime = mainThread->tm.optimum() * timeMult;
 
@@ -484,7 +489,7 @@ void Search::Worker::iterative_deepening() {
         return;
 
     mainThread->previousTimeReduction = timeReduction;
-    mainThread->timeMultAvg = (90 * mainThread->timeMultAvg + 10 * timeMult) / 100.0;
+    mainThread->timeMultAvg = (D * mainThread->timeMultAvg + 10 * timeMult) / (10.0 + D);
 
     // If the skill level is enabled, swap the best PV line with the sub-optimal one
     if (skill.enabled())

@@ -231,7 +231,7 @@ void Search::Worker::iterative_deepening() {
     Value  alpha, beta;
     Value  bestValue     = -VALUE_INFINITE;
     Color  us            = rootPos.side_to_move();
-    double timeReduction = 1, totBestMoveChanges = 0, timeMult = 1;
+    double timeReduction = 1, totBestMoveChanges = 0;
     int    delta, iterIdx                        = 0;
 
     // Allocate stack with extra size to allow access from (ss - 7) to (ss + 2):
@@ -271,6 +271,10 @@ void Search::Worker::iterative_deepening() {
     multiPV = std::min(multiPV, rootMoves.size());
 
     int searchAgainCounter = 0;
+
+    double timeMult = 1;
+    if (mainThread->timeMultAvg < 0.65) // && bestValue > 0)
+        timeMult = 1.15;
 
     // Iterative deepening loop until requested to stop or the target depth is reached
     while (++rootDepth < MAX_PLY && !threads.stop
@@ -445,12 +449,8 @@ void Search::Worker::iterative_deepening() {
             int    el                  = std::clamp((bestValue + 750) / 150, 0, 9);
             double recapture           = limits.capSq == rootMoves[0].pv[0].to_sq() ? 0.955 : 1.005;
 
-            timeMult = fallingEval * reduction * bestMoveInstability * EvalLevel[el] * recapture;
-
-            if (mainThread->timeMultAvg < 0.65 && bestValue > 0)
-                timeMult *= 1.15;
-
-            double totalTime = mainThread->tm.optimum() * timeMult;
+            double totalTime = mainThread->tm.optimum() * fallingEval * reduction * bestMoveInstability
+                               * EvalLevel[el] * recapture * timeMult;
 
             // Cap used time in case of a single legal move for a better viewer experience
             if (rootMoves.size() == 1)

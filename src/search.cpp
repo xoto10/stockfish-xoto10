@@ -54,12 +54,6 @@ using namespace Search;
 
 namespace {
 
-//auto f1 = [](int m){return m < 20 ? Range(m - 20, m + 20) : Range(m / 2, m * 3 / 2);};
-int A=700, M=700;
-const int C=1080, D=900, N=1080;
-TUNE(A, M);
-//TUNE(SetRange(-500,500), B);
-
 static constexpr double EvalLevel[10] = {0.981, 0.956, 0.895, 0.949, 0.913,
                                          0.942, 0.933, 0.890, 0.984, 0.941};
 
@@ -237,7 +231,7 @@ void Search::Worker::iterative_deepening() {
     Value  alpha, beta;
     Value  bestValue     = -VALUE_INFINITE;
     Color  us            = rootPos.side_to_move();
-    double timeReduction = 1, totBestMoveChanges = 0, timeMult = 1;
+    double timeReduction = 1, totBestMoveChanges = 0;
     int    delta, iterIdx                        = 0;
 
     // Allocate stack with extra size to allow access from (ss - 7) to (ss + 2):
@@ -277,6 +271,10 @@ void Search::Worker::iterative_deepening() {
     multiPV = std::min(multiPV, rootMoves.size());
 
     int searchAgainCounter = 0;
+
+    double timeMult = 1;
+    if (mainThread->timeMultAvg < 0.70)
+        timeMult = 1.10;
 
     // Iterative deepening loop until requested to stop or the target depth is reached
     while (++rootDepth < MAX_PLY && !threads.stop
@@ -451,17 +449,8 @@ void Search::Worker::iterative_deepening() {
             int    el                  = std::clamp((bestValue + 750) / 150, 0, 9);
             double recapture           = limits.capSq == rootMoves[0].pv[0].to_sq() ? 0.955 : 1.005;
 
-            timeMult = fallingEval * reduction * bestMoveInstability * EvalLevel[el] * recapture;
-
-            if (bestValue > 0)
-            {
-                if (mainThread->timeMultAvg < A/1000.0)
-                    timeMult *= C/1000.0;
-            }
-            else if (mainThread->timeMultAvg < M/1000.0)
-                timeMult *= N/1000.0;
-
-            double totalTime = mainThread->tm.optimum() * timeMult;
+            double totalTime = mainThread->tm.optimum() * fallingEval * reduction * bestMoveInstability
+                               * EvalLevel[el] * recapture * timeMult;
 
             // Cap used time in case of a single legal move for a better viewer experience
             if (rootMoves.size() == 1)
@@ -495,7 +484,7 @@ void Search::Worker::iterative_deepening() {
         return;
 
     mainThread->previousTimeReduction = timeReduction;
-    mainThread->timeMultAvg = (D * mainThread->timeMultAvg + 100 * timeMult) / (100.0 + D);
+    mainThread->timeMultAvg = (90 * mainThread->timeMultAvg + 10 * timeMult) / 100.0;
 
     // If the skill level is enabled, swap the best PV line with the sub-optimal one
     if (skill.enabled())

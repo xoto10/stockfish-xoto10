@@ -273,8 +273,8 @@ void Search::Worker::iterative_deepening() {
     int searchAgainCounter = 0;
 
     double timeMult = 1;
-    if (mainThread->timeMultAvg < 0.70 && bestValue > 0)
-        timeMult = 1.08;
+    if (mainThread->timeMultAvg < 0.70) // && bestValue > 0)
+        timeMult = 1.10;
 
     // Iterative deepening loop until requested to stop or the target depth is reached
     while (++rootDepth < MAX_PLY && !threads.stop

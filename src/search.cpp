@@ -273,8 +273,8 @@ void Search::Worker::iterative_deepening() {
     int searchAgainCounter = 0;
 
     double timeMult = 1;
-    if (mainThread->timeMultAvg < 0.65) // && bestValue > 0)
-        timeMult = 1.15;
+    if (mainThread->timeMultAvg < 0.70 && bestValue > 0)
+        timeMult = 1.08;
 
     // Iterative deepening loop until requested to stop or the target depth is reached
     while (++rootDepth < MAX_PLY && !threads.stop
@@ -484,7 +484,7 @@ void Search::Worker::iterative_deepening() {
         return;
 
     mainThread->previousTimeReduction = timeReduction;
-    mainThread->timeMultAvg = (85 * mainThread->timeMultAvg + 10 * timeMult) / 95.0;
+    mainThread->timeMultAvg = (90 * mainThread->timeMultAvg + 10 * timeMult) / 100.0;
 
     // If the skill level is enabled, swap the best PV line with the sub-optimal one
     if (skill.enabled())

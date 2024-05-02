@@ -54,9 +54,6 @@ using namespace Search;
 
 namespace {
 
-int C=80, N=80;
-TUNE(C, N);
-
 static constexpr double EvalLevel[10] = {0.981, 0.956, 0.895, 0.949, 0.913,
                                          0.942, 0.933, 0.890, 0.984, 0.941};
 
@@ -279,10 +276,10 @@ void Search::Worker::iterative_deepening() {
     if (mainThread->bestPreviousScore > 0)
     {
         if (mainThread->timeMultAvg < 0.711)
-            timeExtra = 1 + C/1000.0;
+            timeExtra = 1.076;
     }
     else if (mainThread->timeMultAvg < 0.661)
-        timeExtra = 1 + N/1000.0;
+        timeExtra = 1.078;
 //sync_cout << "info bestprvsc " << mainThread->bestPreviousScore
 //          << " multavg " << mainThread->timeMultAvg
 //          << " extra " << timeExtra << sync_endl;

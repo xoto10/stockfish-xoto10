@@ -54,6 +54,9 @@ using namespace Search;
 
 namespace {
 
+int C=80, N=80;
+TUNE(C, N);
+
 static constexpr double EvalLevel[10] = {0.981, 0.956, 0.895, 0.949, 0.913,
                                          0.942, 0.933, 0.890, 0.984, 0.941};
 
@@ -272,9 +275,17 @@ void Search::Worker::iterative_deepening() {
 
     int searchAgainCounter = 0;
 
-    double timeMult = 1;
-    if (mainThread->timeMultAvg < 0.70)
-        timeMult = 1.10;
+    double timeExtra = 1, timeMult = 1;
+    if (mainThread->bestPreviousScore > 0)
+    {
+        if (mainThread->timeMultAvg < 0.711)
+            timeExtra = 1 + C/1000.0;
+    }
+    else if (mainThread->timeMultAvg < 0.661)
+        timeExtra = 1 + N/1000.0;
+//sync_cout << "info bestprvsc " << mainThread->bestPreviousScore
+//          << " multavg " << mainThread->timeMultAvg
+//          << " extra " << timeExtra << sync_endl;
 
     // Iterative deepening loop until requested to stop or the target depth is reached
     while (++rootDepth < MAX_PLY && !threads.stop
@@ -449,8 +460,8 @@ void Search::Worker::iterative_deepening() {
             int    el                  = std::clamp((bestValue + 750) / 150, 0, 9);
             double recapture           = limits.capSq == rootMoves[0].pv[0].to_sq() ? 0.955 : 1.005;
 
-            double totalTime = mainThread->tm.optimum() * fallingEval * reduction * bestMoveInstability
-                               * EvalLevel[el] * recapture * timeMult;
+            timeMult = fallingEval * reduction * bestMoveInstability * EvalLevel[el] * recapture * timeExtra;
+            double totalTime = mainThread->tm.optimum() * timeMult;
 
             // Cap used time in case of a single legal move for a better viewer experience
             if (rootMoves.size() == 1)
@@ -484,7 +495,8 @@ void Search::Worker::iterative_deepening() {
         return;
 
     mainThread->previousTimeReduction = timeReduction;
-    mainThread->timeMultAvg = (90 * mainThread->timeMultAvg + 10 * timeMult) / 100.0;
+    mainThread->timeMultAvg = (900 * mainThread->timeMultAvg + 100 * timeMult) / 1000.0;
+//sync_cout << "info mult " << timeMult << sync_endl;
 
     // If the skill level is enabled, swap the best PV line with the sub-optimal one
     if (skill.enabled())

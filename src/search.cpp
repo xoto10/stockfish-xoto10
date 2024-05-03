@@ -271,18 +271,7 @@ void Search::Worker::iterative_deepening() {
     multiPV = std::min(multiPV, rootMoves.size());
 
     int searchAgainCounter = 0;
-
-    double timeExtra = 1, timeMult = 1;
-    if (mainThread->bestPreviousScore > 0)
-    {
-        if (mainThread->timeMultAvg < 0.711)
-            timeExtra = 1.076;
-    }
-    else if (mainThread->timeMultAvg < 0.661)
-        timeExtra = 1.078;
-//sync_cout << "info bestprvsc " << mainThread->bestPreviousScore
-//          << " multavg " << mainThread->timeMultAvg
-//          << " extra " << timeExtra << sync_endl;
+    double timeMult = 1, timeExtra = 1;
 
     // Iterative deepening loop until requested to stop or the target depth is reached
     while (++rootDepth < MAX_PLY && !threads.stop
@@ -457,6 +446,13 @@ void Search::Worker::iterative_deepening() {
             int    el                  = std::clamp((bestValue + 750) / 150, 0, 9);
             double recapture           = limits.capSq == rootMoves[0].pv[0].to_sq() ? 0.955 : 1.005;
 
+            if (mainThread->timeMultAvg < 0.7 && bestValue > 0)
+                timeExtra = 1.08;
+//          else if (mainThread->timeMultAvg < 0.661)
+//              timeExtra = 1.078;
+//sync_cout << "info bestprvsc " << mainThread->bestPreviousScore
+//          << " multavg " << mainThread->timeMultAvg
+//          << " extra " << timeExtra << sync_endl;
             timeMult = fallingEval * reduction * bestMoveInstability * EvalLevel[el] * recapture * timeExtra;
             double totalTime = mainThread->tm.optimum() * timeMult;
 

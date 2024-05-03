@@ -484,7 +484,7 @@ void Search::Worker::iterative_deepening() {
         return;
 
     mainThread->previousTimeReduction = timeReduction;
-    mainThread->timeMultAvg           = (40 * mainThread->timeMultAvg + 10 * timeMult) / 100.0;
+    mainThread->timeMultAvg           = (40 * mainThread->timeMultAvg + 10 * timeMult) / 50.0;
 //sync_cout << "info tmu " << timeMult << sync_endl;
 //sync_cout << "info tma " << mainThread->timeMultAvg << sync_endl;
 

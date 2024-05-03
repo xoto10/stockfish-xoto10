@@ -231,8 +231,8 @@ void Search::Worker::iterative_deepening() {
     Value  alpha, beta;
     Value  bestValue     = -VALUE_INFINITE;
     Color  us            = rootPos.side_to_move();
-    double timeReduction = 1, totBestMoveChanges = 0;
-    int    delta, iterIdx                        = 0;
+    double timeReduction = 1, totBestMoveChanges = 0, timeMult = 1;
+    int    delta, iterIdx = 0;
 
     // Allocate stack with extra size to allow access from (ss - 7) to (ss + 2):
     // (ss - 7) is needed for update_continuation_histories(ss - 1) which accesses (ss - 6),
@@ -445,8 +445,11 @@ void Search::Worker::iterative_deepening() {
             int    el                  = std::clamp((bestValue + 750) / 150, 0, 9);
             double recapture           = limits.capSq == rootMoves[0].pv[0].to_sq() ? 0.955 : 1.005;
 
-            double totalTime = mainThread->tm.optimum() * fallingEval * reduction
-                             * bestMoveInstability * EvalLevel[el] * recapture;
+            timeMult = fallingEval * reduction * bestMoveInstability * EvalLevel[el] * recapture;
+            double totalTime = mainThread->tm.optimum() * timeMult;
+
+            if (mainThread->timeMultAvg < 0.70 && bestValue > 0)
+                totalTime *= 1.1;
 
             // Cap used time in case of a single legal move for a better viewer experience
             if (rootMoves.size() == 1)
@@ -480,6 +483,9 @@ void Search::Worker::iterative_deepening() {
         return;
 
     mainThread->previousTimeReduction = timeReduction;
+    mainThread->timeMultAvg           = (140 * mainThread->timeMultAvg + 10 * timeMult) / 150.0;
+//sync_cout << "info tmu " << timeMult << sync_endl;
+//sync_cout << "info tma " << mainThread->timeMultAvg << sync_endl;
 
     // If the skill level is enabled, swap the best PV line with the sub-optimal one
     if (skill.enabled())

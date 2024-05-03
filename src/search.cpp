@@ -231,8 +231,8 @@ void Search::Worker::iterative_deepening() {
     Value  alpha, beta;
     Value  bestValue     = -VALUE_INFINITE;
     Color  us            = rootPos.side_to_move();
-    double timeReduction = 1, totBestMoveChanges = 0;
-    int    delta, iterIdx                        = 0;
+    double timeReduction = 1, totBestMoveChanges = 0, timeMult = 1;
+    int    delta, iterIdx = 0;
 
     // Allocate stack with extra size to allow access from (ss - 7) to (ss + 2):
     // (ss - 7) is needed for update_continuation_histories(ss - 1) which accesses (ss - 6),
@@ -271,7 +271,6 @@ void Search::Worker::iterative_deepening() {
     multiPV = std::min(multiPV, rootMoves.size());
 
     int searchAgainCounter = 0;
-    double timeMult = 1, timeExtra = 1;
 
     // Iterative deepening loop until requested to stop or the target depth is reached
     while (++rootDepth < MAX_PLY && !threads.stop
@@ -446,15 +445,12 @@ void Search::Worker::iterative_deepening() {
             int    el                  = std::clamp((bestValue + 750) / 150, 0, 9);
             double recapture           = limits.capSq == rootMoves[0].pv[0].to_sq() ? 0.955 : 1.005;
 
-            if (mainThread->timeMultAvg < 0.7 && bestValue > 0)
-                timeExtra = 1.08;
-//          else if (mainThread->timeMultAvg < 0.661)
-//              timeExtra = 1.078;
-//sync_cout << "info bestprvsc " << mainThread->bestPreviousScore
-//          << " multavg " << mainThread->timeMultAvg
-//          << " extra " << timeExtra << sync_endl;
             timeMult = fallingEval * reduction * bestMoveInstability * EvalLevel[el] * recapture;
-            double totalTime = mainThread->tm.optimum() * timeMult * timeExtra;
+
+            if (mainThread->timeMultAvg < 0.70 && bestValue > 0)
+                timeMult *= 1.1;
+
+            double totalTime = mainThread->tm.optimum() * timeMult;
 
             // Cap used time in case of a single legal move for a better viewer experience
             if (rootMoves.size() == 1)
@@ -488,8 +484,9 @@ void Search::Worker::iterative_deepening() {
         return;
 
     mainThread->previousTimeReduction = timeReduction;
-    mainThread->timeMultAvg = (900 * mainThread->timeMultAvg + 100 * timeMult) / 1000.0;
-//sync_cout << "info mult " << timeMult << sync_endl;
+    mainThread->timeMultAvg           = (40 * mainThread->timeMultAvg + 10 * timeMult) / 100.0;
+//sync_cout << "info tmu " << timeMult << sync_endl;
+//sync_cout << "info tma " << mainThread->timeMultAvg << sync_endl;
 
     // If the skill level is enabled, swap the best PV line with the sub-optimal one
     if (skill.enabled())

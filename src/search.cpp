@@ -232,7 +232,7 @@ void Search::Worker::iterative_deepening() {
     Value  bestValue     = -VALUE_INFINITE;
     Color  us            = rootPos.side_to_move();
     double timeReduction = 1, totBestMoveChanges = 0, timeMult = 1;
-    int    delta, iterIdx = 0;
+    int    delta, iterIdx                        = 0;
 
     // Allocate stack with extra size to allow access from (ss - 7) to (ss + 2):
     // (ss - 7) is needed for update_continuation_histories(ss - 1) which accesses (ss - 6),
@@ -446,9 +446,8 @@ void Search::Worker::iterative_deepening() {
             double recapture           = limits.capSq == rootMoves[0].pv[0].to_sq() ? 0.955 : 1.005;
 
             timeMult = fallingEval * reduction * bestMoveInstability * EvalLevel[el] * recapture;
-
-            if (mainThread->timeMultAvg < 0.70 && bestValue > 0)
-                timeMult *= 1.12;
+            if (mainThread->timeMultAvg < 0.65)
+                timeMult *= 1.1;
 
             double totalTime = mainThread->tm.optimum() * timeMult;
 
@@ -484,7 +483,7 @@ void Search::Worker::iterative_deepening() {
         return;
 
     mainThread->previousTimeReduction = timeReduction;
-    mainThread->timeMultAvg           = (90 * mainThread->timeMultAvg + 10 * timeMult) / 100.0;
+    mainThread->timeMultAvg = (90 * mainThread->timeMultAvg + 10 * timeMult) / 100.0;
 
     // If the skill level is enabled, swap the best PV line with the sub-optimal one
     if (skill.enabled())

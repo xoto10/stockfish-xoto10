@@ -453,8 +453,8 @@ void Search::Worker::iterative_deepening() {
 //sync_cout << "info bestprvsc " << mainThread->bestPreviousScore
 //          << " multavg " << mainThread->timeMultAvg
 //          << " extra " << timeExtra << sync_endl;
-            timeMult = fallingEval * reduction * bestMoveInstability * EvalLevel[el] * recapture * timeExtra;
-            double totalTime = mainThread->tm.optimum() * timeMult;
+            timeMult = fallingEval * reduction * bestMoveInstability * EvalLevel[el] * recapture;
+            double totalTime = mainThread->tm.optimum() * timeMult * timeExtra;
 
             // Cap used time in case of a single legal move for a better viewer experience
             if (rootMoves.size() == 1)

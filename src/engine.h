@@ -94,7 +94,7 @@ class Engine {
 
     Position     pos;
     StateListPtr states;
-    Square       capSq;
+//  Square       capSq;
 
     OptionsMap           options;
     ThreadPool           threads;

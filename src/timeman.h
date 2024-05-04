@@ -55,6 +55,7 @@ class TimeManagement {
 
     std::int64_t availableNodes = 0;      // When in 'nodes as time' mode
     bool         useNodesTime   = false;  // True if we are in 'nodes as time' mode
+    int          numMoves       = 0;      // Counts calls to init() aka number of moves in game
 };
 
 }  // namespace Stockfish

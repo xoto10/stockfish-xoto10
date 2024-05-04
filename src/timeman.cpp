@@ -33,6 +33,7 @@ TimePoint TimeManagement::maximum() const { return maximumTime; }
 
 void TimeManagement::clear() {
     availableNodes = 0;  // When in 'nodes as time' mode
+    numMoves = 0;
 }
 
 void TimeManagement::advance_nodes_time(std::int64_t nodes) {
@@ -56,6 +57,7 @@ void TimeManagement::init(Search::LimitsType& limits,
 
     TimePoint moveOverhead = TimePoint(options["Move Overhead"]);
     TimePoint npmsec       = TimePoint(options["nodestime"]);
+    numMoves++;
 
     // optScale is a percentage of available time to use for the current move.
     // maxScale is a multiplier applied to optimumTime.
@@ -103,8 +105,9 @@ void TimeManagement::init(Search::LimitsType& limits,
         double optConstant =
           std::min(0.00308 + 0.000319 * std::log10(limits.time[us] / 1000.0), 0.00506);
         double maxConstant = std::max(3.39 + 3.01 * std::log10(limits.time[us] / 1000.0), 2.93);
+        double optStart = 1 + std::max(0, 6 - numMoves) * 0.04;
 
-        optScale = std::min(0.0122 + std::pow(ply + 2.95, 0.462) * optConstant,
+        optScale = std::min(0.0122 + std::pow(ply + 2.95, 0.462) * optConstant * optStart,
                             0.213 * limits.time[us] / double(timeLeft))
                  * optExtra;
         maxScale = std::min(6.64, maxConstant + ply / 12.0);

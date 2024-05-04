@@ -54,6 +54,10 @@ using namespace Search;
 
 namespace {
 
+auto f2 = [](int m){return m < 20 ? Range(m - 20, m + 20) : Range(m / 2, m * 3 / 2);};
+int C=324, D=232, E= 96, F=293, G=363, H=148, I=202, J=196, K=325, L=326;
+TUNE(SetRange(f2), C, D, E, F, G, H, I, J, K, L);
+
 static constexpr double EvalLevel[10] = {0.981, 0.956, 0.895, 0.949, 0.913,
                                          0.942, 0.933, 0.890, 0.984, 0.941};
 
@@ -433,19 +437,20 @@ void Search::Worker::iterative_deepening() {
         {
             int nodesEffort = rootMoves[0].effort * 100 / std::max(size_t(1), size_t(nodes));
 
-            double fallingEval = (971 + 232 * (mainThread->bestPreviousAverageScore - bestValue)
-                                  + 96 * (mainThread->iterValue[iterIdx] - bestValue))
+            double fallingEval = (C*3  + D   * (mainThread->bestPreviousAverageScore - bestValue)
+                                  + E  * (mainThread->iterValue[iterIdx] - bestValue))
                                / 10000.0;
             fallingEval = std::clamp(fallingEval, 0.580, 1.667);
 
             // If the bestMove is stable over several iterations, reduce time accordingly
-            timeReduction    = lastBestMoveDepth + 8 < completedDepth ? 1.466 : 0.726;
-            double reduction = (1.48 + mainThread->previousTimeReduction) / (2.02 * timeReduction);
-            double bestMoveInstability = 1 + 1.96 * totBestMoveChanges / threads.size();
+            timeReduction    = lastBestMoveDepth + 8 < completedDepth ? F/200.0: G/500.0;
+            double reduction = (H/100.0 + mainThread->previousTimeReduction) / (I/100.0 * timeReduction);
+            double bestMoveInstability = 1 + J/100.0 * totBestMoveChanges / threads.size();
             int    el                  = std::clamp((bestValue + 750) / 150, 0, 9);
+            double recapture           = limits.capSq == rootMoves[0].pv[0].to_sq() ? K/333.3 : L/333.3;
 
             double totalTime = mainThread->tm.optimum() * fallingEval * reduction
-                             * bestMoveInstability * EvalLevel[el];
+                             * bestMoveInstability * EvalLevel[el] * recapture;
 
             // Cap used time in case of a single legal move for a better viewer experience
             if (rootMoves.size() == 1)

@@ -117,7 +117,7 @@ void TimeManagement::init(Search::LimitsType& limits,
 // 12 + 3P + 0.3PT    [P:2-10 T:1-2(3-4)]  0.3!!
 // 12 + 6-30 + 0.6-10
 //
-// 12 + 4-6 + 13-20  [4-6 x 3.25 = 13-20]
+// 12 + 7-10 + 5-7  [0.36 x 4-6 x 3.25 = 0.36 x 13-20]
 //
         maxScale = std::min(6.64, maxConstant + ply / 12.0);
         sync_cout << "info optScale " << optScale << sync_endl;

@@ -258,10 +258,7 @@ void Search::Worker::iterative_deepening() {
     if (mainThread)
     {
         if (mainThread->bestPreviousScore == VALUE_INFINITE)
-        {
-            mainThread->originalTime = limits.time[us];
             mainThread->iterValue.fill(VALUE_ZERO);
-        }
         else
             mainThread->iterValue.fill(mainThread->bestPreviousScore);
     }

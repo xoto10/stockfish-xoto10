@@ -47,7 +47,8 @@ void TimeManagement::advance_nodes_time(std::int64_t nodes) {
 void TimeManagement::init(Search::LimitsType& limits,
                           Color               us,
                           int                 ply,
-                          const OptionsMap&   options) {
+                          const OptionsMap&   options,
+                          TimePoint           originalTime) {
     // If we have no time, no need to initialize TM, except for the start time,
     // which is used by movetime.
     startTime = limits.startTime;
@@ -100,27 +101,14 @@ void TimeManagement::init(Search::LimitsType& limits,
         double optExtra = limits.inc[us] < 500 ? 1.0 : 1.13;
 
         // Calculate time constants based on current time left.
-//      double optConstant =
-//        std::min(0.002249 + 0.000485 * std::log10(limits.time[us] / 1000.0), 0.00506);
-//        (0.002249 + 0.000485 * std::log10(limits.time[us] / 1000.0)
+        double optConstant =
+          std::min(0.003026 + 0.000453 * std::log10((originalTime + limits.time[us]) / 2000.0), 0.00506);
         double maxConstant = std::max(3.39 + 3.01 * std::log10(limits.time[us] / 1000.0), 2.93);
 
-        optScale = std::min(0.0132                                                     13
-                              + (0.001693 * std::pow(ply + 3.65, 4.93)                 3-34
-                              + (0.000364 * std::log10(limits.time[us] / 1000.0)       1-7    (1-2.2 x 2x10)
-                                          * std::pow(ply + 3.65, 4.93)
-                            ,        
+        optScale = std::min(0.0122 + std::pow(ply + 2.95, 0.462) * optConstant,
                             0.213 * limits.time[us] / double(timeLeft))
                  * optExtra;
-// c  + P * (d + eT)
-// 12 + P * (3 + 0.3T)
-// 12 + 3P + 0.3PT    [P:2-10 T:1-2(3-4)]  0.3!!
-// 12 + 6-30 + 0.6-10
-//
-// 12 + 7-10 + 5-7  [0.36 x 4-6 x 3.25 = 0.36 x 13-20]
-//
         maxScale = std::min(6.64, maxConstant + ply / 12.0);
-        sync_cout << "info optScale " << optScale << sync_endl;
     }
 
     // x moves in y seconds (+ z increment)

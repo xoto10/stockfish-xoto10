@@ -58,9 +58,6 @@ void TimeManagement::init(Search::LimitsType& limits,
     TimePoint moveOverhead = TimePoint(options["Move Overhead"]);
     TimePoint npmsec       = TimePoint(options["nodestime"]);
 
-    if (originalTime == 0)
-        originalTime = limits.time[us];
-
     // optScale is a percentage of available time to use for the current move.
     // maxScale is a multiplier applied to optimumTime.
     double optScale, maxScale;
@@ -128,6 +125,9 @@ void TimeManagement::init(Search::LimitsType& limits,
 
     if (options["Ponder"])
         optimumTime += optimumTime / 4;
+
+    if (originalTime == 0)
+        originalTime = limits.time[us];
 }
 
 }  // namespace Stockfish

@@ -47,7 +47,8 @@ void TimeManagement::advance_nodes_time(std::int64_t nodes) {
 void TimeManagement::init(Search::LimitsType& limits,
                           Color               us,
                           int                 ply,
-                          const OptionsMap&   options) {
+                          const OptionsMap&   options,
+                          TimePoint&          originalTime) {
     // If we have no time, no need to initialize TM, except for the start time,
     // which is used by movetime.
     startTime = limits.startTime;
@@ -100,8 +101,9 @@ void TimeManagement::init(Search::LimitsType& limits,
         double optExtra = limits.inc[us] < 500 ? 1.0 : 1.13;
 
         // Calculate time constants based on current time left.
+        double quicker = originalTime == 0 ? 0.5 : 1.0;
         double optConstant =
-          std::min(0.00308 + 0.000319 * std::log10(limits.time[us] / 1000.0), 0.00506);
+          std::min(0.00225 + 0.000811 * std::log10(quicker * limits.time[us] / 1000.0), 0.00506);
         double maxConstant = std::max(3.39 + 3.01 * std::log10(limits.time[us] / 1000.0), 2.93);
 
         optScale = std::min(0.0122 + std::pow(ply + 2.95, 0.462) * optConstant,
@@ -124,6 +126,9 @@ void TimeManagement::init(Search::LimitsType& limits,
 
     if (options["Ponder"])
         optimumTime += optimumTime / 4;
+
+    if (originalTime == 0)
+        originalTime = limits.time[us];
 }
 
 }  // namespace Stockfish

@@ -28,10 +28,6 @@
 
 namespace Stockfish {
 
-//auto f1 = [](int m){return m < 20 ? Range(m - 20, m + 20) : Range(m / 2, m * 3 / 2);};
-int A=225;
-TUNE(A);
-
 TimePoint TimeManagement::optimum() const { return optimumTime; }
 TimePoint TimeManagement::maximum() const { return maximumTime; }
 
@@ -58,9 +54,6 @@ void TimeManagement::init(Search::LimitsType& limits,
     startTime = limits.startTime;
     if (limits.time[us] == 0)
         return;
-
-    if (originalTime == 0)
-        originalTime = limits.time[us];
 
     TimePoint moveOverhead = TimePoint(options["Move Overhead"]);
     TimePoint npmsec       = TimePoint(options["nodestime"]);
@@ -109,7 +102,7 @@ void TimeManagement::init(Search::LimitsType& limits,
 
         // Calculate time constants based on current time left.
         double optConstant =
-          std::min(0.00225 + 0.000811 * std::log10((originalTime + limits.time[us]) * A / 1000000.0), 0.00506);
+          std::min(0.00225 + 0.000811 * std::log10((originalTime + limits.time[us]) / 4000.0), 0.00506);
         double maxConstant = std::max(3.39 + 3.01 * std::log10(limits.time[us] / 1000.0), 2.93);
 
         optScale = std::min(0.0122 + std::pow(ply + 2.95, 0.462) * optConstant,
@@ -132,6 +125,9 @@ void TimeManagement::init(Search::LimitsType& limits,
 
     if (options["Ponder"])
         optimumTime += optimumTime / 4;
+
+    if (originalTime == 0)
+        originalTime = limits.time[us];
 }
 
 }  // namespace Stockfish

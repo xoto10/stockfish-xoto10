@@ -29,7 +29,7 @@
 namespace Stockfish {
 
 //auto f1 = [](int m){return m < 20 ? Range(m - 20, m + 20) : Range(m / 2, m * 3 / 2);};
-int A=250;
+int A=225;
 TUNE(A);
 
 TimePoint TimeManagement::optimum() const { return optimumTime; }

@@ -54,6 +54,10 @@ using namespace Search;
 
 namespace {
 
+auto f2 = [](int m){return m < 20 ? Range(m - 20, m + 20) : Range(m / 2, m * 3 / 2);};
+int I=213, J=223, K=194, L=249, M=229, N=148, P=217, Q=188, S=239, T=251;
+TUNE(SetRange(f2), I, J, K, L, M, N, P, Q, S, T);
+
 static constexpr double EvalLevel[10] = {0.981, 0.956, 0.895, 0.949, 0.913,
                                          0.942, 0.933, 0.890, 0.984, 0.941};
 
@@ -436,17 +440,17 @@ void Search::Worker::iterative_deepening() {
         {
             int nodesEffort = rootMoves[0].effort * 100 / std::max(size_t(1), size_t(nodes));
 
-            double fallingEval = (1067 + 223 * (mainThread->bestPreviousAverageScore - bestValue)
-                                  + 97 * (mainThread->iterValue[iterIdx] - bestValue))
+            double fallingEval = (I*5  + J   * (mainThread->bestPreviousAverageScore - bestValue)
+                                  +(K/2.0)*(mainThread->iterValue[iterIdx] - bestValue))
                                / 10000.0;
             fallingEval = std::clamp(fallingEval, 0.580, 1.667);
 
             // If the bestMove is stable over several iterations, reduce time accordingly
-            timeReduction    = lastBestMoveDepth + 8 < completedDepth ? 1.495 : 0.687;
-            double reduction = (1.48 + mainThread->previousTimeReduction) / (2.17 * timeReduction);
-            double bestMoveInstability = 1 + 1.88 * totBestMoveChanges / threads.size();
+            timeReduction    = lastBestMoveDepth + 8 < completedDepth ? 6*L/1000.0 : 3*M/1000.0;
+            double reduction = ((N/100.0) + mainThread->previousTimeReduction) / ((P/100.0) * timeReduction);
+            double bestMoveInstability = 1 + (Q/100.0) * totBestMoveChanges / threads.size();
             int    el                  = std::clamp((bestValue + 750) / 150, 0, 9);
-            double recapture           = limits.capSq == rootMoves[0].pv[0].to_sq() ? 0.955 : 1.005;
+            double recapture           = limits.capSq == rootMoves[0].pv[0].to_sq() ? 4*S/1000.0 : 4*T/1000.0;
 
             double totalTime = mainThread->tm.optimum() * fallingEval * reduction
                              * bestMoveInstability * EvalLevel[el] * recapture;

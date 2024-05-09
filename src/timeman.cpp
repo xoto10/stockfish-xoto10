@@ -49,7 +49,8 @@ void TimeManagement::advance_nodes_time(std::int64_t nodes) {
 void TimeManagement::init(Search::LimitsType& limits,
                           Color               us,
                           int                 ply,
-                          const OptionsMap&   options) {
+                          const OptionsMap&   options,
+                          int&                originalPly) {
     TimePoint npmsec = TimePoint(options["nodestime"]);
 
     // If we have no time, we don't need to fully initialize TM.
@@ -59,6 +60,9 @@ void TimeManagement::init(Search::LimitsType& limits,
 
     if (limits.time[us] == 0)
         return;
+
+    if (originalPly == -1)
+        originalPly = ply;
 
     TimePoint moveOverhead = TimePoint(options["Move Overhead"]);
 
@@ -108,8 +112,8 @@ void TimeManagement::init(Search::LimitsType& limits,
     {
         // Use extra time with larger increments
         double optExtra = scaledInc < 500 ? 1.0 : 1.13;
-        if (ply < 20)
-            optExtra *= plyExtra[ply/2];
+        if (ply - originalPly < 20)
+            optExtra *= plyExtra[(ply - originalPly) / 2];
 
         // Calculate time constants based on current time left.
         double logTimeInSec = std::log10(scaledTime / 1000.0);

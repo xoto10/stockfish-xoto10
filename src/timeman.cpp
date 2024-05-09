@@ -117,7 +117,7 @@ void TimeManagement::init(Search::LimitsType& limits,
         // Use extra time with larger increments
         double optExtra = scaledInc < 500 ? 1.0 : 1.13;
         if (ply - originalPly < 20)
-            optExtra *= PE[(ply - originalPly) / 2];
+            optExtra *= PE[(ply - originalPly) / 2] / 1000.0;
 
         // Calculate time constants based on current time left.
         double logTimeInSec = std::log10(scaledTime / 1000.0);

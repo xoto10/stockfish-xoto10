@@ -28,7 +28,7 @@
 
 namespace Stockfish {
 
-const static double plyExtra[] = { 0.9, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 };
+const static double plyExtra[] = { 0.981, 0.990, 0.974, 0.991, 1.022, 1.009, 0.995, 1.001, 1.034, 1.024 };
 
 TimePoint TimeManagement::optimum() const { return optimumTime; }
 TimePoint TimeManagement::maximum() const { return maximumTime; }

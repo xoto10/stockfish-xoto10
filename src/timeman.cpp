@@ -28,11 +28,7 @@
 
 namespace Stockfish {
 
-//const static double plyExtra[] = { 1.0, 1.02, 1.02, 1.02, 1.02, 1.02, 1.0, 1.0, 1.0, 1.0 };
-
-//auto f1 = [](int m){return m < 20 ? Range(m - 20, m + 20) : Range(m / 2, m * 3 / 2);};
-int PE[] = { 995, 1005, 1005, 1005, 1005, 1004, 1003, 1002, 1001, 1000 };
-TUNE(SetRange(500,1500), PE);
+const static double plyExtra[] = { 0.9, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 };
 
 TimePoint TimeManagement::optimum() const { return optimumTime; }
 TimePoint TimeManagement::maximum() const { return maximumTime; }
@@ -117,7 +113,7 @@ void TimeManagement::init(Search::LimitsType& limits,
         // Use extra time with larger increments
         double optExtra = scaledInc < 500 ? 1.0 : 1.13;
         if (ply - originalPly < 20)
-            optExtra *= PE[(ply - originalPly) / 2] / 1000.0;
+            optExtra *= plyExtra[(ply - originalPly) / 2];
 
         // Calculate time constants based on current time left.
         double logTimeInSec = std::log10(scaledTime / 1000.0);

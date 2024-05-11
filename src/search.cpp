@@ -157,6 +157,10 @@ void Search::Worker::start_searching() {
         return;
     }
 
+
+    if (main_manager()->originalPly == -1)
+        main_manager()->originalPly = rootPos.game_ply();
+
     main_manager()->tm.init(limits, rootPos.side_to_move(), rootPos.game_ply(), options);
     tt.new_search();
 
@@ -448,8 +452,11 @@ void Search::Worker::iterative_deepening() {
             int    el                  = std::clamp((bestValue + 750) / 150, 0, 9);
             double recapture           = limits.capSq == rootMoves[0].pv[0].to_sq() ? 0.955 : 1.005;
 
-            double totalTime = mainThread->tm.optimum() * fallingEval * reduction
-                             * bestMoveInstability * EvalLevel[el] * recapture;
+            double timeMultiplier = fallingEval * reduction * bestMoveInstability * EvalLevel[el] * recapture;
+            if (rootPos.game_ply() - mainThread->originalPly == 0)
+                timeMultiplier = (1 + timeMultiplier) / 2.0;
+
+            double totalTime = mainThread->tm.optimum() * timeMultiplier;
 
             // Cap used time in case of a single legal move for a better viewer experience
             if (rootMoves.size() == 1)

@@ -453,8 +453,8 @@ void Search::Worker::iterative_deepening() {
             double recapture           = limits.capSq == rootMoves[0].pv[0].to_sq() ? 0.955 : 1.005;
 
             double timeMultiplier = fallingEval * reduction * bestMoveInstability * EvalLevel[el] * recapture;
-            if (rootPos.game_ply() - mainThread->originalPly == 0)
-                timeMultiplier = (1 + 5 * timeMultiplier) / 6.0;
+            if (rootPos.game_ply() - mainThread->originalPly < 2)
+                timeMultiplier = (1.4 + 7 * timeMultiplier) / 8.0;
 
             double totalTime = mainThread->tm.optimum() * timeMultiplier;
 

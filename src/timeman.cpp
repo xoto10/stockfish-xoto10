@@ -28,10 +28,6 @@
 
 namespace Stockfish {
 
-//auto f1 = [](int m){return m < 20 ? Range(m - 20, m + 20) : Range(m / 2, m * 3 / 2);};
-int A=210, B=255, C=281, D=215, E=290;
-TUNE(A, B, C, D, E);
-
 TimePoint TimeManagement::optimum() const { return optimumTime; }
 TimePoint TimeManagement::maximum() const { return maximumTime; }
 
@@ -117,14 +113,16 @@ void TimeManagement::init(
         // Calculate time constants based on current time left.
         double logTimeInSec = std::log10(scaledTime / 1000.0);
 
-        double optConstant  = (A/100.0) * std::min((B/1000000.0) * logTimeInSec, 0.00198);
-        double optPly       = (C/100000.0) * std::pow(ply + 1.0, D*0.002);
+        double optConstant  = 2.00 * std::min(0.000255 * logTimeInSec, 0.00198);
+        double optPly       = 0.00281 * std::pow(ply + 1.0, 0.430);
 
-        optScale = std::min((E*0.00005) + optConstant + optPly, 0.213 * limits.time[us] / timeLeft)
+        optScale = std::min(0.01452 + optConstant + optPly, 0.213 * limits.time[us] / timeLeft)
                  * optExtra;
 
         double maxConstant  = std::max(3.39 + 3.01 * logTimeInSec, 2.93);
         maxScale = std::min(6.64, maxConstant + ply / 12.0);
+//sync_cout << "info optConstantExp " << optConstant << " optPly " << optPly
+//          << " optScale " << optScale << sync_endl;
     }
 
     // x moves in y seconds (+ z increment)

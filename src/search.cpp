@@ -454,7 +454,7 @@ void Search::Worker::iterative_deepening() {
 
             double timeMultiplier = fallingEval * reduction * bestMoveInstability * EvalLevel[el] * recapture;
             if (rootPos.game_ply() - mainThread->originalPly < 2)
-                timeMultiplier = (1 + 9 * timeMultiplier) / 10.0;
+                timeMultiplier = (1 + 5 * timeMultiplier) / 6.0;
 
             double totalTime = mainThread->tm.optimum() * timeMultiplier;
 

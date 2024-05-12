@@ -1196,7 +1196,7 @@ moves_loop:  // When in check, search starts here
 
         // For PV nodes only, do a full PV search on the first move or after a fail high,
         // otherwise let the parent node fail low with value <= alpha and try another move.
-        Value inc = ((nodes & 15) == 15);
+        Value inc = ((nodes & 31) == 31);
         if (PvNode && (moveCount == 1 || value > alpha + inc))
         {
             (ss + 1)->pv    = pv;

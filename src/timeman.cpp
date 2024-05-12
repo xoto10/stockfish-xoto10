@@ -113,7 +113,7 @@ void TimeManagement::init(
         // Calculate time constants based on current time left.
         double logTimeInSec = std::log10(scaledTime / 1000.0);
 
-        double optConstant  = 2.00 * std::min(0.000255 * logTimeInSec, 0.00198);
+        double optConstant  = 2.20 * std::min(0.000255 * logTimeInSec, 0.00198);
         double optPly       = 0.00281 * std::pow(ply + 1.0, 0.430);
 
         optScale = std::min(0.01452 + optConstant + optPly, 0.213 * limits.time[us] / timeLeft)

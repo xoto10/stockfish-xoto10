@@ -114,13 +114,15 @@ void TimeManagement::init(
         double logTimeInSec = std::log10(scaledTime / 1000.0);
 
         double optConstant  = 2.10 * std::min(0.000255 * logTimeInSec, 0.00198);
-        double optPly       = 0.00241 * std::pow(ply + 1.0, 0.462);
+        double optPly       = 0.00281 * std::pow(ply + 1.0, 0.398);
 
         optScale = std::min(0.01452 + optConstant + optPly, 0.213 * limits.time[us] / timeLeft)
                  * optExtra;
 
         double maxConstant  = std::max(3.39 + 3.01 * logTimeInSec, 2.93);
         maxScale = std::min(6.64, maxConstant + ply / 12.0);
+//sync_cout << "info optConstantExp " << optConstant << " optPly " << optPly
+//          << " optScale " << optScale << sync_endl;
     }
 
     // x moves in y seconds (+ z increment)

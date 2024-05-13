@@ -55,7 +55,7 @@ using namespace Search;
 namespace {
 
 //auto f1 = [](int m){return m < 20 ? Range(m - 20, m + 20) : Range(m / 2, m * 3 / 2);};
-int A=250, B=150, C=200;
+int A=250, B=120, C=185;
 TUNE(A, B, C);
 
 static constexpr double EvalLevel[10] = {0.981, 0.956, 0.895, 0.949, 0.913,

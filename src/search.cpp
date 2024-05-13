@@ -1265,9 +1265,6 @@ moves_loop:  // When in check, search starts here
         }
 
         Value inc = (ss->ply == 1 && (nodes & 31) == 31);
-//if (ss->ply < 2) {
-//sync_cout << "info ply " << ss->ply << " inc " << inc << sync_endl;
-//}
         if (value + inc > bestValue)
         {
             bestValue = value;

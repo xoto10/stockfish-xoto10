@@ -1227,8 +1227,7 @@ moves_loop:  // When in check, search starts here
               rm.averageScore != -VALUE_INFINITE ? (2 * value + rm.averageScore) / 3 : value;
 
             // PV move or new best move?
-            Value inc = ((nodes & 31) == 31);
-            if (moveCount == 1 || value > alpha + inc)
+            if (moveCount == 1 || value > alpha)
             {
                 rm.score = rm.uciScore = value;
                 rm.selDepth            = thisThread->selDepth;
@@ -1265,7 +1264,11 @@ moves_loop:  // When in check, search starts here
                 rm.score = -VALUE_INFINITE;
         }
 
-        if (value > bestValue)
+        Value inc = (ss->ply == 1 && (nodes & 31) == 31);
+//if (ss->ply < 2) {
+//sync_cout << "info ply " << ss->ply << " inc " << inc << sync_endl;
+//}
+        if (value + inc > bestValue)
         {
             bestValue = value;
 

@@ -1278,7 +1278,8 @@ moves_loop:  // When in check, search starts here
                 rm.score = -VALUE_INFINITE;
         }
 
-        if (value > bestValue)
+        Value inc = (ss->ply == 1 && (nodes & 15) == 15);
+        if (value + inc > bestValue)
         {
             bestValue = value;
 

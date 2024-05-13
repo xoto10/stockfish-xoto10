@@ -449,7 +449,8 @@ void Search::Worker::iterative_deepening() {
             double recapture           = limits.capSq == rootMoves[0].pv[0].to_sq() ? 0.955 : 1.005;
 
             double timeMultiplier = fallingEval * reduction * bestMoveInstability * EvalLevel[el] * recapture;
-            timeMultiplier = (1 + 16 * timeMultiplier) / 17;
+            if (timeMultiplier > 2)
+                timeMultiplier = (2 + 19 * timeMultiplier) / 20;
 
             double totalTime = mainThread->tm.optimum() * timeMultiplier;
 

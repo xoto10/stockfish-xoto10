@@ -58,8 +58,8 @@ static constexpr double EvalLevel[10] = {0.981, 0.956, 0.895, 0.949, 0.913,
                                          0.942, 0.933, 0.890, 0.984, 0.941};
 
 // Futility margin
-Value futility_margin(Depth d, bool noTtCutNode, bool improving, bool oppWorsening) {
-    Value futilityMult       = 131 - 48 * noTtCutNode;
+Value futility_margin(Depth d, bool noTtCutNode, bool improving, bool oppWorsening, size_t nodes) {
+    Value futilityMult       = (131 - (nodes & 4)) - 48 * noTtCutNode;
     Value improvingDeduction = 57 * improving * futilityMult / 32;
     Value worseningDeduction = (309 + 52 * improving) * oppWorsening * futilityMult / 1024;
 
@@ -771,7 +771,7 @@ Value Search::Worker::search(
     // Step 8. Futility pruning: child node (~40 Elo)
     // The depth condition is important for mate finding.
     if (!ss->ttPv && depth < 11
-        && eval - futility_margin(depth, cutNode && !ss->ttHit, improving, opponentWorsening)
+        && eval - futility_margin(depth, cutNode && !ss->ttHit, improving, opponentWorsening, thisThread->nodes)
                - (ss - 1)->statScore / 258
              >= beta
         && eval >= beta && eval < VALUE_TB_WIN_IN_MAX_PLY && (!ttMove || ttCapture))

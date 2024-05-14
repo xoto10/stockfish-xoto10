@@ -54,10 +54,6 @@ using namespace Search;
 
 namespace {
 
-//auto f1 = [](int m){return m < 20 ? Range(m - 20, m + 20) : Range(m / 2, m * 3 / 2);};
-int A=250, B=120, C=185;
-TUNE(A, B, C);
-
 static constexpr double EvalLevel[10] = {0.981, 0.956, 0.895, 0.949, 0.913,
                                          0.942, 0.933, 0.890, 0.984, 0.941};
 
@@ -453,8 +449,8 @@ void Search::Worker::iterative_deepening() {
             double recapture           = limits.capSq == rootMoves[0].pv[0].to_sq() ? 0.955 : 1.005;
 
             double timeMultiplier = fallingEval * reduction * bestMoveInstability * EvalLevel[el] * recapture;
-            double excess = std::max(timeMultiplier - (A*0.01), 0.0);
-            timeMultiplier -= std::pow(excess, (B*0.01)) * (C*0.0002);
+            double excess = std::max(timeMultiplier - 2.37, 0.0);
+            timeMultiplier -= std::pow(excess, 1.20) * 0.037;
 
             double totalTime = mainThread->tm.optimum() * timeMultiplier;
 

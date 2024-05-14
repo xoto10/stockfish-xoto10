@@ -56,11 +56,8 @@ namespace {
 
 static constexpr double EvalLevel[10] = {0.981, 0.956, 0.895, 0.949, 0.913,
                                          0.942, 0.933, 0.890, 0.984, 0.941};
-//static const double Multipliers[] = { 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 };
-
-//auto f1 = [](int m){return m < 20 ? Range(m - 20, m + 20) : Range(m / 2, m * 3 / 2);};
-int MU[12] = { 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000 };
-TUNE(MU);
+static const double Multipliers[] = { 1.049, 1.003, 1.003, 1.029, 1.025, 1.001,
+                                      0.993, 1.016, 0.958, 1.053, 1.025, 1.027 };
 
 // Futility margin
 Value futility_margin(Depth d, bool noTtCutNode, bool improving, bool oppWorsening) {
@@ -457,8 +454,7 @@ void Search::Worker::iterative_deepening() {
             double timeMultiplier = fallingEval * reduction * bestMoveInstability * EvalLevel[el] * recapture;
 
             int multGroup = std::clamp(int(std::log(4 * timeMultiplier) / 0.405), 0, 11);
-            timeMultiplier *= MU[multGroup] / 1000.0;
-//sync_cout << "info timeMult " << timeMultiplier << " multGroup " << multGroup << sync_endl;
+            timeMultiplier *= Multipliers[multGroup];
 
             double totalTime = mainThread->tm.optimum() * timeMultiplier;
 

@@ -56,6 +56,11 @@ namespace {
 
 static constexpr double EvalLevel[10] = {0.981, 0.956, 0.895, 0.949, 0.913,
                                          0.942, 0.933, 0.890, 0.984, 0.941};
+//static const double Multipliers[] = { 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 };
+
+//auto f1 = [](int m){return m < 20 ? Range(m - 20, m + 20) : Range(m / 2, m * 3 / 2);};
+int MU[12] = { 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000 };
+TUNE(MU);
 
 // Futility margin
 Value futility_margin(Depth d, bool noTtCutNode, bool improving, bool oppWorsening) {
@@ -449,8 +454,13 @@ void Search::Worker::iterative_deepening() {
             int    el                  = std::clamp((bestValue + 750) / 150, 0, 9);
             double recapture           = limits.capSq == rootMoves[0].pv[0].to_sq() ? 0.955 : 1.005;
 
-            double totalTime = mainThread->tm.optimum() * fallingEval * reduction
-                             * bestMoveInstability * EvalLevel[el] * recapture;
+            double timeMultiplier = fallingEval * reduction * bestMoveInstability * EvalLevel[el] * recapture;
+
+            int multGroup = std::clamp(int(std::log(4 * timeMultiplier) / 0.405), 0, 11);
+            timeMultiplier *= MU[multGroup] / 1000.0;
+//sync_cout << "info timeMult " << timeMultiplier << " multGroup " << multGroup << sync_endl;
+
+            double totalTime = mainThread->tm.optimum() * timeMultiplier;
 
             // Cap used time in case of a single legal move for a better viewer experience
             if (rootMoves.size() == 1)

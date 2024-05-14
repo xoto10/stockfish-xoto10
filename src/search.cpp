@@ -1278,7 +1278,7 @@ moves_loop:  // When in check, search starts here
                 rm.score = -VALUE_INFINITE;
         }
 
-        Value inc = (!rootNode && (nodes & 3) == 3);
+        Value inc = (ss->ply == 2 && (nodes & 3) == 3);
         if (value + inc > bestValue)
         {
             bestValue = value;

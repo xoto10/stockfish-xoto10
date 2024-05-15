@@ -56,8 +56,8 @@ namespace {
 
 static constexpr double EvalLevel[10] = {0.981, 0.956, 0.895, 0.949, 0.913,
                                          0.942, 0.933, 0.890, 0.984, 0.941};
-static const double Multipliers[] = { 1.054, 0.989, 0.990, 1.041, 1.036, 0.972,
-                                      0.983, 1.003, 0.944, 1.041, 1.034, 0.991 };
+static const double Multipliers[] = { 1.044, 1.030, 0.961, 1.032, 1.112, 1.024,
+                                      1.008, 0.988, 0.990, 1.058, 1.045, 1.015 };
 
 // Futility margin
 Value futility_margin(Depth d, bool noTtCutNode, bool improving, bool oppWorsening) {

@@ -73,7 +73,8 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
     }
 
     // Blend optimism and eval with nnue complexity and material imbalance
-    optimism += optimism * (nnueComplexity + std::abs(simpleEval - nnue)) / 584;
+    int ocb = pos.opposite_bishops() ? -100 : 0;
+    optimism += optimism * (nnueComplexity + std::abs(simpleEval - nnue)) / 584 + ocb;
     nnue -= nnue * (nnueComplexity * 5 / 3) / 32395;
 
     int npm = pos.non_pawn_material() / 64;

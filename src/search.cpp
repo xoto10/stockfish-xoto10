@@ -54,6 +54,9 @@ using namespace Search;
 
 namespace {
 
+int A=580, B=1667, C=1495, D=687, E=880;
+TUNE(A, B, C, D, E);
+
 static constexpr double EvalLevel[10] = {0.981, 0.956, 0.895, 0.949, 0.913,
                                          0.942, 0.933, 0.890, 0.984, 0.941};
 
@@ -440,13 +443,13 @@ void Search::Worker::iterative_deepening() {
             double fallingEval = (1067 + 223 * (mainThread->bestPreviousAverageScore - bestValue)
                                   + 97 * (mainThread->iterValue[iterIdx] - bestValue))
                                / 10000.0;
-            fallingEval = std::clamp(fallingEval, 0.580, 1.667);
+            fallingEval = std::clamp(fallingEval, A*0.001, B*0.001);
 
             // If the bestMove is stable over several iterations, reduce time accordingly
-            timeReduction    = lastBestMoveDepth + 8 < completedDepth ? 1.495 : 0.687;
+            timeReduction    = lastBestMoveDepth + 8 < completedDepth ? C*0.001 : D*0.001;
             double reduction = (1.48 + mainThread->previousTimeReduction) / (2.17 * timeReduction);
             double unstable            = 1 + 2 * std::log(0.1 + completedDepth);
-            double bestMoveInstability = 1 + 8.8 * totBestMoveChanges / (threads.size() * unstable);
+            double bestMoveInstability = 1 + E*0.01 * totBestMoveChanges / (threads.size() * unstable);
             int    el                  = std::clamp((bestValue + 750) / 150, 0, 9);
             double recapture           = limits.capSq == rootMoves[0].pv[0].to_sq() ? 0.955 : 1.005;
 

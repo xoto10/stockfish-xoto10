@@ -54,9 +54,6 @@ using namespace Search;
 
 namespace {
 
-int BMI=800;
-TUNE(BMI);
-
 static constexpr double EvalLevel[10] = {0.981, 0.956, 0.895, 0.949, 0.913,
                                          0.942, 0.933, 0.890, 0.984, 0.941};
 
@@ -449,7 +446,7 @@ void Search::Worker::iterative_deepening() {
             timeReduction    = lastBestMoveDepth + 8 < completedDepth ? 1.495 : 0.687;
             double reduction = (1.48 + mainThread->previousTimeReduction) / (2.17 * timeReduction);
             double unstable            = 1 + 2 * std::log(0.1 + completedDepth);
-            double bestMoveInstability = 1 + BMI*0.01 * totBestMoveChanges / (threads.size() * unstable);
+            double bestMoveInstability = 1 + 8.8 * totBestMoveChanges / (threads.size() * unstable);
             int    el                  = std::clamp((bestValue + 750) / 150, 0, 9);
             double recapture           = limits.capSq == rootMoves[0].pv[0].to_sq() ? 0.955 : 1.005;
 

@@ -437,14 +437,14 @@ void Search::Worker::iterative_deepening() {
         {
             int nodesEffort = rootMoves[0].effort * 100 / std::max(size_t(1), size_t(nodes));
 
-            double fallingEval = (1067 + 223 * (mainThread->bestPreviousAverageScore - bestValue)
-                                  + 97 * (mainThread->iterValue[iterIdx] - bestValue))
-                               / 10000.0;
-            double fallingEval2 = (1840 + 384 * (mainThread->bestPreviousAverageScore - bestValue)
+//          double fallingEval0 = (1067 + 223 * (mainThread->bestPreviousAverageScore - bestValue)
+//                                + 97 * (mainThread->iterValue[iterIdx] - bestValue))
+//                             / 10000.0;
+            double fallingEval = (1840 + 384 * (mainThread->bestPreviousAverageScore - bestValue)
                                   + 167 * (mainThread->iterValue[iterIdx] - bestValue))
                                / 10000.0;
-//          fallingEval = std::clamp(fallingEval, 0.580, 1.667);
-            fallingEval2 = std::clamp(fallingEval, 1.000, 2.874);
+//          fallingEval0 = std::clamp(fallingEval0, 0.580, 1.667);
+            fallingEval = std::clamp(fallingEval, 1.000, 2.874);
 
             // If the bestMove is stable over several iterations, reduce time accordingly
             timeReduction    = lastBestMoveDepth + 8 < completedDepth ? 1.495 : 0.687;
@@ -460,15 +460,15 @@ void Search::Worker::iterative_deepening() {
                 multiplier1 = bestMoveInstability;
             else if (bestMoveInstability > multiplier2)
                 multiplier2 = bestMoveInstability;
-            if (fallingEval2 > multiplier1)
-                multiplier1 = fallingEval2;
-            else if (fallingEval2 > multiplier2)
-                multiplier2 = fallingEval2;
+            if (fallingEval > multiplier1)
+                multiplier1 = fallingEval;
+            else if (fallingEval > multiplier2)
+                multiplier2 = fallingEval;
 
 //          double totalTime = mainThread->tm.optimum() * fallingEval * reduction
 //                           * bestMoveInstability * EvalLevel[el] * recapture;
-//          double multold = fallingEval * reduction * bestMoveInstability * EvalLevel[el] * recapture;
-            double multnew = 0.45 * multiplier1 * multiplier2 * recapture;
+//          double multold = fallingEval0 * reduction * bestMoveInstability * EvalLevel[el] * recapture;
+            double multnew = 0.36 * multiplier1 * multiplier2 * recapture;
             double totalTime = mainThread->tm.optimum() * multnew;
 //sync_cout << "info multold " << multold << " multnew " << multnew << sync_endl;
 

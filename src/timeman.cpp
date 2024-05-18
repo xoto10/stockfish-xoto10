@@ -113,9 +113,9 @@ void TimeManagement::init(
         // Calculate time constants based on current time left.
         double logTimeInSec = std::log10(scaledTime / 1000.0);
 
-        double optTime = std::min(0.00387 * logTimeInSec, 0.01187);
-        double optPly  = 0.00267 * std::pow(ply + 0.4, 0.496);
-        optScale = std::min(0.01040 + optTime + optPly, 0.213 * limits.time[us] / timeLeft)
+        double optTime = std::min(0.00397 * logTimeInSec, 0.01187);
+        double optPly  = 0.00309 * std::pow(ply + 0.384, 0.496);
+        optScale = std::min(0.01211 + optTime + optPly, 0.213 * limits.time[us] / timeLeft)
                  * optExtra;
 
         double maxConstant  = std::max(3.39 + 3.01 * logTimeInSec, 2.93);

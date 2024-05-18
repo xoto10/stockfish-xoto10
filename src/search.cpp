@@ -437,13 +437,9 @@ void Search::Worker::iterative_deepening() {
         {
             int nodesEffort = rootMoves[0].effort * 100 / std::max(size_t(1), size_t(nodes));
 
-//          double fallingEval0 = (1067 + 223 * (mainThread->bestPreviousAverageScore - bestValue)
-//                                + 97 * (mainThread->iterValue[iterIdx] - bestValue))
-//                             / 10000.0;
             double fallingEval = (1840 + 384 * (mainThread->bestPreviousAverageScore - bestValue)
                                   + 167 * (mainThread->iterValue[iterIdx] - bestValue))
                                / 10000.0;
-//          fallingEval0 = std::clamp(fallingEval0, 0.580, 1.667);
             fallingEval = std::clamp(fallingEval, 1.000, 2.874);
 
             // If the bestMove is stable over several iterations, reduce time accordingly
@@ -453,7 +449,7 @@ void Search::Worker::iterative_deepening() {
             int    el                  = std::clamp((bestValue + 750) / 150, 0, 9);
             double recapture           = limits.capSq == rootMoves[0].pv[0].to_sq() ? 0.955 : 1.005;
 
-            // Standardise multipliers at 1.0 - X and choose the largest two
+            // Standardise multipliers starting at 1.0 and find the largest two
             double multiplier1 = EvalLevel[el] / 0.890;
             double multiplier2 = reduction * 1.6913;
             if (bestMoveInstability > multiplier1)
@@ -465,12 +461,7 @@ void Search::Worker::iterative_deepening() {
             else if (fallingEval > multiplier2)
                 multiplier2 = fallingEval;
 
-//          double totalTime = mainThread->tm.optimum() * fallingEval * reduction
-//                           * bestMoveInstability * EvalLevel[el] * recapture;
-//          double multold = fallingEval0 * reduction * bestMoveInstability * EvalLevel[el] * recapture;
-            double multnew = 0.32 * multiplier1 * multiplier2 * recapture;
-            double totalTime = mainThread->tm.optimum() * multnew;
-//sync_cout << "info multold " << multold << " multnew " << multnew << sync_endl;
+            double totalTime = mainThread->tm.optimum() * 0.35 * multiplier1 * multiplier2 * recapture;
 
             // Cap used time in case of a single legal move for a better viewer experience
             if (rootMoves.size() == 1)

@@ -468,7 +468,7 @@ void Search::Worker::iterative_deepening() {
 //          double totalTime = mainThread->tm.optimum() * fallingEval * reduction
 //                           * bestMoveInstability * EvalLevel[el] * recapture;
 //          double multold = fallingEval0 * reduction * bestMoveInstability * EvalLevel[el] * recapture;
-            double multnew = 0.36 * multiplier1 * multiplier2 * recapture;
+            double multnew = 0.32 * multiplier1 * multiplier2 * recapture;
             double totalTime = mainThread->tm.optimum() * multnew;
 //sync_cout << "info multold " << multold << " multnew " << multnew << sync_endl;
 

@@ -443,7 +443,7 @@ void Search::Worker::iterative_deepening() {
             double fallingEval2 = (1840 + 384 * (mainThread->bestPreviousAverageScore - bestValue)
                                   + 167 * (mainThread->iterValue[iterIdx] - bestValue))
                                / 10000.0;
-            fallingEval = std::clamp(fallingEval, 0.580, 1.667);
+//          fallingEval = std::clamp(fallingEval, 0.580, 1.667);
             fallingEval2 = std::clamp(fallingEval, 1.000, 2.874);
 
             // If the bestMove is stable over several iterations, reduce time accordingly
@@ -468,7 +468,7 @@ void Search::Worker::iterative_deepening() {
 //          double totalTime = mainThread->tm.optimum() * fallingEval * reduction
 //                           * bestMoveInstability * EvalLevel[el] * recapture;
 //          double multold = fallingEval * reduction * bestMoveInstability * EvalLevel[el] * recapture;
-            double multnew = 0.40 * multiplier1 * multiplier2 * recapture;
+            double multnew = 0.45 * multiplier1 * multiplier2 * recapture;
             double totalTime = mainThread->tm.optimum() * multnew;
 //sync_cout << "info multold " << multold << " multnew " << multnew << sync_endl;
 

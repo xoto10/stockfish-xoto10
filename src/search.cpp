@@ -55,7 +55,7 @@ using namespace Search;
 namespace {
 
 static constexpr double EvalLevel[10] = {0.981, 0.956, 0.895, 0.949, 0.913,
-                                         0.942, 0.933, 0.890, 0.984, 0.941};
+                                         0.942, 0.933, 0.890, 0.984, 0.941};  // lowest 0.890
 
 // Futility margin
 Value futility_margin(Depth d, bool noTtCutNode, bool improving, bool oppWorsening) {
@@ -440,7 +440,11 @@ void Search::Worker::iterative_deepening() {
             double fallingEval = (1067 + 223 * (mainThread->bestPreviousAverageScore - bestValue)
                                   + 97 * (mainThread->iterValue[iterIdx] - bestValue))
                                / 10000.0;
+            double fallingEval2 = (1840 + 384 * (mainThread->bestPreviousAverageScore - bestValue)
+                                  + 167 * (mainThread->iterValue[iterIdx] - bestValue))
+                               / 10000.0;
             fallingEval = std::clamp(fallingEval, 0.580, 1.667);
+            fallingEval2 = std::clamp(fallingEval, 1.000, 2.874);
 
             // If the bestMove is stable over several iterations, reduce time accordingly
             timeReduction    = lastBestMoveDepth + 8 < completedDepth ? 1.495 : 0.687;
@@ -449,8 +453,24 @@ void Search::Worker::iterative_deepening() {
             int    el                  = std::clamp((bestValue + 750) / 150, 0, 9);
             double recapture           = limits.capSq == rootMoves[0].pv[0].to_sq() ? 0.955 : 1.005;
 
-            double totalTime = mainThread->tm.optimum() * fallingEval * reduction
-                             * bestMoveInstability * EvalLevel[el] * recapture;
+            // Standardise multipliers at 1.0 - X and choose the largest two
+            double multiplier1 = EvalLevel[el] / 0.890;
+            double multiplier2 = reduction * 1.6913;
+            if (bestMoveInstability > multiplier1)
+                multiplier1 = bestMoveInstability;
+            else if (bestMoveInstability > multiplier2)
+                multiplier2 = bestMoveInstability;
+            if (fallingEval2 > multiplier1)
+                multiplier1 = fallingEval2;
+            else if (fallingEval2 > multiplier2)
+                multiplier2 = fallingEval2;
+
+//          double totalTime = mainThread->tm.optimum() * fallingEval * reduction
+//                           * bestMoveInstability * EvalLevel[el] * recapture;
+//          double multold = fallingEval * reduction * bestMoveInstability * EvalLevel[el] * recapture;
+            double multnew = 0.40 * multiplier1 * multiplier2 * recapture;
+            double totalTime = mainThread->tm.optimum() * multnew;
+//sync_cout << "info multold " << multold << " multnew " << multnew << sync_endl;
 
             // Cap used time in case of a single legal move for a better viewer experience
             if (rootMoves.size() == 1)

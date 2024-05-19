@@ -60,7 +60,12 @@ static constexpr double EvalLevel[10] = {0.981, 0.956, 0.895, 0.949, 0.913,
 
 int C[] = { 50, 80, 80, 80, 50, 50, 50, 15, 940, 4590, 300 };
 TUNE(C);
-double c(int i) { return C[i] * 0.001; }
+
+double c(int i) {
+//  double C[] = { 0.046, 0.083, 0.082, 0.075, 0.049, 0.049, 0.043, 0.015, 0.820, 4.423, 0.299 };
+//  return C[i];
+    return C[i] * 0.001;
+}
 
 // Futility margin
 Value futility_margin(Depth d, bool noTtCutNode, bool improving, bool oppWorsening) {
@@ -457,15 +462,16 @@ void Search::Worker::iterative_deepening() {
             double m1 = fallingEval;
             double m2 = reduction * 1.6913;
             double unstable = 1 + 2 * std::log(0.1 + completedDepth);
-            double bestMoveInstability = 1 + C[8] * totBestMoveChanges / threads.size()
-                                           + C[9] * totBestMoveChanges / (threads.size() * unstable);
+            double bestMoveInstability = 1 + c(8) * totBestMoveChanges / threads.size()
+                                           + c(9) * totBestMoveChanges / (threads.size() * unstable);
             double m3 = bestMoveInstability;
 
             double combined = c(0) + c(1)*m1 + c(2)*m2 + c(3)*m3
                             + c(4)*m1*m2 + c(5)*m2*m3 + c(6)*m1*m3
                             + c(7)*m1*m2*m3;
+            combined *= c(10);
 
-            double totalTime = mainThread->tm.optimum() * c(10)*combined * EvalLevel[el] * recapture;
+            double totalTime = mainThread->tm.optimum() * combined * EvalLevel[el] * recapture;
 
             // Cap used time in case of a single legal move for a better viewer experience
             if (rootMoves.size() == 1)

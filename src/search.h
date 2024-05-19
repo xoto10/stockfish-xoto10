@@ -215,9 +215,9 @@ class SearchManager: public ISearchManager {
     std::atomic_bool          ponder;
 
     std::array<Value, 4> iterValue;
-    double               previousTimeReduction;
     Value                bestPreviousScore;
     Value                bestPreviousAverageScore;
+    bool                 previousStableMoveFound;
     bool                 stopOnPonderhit;
 
     size_t id;

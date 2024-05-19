@@ -108,7 +108,7 @@ void TimeManagement::init(
         // Use extra time with larger increments
         double optExtra = scaledInc < 500 ? 1.0 : 1.13;
         if (ply - originalPly < 2)
-            optExtra *= 1.33;
+            optExtra *= 0.95;
 
         // Calculate time constants based on current time left.
         double logTimeInSec = std::log10(scaledTime / 1000.0);

@@ -55,7 +55,7 @@ using namespace Search;
 namespace {
 
 static constexpr double EvalLevel[10] = {0.981, 0.956, 0.895, 0.949, 0.913,
-                                         0.942, 0.933, 0.890, 0.984, 0.941};  // lowest 0.890
+                                         0.942, 0.933, 0.890, 0.984, 0.941};
 
 // Futility margin
 Value futility_margin(Depth d, bool noTtCutNode, bool improving, bool oppWorsening) {
@@ -461,7 +461,7 @@ void Search::Worker::iterative_deepening() {
             else if (fallingEval > multiplier2)
                 multiplier2 = fallingEval;
 
-            double totalTime = mainThread->tm.optimum() * 0.35 * multiplier1 * multiplier2 * recapture;
+            double totalTime = mainThread->tm.optimum() * 0.350 * multiplier1 * multiplier2 * recapture;
 
             // Cap used time in case of a single legal move for a better viewer experience
             if (rootMoves.size() == 1)

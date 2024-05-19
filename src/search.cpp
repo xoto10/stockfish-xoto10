@@ -54,11 +54,7 @@ using namespace Search;
 
 namespace {
 
-int A=1454, B=668, C=1996, D=917;
-TUNE(A, B, C, D);
-
-double Stability[2][2] = {{A*0.001, B*0.001}, {C*0.001, D*0.001}};
-//static constexpr double Stability[2][2] = {{1.4536, 0.6680}, {1.9956, 0.9170}};
+static constexpr double Stability[2][2] = {{1.408, 0.625}, {2.063, 0.922}};
 static constexpr double EvalLevel[10]   = {0.981, 0.956, 0.895, 0.949, 0.913,
                                            0.942, 0.933, 0.890, 0.984, 0.941};
 

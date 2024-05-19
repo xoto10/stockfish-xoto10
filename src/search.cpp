@@ -461,7 +461,7 @@ void Search::Worker::iterative_deepening() {
             else if (fallingEval > multiplier2)
                 multiplier2 = fallingEval;
 
-            double totalTime = mainThread->tm.optimum() * 0.350 * multiplier1 * multiplier2 * recapture;
+            double totalTime = mainThread->tm.optimum() * 0.290 * multiplier1 * multiplier2 * recapture;
 
             // Cap used time in case of a single legal move for a better viewer experience
             if (rootMoves.size() == 1)

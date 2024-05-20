@@ -54,10 +54,6 @@ using namespace Search;
 
 namespace {
 
-int A=-100, B=100, C=200, D=0, E=290;
-TUNE(SetRange(-900,2000), A, B, C, D);
-TUNE(E);
-
 static constexpr double EvalLevel[10] = {0.981, 0.956, 0.895, 0.949, 0.913,
                                          0.942, 0.933, 0.890, 0.984, 0.941};
 
@@ -454,13 +450,11 @@ void Search::Worker::iterative_deepening() {
             double recapture           = limits.capSq == rootMoves[0].pv[0].to_sq() ? 0.955 : 1.005;
 
             // Standardise multipliers starting at 1.0 and scale
-            double multiplier1 = EvalLevel[el] / 0.890;
-            double multiplier2 = reduction * 1.6913;
+            double multiplier1 = EvalLevel[el] / 0.865 - 0.029;
+            double multiplier2 = reduction * 1.7674 - 0.045;
 
-            multiplier1 = multiplier1 * (1.0 + A*0.001) - A*0.001;
-            multiplier2 = multiplier2 * (1.0 + B*0.001) - B*0.001;
-            bestMoveInstability = bestMoveInstability * (1.0 + C*0.001) - C*0.001;
-            fallingEval         = fallingEval * (1.0 + D*0.001) - D*0.001;
+            bestMoveInstability = bestMoveInstability * 1.403 - 0.403;
+            fallingEval         = fallingEval * 1.223 - 0.223;
 
             // Find the largest two
             if (bestMoveInstability > multiplier1)
@@ -472,7 +466,7 @@ void Search::Worker::iterative_deepening() {
             else if (fallingEval > multiplier2)
                 multiplier2 = fallingEval;
 
-            double totalTime = mainThread->tm.optimum() * E*0.001 * multiplier1 * multiplier2 * recapture;
+            double totalTime = mainThread->tm.optimum() * 0.296 * multiplier1 * multiplier2 * recapture;
 
             // Cap used time in case of a single legal move for a better viewer experience
             if (rootMoves.size() == 1)

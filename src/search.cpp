@@ -62,7 +62,7 @@ static constexpr double EvalLevel[10] = {0.981, 0.956, 0.895, 0.949, 0.913,
 int C[] = { 60, 118, 116, 114, 54, 86, 68, 18, 1368, 6006, 1004 };
 
 auto f1 = [](int m){return Range(m / 2, m * 3 / 2);};
-TUNE(C);
+TUNE(SetRange(f1), C);
 
 inline double c(int i) {
 //  return C[i];

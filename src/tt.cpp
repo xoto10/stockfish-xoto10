@@ -39,15 +39,19 @@ void TTEntry::save(
     if (m || uint16_t(k) != key16)
         move16 = m;
 
-    // Overwrite all entries
-    assert(d > DEPTH_OFFSET);
-    assert(d < 256 + DEPTH_OFFSET);
+    // Overwrite less valuable entries (frequently passing checks first)
+    if (uint16_t(k) != key16 || d - DEPTH_OFFSET + 2 * pv > depth8 - 4
+        || relative_age(generation8) || b == BOUND_EXACT)
+    {
+        assert(d > DEPTH_OFFSET);
+        assert(d < 256 + DEPTH_OFFSET);
 
-    key16     = uint16_t(k);
-    depth8    = uint8_t(d - DEPTH_OFFSET);
-    genBound8 = uint8_t(generation8 | uint8_t(pv) << 2 | b);
-    value16   = int16_t(v);
-    eval16    = int16_t(ev);
+        key16     = uint16_t(k);
+        depth8    = uint8_t(d - DEPTH_OFFSET);
+        genBound8 = uint8_t(generation8 | uint8_t(pv) << 2 | b);
+        value16   = int16_t(v);
+        eval16    = int16_t(ev);
+    }
 }
 
 

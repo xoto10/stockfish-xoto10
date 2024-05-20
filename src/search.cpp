@@ -217,6 +217,7 @@ void Search::Worker::start_searching() {
 
     auto bestmove = UCIEngine::move(bestThread->rootMoves[0].pv[0], rootPos.is_chess960());
     main_manager()->updates.onBestmove(bestmove, ponder);
+dbg_print();
 }
 
 // Main iterative deepening loop. It calls search()

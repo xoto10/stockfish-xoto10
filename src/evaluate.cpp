@@ -73,7 +73,7 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
     }
 
     // Blend optimism and eval with nnue complexity and material imbalance
-    int ocb = pos.opposite_bishops() ? -50 : 0;
+    int ocb = pos.opposite_bishops() ? -45 : 0;
     optimism += optimism * (nnueComplexity + std::abs(simpleEval - nnue)) / 584 + ocb;
     nnue -= nnue * (nnueComplexity * 5 / 3) / 32395;
 

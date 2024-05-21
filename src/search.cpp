@@ -263,6 +263,7 @@ void Search::Worker::iterative_deepening() {
             mainThread->iterValue.fill(VALUE_ZERO);
         else
             mainThread->iterValue.fill(mainThread->bestPreviousScore);
+        mainThread->bestMoveGap = 30; // stored x10 to give 1 decimal
     }
 
     size_t multiPV = size_t(options["MultiPV"]);
@@ -449,9 +450,10 @@ void Search::Worker::iterative_deepening() {
             double bestMoveInstability = 1 + 1.88 * totBestMoveChanges / threads.size();
             int    el                  = std::clamp((bestValue + 750) / 150, 0, 9);
             double recapture           = limits.capSq == rootMoves[0].pv[0].to_sq() ? 0.955 : 1.005;
+            double gaps                = 1.4 - std::clamp(mainThread->bestMoveGap, 60, 100) / 200.0;
 
             double totalTime = mainThread->tm.optimum() * fallingEval * reduction
-                             * bestMoveInstability * EvalLevel[el] * recapture;
+                             * bestMoveInstability * EvalLevel[el] * recapture * gaps;
 
             // Cap used time in case of a single legal move for a better viewer experience
             if (rootMoves.size() == 1)
@@ -1256,10 +1258,8 @@ moves_loop:  // When in check, search starts here
                     rm.scoreUpperbound = true;
                     rm.uciScore        = alpha;
                 }
-                else
-                {
-                    thisThread->bestMoveGap = (9 * thisThread->bestMoveGap + value - alpha) / 10;
-                }
+                else if (is_mainthread() && moveCount > 1)  //value - alpha < 5000)
+                    main_manager()->bestMoveGap = (9 * main_manager()->bestMoveGap) / 10 + value - alpha;
 
                 rm.pv.resize(1);
 

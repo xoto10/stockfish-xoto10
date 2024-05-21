@@ -1256,6 +1256,10 @@ moves_loop:  // When in check, search starts here
                     rm.scoreUpperbound = true;
                     rm.uciScore        = alpha;
                 }
+                else
+                {
+                    thisThread->bestMoveGap = (9 * thisThread->bestMoveGap + value - alpha) / 10;
+                }
 
                 rm.pv.resize(1);
 

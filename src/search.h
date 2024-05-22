@@ -218,7 +218,6 @@ class SearchManager: public ISearchManager {
     double               previousTimeReduction;
     Value                bestPreviousScore;
     Value                bestPreviousAverageScore;
-    Value                bestMoveGap;
     bool                 stopOnPonderhit;
 
     size_t id;
@@ -283,7 +282,7 @@ class Worker {
     LimitsType limits;
 
     size_t                pvIdx, pvLast;
-    std::atomic<uint64_t> nodes, tbHits, bestMoveChanges;
+    std::atomic<uint64_t> nodes, tbHits, bestMoveChanges, bestMoveGaps;
     int                   selDepth, nmpMinPly;
 
     Value optimism[COLOR_NB];

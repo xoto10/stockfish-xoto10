@@ -236,7 +236,7 @@ void Search::Worker::iterative_deepening() {
     Value  alpha, beta;
     Value  bestValue     = -VALUE_INFINITE;
     Color  us            = rootPos.side_to_move();
-    double timeReduction = 1, totBestMoveChanges = 0;
+    double timeReduction = 1, totBestMoveChanges = 0, totBestMoveGaps = 0;
     int    delta, iterIdx                        = 0;
 
     // Allocate stack with extra size to allow access from (ss - 7) to (ss + 2):
@@ -257,13 +257,14 @@ void Search::Worker::iterative_deepening() {
 
     ss->pv = pv;
 
+    bestMoveGaps = 80; // stored x10 to give 1 decimal
+
     if (mainThread)
     {
         if (mainThread->bestPreviousScore == VALUE_INFINITE)
             mainThread->iterValue.fill(VALUE_ZERO);
         else
             mainThread->iterValue.fill(mainThread->bestPreviousScore);
-        mainThread->bestMoveGap = 30; // stored x10 to give 1 decimal
     }
 
     size_t multiPV = size_t(options["MultiPV"]);
@@ -432,6 +433,7 @@ void Search::Worker::iterative_deepening() {
         {
             totBestMoveChanges += th->worker->bestMoveChanges;
             th->worker->bestMoveChanges = 0;
+            totBestMoveGaps += th->worker->bestMoveGaps;
         }
 
         // Do we have time for the next iteration? Can we stop searching now?
@@ -450,7 +452,7 @@ void Search::Worker::iterative_deepening() {
             double bestMoveInstability = 1 + 1.88 * totBestMoveChanges / threads.size();
             int    el                  = std::clamp((bestValue + 750) / 150, 0, 9);
             double recapture           = limits.capSq == rootMoves[0].pv[0].to_sq() ? 0.955 : 1.005;
-            double gaps                = 1.25 - std::clamp(mainThread->bestMoveGap, 30, 70) * 0.005;
+            double gaps                = 1.40 - std::clamp(totBestMoveGaps / threads.size(), 60.0, 95.0) * 0.00470;
 
             double totalTime = mainThread->tm.optimum() * fallingEval * reduction
                              * bestMoveInstability * EvalLevel[el] * recapture * gaps;
@@ -1258,8 +1260,8 @@ moves_loop:  // When in check, search starts here
                     rm.scoreUpperbound = true;
                     rm.uciScore        = alpha;
                 }
-                else if (is_mainthread() && moveCount > 1)  //value - alpha < 5000)
-                    main_manager()->bestMoveGap = (9 * main_manager()->bestMoveGap) / 10 + value - alpha;
+                else if (moveCount > 1)  //value - alpha < PawnValue)
+                    thisThread->bestMoveGaps = (9 * thisThread->bestMoveGaps) / 10 + value - alpha;
 
                 rm.pv.resize(1);
 

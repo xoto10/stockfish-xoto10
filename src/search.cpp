@@ -55,6 +55,9 @@ using namespace Search;
 
 namespace {
 
+int A=1633, B=52, C=100, D=833;
+TUNE(A, B, C, D);
+
 static constexpr double EvalLevel[10] = {0.981, 0.956, 0.895, 0.949, 0.913,
                                          0.942, 0.933, 0.890, 0.984, 0.941};
 
@@ -236,7 +239,7 @@ void Search::Worker::iterative_deepening() {
     Value  alpha, beta;
     Value  bestValue     = -VALUE_INFINITE;
     Color  us            = rootPos.side_to_move();
-    double timeReduction = 1, totBestMoveChanges = 0, totBestMoveGaps = 0;
+    double timeReduction = 1, totBestMoveChanges = 0;
     int    delta, iterIdx                        = 0;
 
     // Allocate stack with extra size to allow access from (ss - 7) to (ss + 2):
@@ -257,14 +260,13 @@ void Search::Worker::iterative_deepening() {
 
     ss->pv = pv;
 
-    bestMoveGaps = 80; // stored x10 to give 1 decimal
-
     if (mainThread)
     {
         if (mainThread->bestPreviousScore == VALUE_INFINITE)
             mainThread->iterValue.fill(VALUE_ZERO);
         else
             mainThread->iterValue.fill(mainThread->bestPreviousScore);
+        mainThread->bestMoveGap = 76; // stored x10 to give 1 decimal
     }
 
     size_t multiPV = size_t(options["MultiPV"]);
@@ -433,7 +435,6 @@ void Search::Worker::iterative_deepening() {
         {
             totBestMoveChanges += th->worker->bestMoveChanges;
             th->worker->bestMoveChanges = 0;
-            totBestMoveGaps += th->worker->bestMoveGaps;
         }
 
         // Do we have time for the next iteration? Can we stop searching now?
@@ -452,7 +453,7 @@ void Search::Worker::iterative_deepening() {
             double bestMoveInstability = 1 + 1.88 * totBestMoveChanges / threads.size();
             int    el                  = std::clamp((bestValue + 750) / 150, 0, 9);
             double recapture           = limits.capSq == rootMoves[0].pv[0].to_sq() ? 0.955 : 1.005;
-            double gaps                = 1.40 - std::clamp(totBestMoveGaps / threads.size(), 60.0, 95.0) * 0.00470;
+            double gaps                = A*0.001 - std::clamp(mainThread->bestMoveGap, B, C) * D*0.00001;
 
             double totalTime = mainThread->tm.optimum() * fallingEval * reduction
                              * bestMoveInstability * EvalLevel[el] * recapture * gaps;
@@ -1260,8 +1261,10 @@ moves_loop:  // When in check, search starts here
                     rm.scoreUpperbound = true;
                     rm.uciScore        = alpha;
                 }
-                else if (moveCount > 1)  //value - alpha < PawnValue)
-                    thisThread->bestMoveGaps = (9 * thisThread->bestMoveGaps) / 10 + value - alpha;
+                // Maintain a moving average of the gap between move evals.
+                // (value - alpha) is multiplied by 10 to allow 1 decimal place precision in average.
+                if (moveCount > 1 && thisThread->completedDepth > 9)  // && value-alpha < PawnValue)
+                    main_manager()->bestMoveGap = (9 * main_manager()->bestMoveGap) / 10 + value - alpha;
 
                 rm.pv.resize(1);
 

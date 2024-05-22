@@ -58,14 +58,15 @@ namespace {
 static constexpr double EvalLevel[10] = {0.981, 0.956, 0.895, 0.949, 0.913,
                                          0.942, 0.933, 0.890, 0.984, 0.941};
 
-//static constexpr double C[11] = { 0.060, 0.118, 0.116, 0.114, 0.054, 0.086, 0.068, 0.018, 1.368, 6.006, 1.004 };
+static constexpr double C[11] = { 0.043, 0.130, 0.090, 0.119, 0.048, 0.101, 0.073, 0.021, 1.699, 7.572, 0.984 };
 
-int C[] = { 60, 118, 116, 114, 54, 86, 68, 18, 1368, 6006, 1004 };
-TUNE(C[0], C[1], C[2], C[4], C[5], C[6], C[7], C[8], C[9], C[10] );
+//int C[] = { 60, 118, 116, 114, 54, 86, 68, 18, 1368, 6006, 1004 };
+//auto f1 = [](int m){return Range(m / 2, m * 3 / 2);};
+//TUNE(SetRange(f1), C);
 
 inline double c(int i) {
-//  return C[i];
-    return C[i] * 0.001;
+    return C[i];
+//  return C[i] * 0.001;
 }
 
 // Futility margin

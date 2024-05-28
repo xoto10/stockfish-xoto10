@@ -87,9 +87,9 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
     if (pos.opposite_bishops())
     {
         if (v < 0)
-            v += 8;
+            v += 4;
         else if (v > 0)
-            v -= 8;
+            v -= 4;
     }
 
     // Damp down the evaluation linearly when shuffling

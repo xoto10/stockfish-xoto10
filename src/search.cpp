@@ -55,11 +55,6 @@ using namespace Search;
 
 namespace {
 
-auto f1 = [](int m){return Range(m / 2, m * 3 / 2);};
-int A=1200, B=2000, C=500, D=100;
-TUNE(SetRange(f1), A, B, C);
-TUNE(SetRange(-1000,1000), D);
-
 static constexpr double EvalLevel[10] = {0.981, 0.956, 0.895, 0.949, 0.913,
                                          0.942, 0.933, 0.890, 0.984, 0.941};
 
@@ -457,8 +452,8 @@ void Search::Worker::iterative_deepening() {
             double bestMoveInstability = 1 + 1.88 * totBestMoveChanges / threads.size();
             int    el                  = std::clamp((bestValue + 750) / 150, 0, 9);
             double recapture           = limits.capSq == rootMoves[0].pv[0].to_sq() ? 0.955 : 1.005;
-            double branching           = std::clamp(std::exp(std::log(double(nodes))/completedDepth),
-                                                    A*0.001, B*0.001) * C*0.001 + D*0.001;
+            double branching           = std::clamp(std::exp(std::log(double(nodes))/completedDepth), 1.17, 1.93)
+                                         * 0.5 + 0.05;
 
             double totalTime = mainThread->tm.optimum() * fallingEval * reduction
                              * bestMoveInstability * EvalLevel[el] * recapture * branching;

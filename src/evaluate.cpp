@@ -85,7 +85,12 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
       / 35967;
 
     if (pos.opposite_bishops())
-        v += 16 * (v < 0) - 16 * (v > 0);
+    {
+        if (v < 0)
+            v += 8;
+        else if (v > 0)
+            v -= 8;
+    }
 
     // Damp down the evaluation linearly when shuffling
     v = v * (204 - pos.rule50_count()) / 208;

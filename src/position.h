@@ -135,6 +135,9 @@ class Position {
     Piece moved_piece(Move m) const;
     Piece captured_piece() const;
 
+    // Piece specific
+    bool opposite_bishops() const;
+
     // Doing and undoing moves
     void do_move(Move m, StateInfo& newSt);
     void do_move(Move m, StateInfo& newSt, bool givesCheck);
@@ -323,6 +326,12 @@ inline bool Position::capture_stage(Move m) const {
 }
 
 inline Piece Position::captured_piece() const { return st->capturedPiece; }
+
+inline bool Position::opposite_bishops() const {
+  return   count<BISHOP>(WHITE) == 1
+        && count<BISHOP>(BLACK) == 1
+        && opposite_colors(square<BISHOP>(WHITE), square<BISHOP>(BLACK));
+}
 
 inline void Position::put_piece(Piece pc, Square s) {
 

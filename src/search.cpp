@@ -1277,7 +1277,8 @@ moves_loop:  // When in check, search starts here
         }
 
         int inc = nodes & 1 & (ss->ply == 1);
-        if (value + inc > bestValue)
+        value += inc;
+        if (value > bestValue)
         {
             bestValue = value;
 

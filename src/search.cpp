@@ -1276,14 +1276,13 @@ moves_loop:  // When in check, search starts here
                 rm.score = -VALUE_INFINITE;
         }
 
-        if (ss->ply == 1 && value == bestValue && (int(nodes) & 3) == 0)
-            value++;
+        int inc = (ss->ply == 1 && value == bestValue && (int(nodes) & 1));
 
-        if (value > bestValue)
+        if (value + inc > bestValue)
         {
             bestValue = value;
 
-            if (value > alpha)
+            if (value + inc > alpha)
             {
                 bestMove = move;
 

@@ -1208,8 +1208,10 @@ moves_loop:  // When in check, search starts here
 
         // For PV nodes only, do a full PV search on the first move or after a fail high,
         // otherwise let the parent node fail low with value <= alpha and try another move.
+        bool nextPv = false;
         if (PvNode && (moveCount == 1 || value > alpha))
         {
+            nextPv = true;
             (ss + 1)->pv    = pv;
             (ss + 1)->pv[0] = Move::none();
 
@@ -1239,8 +1241,15 @@ moves_loop:  // When in check, search starts here
               rm.averageScore != -VALUE_INFINITE ? (2 * value + rm.averageScore) / 3 : value;
 
             // PV move or new best move?
+            value += nodes & 1;
             if (moveCount == 1 || value > alpha)
             {
+                if (!nextPv)
+                {
+                    (ss + 1)->pv    = pv;
+                    (ss + 1)->pv[0] = Move::none();
+                }
+
                 rm.score = rm.uciScore = value;
                 rm.selDepth            = thisThread->selDepth;
                 rm.scoreLowerbound = rm.scoreUpperbound = false;
@@ -1276,8 +1285,6 @@ moves_loop:  // When in check, search starts here
                 rm.score = -VALUE_INFINITE;
         }
 
-        int inc = nodes & 1 & (ss->ply == 1);
-        value += inc;
         if (value > bestValue)
         {
             bestValue = value;

@@ -28,6 +28,10 @@
 
 namespace Stockfish {
 
+auto f1 = [](int m){return m < 20 ? Range(m - 20, m + 20) : Range(m / 2, m * 3 / 2);};
+int A=2078, B=1623, C=950, D=308, E=319, F=122, G=295, H=462;
+TUNE(SetRange(f1), A, B, C, D, E, F, G, H);
+
 TimePoint TimeManagement::optimum() const { return optimumTime; }
 TimePoint TimeManagement::maximum() const { return maximumTime; }
 
@@ -106,7 +110,7 @@ void TimeManagement::init(Search::LimitsType& limits,
 
     // Extra time according to timeLeft
     if (originalTimeAdjust < 0)
-        originalTimeAdjust = 0.2078 + 0.1623 * std::log10(timeLeft);
+        originalTimeAdjust = A*0.0001 + B*0.0001 * std::log10(timeLeft);
 
     // x basetime (+ z increment)
     // If there is a healthy increment, timeLeft can exceed the actual available
@@ -116,15 +120,15 @@ void TimeManagement::init(Search::LimitsType& limits,
         // Use extra time with larger increments
         double optExtra = scaledInc < 500 ? 1.0 : 1.13;
         if (ply - originalPly < 2)
-            optExtra *= 0.95;
+            optExtra *= C*0.001;
         optExtra *= originalTimeAdjust;
 
         // Calculate time constants based on current time left.
         double logTimeInSec = std::log10(scaledTime / 1000.0);
-        double optConstant  = std::min(0.00308 + 0.000319 * logTimeInSec, 0.00506);
+        double optConstant  = std::min(D*0.00001 + E*0.000001 * logTimeInSec, 0.00506);
         double maxConstant  = std::max(3.39 + 3.01 * logTimeInSec, 2.93);
 
-        optScale = std::min(0.0122 + std::pow(ply + 2.95, 0.462) * optConstant,
+        optScale = std::min(F*0.0001 + std::pow(ply + G*0.01, H*0.001) * optConstant,
                             0.213 * limits.time[us] / timeLeft)
                  * optExtra;
 

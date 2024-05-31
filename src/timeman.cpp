@@ -102,7 +102,7 @@ void TimeManagement::init(Search::LimitsType& limits,
 
     // Extra time according to timeLeft
     if (originalTimeAdjust < 0)
-        originalTimeAdjust = 0.2078 + 0.1623 * std::log10(timeLeft);
+        originalTimeAdjust = 0.2149 + 0.1643 * std::log10(timeLeft);
 
     // x basetime (+ z increment)
     // If there is a healthy increment, timeLeft can exceed the actual available
@@ -115,10 +115,10 @@ void TimeManagement::init(Search::LimitsType& limits,
 
         // Calculate time constants based on current time left.
         double logTimeInSec = std::log10(scaledTime / 1000.0);
-        double optConstant  = std::min(0.00308 + 0.000319 * logTimeInSec, 0.00506);
+        double optConstant  = std::min(0.00305 + 0.000319 * logTimeInSec, 0.00506);
         double maxConstant  = std::max(3.39 + 3.01 * logTimeInSec, 2.93);
 
-        optScale = std::min(0.0122 + std::pow(ply + 2.95, 0.462) * optConstant,
+        optScale = std::min(0.0129 + std::pow(ply + 2.93, 0.479) * optConstant,
                             0.213 * limits.time[us] / timeLeft)
                  * optExtra;
 

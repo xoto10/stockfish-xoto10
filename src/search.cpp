@@ -450,7 +450,7 @@ void Search::Worker::iterative_deepening() {
             double reduction = (1.48 + mainThread->previousTimeReduction) / (2.17 * timeReduction);
             double bestMoveInstability = 1 + 1.88 * totBestMoveChanges / threads.size();
             int    el                  = std::clamp((bestValue + 750) / 150, 0, 9);
-            double recapture           = limits.capSq == rootMoves[0].pv[0].to_sq() ? 0.973 : 1.096;
+            double recapture           = limits.capSq == rootMoves[0].pv[0].to_sq() ? 1.031 : 1.162;
 
             double totalTime = mainThread->tm.optimum() * fallingEval * reduction
                              * bestMoveInstability * EvalLevel[el] * recapture;

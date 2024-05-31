@@ -55,8 +55,12 @@ using namespace Search;
 
 namespace {
 
-static constexpr double EvalLevel[10] = {0.981, 0.956, 0.895, 0.949, 0.913,
-                                         0.942, 0.933, 0.890, 0.984, 0.941};
+auto f1 = [](int m){return Range(m * 2 / 3, m * 4 / 3);};
+int B=202, C=90, D=523, E=1600, F=1473, G=652, J=1831, K=974, L=124;
+TUNE(SetRange(f1), B, C, D, E, F, G, J, K, L);
+
+static constexpr double EvalLevel[10] = {1.044, 1.017, 0.952, 1.010, 0.971,
+                                         1.002, 0.993, 0.947, 1.047, 1.001};
 
 // Futility margin
 Value futility_margin(Depth d, bool noTtCutNode, bool improving, bool oppWorsening) {
@@ -440,17 +444,17 @@ void Search::Worker::iterative_deepening() {
         {
             int nodesEffort = rootMoves[0].effort * 100 / std::max(size_t(1), size_t(nodes));
 
-            double fallingEval = (1067 + 223 * (mainThread->bestPreviousAverageScore - bestValue)
-                                  + 97 * (mainThread->iterValue[iterIdx] - bestValue))
+            double fallingEval = (1027 + B * (mainThread->bestPreviousAverageScore - bestValue)
+                                  + C * (mainThread->iterValue[iterIdx] - bestValue))
                                / 10000.0;
-            fallingEval = std::clamp(fallingEval, 0.580, 1.667);
+            fallingEval = std::clamp(fallingEval, D*0.001, E*0.001);
 
             // If the bestMove is stable over several iterations, reduce time accordingly
-            timeReduction    = lastBestMoveDepth + 8 < completedDepth ? 1.495 : 0.687;
-            double reduction = (1.48 + mainThread->previousTimeReduction) / (2.17 * timeReduction);
-            double bestMoveInstability = 1 + 1.88 * totBestMoveChanges / threads.size();
+            timeReduction    = lastBestMoveDepth + 8 < completedDepth ? F*0.001 : G*0.001;
+            double reduction = (1.569 + mainThread->previousTimeReduction) / (2.221 * timeReduction);
+            double bestMoveInstability = 1 + J*0.001 * totBestMoveChanges / threads.size();
             int    el                  = std::clamp((bestValue + 750) / 150, 0, 9);
-            double recapture           = limits.capSq == rootMoves[0].pv[0].to_sq() ? 0.955 : 1.005;
+            double recapture           = limits.capSq == rootMoves[0].pv[0].to_sq() ? K*0.001 : (K+L)*0.001;
 
             double totalTime = mainThread->tm.optimum() * fallingEval * reduction
                              * bestMoveInstability * EvalLevel[el] * recapture;

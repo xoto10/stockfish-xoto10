@@ -440,17 +440,17 @@ void Search::Worker::iterative_deepening() {
         {
             int nodesEffort = rootMoves[0].effort * 100 / std::max(size_t(1), size_t(nodes));
 
-            double fallingEval = (1067 + 200 * (mainThread->bestPreviousAverageScore - bestValue)
-                                  + 92 * (mainThread->iterValue[iterIdx] - bestValue))
+            double fallingEval = (1067 + 202 * (mainThread->bestPreviousAverageScore - bestValue)
+                                  + 91 * (mainThread->iterValue[iterIdx] - bestValue))
                                / 10000.0;
-            fallingEval = std::clamp(fallingEval, 0.524, 1.608);
+            fallingEval = std::clamp(fallingEval, 0.515, 1.573);
 
             // If the bestMove is stable over several iterations, reduce time accordingly
-            timeReduction    = lastBestMoveDepth + 8 < completedDepth ? 1.465 : 0.640;
+            timeReduction    = lastBestMoveDepth + 8 < completedDepth ? 1.493 : 0.649;
             double reduction = (1.48 + mainThread->previousTimeReduction) / (2.17 * timeReduction);
-            double bestMoveInstability = 1 + 1.81 * totBestMoveChanges / threads.size();
+            double bestMoveInstability = 1 + 1.83 * totBestMoveChanges / threads.size();
             int    el                  = std::clamp((bestValue + 750) / 150, 0, 9);
-            double recapture           = limits.capSq == rootMoves[0].pv[0].to_sq() ? 0.967 : 1.097;
+            double recapture           = limits.capSq == rootMoves[0].pv[0].to_sq() ? 0.981 : 1.111;
 
             double totalTime = mainThread->tm.optimum() * fallingEval * reduction
                              * bestMoveInstability * EvalLevel[el] * recapture;

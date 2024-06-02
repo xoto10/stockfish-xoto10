@@ -65,9 +65,9 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
     int  simpleEval     = simple_eval(pos, pos.side_to_move());
     bool preferSmallNet = use_smallnet(pos, simpleEval);
 
-    preferSmallAverage = (255 * preferSmallAverage + 1024 * int(preferSmallNet)) / 256;
+    preferSmallAverage = (7 * preferSmallAverage + 1024 * int(preferSmallNet)) / 8;
 
-    bool useSmallNet   = preferSmallAverage > 950;
+    bool useSmallNet   = preferSmallAverage > 200;
 
     Value nnue = useSmallNet ? networks.small.evaluate(pos, &caches.small, true, &nnueComplexity)
                              : networks.big.evaluate(pos, &caches.big, true, &nnueComplexity);

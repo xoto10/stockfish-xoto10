@@ -44,8 +44,7 @@ int Eval::simple_eval(const Position& pos, Color c) {
          + (pos.non_pawn_material(c) - pos.non_pawn_material(~c));
 }
 
-bool Eval::use_smallnet(const Position& pos) {
-    int simpleEval = simple_eval(pos, pos.side_to_move());
+bool Eval::use_smallnet(const Position& pos, const int simpleEval) {
     int pawnCount  = pos.count<PAWN>();
     return std::abs(simpleEval) > 992 + 6 * pawnCount * pawnCount / 16;
 }
@@ -60,7 +59,7 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
     assert(!pos.checkers());
 
     int  simpleEval = simple_eval(pos, pos.side_to_move());
-    bool smallNet   = use_smallnet(pos);
+    bool smallNet   = use_smallnet(pos, simpleEval);
     int  nnueComplexity;
     int  v;
 

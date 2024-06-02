@@ -1282,7 +1282,7 @@ moves_loop:  // When in check, search starts here
                 rm.score = -VALUE_INFINITE;
         }
 
-        int inc = (value == bestValue && (int(nodes) & 2047) == 0);
+        int inc = (value == bestValue && (int(nodes) & 4095) == 0);
 
         if (value + inc > bestValue)
         {

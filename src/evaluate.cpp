@@ -36,9 +36,6 @@
 
 namespace Stockfish {
 
-int SA=300;
-TUNE(SA);
-
 static thread_local int preferSmallAverage = 0;
 
 // Returns a static, purely materialistic evaluation of the position from
@@ -71,7 +68,7 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
 
     preferSmallAverage = (255 * preferSmallAverage + 1024 * int(preferSmallNet)) / 256;
 
-    bool useSmallNet   = preferSmallAverage > SA;
+    bool useSmallNet   = preferSmallAverage > 300;
 
     Value nnue = useSmallNet ? networks.small.evaluate(pos, &caches.small, true, &nnueComplexity)
                              : networks.big.evaluate(pos, &caches.big, true, &nnueComplexity);

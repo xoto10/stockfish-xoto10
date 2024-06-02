@@ -36,6 +36,11 @@
 
 namespace Stockfish {
 
+int SA=300;
+TUNE(SA);
+
+static thread_local int preferSmallAverage = 0;
+
 // Returns a static, purely materialistic evaluation of the position from
 // the point of view of the given color. It can be divided by PawnValue to get
 // an approximation of the material advantage on the board in terms of pawns.
@@ -49,6 +54,7 @@ bool Eval::use_smallnet(const Position& pos, const int simpleEval) {
     return std::abs(simpleEval) > 992 + 6 * pawnCount * pawnCount / 16;
 }
 
+
 // Evaluate is the evaluator for the outer world. It returns a static evaluation
 // of the position from the point of view of the side to move.
 Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
@@ -58,20 +64,21 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
 
     assert(!pos.checkers());
 
-    int  simpleEval = simple_eval(pos, pos.side_to_move());
-    bool smallNet   = use_smallnet(pos, simpleEval);
-    int  nnueComplexity;
     int  v;
+    int  nnueComplexity;
+    int  simpleEval     = simple_eval(pos, pos.side_to_move());
+    bool preferSmallNet = use_smallnet(pos, simpleEval);
 
-    Value nnue = smallNet ? networks.small.evaluate(pos, &caches.small, true, &nnueComplexity)
-                          : networks.big.evaluate(pos, &caches.big, true, &nnueComplexity);
+    preferSmallAverage = (255 * preferSmallAverage + 1024 * int(preferSmallNet)) / 256;
+
+    bool useSmallNet   = preferSmallAverage > SA;
+
+    Value nnue = useSmallNet ? networks.small.evaluate(pos, &caches.small, true, &nnueComplexity)
+                             : networks.big.evaluate(pos, &caches.big, true, &nnueComplexity);
 
     // Re-evaluate the position when higher eval accuracy is worth the time spent
-    if (smallNet && (nnue * simpleEval < 0 || std::abs(nnue) < 250))
-    {
-        nnue     = networks.big.evaluate(pos, &caches.big, true, &nnueComplexity);
-        smallNet = false;
-    }
+    if (useSmallNet && (nnue * simpleEval < 0 || std::abs(nnue) < 250))
+        nnue = networks.big.evaluate(pos, &caches.big, true, &nnueComplexity);
 
     // Blend optimism and eval with nnue complexity
     optimism += optimism * nnueComplexity / 470;

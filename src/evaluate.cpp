@@ -51,7 +51,6 @@ bool Eval::use_smallnet(const Position& pos, const int simpleEval) {
     return std::abs(simpleEval) > 992 + 6 * pawnCount * pawnCount / 16;
 }
 
-
 // Evaluate is the evaluator for the outer world. It returns a static evaluation
 // of the position from the point of view of the side to move.
 Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
@@ -68,7 +67,7 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
 
     preferSmallAverage = (255 * preferSmallAverage + 1024 * int(preferSmallNet)) / 256;
 
-    bool useSmallNet   = preferSmallAverage > 300;
+    bool useSmallNet   = preferSmallAverage > 200;
 
     Value nnue = useSmallNet ? networks.small.evaluate(pos, &caches.small, true, &nnueComplexity)
                              : networks.big.evaluate(pos, &caches.big, true, &nnueComplexity);

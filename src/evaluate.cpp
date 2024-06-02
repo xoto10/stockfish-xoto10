@@ -67,7 +67,7 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
 
     preferSmallAverage = (7 * preferSmallAverage + 1024 * int(preferSmallNet)) / 8;
 
-    bool useSmallNet   = preferSmallAverage > 200;
+    bool useSmallNet   = preferSmallAverage > 500;
 
     Value nnue = useSmallNet ? networks.small.evaluate(pos, &caches.small, true, &nnueComplexity)
                              : networks.big.evaluate(pos, &caches.big, true, &nnueComplexity);

@@ -82,7 +82,7 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
     // Blend optimism and eval with nnue complexity
     optimism += optimism * nnueComplexity / 470;
     int nn = std::clamp(nnue, -1000, 1000);
-    int complexityFactor = (nn * nn / 4096) * nn * 107 / 8192 - nn * 2300 / 2048;
+    int complexityFactor = (nn * nn / 4096) * nn * 127 / 8192 - nn * 2300 / 2048;
     nnue -= nnueComplexity * complexityFactor / 16384;
 
     int material = 300 * pos.count<PAWN>() + 350 * pos.count<KNIGHT>() + 400 * pos.count<BISHOP>()

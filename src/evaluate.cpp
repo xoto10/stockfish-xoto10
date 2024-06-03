@@ -37,6 +37,9 @@
 
 namespace Stockfish {
 
+int A=160, B=1875;
+TUNE(A, B);
+
 // Returns a static, purely materialistic evaluation of the position from
 // the point of view of the given color. It can be divided by PawnValue to get
 // an approximation of the material advantage on the board in terms of pawns.
@@ -81,8 +84,8 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
 
     // Blend optimism and eval with nnue complexity
     optimism += optimism * nnueComplexity / 470;
-    int nn = std::clamp(nnue, -630, 630);
-    int complexityFactor = nn * nn * nn * 5L / 1048576 - 1875L * nn / 2048;
+    int nn = std::clamp(nnue, -1000, 1000);
+    int complexityFactor = (nn * nn / 4096) * nn * A / 8192 - nn * B / 2048;
     nnue -= nnueComplexity * complexityFactor / 16384;
 
     int material = 300 * pos.count<PAWN>() + 350 * pos.count<KNIGHT>() + 400 * pos.count<BISHOP>()

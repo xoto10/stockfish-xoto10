@@ -1620,11 +1620,13 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta,
         assert(value > -VALUE_INFINITE && value < VALUE_INFINITE);
 
         // Step 8. Check for a new best move
-        if (value > bestValue)
+        int inc = (value == bestValue && (int(nodes) & 15) == 0);
+
+        if (value + inc > bestValue)
         {
             bestValue = value;
 
-            if (value > alpha)
+            if (value + inc > alpha)
             {
                 bestMove = move;
 

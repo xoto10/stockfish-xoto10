@@ -1282,7 +1282,7 @@ moves_loop:  // When in check, search starts here
                 rm.score = -VALUE_INFINITE;
         }
 
-        int inc = (value == bestValue && (int(nodes) & 15) == 0 && ss->ply + 2 >= thisThread->rootDepth);
+        int inc = (value == bestValue && (int(nodes) & 15) == 0 && ss->ply + 3 >= thisThread->rootDepth);
 
         if (value + inc > bestValue)
         {
@@ -1620,13 +1620,11 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta,
         assert(value > -VALUE_INFINITE && value < VALUE_INFINITE);
 
         // Step 8. Check for a new best move
-        int inc = (value == bestValue && (int(nodes) & 15) == 0);
-
-        if (value + inc > bestValue)
+        if (value > bestValue)
         {
             bestValue = value;
 
-            if (value + inc > alpha)
+            if (value > alpha)
             {
                 bestMove = move;
 

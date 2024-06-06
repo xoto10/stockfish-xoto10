@@ -55,7 +55,7 @@ using namespace Search;
 
 namespace {
 
-static constexpr double TimeReduction[4] = {1.454, 1.996, 0.543, 0.917};
+static constexpr double TimeReduction[4] = {1.454, 1.996, 0.668, 0.917};
 
 static constexpr double EvalLevel[10] = {0.981, 0.956, 0.895, 0.949, 0.913,
                                          0.942, 0.933, 0.890, 0.984, 0.941};
@@ -241,7 +241,7 @@ void Search::Worker::iterative_deepening() {
     Value  bestValue          = -VALUE_INFINITE;
     Color  us                 = rootPos.side_to_move();
     double totBestMoveChanges = 0;
-    int    timeReduction      = 1;
+    int    stableMoves        = 0;
     int    delta, iterIdx     = 0;
 
     // Allocate stack with extra size to allow access from (ss - 7) to (ss + 2):
@@ -450,16 +450,13 @@ void Search::Worker::iterative_deepening() {
             fallingEval = std::clamp(fallingEval, 0.580, 1.667);
 
             // If the bestMove is stable over several iterations, reduce time accordingly
-            //          timeReduction    = lastBestMoveDepth + 8 < completedDepth ? 1.495 : 0.687;
-            //          double reduction = (1.48 + mainThread->previousTimeReduction) / (2.17 * timeReduction);
-            timeReduction =
-              2 * (lastBestMoveDepth + 8 < completedDepth) + mainThread->previousTimeReduction / 2;
+            stableMoves = 2 * (lastBestMoveDepth + 8 < completedDepth) + mainThread->previousStableMoves / 2;
 
             double bestMoveInstability = 1 + 1.88 * totBestMoveChanges / threads.size();
             int    el                  = std::clamp((bestValue + 750) / 150, 0, 9);
             double recapture           = limits.capSq == rootMoves[0].pv[0].to_sq() ? 0.955 : 1.005;
 
-            double totalTime = mainThread->tm.optimum() * fallingEval * TimeReduction[timeReduction]
+            double totalTime = mainThread->tm.optimum() * fallingEval * TimeReduction[stableMoves]
                              * bestMoveInstability * EvalLevel[el] * recapture;
 
             // Cap used time in case of a single legal move for a better viewer experience
@@ -493,7 +490,7 @@ void Search::Worker::iterative_deepening() {
     if (!mainThread)
         return;
 
-    mainThread->previousTimeReduction = timeReduction;
+    mainThread->previousStableMoves = stableMoves;
 
     // If the skill level is enabled, swap the best PV line with the sub-optimal one
     if (skill.enabled())

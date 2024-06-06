@@ -55,7 +55,7 @@ using namespace Search;
 
 namespace {
 
-static constexpr double TimeReduction[4] = {1.454, 1.996, 0.793, 0.917};
+static constexpr double TimeReduction[4] = {1.454, 1.996, 0.543, 0.917};
 
 static constexpr double EvalLevel[10] = {0.981, 0.956, 0.895, 0.949, 0.913,
                                          0.942, 0.933, 0.890, 0.984, 0.941};

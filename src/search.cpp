@@ -453,7 +453,7 @@ void Search::Worker::iterative_deepening() {
             int    el                  = std::clamp((bestValue + 750) / 150, 0, 9);
             double recapture           = limits.capSq == rootMoves[0].pv[0].to_sq() ? 0.955 : 1.005;
 
-            double totalTime = mainThread->tm.optimum() * std::min(5.0, fallingEval * reduction * bestMoveInstability)
+            double totalTime = mainThread->tm.optimum() * std::min(4.0, fallingEval * reduction * bestMoveInstability)
                              * EvalLevel[el] * recapture;
 
             // Cap used time in case of a single legal move for a better viewer experience

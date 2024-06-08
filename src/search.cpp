@@ -1282,7 +1282,10 @@ moves_loop:  // When in check, search starts here
                 rm.score = -VALUE_INFINITE;
         }
 
-        int inc = (value == bestValue && (int(nodes) & 15) == 0 && ss->ply + 2 + ss->ply / 16 >= thisThread->rootDepth);
+        int inc = (   value == bestValue
+                   && (int(nodes) & 15) == 0
+                   && ss->ply + 2 + ss->ply / 32 >= thisThread->rootDepth
+                   && std::abs(value) < VALUE_TB_WIN_IN_MAX_PLY);
 
         if (value + inc > bestValue)
         {

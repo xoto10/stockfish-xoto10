@@ -1288,7 +1288,7 @@ moves_loop:  // When in check, search starts here
         // In case we have an alternative move close in eval to the current bestmove,
         // promote it to bestmove by pretending it just exceeds alpha (but not beta).
         int inc = std::clamp(4 * (ss->ply + 2 - thisThread->rootDepth), 0, 8)
-                  * (   (int(nodes) & 15) == 0
+                  * (   (int(nodes) & 31) == 0
                      && ss->ply + ss->ply / 32 >= thisThread->rootDepth - 3
                      && std::abs(value) < VALUE_TB_WIN_IN_MAX_PLY - 100);
 

@@ -241,6 +241,8 @@ void Search::Worker::iterative_deepening() {
     // (ss + 2) is needed for initialization of cutOffCnt.
     Stack  stack[MAX_PLY + 10] = {};
     Stack* ss                  = stack + 7;
+//dbg_clear_means();
+//dbg_clear_means(1);
 
     for (int i = 7; i > 0; --i)
     {
@@ -485,6 +487,7 @@ void Search::Worker::iterative_deepening() {
         mainThread->iterValue[iterIdx] = bestValue;
         iterIdx                        = (iterIdx + 1) & 3;
     }
+//dbg_print();
 
     if (!mainThread)
         return;
@@ -967,6 +970,9 @@ moves_loop:  // When in check, search starts here
 
         ss->moveCount = ++moveCount;
 
+        if (rootNode)
+            thisThread->rmBestMoveChanges = 0;
+
         if (rootNode && is_mainthread() && nodes > 10000000)
         {
             main_manager()->updates.onIter(
@@ -1266,6 +1272,14 @@ moves_loop:  // When in check, search starts here
 
             rm.effort += nodes - nodeCount;
 
+            // adjust value according to rmUncertainty
+            int moreChoices = (completedDepth > 10 && !is_decisive(value) && thisThread->rmBestMoveChanges > 0)
+                              && 10 * msb(thisThread->rmBestMoveChanges) / (completedDepth - 10) > 30;
+                                 // calculated uncertainty: 40-71 from bench, 19-75 from tests
+//dbg_mean_of(rmUncertainty);
+//dbg_mean_of(thisThread->rmBestMoveChanges,1);
+//dbg_mean_of(thisThread->rmUncertainty,1);
+
             rm.averageScore =
               rm.averageScore != -VALUE_INFINITE ? (value + rm.averageScore) / 2 : value;
 
@@ -1274,8 +1288,14 @@ moves_loop:  // When in check, search starts here
                                   : value * std::abs(value);
 
             // PV move or new best move?
-            if (moveCount == 1 || value > alpha)
+            if (moveCount == 1 || value + moreChoices > alpha)
             {
+                if (moveCount != 1 && value == alpha)
+                {
+                    (ss + 1)->pv    = pv;
+                    (ss + 1)->pv[0] = Move::none();
+                }
+
                 rm.score = rm.uciScore = value;
                 rm.selDepth            = thisThread->selDepth;
                 rm.scoreLowerbound = rm.scoreUpperbound = false;
@@ -1318,6 +1338,7 @@ moves_loop:  // When in check, search starts here
 
         if (value + inc > bestValue)
         {
+            thisThread->rmBestMoveChanges++;
             bestValue = value;
 
             if (value + inc > alpha)

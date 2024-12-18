@@ -318,6 +318,12 @@ void dbg_mean_of(int64_t value, int slot) {
     mean[slot][1] += value;
 }
 
+void dbg_clear_means(int slot) {
+
+    mean[slot][0] = 0;
+    mean[slot][1] = 0;
+}
+
 void dbg_stdev_of(int64_t value, int slot) {
 
     ++stdev[slot][0];

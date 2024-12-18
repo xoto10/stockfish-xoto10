@@ -327,6 +327,7 @@ class Worker {
     RootMoves rootMoves;
     Depth     rootDepth, completedDepth;
     Value     rootDelta;
+    int       rmBestMoveChanges;
 
     size_t                    threadIdx;
     NumaReplicatedAccessToken numaAccessToken;

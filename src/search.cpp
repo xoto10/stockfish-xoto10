@@ -241,8 +241,6 @@ void Search::Worker::iterative_deepening() {
     // (ss + 2) is needed for initialization of cutOffCnt.
     Stack  stack[MAX_PLY + 10] = {};
     Stack* ss                  = stack + 7;
-//dbg_clear_means();
-//dbg_clear_means(1);
 
     for (int i = 7; i > 0; --i)
     {
@@ -487,7 +485,6 @@ void Search::Worker::iterative_deepening() {
         mainThread->iterValue[iterIdx] = bestValue;
         iterIdx                        = (iterIdx + 1) & 3;
     }
-//dbg_print();
 
     if (!mainThread)
         return;
@@ -1276,9 +1273,6 @@ moves_loop:  // When in check, search starts here
             int moreChoices = (completedDepth > 10 && !is_decisive(value) && thisThread->rmBestMoveChanges > 0)
                               && 10 * msb(thisThread->rmBestMoveChanges) / (completedDepth - 10) > 30;
                                  // calculated uncertainty: 40-71 from bench, 19-75 from tests
-//dbg_mean_of(rmUncertainty);
-//dbg_mean_of(thisThread->rmBestMoveChanges,1);
-//dbg_mean_of(thisThread->rmUncertainty,1);
 
             rm.averageScore =
               rm.averageScore != -VALUE_INFINITE ? (value + rm.averageScore) / 2 : value;

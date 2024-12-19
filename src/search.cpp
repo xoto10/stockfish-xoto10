@@ -64,6 +64,9 @@ using Eval::evaluate;
 using namespace Search;
 
 namespace {
+int A=40;
+//auto f1 = [](int m){return m < 20 ? Range(m - 20, m + 20) : Range(m / 2, m * 3 / 2);};
+TUNE(A);
 
 // Futility margin
 Value futility_margin(Depth d, bool noTtCutNode, bool improving, bool oppWorsening) {
@@ -1271,7 +1274,7 @@ moves_loop:  // When in check, search starts here
 
             // adjust value according to rmUncertainty
             int moreChoices = (completedDepth > 10 && !is_decisive(value) && thisThread->rmBestMoveChanges > 0)
-                              && 10 * msb(thisThread->rmBestMoveChanges) / (completedDepth - 10) > 30;
+                              && 10 * msb(thisThread->rmBestMoveChanges) / (completedDepth - 10) > A;
                                  // calculated uncertainty: 40-71 from bench, 19-75 from tests
 
             rm.averageScore =

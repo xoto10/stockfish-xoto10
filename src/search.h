@@ -125,7 +125,7 @@ struct LimitsType {
     TimePoint                time[COLOR_NB], inc[COLOR_NB], npmsec, movetime, startTime;
     int                      movestogo, depth, mate, perft, infinite;
     uint64_t                 nodes;
-    bool                     ponderMode;
+    bool                     ponderMode, sideToMove;
     Square                   capSq;
 };
 

@@ -28,8 +28,8 @@
 
 namespace Stockfish {
 
-int A=700;
-TUNE(SetRange(350,850), A);
+//int A=500;
+//TUNE(A);
 
 TimePoint TimeManagement::optimum() const { return optimumTime; }
 TimePoint TimeManagement::maximum() const { return maximumTime; }
@@ -134,7 +134,7 @@ void TimeManagement::init(Search::LimitsType& limits,
     // Limit the maximum possible time for this move
     optimumTime = TimePoint(optScale * timeLeft);
     maximumTime =
-      TimePoint(std::min(A*0.001 * (limits.time[us] - limits.inc[us]) + limits.inc[us] - moveOverhead, maxScale * optimumTime)) - 10;
+      TimePoint(std::min(0.500 * (limits.time[us] - limits.inc[us]) + limits.inc[us] - moveOverhead, maxScale * optimumTime)) - 10;
 
     if (options["Ponder"])
         optimumTime += optimumTime / 4;

@@ -29,7 +29,7 @@
 namespace Stockfish {
 
 int A=700;
-TUNE(SetRange(350,1050), A);
+TUNE(SetRange(350,850), A);
 
 TimePoint TimeManagement::optimum() const { return optimumTime; }
 TimePoint TimeManagement::maximum() const { return maximumTime; }

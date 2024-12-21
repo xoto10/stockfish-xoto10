@@ -124,6 +124,9 @@ void update_all_stats(const Position&      pos,
 
 }  // namespace
 
+int A=70;
+TUNE(SetRange(50,90), A);
+
 Search::Worker::Worker(SharedState&                    sharedState,
                        std::unique_ptr<ISearchManager> sm,
                        size_t                          threadId,
@@ -459,7 +462,7 @@ void Search::Worker::iterative_deepening() {
                                 && rootMoves[0].pv[2] == rootMoves[1].pv[0]
                                 && (rootMoves[0].pv[1] == rootMoves[1].pv[1] || rootMoves[0].pv[1] == rootMoves[1].pv[3])
                                 && (rootMoves[0].pv[3] == rootMoves[1].pv[1] || rootMoves[0].pv[3] == rootMoves[1].pv[3]))
-                               ? 0.7 : 1.0;
+                               ? A*0.01 : 1.0;
             double bestMoveInstability = 1 + 1.88 * totBestMoveChanges / threads.size();
             double recapture           = limits.capSq == rootMoves[0].pv[0].to_sq() ? 0.955 : 1.005;
 

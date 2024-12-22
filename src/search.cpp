@@ -451,10 +451,17 @@ void Search::Worker::iterative_deepening() {
             // If the bestMove is stable over several iterations, reduce time accordingly
             timeReduction    = lastBestMoveDepth + 8 < completedDepth ? 1.495 : 0.687;
             double reduction = (1.48 + mainThread->previousTimeReduction) / (2.17 * timeReduction);
+            double transpose = (   rootMoves.size() > 1
+                                && rootMoves[0].pv.size() > 3
+                                && rootMoves[1].pv.size() > 3
+                                && rootMoves[0].pv[0] == rootMoves[1].pv[2]
+                                && rootMoves[0].pv[2] == rootMoves[1].pv[0]
+                                && (rootMoves[0].pv[1] == rootMoves[1].pv[1] || rootMoves[0].pv[1] == rootMoves[1].pv[3])
+                                && (rootMoves[0].pv[3] == rootMoves[1].pv[1] || rootMoves[0].pv[3] == rootMoves[1].pv[3]))
+                               ? 0.90 : 1.0;
             double bestMoveInstability = 1 + 1.88 * totBestMoveChanges / threads.size();
 
-            double totalTime =
-              mainThread->tm.optimum() * fallingEval * reduction * bestMoveInstability;
+            double totalTime = mainThread->tm.optimum() * fallingEval * reduction * transpose * bestMoveInstability;
 
             // Cap used time in case of a single legal move for a better viewer experience
             if (rootMoves.size() == 1)

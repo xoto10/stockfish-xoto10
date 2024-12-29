@@ -462,7 +462,7 @@ void Search::Worker::iterative_deepening() {
                                 && (   rootMoves[0].pv[1] == rootMoves[1].pv[1]
                                     || (   rootMoves[0].pv[1] == rootMoves[1].pv[3]
                                         && rootMoves[0].pv[3] == rootMoves[1].pv[1])))
-                               ? A*0.01 : 1.0;
+                               ? A*0.001 : 1.0;
             double bestMoveInstability = 1 + 1.88 * totBestMoveChanges / threads.size();
 
             double totalTime = mainThread->tm.optimum() * fallingEval * reduction * transpose * bestMoveInstability;

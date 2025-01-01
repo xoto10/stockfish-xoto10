@@ -64,9 +64,6 @@ using namespace Search;
 
 namespace {
 
-int A=880;
-TUNE(SetRange(500,999), A);
-
 // Futility margin
 Value futility_margin(Depth d, bool noTtCutNode, bool improving, bool oppWorsening) {
     Value futilityMult       = 109 - 27 * noTtCutNode;
@@ -462,7 +459,7 @@ void Search::Worker::iterative_deepening() {
                                 && (   rootMoves[0].pv[1] == rootMoves[1].pv[1]
                                     || (   rootMoves[0].pv[1] == rootMoves[1].pv[3]
                                         && rootMoves[0].pv[3] == rootMoves[1].pv[1])))
-                               ? A*0.001 : 1.0;
+                               ? 0.875 : 1.0;
             double bestMoveInstability = 1 + 1.88 * totBestMoveChanges / threads.size();
 
             double totalTime = mainThread->tm.optimum() * fallingEval * reduction * transpose * bestMoveInstability;

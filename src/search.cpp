@@ -1272,8 +1272,8 @@ moves_loop:  // When in check, search starts here
             rm.effort += nodes - nodeCount;
 
             // adjust value according to rmUncertainty
-            int moreChoices = (completedDepth > 10 && !is_decisive(value) && thisThread->rmBestMoveChanges > 0)
-                              && 10 * msb(thisThread->rmBestMoveChanges) / (completedDepth - 10) > 25;
+            int fewChoices = (completedDepth > 10 && !is_decisive(value) && thisThread->rmBestMoveChanges > 0)
+                              && 10 * msb(thisThread->rmBestMoveChanges) / (completedDepth - 10) < 25;
                                  // calculated uncertainty: 40-71 from bench, 19-75 from tests
 
             rm.averageScore =
@@ -1284,7 +1284,7 @@ moves_loop:  // When in check, search starts here
                                   : value * std::abs(value);
 
             // PV move or new best move?
-            if (moveCount == 1 || value + moreChoices > alpha)
+            if (moveCount == 1 || value - fewChoices > alpha)
             {
                 if (moveCount != 1 && value == alpha)
                 {

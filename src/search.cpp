@@ -1334,7 +1334,7 @@ moves_loop:  // When in check, search starts here
 
         if (value + inc > bestValue)
         {
-            if (us != limits.sideToMove)
+            if (us == limits.sideToMove)
                 thisThread->rmBestMoveChanges++;
             bestValue = value;
 

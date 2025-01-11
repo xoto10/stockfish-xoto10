@@ -56,6 +56,8 @@ void TimeManagement::init(Search::LimitsType& limits,
     startTime    = limits.startTime;
     useNodesTime = npmsec != 0;
 
+    limits.sideToMove   = us;
+
     if (limits.time[us] == 0)
         return;
 

@@ -1319,7 +1319,9 @@ moves_loop:  // When in check, search starts here
                    && (int(nodes) & 15) == 0 && !is_win(std::abs(value) + 1));
 
         // Deter moving pawns if we're losing and draw counter is fairly high
-        value -= (type_of(movedPiece) == PAWN && st.rule50 > 20 && bestValue < -150 && rootSideToMove == us);
+        if (   (int(nodes) & 15) == 0 && type_of(movedPiece) == PAWN
+            && st.rule50 > 20 && bestValue < -150 && rootSideToMove == us)
+            value--;
 
         if (value + inc > bestValue)
         {

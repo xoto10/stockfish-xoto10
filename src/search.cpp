@@ -1308,7 +1308,7 @@ moves_loop:  // When in check, search starts here
 
         // In case we have an alternative move close in eval to the current bestmove,
         // promote it to bestmove by pretending it just exceeds alpha (but not beta).
-        int m = msb((((long long)nodes) & 112) / 16); // 50% 3, 25% 2, 12% 1, 12% 0
+        int m = msb((((long long)nodes) & 112LL) >> 4); // 50% 3, 25% 2, 12% 1, 12% 0
         int err = (m + 1) * (   (int(nodes) & 15) == 0
                              && ss->ply + (3 - m) >= thisThread->rootDepth
                              && !is_win(std::abs(value) + 1));

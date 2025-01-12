@@ -1272,8 +1272,8 @@ moves_loop:  // When in check, search starts here
             rm.effort += nodes - nodeCount;
 
             // adjust value according to rmUncertainty
-            int fewChoices = (completedDepth > 10 && !is_decisive(value) && thisThread->rmBestMoveChanges > 0)
-                              && 10 * msb(thisThread->rmBestMoveChanges) / (completedDepth - 10) < 20;
+            int fewChoices = (completedDepth > 8  && !is_decisive(value) && thisThread->rmBestMoveChanges > 0)
+                              && 10 * msb(thisThread->rmBestMoveChanges) / (completedDepth - 7) < 21;
                                  // calculated uncertainty: 40-71 from bench, 19-75 from tests
 
             rm.averageScore =

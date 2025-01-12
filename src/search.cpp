@@ -1308,7 +1308,7 @@ moves_loop:  // When in check, search starts here
 
         // In case we have an alternative move close in eval to the current bestmove,
         // promote it to bestmove by pretending it just exceeds alpha (but not beta).
-        const int M[8] = {0, 1, 2, 2, 3, 3, 3, 3};
+        const int M[8] = {0, 0, 1, 1, 2, 2, 2, 2};
         int m = M[nodes & 3]; // msb((((long long)nodes) & 112LL) >> 4); // 50% 3, 25% 2, 12% 1, 12% 0
         int err = (m + 1) * (   (int(nodes) & 15) == 0
                              && ss->ply + (3 - m) >= thisThread->rootDepth

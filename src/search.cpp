@@ -123,10 +123,6 @@ void update_all_stats(const Position&      pos,
 
 }  // namespace
 
-int A=10, B=2, C=200;
-TUNE(A, C);
-TUNE(SetRange(0,5), B);
-
 Search::Worker::Worker(SharedState&                    sharedState,
                        std::unique_ptr<ISearchManager> sm,
                        size_t                          threadId,
@@ -1276,8 +1272,8 @@ moves_loop:  // When in check, search starts here
             rm.effort += nodes - nodeCount;
 
             // adjust value according to rmUncertainty
-            int fewChoices = (completedDepth > A  && !is_decisive(value) && thisThread->rmBestMoveChanges > 0)
-                              && 100 * msb(thisThread->rmBestMoveChanges) / (completedDepth - A+B) < C;
+            int fewChoices = (completedDepth > 10 && !is_decisive(value) && thisThread->rmBestMoveChanges > 0)
+                              && 10 * msb(thisThread->rmBestMoveChanges) / (completedDepth - 10) < 20;
                                  // calculated uncertainty: 40-71 from bench, 19-75 from tests
 
             rm.averageScore =

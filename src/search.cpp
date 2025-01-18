@@ -785,7 +785,7 @@ Value Search::Worker::search(
         && eval - futility_margin(depth, cutNode && !ss->ttHit, improving, opponentWorsening)
                - (ss - 1)->statScore / 310
                + (ss->staticEval == eval) * (40 - std::abs(correctionValue) / 131072)
-               + (depth < 2) * ((thisThread->nodes & 7) - 4)
+               + (depth < 2) * (((int)thisThread->nodes & 7) - 4)
              >= beta
         && eval >= beta && (!ttData.move || ttCapture) && !is_loss(beta) && !is_win(eval))
         return beta + (eval - beta) / 3;

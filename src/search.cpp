@@ -793,7 +793,7 @@ Value Search::Worker::search(
 
     // Step 8. Futility pruning: child node (~40 Elo)
     // The depth condition is important for mate finding.
-    inc = (depth < 2) * (((int)thisThread->nodes & 15) - 8);
+    inc = (depth < 2) * (((int)thisThread->nodes & 7) - 4);
     if (!ss->ttPv && depth < 14
         && eval - futility_margin(depth, cutNode && !ss->ttHit, improving, opponentWorsening)
                - (ss - 1)->statScore / 310 + 40 - std::abs(correctionValue) / 131072 + inc

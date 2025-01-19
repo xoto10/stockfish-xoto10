@@ -794,7 +794,7 @@ Value Search::Worker::search(
     // The depth condition is important for mate finding.
     if (!ss->ttPv && depth < 14)
     {
-        int inc = (depth < 3 && bestValue < 0) * ((int)thisThread->nodes & 7);
+        int inc = (depth < 3 && bestValue < 0) * ((int)thisThread->nodes & 31);
         if (eval - futility_margin(depth, cutNode && !ss->ttHit, improving, opponentWorsening)
                 - (ss - 1)->statScore / 310 + 40 - std::abs(correctionValue) / 131072 - inc
               >= beta

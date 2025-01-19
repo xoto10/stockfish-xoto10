@@ -723,7 +723,6 @@ Value Search::Worker::search(
     // Step 6. Static evaluation of the position
     Value      unadjustedStaticEval = VALUE_NONE;
     const auto correctionValue      = correction_value(*thisThread, pos, ss);
-    int        inc;
     if (ss->inCheck)
     {
         // Skip early pruning when in check
@@ -793,13 +792,15 @@ Value Search::Worker::search(
 
     // Step 8. Futility pruning: child node (~40 Elo)
     // The depth condition is important for mate finding.
-    inc = (depth < 3) * (((int)thisThread->nodes & 7) - 4);
-    if (!ss->ttPv && depth < 14
-        && eval - futility_margin(depth, cutNode && !ss->ttHit, improving, opponentWorsening)
-               - (ss - 1)->statScore / 310 + 40 - std::abs(correctionValue) / 131072 + inc
-             >= beta
-        && eval + inc >= beta && (!ttData.move || ttCapture) && !is_loss(beta) && !is_win(eval))
-        return beta + (eval + inc - beta) / 3;
+    if (!ss->ttPv && depth < 14)
+    {
+        int inc = (depth < 3 && bestValue < 0) * ((int)thisThread->nodes & 7);
+        if (eval - futility_margin(depth, cutNode && !ss->ttHit, improving, opponentWorsening)
+                - (ss - 1)->statScore / 310 + 40 - std::abs(correctionValue) / 131072 - inc
+              >= beta
+        && eval - inc >= beta && (!ttData.move || ttCapture) && !is_loss(beta) && !is_win(eval))
+        return beta + (eval - inc - beta) / 3;
+    }
 
     improving |= ss->staticEval >= beta + 97;
 
@@ -1320,8 +1321,8 @@ moves_loop:  // When in check, search starts here
 
         // In case we have an alternative move equal in eval to the current bestmove,
         // promote it to bestmove by pretending it just exceeds alpha (but not beta).
-        inc = (value == bestValue && ss->ply + 2 >= thisThread->rootDepth
-               && (int(nodes) & 15) == 0 && !is_win(std::abs(value) + 1));
+        int inc = (value == bestValue && ss->ply + 2 >= thisThread->rootDepth
+                   && (int(nodes) & 15) == 0 && !is_win(std::abs(value) + 1));
 
         if (value + inc > bestValue)
         {

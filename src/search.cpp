@@ -1319,7 +1319,7 @@ moves_loop:  // When in check, search starts here
         {
             bestValue = value;
 
-            if (value > alpha)
+            if (value + inc > alpha)
             {
                 bestMove = move;
 

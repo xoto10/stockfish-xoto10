@@ -1319,14 +1319,14 @@ moves_loop:  // When in check, search starts here
         {
             bestValue = value;
 
-            if (value + inc > alpha)
+            if (value > alpha)
             {
                 bestMove = move;
 
                 if (PvNode && !rootNode)  // Update pv even in fail-high case
                     update_pv(ss->pv, move, (ss + 1)->pv);
 
-                if (value >= beta)
+                if (value + inc >= beta)
                 {
                     ss->cutoffCnt += !ttData.move + (extension < 2);
                     assert(value >= beta);  // Fail high

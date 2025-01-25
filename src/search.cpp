@@ -1661,11 +1661,16 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
         assert(value > -VALUE_INFINITE && value < VALUE_INFINITE);
 
         // Step 8. Check for a new best move
+
+        // In case we have an alternative move equal in eval to the current bestmove,
+        // promote it to bestmove by pretending it just exceeds alpha (but not beta).
+        int inc2 = (ss->ply + 2 >= thisThread->rootDepth && (int(nodes) & 127) == 0 && !is_win(std::abs(value) + 1));
+
         if (value > bestValue)
         {
             bestValue = value;
 
-            if (value > alpha)
+            if (value + inc2 > alpha)
             {
                 bestMove = move;
 

@@ -496,10 +496,10 @@ void Search::Worker::iterative_deepening() {
             // Stop the search if we have exceeded the totalTime or maximum
             if (elapsedTime > std::min(totalTime, double(mainThread->tm.maximum())))
             {
-                sync_cout
-                  << "info string Stopping after " << elapsedTime << " totalT " << totalTime << " fallEv " << fallingEval
-                  << " red " << reduction << " bmi " << bestMoveInstability << " prevAvg " << mainThread->bestPreviousAverageScore
-                  << sync_endl;
+//              sync_cout
+//                << "info string Stopping after " << elapsedTime << " totalT " << totalTime << " fallEv " << fallingEval
+//                << " red " << reduction << " bmi " << bestMoveInstability << " prevAvg " << mainThread->bestPreviousAverageScore
+//                << sync_endl;
                 // If we are allowed to ponder do not stop the search now but
                 // keep pondering until the GUI sends "ponderhit" or "stop".
                 if (mainThread->ponder)

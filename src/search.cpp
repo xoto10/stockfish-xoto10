@@ -456,22 +456,25 @@ void Search::Worker::iterative_deepening() {
             uint64_t nodesEffort =
               rootMoves[0].effort * 100000 / std::max(size_t(1), size_t(nodes));
 
-            double fallingEval =
-              (11.396 + 2.035 * (mainThread->bestPreviousAverageScore - bestValue)
-               + 0.968 * (mainThread->iterValue[iterIdx] - bestValue))
-              / 100.0;
-            fallingEval = std::clamp(fallingEval, 0.5786, 1.6752);
+            double fallingEval;
+            if (mainThread->bestPreviousAverageScore == VALUE_INFINITE)
+                fallingEval = 1.6789;
+            else
+            {
+                fallingEval = (11.396 + 2.035 * (mainThread->bestPreviousAverageScore - bestValue)
+                               + 0.968 * (mainThread->iterValue[iterIdx] - bestValue))
+                              / 100.0;
+                fallingEval = std::clamp(fallingEval, 0.5786, 1.6752);
+            }
 
             // If the bestMove is stable over several iterations, reduce time accordingly
             double k      = 0.527;
             double center = lastBestMoveDepth + 11;
             timeReduction = 0.8 + 0.84 / (1.077 + std::exp(-k * (completedDepth - center)));
-            double reduction =
-              (1.4540 + mainThread->previousTimeReduction) / (2.1593 * timeReduction);
+            double reduction = (1.4540 + mainThread->previousTimeReduction) / (2.1593 * timeReduction);
             double bestMoveInstability = 0.9929 + 1.8519 * totBestMoveChanges / threads.size();
 
-            double totalTime =
-              mainThread->tm.optimum() * fallingEval * reduction * bestMoveInstability;
+            double totalTime = mainThread->tm.optimum() * fallingEval * reduction * bestMoveInstability;
 
             // Cap used time in case of a single legal move for a better viewer experience
             if (rootMoves.size() == 1)
@@ -486,6 +489,10 @@ void Search::Worker::iterative_deepening() {
             // Stop the search if we have exceeded the totalTime or maximum
             if (elapsedTime > std::min(totalTime, double(mainThread->tm.maximum())))
             {
+                sync_cout
+                  << "info string Stopping after " << elapsedTime << " totalT " << totalTime << " fallEv " << fallingEval
+                  << " red " << reduction << " bmi " << bestMoveInstability << " prevAvg " << mainThread->bestPreviousAverageScore
+                  << sync_endl;
                 // If we are allowed to ponder do not stop the search now but
                 // keep pondering until the GUI sends "ponderhit" or "stop".
                 if (mainThread->ponder)

@@ -133,6 +133,11 @@ void update_all_stats(const Position& pos,
 
 }  // namespace
 
+auto f1 = [](int m){return Range(m / 2, m * 3 / 2);};
+int A=1703, B=28167, C=1781, D=956, E=566, F=1641;
+TUNE(B);
+TUNE(SetRange(f1), A, C, D, E, F);
+
 Search::Worker::Worker(SharedState&                    sharedState,
                        std::unique_ptr<ISearchManager> sm,
                        size_t                          threadId,
@@ -458,13 +463,13 @@ void Search::Worker::iterative_deepening() {
 
             double fallingEval;
             if (mainThread->bestPreviousAverageScore == VALUE_INFINITE)
-                fallingEval = 1.703;
+                fallingEval = A/1000.0;
             else
             {
-                fallingEval = (28.167 + 1.781 * (mainThread->bestPreviousAverageScore - bestValue)
-                               + 0.956 * (mainThread->iterValue[iterIdx] - bestValue))
+                fallingEval = (B/1000.0 + C/1000.0 * (mainThread->bestPreviousAverageScore - bestValue)
+                               + D/1000.0 * (mainThread->iterValue[iterIdx] - bestValue))
                               / 100.0;
-                fallingEval = std::clamp(fallingEval, 0.566, 1.641);
+                fallingEval = std::clamp(fallingEval, E/1000.0, F/1000.0);
             }
 
             // If the bestMove is stable over several iterations, reduce time accordingly

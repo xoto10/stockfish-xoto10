@@ -133,10 +133,8 @@ void update_all_stats(const Position& pos,
 
 }  // namespace
 
-auto f1 = [](int m){return Range(m / 2, m * 3 / 2);};
-int A=1703, B=28167, C=1781, D=956, E=566, F=1641;
-TUNE(B);
-TUNE(SetRange(f1), A, C, D, E, F);
+int A=1729, B=55000, C=1500, D=949, E=579, F=1664;
+TUNE(A, B, C, D, E, F);
 
 Search::Worker::Worker(SharedState&                    sharedState,
                        std::unique_ptr<ISearchManager> sm,

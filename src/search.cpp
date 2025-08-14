@@ -133,7 +133,7 @@ void update_all_stats(const Position& pos,
 
 }  // namespace
 
-int A=1729, B=55000, C=1500, D=949, E=579, F=1664;
+int A=1570, B=49934, C=1422, D=957, E=522, F=1826;
 TUNE(A, B, C, D, E, F);
 
 Search::Worker::Worker(SharedState&                    sharedState,

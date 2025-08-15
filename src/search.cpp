@@ -133,6 +133,10 @@ void update_all_stats(const Position& pos,
 
 }  // namespace
 
+auto f1 = [](int m){return m < 20 ? Range(m - 20, m + 20) : Range(m / 2, m * 3 / 2);};
+int A=104, B=93;
+TUNE(SetRange(f1), A, B);
+
 Search::Worker::Worker(SharedState&                    sharedState,
                        std::unique_ptr<ISearchManager> sm,
                        size_t                          threadId,
@@ -328,7 +332,7 @@ void Search::Worker::iterative_deepening() {
             beta      = std::min(avg + delta, VALUE_INFINITE);
 
             // Adjust optimism based on root move's averageScore
-            optimism[us]  = 104 * avg / (std::abs(avg) + 93);
+            optimism[us]  = A   * avg / (std::abs(avg) + B );
             optimism[~us] = -optimism[us];
 
             // Start with a small aspiration window and, in the case of a fail

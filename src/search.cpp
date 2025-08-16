@@ -458,13 +458,13 @@ void Search::Worker::iterative_deepening() {
 
             double fallingEval;
             if (mainThread->bestPreviousAverageScore == VALUE_INFINITE)
-                fallingEval = 1.635;
+                fallingEval = 1.480;
             else
             {
-                fallingEval = (47.088 + 1.386 * (mainThread->bestPreviousAverageScore - bestValue)
-                               + 0.966 * (mainThread->iterValue[iterIdx] - bestValue))
+                fallingEval = (48.721 + 1.440 * (mainThread->bestPreviousAverageScore - bestValue)
+                               + 0.886 * (mainThread->iterValue[iterIdx] - bestValue))
                               / 100.0;
-                fallingEval = std::clamp(fallingEval, 0.522, 1.872);
+                fallingEval = std::clamp(fallingEval, 0.532, 1.773);
             }
 
             // If the bestMove is stable over several iterations, reduce time accordingly
@@ -491,10 +491,6 @@ void Search::Worker::iterative_deepening() {
             // Stop the search if we have exceeded the totalTime or maximum
             if (elapsedTime > std::min(totalTime, double(mainThread->tm.maximum())))
             {
-//              sync_cout
-//                << "info string Stopping after " << elapsedTime << " totalT " << totalTime << " fallEv " << fallingEval
-//                << " red " << reduction << " bmi " << bestMoveInstability << " prevAvg " << mainThread->bestPreviousAverageScore
-//                << sync_endl;
                 // If we are allowed to ponder do not stop the search now but
                 // keep pondering until the GUI sends "ponderhit" or "stop".
                 if (mainThread->ponder)

@@ -458,7 +458,12 @@ void Search::Worker::iterative_deepening() {
 
             double fallingEval;
             if (mainThread->bestPreviousAverageScore == VALUE_INFINITE)
-                fallingEval = 1.585;
+            {
+                if (main_manager()->originalTimeAdjust > 0)
+                    fallingEval = std::clamp(1.16282 + 0.2807 * main_manager()->originalTimeAdjust, 1.4, 1.794);
+                else
+                    fallingEval = 1.500;
+            }
             else
             {
                 fallingEval = (42.453 + 1.348 * (mainThread->bestPreviousAverageScore - bestValue)

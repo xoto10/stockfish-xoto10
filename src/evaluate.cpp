@@ -37,10 +37,6 @@
 
 namespace Stockfish {
 
-auto f1 = [](int m){return Range(1, m * 2);};
-int A=422, B=16200, C=7777;
-TUNE(SetRange(f1), A, B, C);
-
 // Returns a static, purely materialistic evaluation of the position from
 // the point of view of the side to move. It can be divided by PawnValue to get
 // an approximation of the material advantage on the board in terms of pawns.

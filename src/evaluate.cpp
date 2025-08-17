@@ -37,6 +37,10 @@
 
 namespace Stockfish {
 
+auto f1 = [](int m){return Range(m / 2, m * 3 / 2);};
+int A=400, B=16289, C=7780;
+TUNE(SetRange(f1), A, B, C);
+
 // Returns a static, purely materialistic evaluation of the position from
 // the point of view of the side to move. It can be divided by PawnValue to get
 // an approximation of the material advantage on the board in terms of pawns.
@@ -74,11 +78,11 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
 
     // Blend optimism and eval with nnue complexity
     int nnueComplexity = std::abs(psqt - positional);
-    optimism += optimism * nnueComplexity / 400;
-    nnue -= nnue * nnueComplexity / 16321;
+    optimism += optimism * nnueComplexity / A;
+    nnue -= nnue * nnueComplexity / B;
 
     int material = 535 * pos.count<PAWN>() + pos.non_pawn_material();
-    int v        = (nnue * (77777 + material) + optimism * (7764 + material)) / 77777;
+    int v        = (nnue * (77777 + material) + optimism * (C + material)) / 77777;
 
     // Damp down the evaluation linearly when shuffling
     v -= v * pos.rule50_count() / 212;

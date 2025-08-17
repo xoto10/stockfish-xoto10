@@ -133,9 +133,6 @@ void update_all_stats(const Position& pos,
 
 }  // namespace
 
-int A=1480;
-TUNE(A);
-
 Search::Worker::Worker(SharedState&                    sharedState,
                        std::unique_ptr<ISearchManager> sm,
                        size_t                          threadId,
@@ -461,7 +458,14 @@ void Search::Worker::iterative_deepening() {
 
             double fallingEval;
             if (mainThread->bestPreviousAverageScore == VALUE_INFINITE)
-                fallingEval = A/1000.0;
+            {
+                // stc:1.405 ltc:1.475
+                if (main_manager()->originalTimeAdjust > 0)
+                    fallingEval = std::clamp(1.16282 + 0.2807 * main_manager()->originalTimeAdjust, 1.4, 1.6);
+                else
+                    fallingEval = 1.500;
+//sync_cout << "info string fallEv " << fallingEval << sync_endl;
+            }
             else
             {
                 fallingEval = (11.396 + 2.035 * (mainThread->bestPreviousAverageScore - bestValue)

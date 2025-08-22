@@ -39,7 +39,7 @@ namespace Stockfish {
 
 auto f2 = [](int m){return Range(1, m * 2);};
 int A=125, B=131, C=236, D=535, E=77777, F=7777, G=77777, H=18000, I=468, J=212;
-TUNE(SetRange(f2), A, B, C, D, E, F, G, H, I, J);
+TUNE(SetRange(f2), A, B, C, D, E, F, H, I, J);
 
 // Returns a static, purely materialistic evaluation of the position from
 // the point of view of the side to move. It can be divided by PawnValue to get

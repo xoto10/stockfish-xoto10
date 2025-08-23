@@ -37,10 +37,6 @@
 
 namespace Stockfish {
 
-auto f2 = [](int m){return Range(1, m * 2);};
-int A=1000, C=236, D=535, E=77777, F=7777, G=77777, H=18000, I=468, J=212, K=77777, L=7777;
-TUNE(SetRange(f2), A, C, D, E, F, H, I, J, K, L);
-
 // Returns a static, purely materialistic evaluation of the position from
 // the point of view of the side to move. It can be divided by PawnValue to get
 // an approximation of the material advantage on the board in terms of pawns.
@@ -66,26 +62,26 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
     auto [psqt, positional] = smallNet ? networks.small.evaluate(pos, accumulators, &caches.small)
                                        : networks.big.evaluate(pos, accumulators, &caches.big);
 
-    Value nnue = (A   * psqt + (2048-A) * positional) / 1024;
+    Value nnue = (125 * psqt + 131 * positional) / 128;
 
     // Re-evaluate the position when higher eval accuracy is worth the time spent
-    if (smallNet && (std::abs(nnue) < C  ))
+    if (smallNet && (std::abs(nnue) < 239))
     {
         std::tie(psqt, positional) = networks.big.evaluate(pos, accumulators, &caches.big);
-        nnue                       = (A   * psqt + (2048-A) * positional) / 1024;
+        nnue                       = (125 * psqt + 131 * positional) / 128;
         smallNet                   = false;
     }
 
     // Blend optimism and eval with nnue complexity
     int nnueComplexity = std::abs(psqt - positional);
 
-    int material = D   * pos.count<PAWN>() + pos.non_pawn_material();
-    int v        = (  nnue     * (E     + material - (K     + material) * nnueComplexity / H    )
-                    + optimism * (F     + material + (L     + material) * nnueComplexity / I  ))
-                   / G    ;
+    int material = 731 * pos.count<PAWN>() + pos.non_pawn_material();
+    int v        = (  nnue     * (69471 + material - (59821 + material) * nnueComplexity / 13205)
+                    + optimism * (6394  + material + (9025  + material) * nnueComplexity / 429))
+                   / 77777;
 
     // Damp down the evaluation linearly when shuffling
-    v -= v * pos.rule50_count() / J  ;
+    v -= v * pos.rule50_count() / 83;
 
     // Guarantee evaluation does not hit the tablebase range
     v = std::clamp(v, VALUE_TB_LOSS_IN_MAX_PLY + 1, VALUE_TB_WIN_IN_MAX_PLY - 1);

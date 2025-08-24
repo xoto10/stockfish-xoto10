@@ -846,9 +846,11 @@ Value Search::Worker::search(
                  - 1324 * opponentWorsening * futilityMult / 4096  //
                  + (ss - 1)->statScore / 331                       //
                  + std::abs(correctionValue) / 158105              //
-                 + 2 * ((threadIdx & 3) == 3);
+                 + Value(threadIdx & 3);
         };
-
+if (depth == 1){
+  sync_cout << "info string thIdx " << threadIdx << sync_endl;
+}
         if (!ss->ttPv && depth < 14 && eval - futility_margin(depth) >= beta && eval >= beta
             && (!ttData.move || ttCapture) && !is_loss(beta) && !is_win(eval))
             return beta + (eval - beta) / 3;

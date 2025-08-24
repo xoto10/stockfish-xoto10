@@ -832,7 +832,7 @@ Value Search::Worker::search(
     // Step 7. Razoring
     // If eval is really low, skip search entirely and return the qsearch value.
     // For PvNodes, we must have a guard against mates being returned.
-    if (!PvNode && eval < alpha - 514 - 294 * depth * depth - ((threadIdx & 3) == 3))
+    if (!PvNode && eval < alpha - 514 - 294 * depth * depth)
         return qsearch<NonPV>(pos, ss, alpha, beta);
 
     // Step 8. Futility pruning: child node
@@ -845,7 +845,8 @@ Value Search::Worker::search(
                  - 2094 * improving * futilityMult / 1024          //
                  - 1324 * opponentWorsening * futilityMult / 4096  //
                  + (ss - 1)->statScore / 331                       //
-                 + std::abs(correctionValue) / 158105;
+                 + std::abs(correctionValue) / 158105              //
+                 + 4 * ((threadIdx & 3) == 3);
         };
 
         if (!ss->ttPv && depth < 14 && eval - futility_margin(depth) >= beta && eval >= beta

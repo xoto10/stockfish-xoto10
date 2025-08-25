@@ -37,9 +37,9 @@
 
 namespace Stockfish {
 
-auto f1 = [](int m){return m < 20 ? Range(m - 20, m + 20) : Range(m / 2, m * 3 / 2);};
-int A=532, B=81791, C=16807, D=7955, E=7760, F=508;
-TUNE(SetRange(f1), A, B, C, D, E, F);
+auto f1 = [](int m){return Range(m / 2, m * 3 / 2);};
+int A=532, B=1246, C=16807, D=7955, E=244, F=508, G=256;
+TUNE(SetRange(f1), A, B, C, D, E, F, G);
 
 // Returns a static, purely materialistic evaluation of the position from
 // the point of view of the side to move. It can be divided by PawnValue to get
@@ -80,8 +80,8 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
     int nnueComplexity = std::abs(psqt - positional);
 
     int material = A   * pos.count<PAWN>() + pos.non_pawn_material();
-    int v        = (  nnue     * (74842 + material - (B               ) * nnueComplexity / C    )
-                    + optimism * (D     + material + (E     + material) * nnueComplexity / F  ))
+    int v        = (  nnue     * (74842 + material       - (B * nnueComplexity / 256 + material * nnueComplexity / C))
+                    + optimism * (D     + G*material/256 + (E * nnueComplexity / 16  + material * nnueComplexity / F)))
                    / 77777;
 
     // Damp down the evaluation linearly when shuffling

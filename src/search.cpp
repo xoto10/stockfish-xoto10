@@ -212,8 +212,11 @@ void Search::Worker::start_searching() {
               + Value(std::min(th->worker->rootMoves[i].opponentBestMoveChanges, 10ul));
         };
 
-        if (th->worker->rootMoves.size() > 1 && changesScore(th.get(), 1) > changesScore(th.get(), 0))
+        if (   th->worker->rootMoves.size() > 1
+            && changesScore(th.get(), 1) - 1 > changesScore(th.get(), 0))
+        {
             std::swap(th->worker->rootMoves[0], th->worker->rootMoves[1]);
+        }
     }
 
     Worker* bestThread = this;

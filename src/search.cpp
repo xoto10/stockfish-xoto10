@@ -212,21 +212,8 @@ void Search::Worker::start_searching() {
               + Value(std::min(th->worker->rootMoves[i].opponentBestMoveChanges, 10ul));
         };
 
-sync_cout << "info string rm0.oldScore     " << th->worker->rootMoves[0].oldScore << "," << th->worker->rootMoves[0].opponentBestMoveChanges
-          << " rm1old " << th->worker->rootMoves[1].oldScore << "," << th->worker->rootMoves[1].opponentBestMoveChanges << sync_endl;
-sync_cout << "info string changeScore(0): " << changesScore(th.get(), 0)
-          << " sc(1)  " << changesScore(th.get(), 1)
-          << ((th->worker->rootMoves.size() > 1 && changesScore(th.get(), 1) > changesScore(th.get(), 0)) ? "  ch" : "")  << sync_endl;
-if (th->worker->rootMoves.size() > 1 && changesScore(th.get(), 1) > changesScore(th.get(), 0)) {
-  std::stringstream ss;
-  ss << rootPos;
-  sync_cout << "info string was " << UCIEngine::move(rootMoves[0].pv[0], false) << " now " << UCIEngine::move(rootMoves[1].pv[0], false) 
-            << " : " << ss.str() << sync_endl;
-}
         if (th->worker->rootMoves.size() > 1 && changesScore(th.get(), 1) > changesScore(th.get(), 0))
-        {
             std::swap(th->worker->rootMoves[0], th->worker->rootMoves[1]);
-        }
     }
 
     Worker* bestThread = this;

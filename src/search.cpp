@@ -203,6 +203,32 @@ void Search::Worker::start_searching() {
         main_manager()->tm.advance_nodes_time(threads.nodes_searched()
                                               - limits.inc[rootPos.side_to_move()]);
 
+    // Consider swap of rootmoves 0 and 1 in each thread
+    for (auto&& th : threads)
+    {
+        auto changesScore = [](Thread* th, int i)
+        {
+            return th->worker->rootMoves[i].oldScore
+              + Value(std::min(th->worker->rootMoves[i].opponentBestMoveChanges, 10ul));
+        };
+
+sync_cout << "info string rm0.oldScore     " << th->worker->rootMoves[0].oldScore << "," << th->worker->rootMoves[0].opponentBestMoveChanges
+          << " rm1old " << th->worker->rootMoves[1].oldScore << "," << th->worker->rootMoves[1].opponentBestMoveChanges << sync_endl;
+sync_cout << "info string changeScore(0): " << changesScore(th.get(), 0)
+          << " sc(1)  " << changesScore(th.get(), 1)
+          << ((th->worker->rootMoves.size() > 1 && changesScore(th.get(), 1) > changesScore(th.get(), 0)) ? "  ch" : "")  << sync_endl;
+if (th->worker->rootMoves.size() > 1 && changesScore(th.get(), 1) > changesScore(th.get(), 0)) {
+  std::stringstream ss;
+  ss << rootPos;
+  sync_cout << "info string was " << UCIEngine::move(rootMoves[0].pv[0], false) << " now " << UCIEngine::move(rootMoves[1].pv[0], false) 
+            << " : " << ss.str() << sync_endl;
+}
+        if (th->worker->rootMoves.size() > 1 && changesScore(th.get(), 1) > changesScore(th.get(), 0))
+        {
+            std::swap(th->worker->rootMoves[0], th->worker->rootMoves[1]);
+        }
+    }
+
     Worker* bestThread = this;
     Skill   skill =
       Skill(options["Skill Level"], options["UCI_LimitStrength"] ? int(options["UCI_Elo"]) : 0);
@@ -295,6 +321,7 @@ void Search::Worker::iterative_deepening() {
         // Age out PV variability metric
         if (mainThread)
             totBestMoveChanges /= 2;
+        rootMoves[0].opponentBestMoveChanges /= 2;
 
         // Save the last iteration's scores before the first PV line is searched and
         // all the move scores except the (new) PV are set to -VALUE_INFINITE.
@@ -1290,6 +1317,7 @@ moves_loop:  // When in check, search starts here
             rm.meanSquaredScore = rm.meanSquaredScore != -VALUE_INFINITE * VALUE_INFINITE
                                   ? (value * std::abs(value) + rm.meanSquaredScore) / 2
                                   : value * std::abs(value);
+            rm.oldScore = value;
 
             // PV move or new best move?
             if (moveCount == 1 || value > alpha)
@@ -1327,6 +1355,12 @@ moves_loop:  // When in check, search starts here
                 // is not a problem when sorting because the sort is stable and the
                 // move position in the list is preserved - just the PV is pushed up.
                 rm.score = -VALUE_INFINITE;
+        }
+
+        else if (PvNode && ss->ply == 1 && value > alpha && moveCount > 1 && !pvIdx)
+        {
+            RootMove& rm = *std::find(rootMoves.begin(), rootMoves.end(), (ss - 1)->currentMove);
+            rm.opponentBestMoveChanges++;
         }
 
         // In case we have an alternative move equal in eval to the current bestmove,

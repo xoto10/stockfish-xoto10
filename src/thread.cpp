@@ -306,9 +306,24 @@ Thread* ThreadPool::get_best_thread() const {
     std::unordered_map<Move, int64_t, Move::MoveHash> votes(
       2 * std::min(size(), bestThread->worker->rootMoves.size()));
 
-    // Find the minimum score of all threads
+    // Consider swap of rootmoves 0 and 1 in each thread
+    // and find the minimum score of all threads
     for (auto&& th : threads)
+    {
+        auto changesScore = [](Thread* th, int i)
+        {
+            return th->worker->rootMoves[i].score
+              + std::min(th->worker->rootMoves[i].opponentBestMoveChanges, 10ul);
+        };
+
+        if (changesScore(th.get(), 1) > changesScore(th.get(), 0))
+        {
+;//sync_cout << "info string swapping!" << sync_endl;
+//          std::swap(th->worker->rootMoves[0], th->worker->rootMoves[1]);
+        }
+
         minScore = std::min(minScore, th->worker->rootMoves[0].score);
+    }
 
     // Vote according to score and depth, and select the best thread
     auto thread_voting_value = [minScore](Thread* th) {

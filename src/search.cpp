@@ -212,8 +212,19 @@ void Search::Worker::start_searching() {
               + std::min(Value(th->worker->rootMoves[i].moveChanges), 10);
         };
 
+sync_cout << "info string oldSc0 " << th->worker->rootMoves[0].oldScore
+          << " score0 " << th->worker->rootMoves[0].score
+          << " mvChgs0 " << th->worker->rootMoves[0].moveChanges
+          << " oldSc1 " << th->worker->rootMoves[1].oldScore
+          << " mvChgs1 " << Value(th->worker->rootMoves[1].moveChanges)
+          << " diff " << changesScore(th.get(), 1) - changesScore(th.get(), 0)
+          << (changesScore(th.get(), 1) > changesScore(th.get(), 0)
+              && std::abs(th->worker->rootMoves[0].score) != VALUE_INFINITE ? "      swap" : "")
+          << sync_endl;
+
         if (   th->worker->rootMoves.size() > 1
-            && changesScore(th.get(), 1) < changesScore(th.get(), 0))
+            && std::abs(th->worker->rootMoves[0].score) != VALUE_INFINITE
+            && changesScore(th.get(), 1) > changesScore(th.get(), 0))
         {
             std::swap(th->worker->rootMoves[0], th->worker->rootMoves[1]);
         }
@@ -312,6 +323,7 @@ void Search::Worker::iterative_deepening() {
         // Age out PV variability metric
         if (mainThread)
             totBestMoveChanges /= 2;
+        rootMoves[0].moveChanges /= 2;
 
         // Save the last iteration's scores before the first PV line is searched and
         // all the move scores except the (new) PV are set to -VALUE_INFINITE.
@@ -1015,7 +1027,7 @@ moves_loop:  // When in check, search starts here
                 continue;
             }
             rootCurrentMove = &(*rm);
-            rootCurrentMove->moveChanges /= 2;
+//          rootCurrentMove->moveChanges /= 2;
         }
 
         ss->moveCount = ++moveCount;

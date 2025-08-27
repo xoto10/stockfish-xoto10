@@ -209,11 +209,11 @@ void Search::Worker::start_searching() {
         auto changesScore = [](Thread* th, int i)
         {
             return th->worker->rootMoves[i].oldScore
-              + Value(std::min(th->worker->rootMoves[i].opponentBestMoveChanges, 10ul));
+              - std::min(Value(th->worker->rootMoves[i].opponentBestMoveChanges), 10);
         };
 
         if (   th->worker->rootMoves.size() > 1
-            && changesScore(th.get(), 1) - 1 > changesScore(th.get(), 0))
+            && changesScore(th.get(), 1) + 1 < changesScore(th.get(), 0))
         {
             std::swap(th->worker->rootMoves[0], th->worker->rootMoves[1]);
         }

@@ -212,16 +212,6 @@ void Search::Worker::start_searching() {
               + std::min(Value(th->worker->rootMoves[i].moveChanges), 10);
         };
 
-sync_cout << "info string oldSc0 " << th->worker->rootMoves[0].oldScore
-          << " score0 " << th->worker->rootMoves[0].score
-          << " mvChgs0 " << th->worker->rootMoves[0].moveChanges
-          << " oldSc1 " << th->worker->rootMoves[1].oldScore
-          << " mvChgs1 " << Value(th->worker->rootMoves[1].moveChanges)
-          << " diff " << changesScore(th.get(), 1) - changesScore(th.get(), 0)
-          << (changesScore(th.get(), 1) > changesScore(th.get(), 0)
-              && std::abs(th->worker->rootMoves[0].score) != VALUE_INFINITE ? "      swap" : "")
-          << sync_endl;
-
         if (   th->worker->rootMoves.size() > 1
             && std::abs(th->worker->rootMoves[0].score) != VALUE_INFINITE
             && changesScore(th.get(), 1) > changesScore(th.get(), 0))

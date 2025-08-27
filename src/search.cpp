@@ -313,7 +313,6 @@ void Search::Worker::iterative_deepening() {
         // Age out PV variability metric
         if (mainThread)
             totBestMoveChanges /= 2;
-        rootMoves[0].moveChanges /= 2;
 
         // Save the last iteration's scores before the first PV line is searched and
         // all the move scores except the (new) PV are set to -VALUE_INFINITE.
@@ -1017,7 +1016,7 @@ moves_loop:  // When in check, search starts here
                 continue;
             }
             rootCurrentMove = &(*rm);
-//          rootCurrentMove->moveChanges /= 2;
+            rootCurrentMove->moveChanges /= 2;
         }
 
         ss->moveCount = ++moveCount;

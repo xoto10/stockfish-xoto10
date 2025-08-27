@@ -213,7 +213,7 @@ void Search::Worker::start_searching() {
         };
 
         if (   th->worker->rootMoves.size() > 1
-            && changesScore(th.get(), 1) + 1 < changesScore(th.get(), 0))
+            && changesScore(th.get(), 1) < changesScore(th.get(), 0))
         {
             std::swap(th->worker->rootMoves[0], th->worker->rootMoves[1]);
         }
@@ -1361,7 +1361,7 @@ moves_loop:  // When in check, search starts here
                 rm.score = -VALUE_INFINITE;
         }
 
-        else if (PvNode && us == rootPos.side_to_move() && value > alpha && moveCount > 1 && !pvIdx)
+        else if (PvNode && us == limits.rootColor && value > alpha && moveCount > 1 && !pvIdx)
             rootCurrentMove->moveChanges++;
 
         // In case we have an alternative move equal in eval to the current bestmove,

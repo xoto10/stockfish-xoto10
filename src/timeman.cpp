@@ -53,8 +53,9 @@ void TimeManagement::init(Search::LimitsType& limits,
 
     // If we have no time, we don't need to fully initialize TM.
     // startTime is used by movetime and useNodesTime is used in elapsed calls.
-    startTime    = limits.startTime;
-    useNodesTime = npmsec != 0;
+    startTime        = limits.startTime;
+    useNodesTime     = npmsec != 0;
+    limits.rootColor = us;
 
     if (limits.time[us] == 0)
         return;

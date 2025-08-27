@@ -203,6 +203,22 @@ void Search::Worker::start_searching() {
         main_manager()->tm.advance_nodes_time(threads.nodes_searched()
                                               - limits.inc[rootPos.side_to_move()]);
 
+    // Consider swap of rootmoves 0 and 1 in each thread
+    for (auto&& th : threads)
+    {
+        auto changesScore = [](Thread* th, int i)
+        {
+            return th->worker->rootMoves[i].oldScore
+              + std::min(Value(th->worker->rootMoves[i].moveChanges), 10);
+        };
+
+        if (   th->worker->rootMoves.size() > 1
+            && changesScore(th.get(), 1) + 1 < changesScore(th.get(), 0))
+        {
+            std::swap(th->worker->rootMoves[0], th->worker->rootMoves[1]);
+        }
+    }
+
     Worker* bestThread = this;
     Skill   skill =
       Skill(options["Skill Level"], options["UCI_LimitStrength"] ? int(options["UCI_Elo"]) : 0);
@@ -287,6 +303,7 @@ void Search::Worker::iterative_deepening() {
     int searchAgainCounter = 0;
 
     lowPlyHistory.fill(97);
+    rootCurrentMove = nullptr;
 
     // Iterative deepening loop until requested to stop or the target depth is reached
     while (++rootDepth < MAX_PLY && !threads.stop
@@ -988,8 +1005,18 @@ moves_loop:  // When in check, search starts here
         // At root obey the "searchmoves" option and skip moves not listed in Root
         // Move List. In MultiPV mode we also skip PV moves that have been already
         // searched and those of lower "TB rank" if we are in a TB root position.
-        if (rootNode && !std::count(rootMoves.begin() + pvIdx, rootMoves.begin() + pvLast, move))
-            continue;
+        // Also set rootCurrentMove which is used to update moveChanges for each rootMove
+        if (rootNode)
+        {
+            auto rm = std::find(rootMoves.begin() + pvIdx, rootMoves.begin() + pvLast, move);
+            if (rm == rootMoves.begin() + pvLast)
+            {
+                rootCurrentMove = nullptr;
+                continue;
+            }
+            rootCurrentMove = &(*rm);
+            rootCurrentMove->moveChanges /= 2;
+        }
 
         ss->moveCount = ++moveCount;
 
@@ -1294,6 +1321,7 @@ moves_loop:  // When in check, search starts here
             rm.meanSquaredScore = rm.meanSquaredScore != -VALUE_INFINITE * VALUE_INFINITE
                                   ? (value * std::abs(value) + rm.meanSquaredScore) / 2
                                   : value * std::abs(value);
+            rm.oldScore = value;
 
             // PV move or new best move?
             if (moveCount == 1 || value > alpha)
@@ -1332,6 +1360,9 @@ moves_loop:  // When in check, search starts here
                 // move position in the list is preserved - just the PV is pushed up.
                 rm.score = -VALUE_INFINITE;
         }
+
+        else if (PvNode && us == rootPos.side_to_move() && value > alpha && moveCount > 1 && !pvIdx)
+            rootCurrentMove->moveChanges++;
 
         // In case we have an alternative move equal in eval to the current bestmove,
         // promote it to bestmove by pretending it just exceeds alpha (but not beta).

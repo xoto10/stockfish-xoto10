@@ -1311,11 +1311,11 @@ moves_loop:  // When in check, search starts here
 
             rm.effort += nodes - nodeCount;
 
-            if (std::abs(rm.score) < 1000 && rm.moveChanges > 0)
+            if (std::abs(rm.score) < 1000)
             {
                 int diff = (&rm == &rootMoves[0])
-                           ? rm.moveChanges - rootMoves[1].moveChanges
-                           : rm.moveChanges - rootMoves[0].moveChanges;
+                           ? rootMoves[1].moveChanges - rm.moveChanges
+                           : rootMoves[0].moveChanges - rm.moveChanges;
                 if (diff > 0)
                 {
                     value += diff;

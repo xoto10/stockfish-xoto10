@@ -93,12 +93,14 @@ struct RootMove {
         return m.score != score ? m.score < score : m.previousScore < previousScore;
     }
 
+    double            moveChanges      = 0;
     uint64_t          effort           = 0;
     Value             score            = -VALUE_INFINITE;
     Value             previousScore    = -VALUE_INFINITE;
     Value             averageScore     = -VALUE_INFINITE;
     Value             meanSquaredScore = -VALUE_INFINITE * VALUE_INFINITE;
     Value             uciScore         = -VALUE_INFINITE;
+//  Value             oldScore         = -VALUE_INFINITE;
     bool              scoreLowerbound  = false;
     bool              scoreUpperbound  = false;
     int               selDepth         = 0;
@@ -125,6 +127,7 @@ struct LimitsType {
 
     std::vector<std::string> searchmoves;
     TimePoint                time[COLOR_NB], inc[COLOR_NB], npmsec, movetime, startTime;
+    Color                    rootColor;
     int                      movestogo, depth, mate, perft, infinite;
     uint64_t                 nodes;
     bool                     ponderMode;
@@ -336,6 +339,7 @@ class Worker {
     Position  rootPos;
     StateInfo rootState;
     RootMoves rootMoves;
+    RootMove* rootCurrentMove;
     Depth     rootDepth, completedDepth;
     Value     rootDelta;
 

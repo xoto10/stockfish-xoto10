@@ -32,6 +32,7 @@
 #include <ratio>
 #include <string>
 #include <utility>
+//#include <iomanip>
 
 #include "bitboard.h"
 #include "evaluate.h"
@@ -203,6 +204,19 @@ void Search::Worker::start_searching() {
         main_manager()->tm.advance_nodes_time(threads.nodes_searched()
                                               - limits.inc[rootPos.side_to_move()]);
 
+//if (   std::abs(this->rootMoves[0].score) < 1000
+//    && std::abs(this->rootMoves[0].score - this->rootMoves[1].score) < 20)
+/*
+sync_cout << "info string old0 " << std::right << std::setw(6) << this->rootMoves[0].oldScore
+          << " move0 " << UCIEngine::move(this->rootMoves[0].pv[0], false)
+          << " sc0 " << std::right << std::setw(6) << this->rootMoves[0].score
+          << " chgs0 " << std::right << std::setw(6) << this->rootMoves[0].moveChanges
+          << "   move1 " << UCIEngine::move(this->rootMoves[1].pv[0], false)
+          << " old1 " << std::right << std::setw(6) << this->rootMoves[1].oldScore
+          << " chgs1 " << Value(this->rootMoves[1].moveChanges)
+          << sync_endl;
+*/
+
     Worker* bestThread = this;
     Skill   skill =
       Skill(options["Skill Level"], options["UCI_LimitStrength"] ? int(options["UCI_Elo"]) : 0);
@@ -287,6 +301,7 @@ void Search::Worker::iterative_deepening() {
     int searchAgainCounter = 0;
 
     lowPlyHistory.fill(97);
+    rootCurrentMove = nullptr;
 
     // Iterative deepening loop until requested to stop or the target depth is reached
     while (++rootDepth < MAX_PLY && !threads.stop
@@ -989,8 +1004,18 @@ moves_loop:  // When in check, search starts here
         // At root obey the "searchmoves" option and skip moves not listed in Root
         // Move List. In MultiPV mode we also skip PV moves that have been already
         // searched and those of lower "TB rank" if we are in a TB root position.
-        if (rootNode && !std::count(rootMoves.begin() + pvIdx, rootMoves.begin() + pvLast, move))
-            continue;
+        // Also set rootCurrentMove which is used to update moveChanges for each rootMove
+        if (rootNode)
+        {
+            auto rm = std::find(rootMoves.begin() + pvIdx, rootMoves.begin() + pvLast, move);
+            if (rm == rootMoves.begin() + pvLast)
+            {
+                rootCurrentMove = nullptr;
+                continue;
+            }
+            rootCurrentMove = &(*rm);
+            rootCurrentMove->moveChanges /= 2;
+        }
 
         ss->moveCount = ++moveCount;
 
@@ -1282,7 +1307,22 @@ moves_loop:  // When in check, search starts here
         {
             RootMove& rm = *std::find(rootMoves.begin(), rootMoves.end(), move);
 
+//          rm.oldScore = value;
+
             rm.effort += nodes - nodeCount;
+
+            if (std::abs(rm.score) < 1000 && rm.moveChanges > 0)
+            {
+                int diff = (&rm == &rootMoves[0])
+                           ? rm.moveChanges - rootMoves[1].moveChanges
+                           : rm.moveChanges - rootMoves[0].moveChanges;
+                if (diff > 0)
+                {
+                    value += diff;
+                    (ss + 1)->pv    = pv;
+                    (ss + 1)->pv[0] = Move::none();
+                }
+            }
 
             rm.averageScore =
               rm.averageScore != -VALUE_INFINITE ? (value + rm.averageScore) / 2 : value;
@@ -1328,6 +1368,9 @@ moves_loop:  // When in check, search starts here
                 // move position in the list is preserved - just the PV is pushed up.
                 rm.score = -VALUE_INFINITE;
         }
+
+        else if (PvNode && us == limits.rootColor && value > alpha && moveCount > 1 && !pvIdx)
+            rootCurrentMove->moveChanges++;
 
         // In case we have an alternative move equal in eval to the current bestmove,
         // promote it to bestmove by pretending it just exceeds alpha (but not beta).

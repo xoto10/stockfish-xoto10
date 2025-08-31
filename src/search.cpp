@@ -210,25 +210,11 @@ void Search::Worker::start_searching() {
         {
             return th->worker->rootMoves[i].oldScore
               - std::min(Value(th->worker->rootMoves[i].opponentBestMoveChanges
-                               * th->worker->rootMoves[j].effort / std::max(1ul, th->worker->rootMoves[i].effort) ), 10);
+                               * th->worker->rootMoves[j].effort / std::max(1ul, th->worker->rootMoves[i].effort)), 10);
         };
 
-sync_cout << "info string oldSc0 " << th->worker->rootMoves[0].oldScore
-          << " score0 " << th->worker->rootMoves[0].score
-          << " mvChgs0 " << th->worker->rootMoves[0].opponentBestMoveChanges
-          << " effort0 " << th->worker->rootMoves[0].effort
-          << " oldSc1 " << th->worker->rootMoves[1].oldScore
-          << " mvChgs1 " << Value(th->worker->rootMoves[1].opponentBestMoveChanges)
-          << " effort1 " << th->worker->rootMoves[1].effort
-          << " diff " << changesScore(th.get(), 1, 0) - changesScore(th.get(), 0, 0)
-          << (   th->worker->rootMoves.size() > 1
-              && std::abs(th->worker->rootMoves[0].score) < 9 * PawnValue
-              && changesScore(th.get(), 1, 0) > changesScore(th.get(), 0, 0)
-              ? "      swap" : "")
-          << sync_endl;
-
         if (   th->worker->rootMoves.size() > 1
-            && std::abs(th->worker->rootMoves[0].score) < 9 * PawnValue
+            && std::abs(th->worker->rootMoves[0].score) < 5 * PawnValue
             && changesScore(th.get(), 1, 0) > changesScore(th.get(), 0, 0))
         {
             std::swap(th->worker->rootMoves[0], th->worker->rootMoves[1]);

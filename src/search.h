@@ -93,7 +93,7 @@ struct RootMove {
         return m.score != score ? m.score < score : m.previousScore < previousScore;
     }
 
-    uint64_t          opponentBestMoveChanges = 0;
+    double            opponentBestMoveChanges = 0;
     uint64_t          effort                  = 0;
     Value             score                   = -VALUE_INFINITE;
     Value             previousScore           = -VALUE_INFINITE;

@@ -210,7 +210,7 @@ void Search::Worker::start_searching() {
         {
             return th->worker->rootMoves[i].oldScore
               - std::min(Value(th->worker->rootMoves[i].opponentBestMoveChanges
-                               * th->worker->rootMoves[j].effort / std::max(1ul, th->worker->rootMoves[i].effort)), 10);
+                               * th->worker->rootMoves[j].effort / std::max(1ul, th->worker->rootMoves[i].effort)), 4);
         };
 
         if (   th->worker->rootMoves.size() > 1

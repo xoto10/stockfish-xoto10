@@ -221,12 +221,14 @@ sync_cout << "info string oldSc0 " << th->worker->rootMoves[0].oldScore
           << " mvChgs1 " << Value(th->worker->rootMoves[1].opponentBestMoveChanges)
           << " effort1 " << th->worker->rootMoves[1].effort
           << " diff " << changesScore(th.get(), 1, 0) - changesScore(th.get(), 0, 0)
-          << (changesScore(th.get(), 1, 0) > changesScore(th.get(), 0, 0)
-              && std::abs(th->worker->rootMoves[0].score) < 2 * PawnValue ? "      swap" : "")
+          << (   th->worker->rootMoves.size() > 1
+              && std::abs(th->worker->rootMoves[0].score) < 9 * PawnValue
+              && changesScore(th.get(), 1, 0) > changesScore(th.get(), 0, 0)
+              ? "      swap" : "")
           << sync_endl;
 
         if (   th->worker->rootMoves.size() > 1
-            && std::abs(th->worker->rootMoves[0].score) < 2 * PawnValue
+            && std::abs(th->worker->rootMoves[0].score) < 9 * PawnValue
             && changesScore(th.get(), 1, 0) > changesScore(th.get(), 0, 0))
         {
             std::swap(th->worker->rootMoves[0], th->worker->rootMoves[1]);

@@ -209,13 +209,13 @@ void Search::Worker::start_searching() {
         auto changesScore = [](Thread* th, int i, int j)
         {
             return th->worker->rootMoves[i].oldScore
-              - std::min(Value(th->worker->rootMoves[i].opponentBestMoveChanges
-                               * th->worker->rootMoves[j].effort / std::max(1ul, th->worker->rootMoves[i].effort)), 4);
+              + std::min(Value(th->worker->rootMoves[j].opponentBestMoveChanges
+                               * th->worker->rootMoves[0].effort / std::max(1ul, th->worker->rootMoves[i].effort)), 10);
         };
 
         if (   th->worker->rootMoves.size() > 1
             && std::abs(th->worker->rootMoves[0].score) < 5 * PawnValue
-            && changesScore(th.get(), 1, 0) > changesScore(th.get(), 0, 0))
+            && changesScore(th.get(), 1, 0) > changesScore(th.get(), 0, 1))
         {
             std::swap(th->worker->rootMoves[0], th->worker->rootMoves[1]);
         }

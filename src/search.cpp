@@ -204,19 +204,6 @@ void Search::Worker::start_searching() {
         main_manager()->tm.advance_nodes_time(threads.nodes_searched()
                                               - limits.inc[rootPos.side_to_move()]);
 
-//if (   std::abs(this->rootMoves[0].score) < 1000
-//    && std::abs(this->rootMoves[0].score - this->rootMoves[1].score) < 20)
-/*
-sync_cout << "info string old0 " << std::right << std::setw(6) << this->rootMoves[0].oldScore
-          << " move0 " << UCIEngine::move(this->rootMoves[0].pv[0], false)
-          << " sc0 " << std::right << std::setw(6) << this->rootMoves[0].score
-          << " chgs0 " << std::right << std::setw(6) << this->rootMoves[0].moveChanges
-          << "   move1 " << UCIEngine::move(this->rootMoves[1].pv[0], false)
-          << " old1 " << std::right << std::setw(6) << this->rootMoves[1].oldScore
-          << " chgs1 " << Value(this->rootMoves[1].moveChanges)
-          << sync_endl;
-*/
-
     Worker* bestThread = this;
     Skill   skill =
       Skill(options["Skill Level"], options["UCI_LimitStrength"] ? int(options["UCI_Elo"]) : 0);
@@ -1307,15 +1294,12 @@ moves_loop:  // When in check, search starts here
         {
             RootMove& rm = *std::find(rootMoves.begin(), rootMoves.end(), move);
 
-//          rm.oldScore = value;
-
             rm.effort += nodes - nodeCount;
 
-            if (std::abs(rm.score) < 1000)
+            if (std::abs(rm.score) < 1000 && rm.moveChanges > 0)
             {
-                int diff = (&rm == &rootMoves[0])
-                           ? rootMoves[1].moveChanges - rm.moveChanges
-                           : rootMoves[0].moveChanges - rm.moveChanges;
+                int diff = (&rm == &rootMoves[0] ? rm.moveChanges - rootMoves[1].moveChanges
+                                                 : rm.moveChanges - rootMoves[0].moveChanges) / 2;
                 if (diff > 0)
                 {
                     value += diff;

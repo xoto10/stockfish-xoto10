@@ -1302,7 +1302,8 @@ moves_loop:  // When in check, search starts here
                                                  : rm.moveChanges - rootMoves[0].moveChanges) / 2;
                 if (diff > 0)
                 {
-                    value++;
+                    ++value;
+                    ++bestMoveChanges;
                     (ss + 1)->pv    = pv;
                     (ss + 1)->pv[0] = Move::none();
                 }

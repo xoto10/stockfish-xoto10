@@ -1300,7 +1300,7 @@ moves_loop:  // When in check, search starts here
             {
                 int diff = rm.moveChanges - (&rm == &rootMoves[0] ? rootMoves[1].moveChanges
                                                                   : rootMoves[0].moveChanges);
-                if ((int(nodes) & 3) == 0 && diff > 0)
+                if (diff > 0)
                 {
                     ++value;
                     (ss + 1)->pv    = pv;

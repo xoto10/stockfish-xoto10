@@ -1298,12 +1298,11 @@ moves_loop:  // When in check, search starts here
 
             if (std::abs(rm.score) < 1000 && rm.moveChanges > 0)
             {
-                int diff = (&rm == &rootMoves[0] ? rm.moveChanges - rootMoves[1].moveChanges
-                                                 : rm.moveChanges - rootMoves[0].moveChanges) / 2;
-                if (diff > 0)
+                int diff = rm.moveChanges - (&rm == &rootMoves[0] ? rootMoves[1].moveChanges
+                                                                  : rootMoves[0].moveChanges);
+                if ((int(nodes) & 3) == 0 && diff > 0)
                 {
                     ++value;
-                    ++bestMoveChanges;
                     (ss + 1)->pv    = pv;
                     (ss + 1)->pv[0] = Move::none();
                 }

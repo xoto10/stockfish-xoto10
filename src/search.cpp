@@ -999,8 +999,16 @@ moves_loop:  // When in check, search starts here
             main_manager()->updates.onIter(
               {depth, UCIEngine::move(move, pos.is_chess960()), moveCount + pvIdx});
         }
+
         if (PvNode)
             (ss + 1)->pv = nullptr;
+
+        else if (value < bestValue - 1000 && !is_loss(bestValue) && moveCount > 5 && ss->ply > 10
+                 && (int(nodes) & 255) == 0)
+        {
+//sync_cout << "info string ply " << ss->ply << " mc " << moveCount << " best " << bestValue << " val " << value << sync_endl;
+            break;
+        }
 
         extension  = 0;
         capture    = pos.capture_stage(move);

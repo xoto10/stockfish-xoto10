@@ -37,6 +37,9 @@
 
 namespace Stockfish {
 
+int A=12;
+TUNE(SetRange(8,16), A);
+
 // Returns a static, purely materialistic evaluation of the position from
 // the point of view of the side to move. It can be divided by PawnValue to get
 // an approximation of the material advantage on the board in terms of pawns.
@@ -77,8 +80,9 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
     optimism += optimism * nnueComplexity / 468;
     nnue -= nnue * nnueComplexity / 18000;
 
-    int pawnMult = pos.count<PAWN>() > 12 ? pos.count<PAWN>() - 12 : 12 - pos.count<PAWN>();
-    int material = 8560 - 713 * pawnMult + pos.non_pawn_material();
+int B=8560/A;
+    int pawnBonus = pos.count<PAWN>() > A  ? pos.count<PAWN>() - A  : A  - pos.count<PAWN>();
+    int material = 8560 - B   * pawnBonus + pos.non_pawn_material();
     int v        = (nnue * (77777 + material) + optimism * (7777 + material)) / 77777;
 
     // Damp down the evaluation linearly when shuffling

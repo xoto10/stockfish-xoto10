@@ -50,7 +50,6 @@ Value evaluate(const NNUE::Networks&          networks,
                const Position&                pos,
                Eval::NNUE::AccumulatorStack&  accumulators,
                Eval::NNUE::AccumulatorCaches& caches,
-               uint64_t                       nodes,
                int                            optimism);
 }  // namespace Eval
 

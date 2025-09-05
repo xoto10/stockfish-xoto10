@@ -37,9 +37,6 @@
 
 namespace Stockfish {
 
-int A=176;
-TUNE(SetRange(16,256), A);
-
 // Returns a static, purely materialistic evaluation of the position from
 // the point of view of the side to move. It can be divided by PawnValue to get
 // an approximation of the material advantage on the board in terms of pawns.
@@ -57,7 +54,6 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
                      const Position&                pos,
                      Eval::NNUE::AccumulatorStack&  accumulators,
                      Eval::NNUE::AccumulatorCaches& caches,
-                     uint64_t                       nodes,
                      int                            optimism) {
 
     assert(!pos.checkers());
@@ -81,15 +77,8 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
     optimism += optimism * nnueComplexity / 468;
     nnue -= nnue * nnueComplexity / 18000;
 
-// A in [16..255] C in [1..16]
-//int A=(nodes>>4)&255;
-int B = A & 15;
-int C = (A >> 4) + 1 - (int(nodes & 15) > B);
-int D = 8560 / std::max(C, 16 - C);
-//sync_cout << "info string nodes " << nodes << " A " << A << " B " << B << " C " << C << " D " << D << sync_endl;
-
-    int pawnBonus = pos.count<PAWN>() > C  ? pos.count<PAWN>() - C  : C  - pos.count<PAWN>();
-    int material = 8560 - D   * pawnBonus + pos.non_pawn_material();
+    int pawnMult = pos.count<PAWN>() > 11 ? pos.count<PAWN>() - 11 : 11 - pos.count<PAWN>();
+    int material = 8560 - 713 * pawnMult + pos.non_pawn_material();
     int v        = (nnue * (77777 + material) + optimism * (7777 + material)) / 77777;
 
     // Damp down the evaluation linearly when shuffling
@@ -124,7 +113,7 @@ std::string Eval::trace(Position& pos, const Eval::NNUE::Networks& networks) {
     v                       = pos.side_to_move() == WHITE ? v : -v;
     ss << "NNUE evaluation        " << 0.01 * UCIEngine::to_cp(v, pos) << " (white side)\n";
 
-    v = evaluate(networks, pos, accumulators, *caches, 0ul, VALUE_ZERO);
+    v = evaluate(networks, pos, accumulators, *caches, VALUE_ZERO);
     v = pos.side_to_move() == WHITE ? v : -v;
     ss << "Final evaluation       " << 0.01 * UCIEngine::to_cp(v, pos) << " (white side)";
     ss << " [with scaled NNUE, ...]";

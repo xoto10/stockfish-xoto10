@@ -265,6 +265,7 @@ top:
         [[fallthrough]];
 
     case GOOD_QUIET :
+        quiets = true;
         if (!skipQuiets && select([&]() { return cur->value > goodQuietThreshold; }))
             return *(cur - 1);
 
@@ -276,6 +277,7 @@ top:
         [[fallthrough]];
 
     case BAD_CAPTURE :
+        quiets = false;
         if (select([]() { return true; }))
             return *(cur - 1);
 
@@ -287,9 +289,11 @@ top:
         [[fallthrough]];
 
     case BAD_QUIET :
+        quiets = true;
         if (!skipQuiets)
             return select([&]() { return cur->value <= goodQuietThreshold; });
 
+        quiets = false;
         return Move::none();
 
     case EVASION_INIT : {

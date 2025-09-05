@@ -1031,7 +1031,11 @@ moves_loop:  // When in check, search starts here
         {
             // Skip quiet moves if movecount exceeds our FutilityMoveCount threshold
             if (moveCount >= (3 + depth * depth) / (2 - improving))
+            {
                 mp.skip_quiet_moves();
+                if (mp.isQuiet())
+                    continue;
+            }
 
             // Reduced depth of the next LMR search
             int lmrDepth = newDepth - r / 1024;

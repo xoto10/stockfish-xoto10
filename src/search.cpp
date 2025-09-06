@@ -136,6 +136,9 @@ void update_all_stats(const Position& pos,
 
 }  // namespace
 
+int A=200;
+TUNE(A);
+
 Search::Worker::Worker(SharedState&                    sharedState,
                        std::unique_ptr<ISearchManager> sm,
                        size_t                          threadId,
@@ -856,17 +859,18 @@ Value Search::Worker::search(
     // Step 8. Futility pruning: child node
     // The depth condition is important for mate finding.
     {
-        auto futility_margin = [&](Depth d) {
+        auto futility_margin = [&](Value eval, Depth d) {
             Value futilityMult = 91 - 21 * !ss->ttHit;
 
             return futilityMult * d                                //
                  - 2094 * improving * futilityMult / 1024          //
                  - 1324 * opponentWorsening * futilityMult / 4096  //
                  + (ss - 1)->statScore / 331                       //
+                 + (eval < 0) - (eval > 0) * A
                  + std::abs(correctionValue) / 158105;
         };
 
-        if (!ss->ttPv && depth < 14 && eval - futility_margin(depth) >= beta && eval >= beta
+        if (!ss->ttPv && depth < 14 && eval - futility_margin(eval, depth) >= beta && eval >= beta
             && (!ttData.move || ttCapture) && !is_loss(beta) && !is_win(eval))
             return beta + (eval - beta) / 3;
     }

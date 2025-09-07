@@ -136,6 +136,9 @@ void update_all_stats(const Position& pos,
 
 }  // namespace
 
+int A=120;
+TUNE(SetRange(80, 160), A);
+
 Search::Worker::Worker(SharedState&                    sharedState,
                        std::unique_ptr<ISearchManager> sm,
                        size_t                          threadId,
@@ -850,7 +853,7 @@ Value Search::Worker::search(
     // Step 7. Razoring
     // If eval is really low, skip search entirely and return the qsearch value.
     // For PvNodes, we must have a guard against mates being returned.
-    if (!PvNode && eval < alpha - 514 - 294 * depth * depth + ((eval > 0) - (eval < 0)) * 400)
+    if (!PvNode && eval < alpha - 514 - 294 * depth * depth + ((eval>0) - (eval<0)) * (A-100))
         return qsearch<NonPV>(pos, ss, alpha, beta);
 
     // Step 8. Futility pruning: child node

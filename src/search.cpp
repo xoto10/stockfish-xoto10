@@ -136,6 +136,9 @@ void update_all_stats(const Position& pos,
 
 }  // namespace
 
+int A=90;
+TUNE(SetRange(50,130), A);
+
 Search::Worker::Worker(SharedState&                    sharedState,
                        std::unique_ptr<ISearchManager> sm,
                        size_t                          threadId,
@@ -863,7 +866,7 @@ Value Search::Worker::search(
                  - 2094 * improving * futilityMult / 1024          //
                  - 1324 * opponentWorsening * futilityMult / 4096  //
                  + (ss - 1)->statScore / 331                       //
-                 + ((eval > 0) - (eval < 0)) * 400
+                 + ((eval < 0) - (eval > 0)) * 10 * (A-100)
                  + std::abs(correctionValue) / 158105;
         };
 

@@ -485,8 +485,18 @@ void Search::Worker::iterative_deepening() {
               (1.455 + mainThread->previousTimeReduction) / (2.2375 * timeReduction);
             double bestMoveInstability = 1.04 + 1.8956 * totBestMoveChanges / threads.size();
 
-            double totalTime =
-              mainThread->tm.optimum() * fallingEval * reduction * bestMoveInstability;
+            double timeFactor = fallingEval * reduction * bestMoveInstability;
+            mainThread->timeFactorAverage = (mainThread->timeFactorAverage + timeFactor) / 2.0;
+
+dbg_mean_of(mainThread->timeFactorAverage);
+sync_cout << "info string tfa " << mainThread->timeFactorAverage << " tf " << timeFactor << sync_endl;
+            if (mainThread->timeFactorAverage < 2.5 && bestValue < 125)
+            {
+                timeFactor *= 1.3;
+                mainThread->timeFactorAverage += timeFactor * 0.15;
+            }
+
+            double totalTime = mainThread->tm.optimum() * timeFactor;
 
             // Cap used time in case of a single legal move for a better viewer experience
             if (rootMoves.size() == 1)
@@ -520,6 +530,7 @@ void Search::Worker::iterative_deepening() {
         return;
 
     mainThread->previousTimeReduction = timeReduction;
+dbg_print();
 
     // If the skill level is enabled, swap the best PV line with the sub-optimal one
     if (skill.enabled())

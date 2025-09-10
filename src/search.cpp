@@ -1332,7 +1332,6 @@ moves_loop:  // When in check, search starts here
                 {
                     if (rm.pv.size() < 3 || rootMoves[0].pv.size() < 3
                         || rm.pv[0] != rootMoves[0].pv[2]
-                        || rm.pv[1] != rootMoves[0].pv[1]
                         || rm.pv[2] != rootMoves[0].pv[0])
                         bestMoveChanges += 2;
                     else

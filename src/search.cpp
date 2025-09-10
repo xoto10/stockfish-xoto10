@@ -488,10 +488,10 @@ void Search::Worker::iterative_deepening() {
             double timeFactor = fallingEval * reduction * bestMoveInstability;
             mainThread->timeFactorAverage = (mainThread->timeFactorAverage + timeFactor) / 2.0;
 
-            if (mainThread->timeFactorAverage < 1.5 && bestValue < -85)
+            if (mainThread->timeFactorAverage < 1.2 && bestValue < -85)
             {
-                timeFactor *= 1.8;
-                mainThread->timeFactorAverage += timeFactor * 0.4;
+                timeFactor *= 1.3;
+                mainThread->timeFactorAverage += timeFactor * 0.15;
             }
 
             double totalTime = mainThread->tm.optimum() * timeFactor;

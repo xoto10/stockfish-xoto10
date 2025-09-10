@@ -136,10 +136,6 @@ void update_all_stats(const Position& pos,
 
 }  // namespace
 
-//auto f1 = [](int m){return Range(m / 2, m * 3 / 2);};
-int A=250;
-TUNE(A);
-
 Search::Worker::Worker(SharedState&                    sharedState,
                        std::unique_ptr<ISearchManager> sm,
                        size_t                          threadId,
@@ -492,7 +488,7 @@ void Search::Worker::iterative_deepening() {
             double timeFactor = fallingEval * reduction * bestMoveInstability;
             mainThread->timeFactorAverage = (mainThread->timeFactorAverage + timeFactor) / 2.0;
 
-            if (mainThread->timeFactorAverage < A/100.0 && bestValue < -125)
+            if (mainThread->timeFactorAverage < 2.5 && bestValue < -125)
             {
                 timeFactor *= 1.3;
                 mainThread->timeFactorAverage += timeFactor * 0.15;

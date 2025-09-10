@@ -490,8 +490,8 @@ void Search::Worker::iterative_deepening() {
 
             if (mainThread->timeFactorAverage < 1.5 && bestValue < -165)
             {
-                timeFactor *= 1.3;
-                mainThread->timeFactorAverage += timeFactor * 0.15;
+                timeFactor *= 1.2;
+                mainThread->timeFactorAverage += timeFactor * 0.1;
             }
 
             double totalTime = mainThread->tm.optimum() * timeFactor;

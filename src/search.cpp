@@ -136,6 +136,9 @@ void update_all_stats(const Position& pos,
 
 }  // namespace
 
+int A=300;
+TUNE(A);
+
 Search::Worker::Worker(SharedState&                    sharedState,
                        std::unique_ptr<ISearchManager> sm,
                        size_t                          threadId,
@@ -471,7 +474,7 @@ void Search::Worker::iterative_deepening() {
             timeReduction = 0.723 + 0.79 / (1.104 + std::exp(-k * (completedDepth - center)));
             double reduction =
               (1.455 + mainThread->previousTimeReduction) / (2.2375 * timeReduction);
-            double bestMoveInstability = 1.04 + 0.437 * totBestMoveChanges / threads.size();
+            double bestMoveInstability = 1.04 + (A/1000.0) * totBestMoveChanges / threads.size();
 
             double totalTime =
               mainThread->tm.optimum() * fallingEval * reduction * bestMoveInstability;
@@ -1317,7 +1320,7 @@ moves_loop:  // When in check, search starts here
                 // This information is used for time management. In MultiPV mode,
                 // we must take care to only do this for the first PV line.
                 if (moveCount > 1 && !pvIdx)
-                    bestMoveChanges += 1 + int(msb(value - alpha));
+                    bestMoveChanges += std::min(5, 1 + int(msb(value - alpha)));
             }
             else
                 // All other moves but the PV, are set to the lowest value: this

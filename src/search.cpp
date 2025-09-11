@@ -1317,7 +1317,7 @@ moves_loop:  // When in check, search starts here
                 // This information is used for time management. In MultiPV mode,
                 // we must take care to only do this for the first PV line.
                 if (moveCount > 1 && !pvIdx)
-                    bestMoveChanges += std::min(3, int(msb(value - alpha)));
+                    bestMoveChanges += std::min(5, int(msb(value - alpha)));
             }
             else
                 // All other moves but the PV, are set to the lowest value: this

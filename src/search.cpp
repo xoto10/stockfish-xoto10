@@ -136,7 +136,7 @@ void update_all_stats(const Position& pos,
 
 }  // namespace
 
-int A=930;
+int A=1070;
 TUNE(A);
 
 Search::Worker::Worker(SharedState&                    sharedState,

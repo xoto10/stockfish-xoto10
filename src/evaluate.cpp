@@ -37,6 +37,9 @@
 
 namespace Stockfish {
 
+int A=539, B=1248, C=243, D=7839, E=7822, F=127, G=350, H=350, I=350, J=350, K=30, L=30;
+TUNE(A, B, C, D, E, F, G, H, I, J, K, L);
+
 // Returns a static, purely materialistic evaluation of the position from
 // the point of view of the side to move. It can be divided by PawnValue to get
 // an approximation of the material advantage on the board in terms of pawns.
@@ -75,20 +78,18 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
     // Blend optimism and eval with nnue complexity
     int nnueComplexity = std::abs(psqt - positional);
 
-                                                                                                     // nn + nn.m - nn.c - nn.m.c
-    int material = 539 * pos.count<PAWN>() + pos.non_pawn_material();
+    int material = A   * pos.count<PAWN>() + pos.non_pawn_material();
     int v        = (  nnue        * 74842
                                     + nnue * material
-                                    - (nnue+G-400) * 84074 * nnueComplexity / 17246
-                                    - (nnue+G-400) * material * nnueComplexity / 17246
-                    + (nnue > 20) * (  material * I / 65536
-                                       nnueComplexity * J / 400)
-                    + optimism    * 7839
+                                    - (nnue+G-400) * B    * nnueComplexity / 256
+                                    - (nnue+H-400) * material * nnueComplexity * C   / 4194304
+                    + (nnue > 20) * (  material * K / 65536
+                                     + nnueComplexity * L / 400)
+                    + optimism    * D
                                     + optimism * material
-                                    - (optimism+H-400) * 7822 * nnueComplexity / 515
-                                    - (optimism+H-400) * material * nnueComplexity / 515)
+                                    - (optimism+I-400) * E    * nnueComplexity / 515
+                                    - (optimism+J-400) * material * nnueComplexity * F   / 65536)
                    / 77777;
-int A=539, B=84074, C=17246, D=7839, E=7822, F=515, G=350, H=350, I=30, J=50;
 
     // Damp down the evaluation linearly when shuffling
     v -= v * pos.rule50_count() / 212;

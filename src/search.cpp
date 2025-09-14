@@ -136,9 +136,6 @@ void update_all_stats(const Position& pos,
 
 }  // namespace
 
-int A=1070;
-TUNE(A);
-
 Search::Worker::Worker(SharedState&                    sharedState,
                        std::unique_ptr<ISearchManager> sm,
                        size_t                          threadId,
@@ -473,7 +470,7 @@ void Search::Worker::iterative_deepening() {
             double center = lastBestMoveDepth + 11.57;
             timeReduction = 0.723 + 0.79 / (1.104 + std::exp(-k * (completedDepth - center)));
             double reduction = (1.455 + mainThread->previousTimeReduction) / (2.2375 * timeReduction);
-            double bestMoveInstability = 1.04 + (A/10000.0) * totBestMoveChanges / threads.size();
+            double bestMoveInstability = 1.04 + 0.110 * totBestMoveChanges / threads.size();
 
             double totalTime =
               mainThread->tm.optimum() * fallingEval * reduction * bestMoveInstability;

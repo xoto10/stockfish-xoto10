@@ -471,7 +471,7 @@ void Search::Worker::iterative_deepening() {
             timeReduction = 0.723 + 0.79 / (1.104 + std::exp(-k * (completedDepth - center)));
             double reduction =
               (1.455 + mainThread->previousTimeReduction) / (2.2375 * timeReduction);
-            double bestMoveInstability = 1.04 + 0.225 * totBestMoveChanges / threads.size();
+            double bestMoveInstability = 1.04 + 0.200 * totBestMoveChanges / threads.size();
 
             double totalTime =
               mainThread->tm.optimum() * fallingEval * reduction * bestMoveInstability;
@@ -1317,7 +1317,7 @@ moves_loop:  // When in check, search starts here
                 // This information is used for time management. In MultiPV mode,
                 // we must take care to only do this for the first PV line.
                 if (moveCount > 1 && !pvIdx)
-                    bestMoveChanges += std::min(5, 1 + int(msb(value - alpha)));
+                    bestMoveChanges += std::min(7, 1 + int(msb(value - alpha)));
             }
             else
                 // All other moves but the PV, are set to the lowest value: this

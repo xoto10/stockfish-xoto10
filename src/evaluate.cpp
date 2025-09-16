@@ -81,14 +81,14 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
     int material = A   * pos.count<PAWN>() + pos.non_pawn_material();
     int v        = (  nnue        * 74842
                                     + nnue * material
-                                    - (nnue+G-400) * B    * nnueComplexity / 256
-                                    - (nnue+H-400) * material * nnueComplexity * C   / 4194304
+                                    - int64_t(nnue+G-400) * B    * nnueComplexity / 256
+                                    - int64_t(nnue+H-400) * material * nnueComplexity * C   / 4194304
                     + (nnue > 20) * (  material * K / 65536
                                      + nnueComplexity * L / 400)
                     + optimism    * D
                                     + optimism * material
-                                    - (optimism+I-400) * E    * nnueComplexity / 515
-                                    - (optimism+J-400) * material * nnueComplexity * F   / 65536)
+                                    - int64_t(optimism+I-400) * E    * nnueComplexity / 515
+                                    - int64_t(optimism+J-400) * material * nnueComplexity * F   / 65536)
                    / 77777;
 
     // Damp down the evaluation linearly when shuffling

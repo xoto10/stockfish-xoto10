@@ -37,7 +37,7 @@
 
 namespace Stockfish {
 
-int A=539, B=1248, C=243, D=7839, E=7822, F=127, G=350, H=350, I=350, J=350, K=30, L=30;
+int A=559, B=1060, C=241, D=8116, E=7358, F= 86, G=370, H=128, I=90, J=128, K=27, L=29;
 TUNE(A, B, C, D, E, F, G, H, I, J, K, L);
 
 // Returns a static, purely materialistic evaluation of the position from
@@ -80,15 +80,15 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
 
     int material = A   * pos.count<PAWN>() + pos.non_pawn_material();
     int v        = (  nnue        * 74842
-                                    + nnue * material
+                                    + int64_t(nnue) * material * H / 128
                                     - int64_t(nnue+G-400) * B    * nnueComplexity / 256
-                                    - int64_t(nnue+H-400) * material * nnueComplexity * C   / 4194304
+                                    - int64_t(nnue+G-400) * material * nnueComplexity * C   / 4194304
                     + (nnue > 20) * (  material * K / 65536
                                      + nnueComplexity * L / 400)
                     + optimism    * D
-                                    + optimism * material
-                                    - int64_t(optimism+I-400) * E    * nnueComplexity / 515
-                                    - int64_t(optimism+J-400) * material * nnueComplexity * F   / 65536)
+                                    + optimism * material * J / 128
+                                    - int64_t(optimism+I-100) * E    * nnueComplexity / 515
+                                    - int64_t(optimism+I-100) * material * nnueComplexity * F   / 65536)
                    / 77777;
 
     // Damp down the evaluation linearly when shuffling

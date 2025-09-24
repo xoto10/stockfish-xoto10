@@ -37,7 +37,7 @@
 
 namespace Stockfish {
 
-int A=559, B=1060, C=241, D=8116, E=7358, F= 86, G=370, H=128, I=90, J=128, K=27, L=29;
+int A=531, B= 953, C=217, D=8505, E=6739, F=55, G=360, H=135, I=90, J=129, K=29, L=30;
 TUNE(A, B, C, D, E, F, G, H, I, J, K, L);
 
 // Returns a static, purely materialistic evaluation of the position from

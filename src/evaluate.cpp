@@ -37,9 +37,6 @@
 
 namespace Stockfish {
 
-int A=531, B= 953, C=217, D=8505, E=6739, F=55, G=360, H=135, I=90, J=129, K=29, L=30;
-TUNE(A, B, C, D, E, F, G, H, I, J, K, L);
-
 // Returns a static, purely materialistic evaluation of the position from
 // the point of view of the side to move. It can be divided by PawnValue to get
 // an approximation of the material advantage on the board in terms of pawns.
@@ -78,17 +75,17 @@ Value Eval::evaluate(const Eval::NNUE::Networks&    networks,
     // Blend optimism and eval with nnue complexity
     int nnueComplexity = std::abs(psqt - positional);
 
-    int material = A   * pos.count<PAWN>() + pos.non_pawn_material();
+    int material = 562 * pos.count<PAWN>() + pos.non_pawn_material();
     int v        = (  nnue        * 74842
-                                    + int64_t(nnue+G-400) * material                  * H / 128
-                                    - int64_t(nnue+G-400)            * nnueComplexity * B / 256
-                                    - int64_t(nnue+G-400) * material * nnueComplexity * C / 4194304
-                    + (nnue > 20) * (  material * K / 65536
-                                     + nnueComplexity * L / 400)
-                    + optimism    * D
-                                    +        (optimism+I-100) * material                  * J / 128
-                                    - int64_t(optimism+I-100)            * nnueComplexity * E / 515
-                                    - int64_t(optimism+I-100) * material * nnueComplexity * F / 65536)
+                                    +        (nnue-38) * material
+                                    - int64_t(nnue-38)            * nnueComplexity * 833 / 256
+                                    - int64_t(nnue-38) * material * nnueComplexity * 211 / 4194304
+                    + (nnue > 20) * (  material * 30 / 65536
+                                     + nnueComplexity * 17 / 256)
+                    + optimism    * 8530
+                                    +        (optimism-10) * material                  *  242 / 256
+                                    - int64_t(optimism-10)            * nnueComplexity * 2883 / 256
+                                    - int64_t(optimism-10) * material * nnueComplexity *   46 / 65536)
                    / 77777;
 
     // Damp down the evaluation linearly when shuffling

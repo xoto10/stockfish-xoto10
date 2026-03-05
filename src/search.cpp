@@ -152,6 +152,10 @@ bool is_shuffling(Move move, Stack* const ss, const Position& pos) {
 
 }  // namespace
 
+int A=178;
+int B=20;
+TUNE(A,B);
+
 Search::Worker::Worker(SharedState&                    sharedState,
                        std::unique_ptr<ISearchManager> sm,
                        size_t                          threadId,
@@ -480,7 +484,7 @@ void Search::Worker::iterative_deepening() {
             totBestMoveChanges += th->worker->bestMoveChanges;
             th->worker->bestMoveChanges = 0;
         }
-
+dbg_extremes_of(totBestMoveChanges);
         // Do we have time for the next iteration? Can we stop searching now?
         if (limits.use_time_management() && !threads.stop && !mainThread->stopOnPonderhit)
         {
@@ -500,7 +504,7 @@ void Search::Worker::iterative_deepening() {
 
             double reduction = (1.43 + mainThread->previousTimeReduction) / (2.28 * timeReduction);
 
-            double bestMoveInstability = 1.02 + 0.71 * totBestMoveChanges / threads.size();
+            double bestMoveInstability = 1.02 + (A/10000.0) * totBestMoveChanges / threads.size();
 
             double highBestMoveEffort = nodesEffort >= 93340 ? 0.76 : 1.0;
 
@@ -1343,7 +1347,7 @@ moves_loop:  // When in check, search starts here
                 // This information is used for time management. In MultiPV mode,
                 // we must take care to only do this for the first PV line.
                 if (moveCount > 1 && !pvIdx)
-                    bestMoveChanges += 2;
+                    bestMoveChanges += 4*B;
             }
             else
                 // All other moves but the PV, are set to the lowest value: this
@@ -1387,7 +1391,7 @@ moves_loop:  // When in check, search starts here
                 // This information is used for time management. In MultiPV mode,
                 // we must take care to only do this for the first PV line.
                 if (ss->ply == 1 && moveCount > 1 && !pvIdx)
-                    bestMoveChanges++;
+                    bestMoveChanges += 4*10;
             }
         }
 

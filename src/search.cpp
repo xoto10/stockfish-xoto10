@@ -1383,10 +1383,10 @@ moves_loop:  // When in check, search starts here
                 assert(depth > 0);
                 alpha = value;  // Update alpha! Always alpha < beta
 
-                // We record how often the best move has been changed in each iteration.
+                // We record how often the best reply has been changed in each iteration.
                 // This information is used for time management. In MultiPV mode,
                 // we must take care to only do this for the first PV line.
-                if (moveCount > 1 && !pvIdx)
+                if (ss->ply == 1 && moveCount > 1 && !pvIdx)
                     bestMoveChanges++;
             }
         }

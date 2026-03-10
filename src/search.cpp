@@ -153,7 +153,7 @@ bool is_shuffling(Move move, Stack* const ss, const Position& pos) {
 }  // namespace
 
 auto f1 = [](int m){return Range(m / 2, m * 3 / 2);};
-int A=380;
+int A=970;
 TUNE(SetRange(f1), A);
 
 Search::Worker::Worker(SharedState&                    sharedState,
@@ -1347,7 +1347,7 @@ moves_loop:  // When in check, search starts here
                 // This information is used for time management. In MultiPV mode,
                 // we must take care to only do this for the first PV line.
                 if (moveCount > 1 && !pvIdx)
-                    bestMoveChanges += 4;
+                    ++bestMoveChanges;
             }
             else
                 // All other moves but the PV, are set to the lowest value: this

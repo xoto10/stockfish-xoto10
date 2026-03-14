@@ -502,7 +502,7 @@ void Search::Worker::iterative_deepening() {
 
             double reduction = (1.43 + mainThread->previousTimeReduction) / (2.28 * timeReduction);
 
-            double bestMoveInstability = 1.02 + 1.15 * std::max(totBestMoveChanges, totBestReplyChanges) / threads.size();
+            double bestMoveInstability = 1.02 + 1.65 * std::max(totBestMoveChanges, totBestReplyChanges) / threads.size();
 
             double highBestMoveEffort = nodesEffort >= 93340 ? 0.76 : 1.0;
 

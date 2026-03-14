@@ -152,10 +152,6 @@ bool is_shuffling(Move move, Stack* const ss, const Position& pos) {
 
 }  // namespace
 
-auto f1 = [](int m){return Range(1, m * 2);};
-int A=40;
-TUNE(SetRange(f1), A);
-
 Search::Worker::Worker(SharedState&                    sharedState,
                        std::unique_ptr<ISearchManager> sm,
                        size_t                          threadId,
@@ -504,7 +500,7 @@ void Search::Worker::iterative_deepening() {
 
             double reduction = (1.43 + mainThread->previousTimeReduction) / (2.28 * timeReduction);
 
-            double bestMoveInstability = 1.02 + 0.38 * (40.0/A) * totBestMoveChanges / threads.size();
+            double bestMoveInstability = 1.02 + 0.321 * totBestMoveChanges / threads.size();
 
             double highBestMoveEffort = nodesEffort >= 93340 ? 0.76 : 1.0;
 
@@ -1347,7 +1343,7 @@ moves_loop:  // When in check, search starts here
                 // This information is used for time management. In MultiPV mode,
                 // we must take care to only do this for the first PV line.
                 if (moveCount > 1 && !pvIdx)
-                    bestMoveChanges += A;
+                    bestMoveChanges += 5;
             }
             else
                 // All other moves but the PV, are set to the lowest value: this
@@ -1391,7 +1387,7 @@ moves_loop:  // When in check, search starts here
                 // This information is used for time management. In MultiPV mode,
                 // we must take care to only do this for the first PV line.
                 if (ss->ply == 1 && moveCount > 1 && !pvIdx)
-                    bestMoveChanges += 10;
+                    bestMoveChanges++;
             }
         }
 

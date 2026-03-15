@@ -479,6 +479,7 @@ void Search::Worker::iterative_deepening() {
         {
             totBestMoveChanges += th->worker->bestMoveChanges;
             totBestReplyChanges += th->worker->bestReplyChanges;
+sync_cout << "info string hogwrk -" << " mvs " << th->worker->bestMoveChanges << " replies " << th->worker->bestReplyChanges << sync_endl;
             th->worker->bestMoveChanges = 0;
             th->worker->bestReplyChanges = 0;
         }
@@ -503,6 +504,7 @@ void Search::Worker::iterative_deepening() {
             double reduction = (1.43 + mainThread->previousTimeReduction) / (2.28 * timeReduction);
 
             double bestMoveInstability = 1.02 + 0.600 * std::max(3*totBestMoveChanges, totBestReplyChanges) / threads.size();
+sync_cout << "info string hogdep " << completedDepth << " mvs " << totBestMoveChanges << " replies " << totBestReplyChanges << sync_endl;
 
             double highBestMoveEffort = nodesEffort >= 93340 ? 0.76 : 1.0;
 
@@ -1388,7 +1390,7 @@ moves_loop:  // When in check, search starts here
                 // We record how often the best reply has been changed in each iteration.
                 // This information is used for time management. In MultiPV mode,
                 // we must take care to only do this for the first PV line.
-                if (ss->ply == 1 && moveCount > 1 && !pvIdx)
+                if (ss->ply == 1 && PvNode && moveCount > 1 && !pvIdx)
                     ++bestReplyChanges;
             }
         }

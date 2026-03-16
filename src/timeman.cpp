@@ -28,7 +28,7 @@
 
 namespace Stockfish {
 
-int A=194;
+int A=192;
 TUNE(A);
 
 TimePoint TimeManagement::optimum() const { return optimumTime; }

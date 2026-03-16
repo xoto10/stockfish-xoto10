@@ -152,6 +152,10 @@ bool is_shuffling(Move move, Stack* const ss, const Position& pos) {
 
 }  // namespace
 
+//auto f1 = [](int m){return m < 20 ? Range(m - 20, m + 20) : Range(m / 2, m * 3 / 2);};
+int A=190, B=0, C=500;
+//TUNE(SetRange(f1), A, B, C);
+
 Search::Worker::Worker(SharedState&                    sharedState,
                        std::unique_ptr<ISearchManager> sm,
                        size_t                          threadId,
@@ -268,7 +272,7 @@ void Search::Worker::iterative_deepening() {
     Value  alpha, beta;
     Value  bestValue     = -VALUE_INFINITE;
     Color  us            = rootPos.side_to_move();
-    double timeReduction = 1, totBestMoveChanges = 0;
+    double timeReduction = 1, totBestMoveChanges = 0, totBestReplyChanges = 0;
     int    delta, iterIdx                        = 0;
 
     // Allocate stack with extra size to allow access from (ss - 7) to (ss + 2):
@@ -322,7 +326,7 @@ void Search::Worker::iterative_deepening() {
     {
         // Age out PV variability metric
         if (mainThread)
-            totBestMoveChanges /= 2;
+            totBestMoveChanges /= 2, totBestReplyChanges /= 2;
 
         // Save the last iteration's scores before the first PV line is searched and
         // all the move scores except the (new) PV are set to -VALUE_INFINITE.
@@ -478,7 +482,9 @@ void Search::Worker::iterative_deepening() {
         for (auto&& th : threads)
         {
             totBestMoveChanges += th->worker->bestMoveChanges;
+            totBestReplyChanges += th->worker->bestReplyChanges;
             th->worker->bestMoveChanges = 0;
+            th->worker->bestReplyChanges = 0;
         }
 
         // Do we have time for the next iteration? Can we stop searching now?
@@ -500,7 +506,8 @@ void Search::Worker::iterative_deepening() {
 
             double reduction = (1.43 + mainThread->previousTimeReduction) / (2.28 * timeReduction);
 
-            double bestMoveInstability = 1.02 + 2.14 * totBestMoveChanges / threads.size();
+            double bestMoveInstability = 1.02 + ((A/100.0) * totBestMoveChanges + (B/1000.0) * std::max(0.0, totBestReplyChanges - C/1000.0))
+                                                / threads.size();
 
             double highBestMoveEffort = nodesEffort >= 93340 ? 0.76 : 1.0;
 
@@ -1382,6 +1389,12 @@ moves_loop:  // When in check, search starts here
 
                 assert(depth > 0);
                 alpha = value;  // Update alpha! Always alpha < beta
+
+                // We record how often the best reply has been changed in each iteration.
+                // This information is used for time management. In MultiPV mode,
+                // we must take care to only do this for the first PV line.
+                if (ss->ply == 1 && PvNode && moveCount > 1 && !pvIdx)
+                    ++bestReplyChanges;
             }
         }
 

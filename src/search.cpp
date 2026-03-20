@@ -152,7 +152,7 @@ bool is_shuffling(Move move, Stack* const ss, const Position& pos) {
 
 }  // namespace
 
-int A=250;
+int A=344;
 TUNE(A);
 
 Search::Worker::Worker(SharedState&                    sharedState,
@@ -521,7 +521,7 @@ void Search::Worker::iterative_deepening() {
 
             double reduction = (1.5 + mainThread->previousTimeReduction) / (2.255 * timeReduction);
 
-            double bestMoveInstability = 1.088 + std::max(2.315 * totBestMoveChanges, 3.44 * (totBestReplyChanges - (A/1000.0)))
+            double bestMoveInstability = 1.088 + std::max(2.315 * totBestMoveChanges, (A/100.0) * (totBestReplyChanges - 0.3))
                                                 / threads.size();
 
             double highBestMoveEffort = nodesEffort > 86000 ? 0.74 : 0.96;

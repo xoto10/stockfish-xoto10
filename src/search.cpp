@@ -532,6 +532,10 @@ void Search::Worker::iterative_deepening() {
             // Stop the search if we have exceeded the totalTime or maximum
             if (elapsedTime > std::min(totalTime, double(mainThread->tm.maximum())))
             {
+                // If this move was a super-long think use less time on next move
+                if (elapsedTime > 0.5 * mainThread->tm.maximum() && elapsedTime > 10 * limits.inc[us])
+                    timeReduction = 0.64;
+
                 // If we are allowed to ponder do not stop the search now but
                 // keep pondering until the GUI sends "ponderhit" or "stop".
                 if (mainThread->ponder)

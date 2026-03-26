@@ -533,7 +533,7 @@ void Search::Worker::iterative_deepening() {
             if (elapsedTime > std::min(totalTime, double(mainThread->tm.maximum())))
             {
                 // If this move was a super-long think use less time on next move
-                if (elapsedTime > mainThread->tm.maximum() && elapsedTime > 10 * limits.inc[us])
+                if (elapsedTime > 0.5 * mainThread->tm.maximum())
                     timeReduction = 0.64;
 
                 // If we are allowed to ponder do not stop the search now but

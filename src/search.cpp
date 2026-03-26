@@ -152,6 +152,10 @@ bool is_shuffling(Move move, Stack* const ss, const Position& pos) {
 
 }  // namespace
 
+auto f1 = [](int m){return Range(m / 2, m * 3 / 2);};
+int A=289, B=270;
+TUNE(SetRange(f1), A, B);
+
 Search::Worker::Worker(SharedState&                    sharedState,
                        std::unique_ptr<ISearchManager> sm,
                        size_t                          threadId,
@@ -535,7 +539,7 @@ void Search::Worker::iterative_deepening() {
                 // Adjust timeReduction (used on next move)
                 double low = 0.19 * mainThread->tm.optimum();
                 double pct = std::max(0.01, std::min(0.99, (elapsedTime - low) / (mainThread->tm.maximum() - low)));
-                timeReduction = -0.28854 * std::log(pct) + 0.54; // 0.54 to 1.87
+                timeReduction = std::max(0.1, std::min(5.0, -(A/1000.0) * std::log(pct) + (B/500.0))); // ??
 //sync_cout << "info string low " << low << " high " << mainThread->tm.maximum() << " elap " << elapsedTime << " pct "
 //          << pct << " tRed " << timeReduction << sync_endl;
 

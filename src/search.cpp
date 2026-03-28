@@ -152,6 +152,10 @@ bool is_shuffling(Move move, Stack* const ss, const Position& pos) {
 
 }  // namespace
 
+auto f1 = [](int m){return Range(m / 2, m * 3 / 2);};
+int MTR[] = {640, 800, 1000, 1200, 1400, 1600};
+TUNE(SetRange(f1), MTR);
+
 Search::Worker::Worker(SharedState&                    sharedState,
                        std::unique_ptr<ISearchManager> sm,
                        size_t                          threadId,
@@ -529,10 +533,17 @@ void Search::Worker::iterative_deepening() {
             // Stop the search if we have exceeded the totalTime or maximum
             if (elapsedTime > std::min(totalTime, double(mainThread->tm.maximum())))
             {
-                // Adjust timeReduction (used on next move)
-                double low = 0.19 * mainThread->tm.optimum();
-                double pct = std::max(0.01, std::min(0.99, (elapsedTime - low) / (mainThread->tm.maximum() - low)));
-                timeReduction = std::max(0.1, std::min(5.0, -0.290 * std::log(pct) + 0.524)); // ~ 0.53-1.86
+                // If not playing on increments adjust timeReduction (used on next move)
+                if (limits.time[us] > 3 * limits.inc[us])
+                {
+//                  static double MoveTimeReductions[] = {0.64, 0.8, 1.0, 1.2, 1.4, 1.6};
+                    double low = 0.19 * mainThread->tm.optimum();
+                    double pct = std::max(0.01, std::min(0.99, (elapsedTime - low) / (mainThread->tm.maximum() - low)));
+                    int i = std::min(5.0, std::floor(-1.4427 * std::log(pct))); // 0-5
+                    timeReduction = MTR[i]/1000.0;
+//sync_cout << "info string low " << low << " high " << mainThread->tm.maximum() << " elap " << elapsedTime << " pct "
+//          << pct << " i " << i << " tRed " << timeReduction << sync_endl;
+                }
 
                 // If we are allowed to ponder do not stop the search now but
                 // keep pondering until the GUI sends "ponderhit" or "stop".

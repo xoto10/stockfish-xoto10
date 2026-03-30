@@ -152,10 +152,10 @@ bool is_shuffling(Move move, Stack* const ss, const Position& pos) {
 
 }  // namespace
 
-auto f1 = [](int m){return Range(m / 2, m * 3 / 2);};
-int MTR[] = {640, 800, 1000, 1200, 1400, 1600};
-int WTS[] = {100, 50, 50, 50, 50, 50};
-TUNE(SetRange(f1), MTR);
+//auto f1 = [](int m){return Range(m / 2, m * 3 / 2);};
+int MTR[] = {650, 800, 1000, 1325, 1325, 1650};
+int WTS[] = {100, 50, 48, 50, 50, 55};
+//TUNE(SetRange(f1), MTR);
 TUNE(SetRange(0,100), WTS);
 
 Search::Worker::Worker(SharedState&                    sharedState,

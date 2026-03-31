@@ -154,7 +154,7 @@ bool is_shuffling(Move move, Stack* const ss, const Position& pos) {
 
 //auto f1 = [](int m){return Range(m / 2, m * 3 / 2);};
 int MTR[] = {650, 800, 1000, 1325, 1325, 1650};
-int WTS[] = {100, 50, 48, 50, 50, 55};
+int WTS[] = {/*100,*/ 64, 44, 45, 42 /*, 55*/};
 //TUNE(SetRange(f1), MTR);
 TUNE(SetRange(0,100), WTS);
 
@@ -543,7 +543,12 @@ void Search::Worker::iterative_deepening() {
                     double low = 0.19 * mainThread->tm.optimum();
                     double pct = std::max(0.01, std::min(0.99, (elapsedTime - low) / (mainThread->tm.maximum() - low)));
                     int i = std::min(5.0, std::floor(-1.4427 * std::log(pct))); // 0-5
-                    timeReduction = (WTS[i] * MTR[i]/1000.0 + (100-WTS[i]) * timeReduction) / 100.0;
+                    if (i == 0)
+                        timeReduction = MTR[i]/1000.0;
+                    else if (i == 5)
+                        timeReduction = (0.55 * MTR[i]/1000.0 + 0.45 * timeReduction) / 100.0;
+                    else
+                        timeReduction = (WTS[i-1] * MTR[i]/1000.0 + (100-WTS[i-1]) * timeReduction) / 100.0;
 //sync_cout << "info string low " << low << " high " << mainThread->tm.maximum() << " elap " << elapsedTime << " pct "
 //          << pct << " i " << i << " orig " << origTR << " tRed " << timeReduction << sync_endl;
                 }

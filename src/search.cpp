@@ -152,11 +152,8 @@ bool is_shuffling(Move move, Stack* const ss, const Position& pos) {
 
 }  // namespace
 
-//auto f1 = [](int m){return Range(m / 2, m * 3 / 2);};
-int MTR[] = {650, 800, 1000, 1325, 1325, 1650};
-int WTS[] = {/*100,*/ 64, 44, 45, 42 /*, 55*/};
-//TUNE(SetRange(f1), MTR);
-TUNE(SetRange(0,100), WTS);
+int A=650, B=850;
+TUNE(A, B);
 
 Search::Worker::Worker(SharedState&                    sharedState,
                        std::unique_ptr<ISearchManager> sm,
@@ -535,23 +532,16 @@ void Search::Worker::iterative_deepening() {
             // Stop the search if we have exceeded the totalTime or maximum
             if (elapsedTime > std::min(totalTime, double(mainThread->tm.maximum())))
             {
-                // If not playing on increments adjust timeReduction (used on next move)
-                if (limits.time[us] > 3 * limits.inc[us])
-                {
-//                  static double MoveTimeReductions[] = {0.64, 0.8, 1.0, 1.2, 1.4, 1.6};
+                // Adjust timeReduction (used on next move)
 //double origTR = timeReduction;
-                    double low = 0.19 * mainThread->tm.optimum();
-                    double pct = std::max(0.01, std::min(0.99, (elapsedTime - low) / (mainThread->tm.maximum() - low)));
-                    int i = std::min(5.0, std::floor(-1.4427 * std::log(pct))); // 0-5
-                    if (i == 0)
-                        timeReduction = MTR[i]/1000.0;
-                    else if (i == 5)
-                        timeReduction = (0.55 * MTR[i]/1000.0 + 0.45 * timeReduction) / 100.0;
-                    else
-                        timeReduction = (WTS[i-1] * MTR[i]/1000.0 + (100-WTS[i-1]) * timeReduction) / 100.0;
+                double low = 0.19 * mainThread->tm.optimum();
+                double pct = std::max(0.01, std::min(0.99, (elapsedTime - low) / (mainThread->tm.maximum() - low)));
+                if (pct > 0.5)
+                    timeReduction = std::min(A/1000.0, timeReduction);
+                else if (pct > 0.25)
+                    timeReduction = std::min(B/1000.0, timeReduction);
 //sync_cout << "info string low " << low << " high " << mainThread->tm.maximum() << " elap " << elapsedTime << " pct "
-//          << pct << " i " << i << " orig " << origTR << " tRed " << timeReduction << sync_endl;
-                }
+//          << pct << " orig " << origTR << " tRed " << timeReduction << sync_endl;
 
                 // If we are allowed to ponder do not stop the search now but
                 // keep pondering until the GUI sends "ponderhit" or "stop".

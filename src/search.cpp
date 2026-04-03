@@ -152,9 +152,6 @@ bool is_shuffling(Move move, Stack* const ss, const Position& pos) {
 
 }  // namespace
 
-int A=650, B=850;
-TUNE(A, B);
-
 Search::Worker::Worker(SharedState&                    sharedState,
                        std::unique_ptr<ISearchManager> sm,
                        size_t                          threadId,
@@ -532,16 +529,13 @@ void Search::Worker::iterative_deepening() {
             // Stop the search if we have exceeded the totalTime or maximum
             if (elapsedTime > std::min(totalTime, double(mainThread->tm.maximum())))
             {
-                // Adjust timeReduction (used on next move)
-//double origTR = timeReduction;
+                // Adjust timeReduction (used on next move) particularly after long thinks (i=0,1)
+                static double MoveTimeWeights[]    = {1.000, 0.800, 0.320, 0.320, 0.320, 0.550};
+                static double MoveTimeReductions[] = {0.650, 0.800, 1.000, 1.325, 1.325, 1.650};
                 double low = 0.19 * mainThread->tm.optimum();
                 double pct = std::max(0.01, std::min(0.99, (elapsedTime - low) / (mainThread->tm.maximum() - low)));
-                if (pct > 0.5)
-                    timeReduction = std::min(A/1000.0, timeReduction);
-                else if (pct > 0.25)
-                    timeReduction = std::min(B/1000.0, timeReduction);
-//sync_cout << "info string low " << low << " high " << mainThread->tm.maximum() << " elap " << elapsedTime << " pct "
-//          << pct << " orig " << origTR << " tRed " << timeReduction << sync_endl;
+                int i = std::min(5.0, std::floor(-1.4427 * std::log(pct))); // 0-5
+                timeReduction = (MoveTimeWeights[i] * MoveTimeReductions[i] + (1.0-MoveTimeWeights[i]) * timeReduction);
 
                 // If we are allowed to ponder do not stop the search now but
                 // keep pondering until the GUI sends "ponderhit" or "stop".

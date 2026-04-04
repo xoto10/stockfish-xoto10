@@ -258,6 +258,13 @@ void ThreadPool::clear() {
     for (auto&& th : threads)
         th->wait_for_search_finished();
 
+    for (int i=0; i<256; i++)
+        for (int j=0; j<3; j++)
+            candidates[i][j] = Move::none();
+
+    candidatesThreadNum = num_threads() > 1 ? 1 : 0;
+    sync_cout << "info string candidates are being processed by thread " << candidatesThreadNum << sync_endl;
+
     // These two affect the time taken on the first move of a game:
     main_manager()->bestPreviousAverageScore = VALUE_INFINITE;
     main_manager()->previousTimeReduction    = 0.85;
@@ -426,6 +433,24 @@ void ThreadPool::start_searching() {
             th->start_searching();
 }
 
+// Add candidate to array if not already there
+void ThreadPool::add_candidate(const std::optional<CandidateMessage> opt, const int j) {
+    CandidateMessage cm = *opt;
+    int ply = cm.get_ply();
+    Move mv = cm.get_move();
+
+    for (int i=0; i<3; i++)
+    {
+        if (candidates[ply][i] == mv)
+            return;
+        else if (candidates[ply][i] == Move::none())
+        {
+            candidates[ply][i] = mv;
+            return;
+        }
+    }
+    candidates[ply][j] = mv;
+}
 
 // Wait for non-main threads
 void ThreadPool::wait_for_search_finished() const {

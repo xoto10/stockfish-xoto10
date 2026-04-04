@@ -88,6 +88,7 @@ MovePicker::MovePicker(const Position&              p,
                        const CapturePieceToHistory* cph,
                        const PieceToHistory**       ch,
                        const SharedHistories*       sh,
+                       const Move*                  can,
                        int                          pl) :
     pos(p),
     mainHistory(mh),
@@ -95,6 +96,7 @@ MovePicker::MovePicker(const Position&              p,
     captureHistory(cph),
     continuationHistory(ch),
     sharedHistory(sh),
+    candidates(can),
     ttMove(ttm),
     depth(d),
     ply(pl) {
@@ -108,9 +110,10 @@ MovePicker::MovePicker(const Position&              p,
 
 // MovePicker constructor for ProbCut: we generate captures with Static Exchange
 // Evaluation (SEE) greater than or equal to the given threshold.
-MovePicker::MovePicker(const Position& p, Move ttm, int th, const CapturePieceToHistory* cph) :
+MovePicker::MovePicker(const Position& p, Move ttm, int th, const CapturePieceToHistory* cph, const Move* can) :
     pos(p),
     captureHistory(cph),
+    candidates(can),
     ttMove(ttm),
     threshold(th) {
     assert(!pos.checkers());
@@ -185,6 +188,15 @@ ExtMove* MovePicker::score(const MoveList<Type>& ml) {
                 m.value = PieceValue[capturedPiece] + (1 << 28);
             else
                 m.value = (*mainHistory)[us][m.raw()] + (*continuationHistory[0])[pc][to];
+        }
+
+        if (candidates != nullptr)
+        {
+            static constexpr int c[] = {0, 1, 2, 6, 7, 8};
+            static constexpr int v[] = {1000, 3000, 5000, 1000, 3000, 5000};
+            for (int i=0; i<6; i++)
+                if (*(candidates+c[i]) == m)
+                    m.value += v[i];
         }
     }
     return it;

@@ -33,6 +33,7 @@
 #include "position.h"
 #include "search.h"
 #include "thread_win32_osx.h"
+#include "tsqueue.h"
 
 namespace Stockfish {
 
@@ -64,6 +65,19 @@ class OptionalThreadToNumaNodeBinder {
    private:
     const NumaConfig* numaConfig;
     NumaIndex         numaId;
+};
+
+// Used to send pv moves to be stored in candidates array
+class CandidateMessage {
+   public:
+    CandidateMessage(int p, Move m) : ply(p), mv(m) {}
+
+    int get_ply() { return ply; }
+    Move get_move() { return mv; }
+
+   private:
+    int ply;
+    Move mv;
 };
 
 // Abstraction of a thread. It contains a pointer to the worker and a native thread.
@@ -147,6 +161,7 @@ class ThreadPool {
     uint64_t               tb_hits() const;
     Thread*                get_best_thread() const;
     void                   start_searching();
+    void                   add_candidate(const std::optional<CandidateMessage> opt, const int j);
     void                   wait_for_search_finished() const;
 
     std::vector<size_t> get_bound_thread_count_by_numa_node() const;
@@ -154,6 +169,12 @@ class ThreadPool {
     void ensure_network_replicated();
 
     std::atomic_bool stop, increaseDepth;
+
+    // candidates are moves that have been in the PV.
+    // They are stored in an array indexed by ply.
+    Move candidates[256][3];
+    ThreadsafeQueue<CandidateMessage> candidateQ;
+    size_t candidates_thread_num() { return candidatesThreadNum; }
 
     auto cbegin() const noexcept { return threads.cbegin(); }
     auto begin() noexcept { return threads.begin(); }
@@ -166,6 +187,7 @@ class ThreadPool {
     StateListPtr                         setupStates;
     std::vector<std::unique_ptr<Thread>> threads;
     std::vector<NumaIndex>               boundThreadToNumaNode;
+    size_t                               candidatesThreadNum;
 
     uint64_t accumulate(std::atomic<uint64_t> Search::Worker::* member) const {
 

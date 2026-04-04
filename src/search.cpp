@@ -480,6 +480,16 @@ void Search::Worker::iterative_deepening() {
                     && VALUE_MATE + rootMoves[0].score <= 2 * limits.mate)))
             threads.stop = true;
 
+        if (threadIdx == threads.candidates_thread_num() )
+        {
+            std::optional<CandidateMessage> opt = threads.candidateQ.pop();
+            while (opt)
+            {
+                threads.add_candidate(opt, int(nodes & 1ul));
+                opt = threads.candidateQ.pop();
+            }
+        }
+
         if (!mainThread)
             continue;
 
@@ -961,7 +971,7 @@ Value Search::Worker::search(
     {
         assert(probCutBeta < VALUE_INFINITE && probCutBeta > beta);
 
-        MovePicker mp(pos, ttData.move, probCutBeta - ss->staticEval, &captureHistory);
+        MovePicker mp(pos, ttData.move, probCutBeta - ss->staticEval, &captureHistory, (Move *)nullptr);
         Depth      probCutDepth = depth - 4;
 
         while ((move = mp.next_move()) != Move::none())
@@ -1011,8 +1021,7 @@ moves_loop:  // When in check, search starts here
 
 
     MovePicker mp(pos, ttData.move, depth, &mainHistory, &lowPlyHistory, &captureHistory, contHist,
-                  &sharedHistory, ss->ply);
-
+                  &sharedHistory, (Move *)&threads.candidates[std::max(0, ss->ply-2)], ss->ply);
     value = bestValue;
 
     int moveCount = 0;
@@ -1361,6 +1370,12 @@ moves_loop:  // When in check, search starts here
                 // we must take care to only do this for the first PV line.
                 if (moveCount > 1 && !pvIdx)
                     ++bestMoveChanges;
+
+                if (ss->ply + depth > 5)
+                {
+                    CandidateMessage cm = CandidateMessage(ss->ply, move);
+                    threads.candidateQ.push(cm);
+                }
             }
             else
                 // All other moves but the PV, are set to the lowest value: this
@@ -1630,7 +1645,7 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta)
     // the moves. We presently use two stages of move generator in quiescence search:
     // captures, or evasions only when in check.
     MovePicker mp(pos, ttData.move, DEPTH_QS, &mainHistory, &lowPlyHistory, &captureHistory,
-                  contHist, &sharedHistory, ss->ply);
+                  contHist, &sharedHistory, (Move *)&threads.candidates[std::max(0, ss->ply-2)], ss->ply);
 
     // Step 5. Loop through all pseudo-legal moves until no moves remain or a beta
     // cutoff occurs.

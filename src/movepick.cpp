@@ -74,8 +74,6 @@ void partial_insertion_sort(ExtMove* begin, ExtMove* end, int limit) {
 
 }  // namespace
 
-static int V[] = {1000, 3000, 5000, 1000, 3000, 5000};
-TUNE(SetRange(-20000,25000), V);
 
 // Constructors of the MovePicker class. As arguments, we pass information
 // to decide which class of moves to emit, to help sorting the (presumably)
@@ -195,10 +193,10 @@ ExtMove* MovePicker::score(const MoveList<Type>& ml) {
         if (candidates != nullptr)
         {
             static constexpr int c[] = {0, 1, 2, 6, 7, 8};
-//          static constexpr int v[] = {1000, 3000, 5000, 1000, 3000, 5000};
+            static constexpr int v[] = {1000, 3000, 5000, 1000, 3000, 5000};
             for (int i=0; i<6; i++)
                 if (*(candidates+c[i]) == m)
-                    m.value += V[i];
+                    m.value += v[i];
         }
     }
     return it;

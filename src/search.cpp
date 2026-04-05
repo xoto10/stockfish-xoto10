@@ -1022,6 +1022,7 @@ moves_loop:  // When in check, search starts here
 
     MovePicker mp(pos, ttData.move, depth, &mainHistory, &lowPlyHistory, &captureHistory, contHist,
                   &sharedHistory, (Move *)&threads.candidates[std::max(0, ss->ply-2)], ss->ply);
+
     value = bestValue;
 
     int moveCount = 0;

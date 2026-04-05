@@ -193,7 +193,7 @@ ExtMove* MovePicker::score(const MoveList<Type>& ml) {
         if (candidates != nullptr)
         {
             static constexpr int c[] = {0, 1, 2, 6, 7, 8};
-            static constexpr int v[] = {1000, 3000, 5000, 1000, 3000, 5000};
+            static constexpr int v[] = {2091, 5403, 5830, -2113, 1943, 4212};
             for (int i=0; i<6; i++)
                 if (*(candidates+c[i]) == m)
                     m.value += v[i];

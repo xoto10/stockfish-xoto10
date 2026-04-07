@@ -468,6 +468,7 @@ class Move {
     constexpr explicit operator bool() const { return data != 0; }
 
     constexpr std::uint16_t raw() const { return data; }
+    constexpr std::uint16_t raw12() const { return data & 4095; }
 
     struct MoveHash {
         std::size_t operator()(const Move& m) const { return make_key(m.data); }

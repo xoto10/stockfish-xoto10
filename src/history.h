@@ -40,7 +40,7 @@ constexpr int UINT_16_HISTORY_SIZE     = std::numeric_limits<uint16_t>::max() + 
 constexpr int CORRHIST_BASE_SIZE       = UINT_16_HISTORY_SIZE;
 constexpr int CORRECTION_HISTORY_LIMIT = 1024;
 constexpr int LOW_PLY_BASE_SIZE        = 4096;
-constexpr int LOW_PLY_HISTORY_SIZE     = 5;
+constexpr int LOW_PLY_HISTORY_SIZE     = 10;
 
 static_assert((PAWN_HISTORY_BASE_SIZE & (PAWN_HISTORY_BASE_SIZE - 1)) == 0,
               "PAWN_HISTORY_BASE_SIZE has to be a power of 2");

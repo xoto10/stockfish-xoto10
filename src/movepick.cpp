@@ -175,7 +175,8 @@ ExtMove* MovePicker::score(const MoveList<Type>& ml) {
             m.value += PieceValue[pt] * v;
 
 
-            uint16_t idx = (msb(Bitboard(ply)) << 12) & m.raw12();
+            uint16_t bit = ply ? msb(Bitboard(ply)) + 1 : 0;
+            uint16_t idx = (bit << 12) & m.raw12();
             m.value += 8 * (*lowPlyHistory)[idx] / (1 + ply);
         }
 

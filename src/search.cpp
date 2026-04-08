@@ -1917,7 +1917,8 @@ void update_quiet_histories(
     Color us = pos.side_to_move();
     workerThread.mainHistory[us][move.raw()] << bonus;  // Untuned to prevent duplicate effort
 
-    uint16_t idx = (msb(Bitboard(ss->ply)) << 12) & move.raw12();
+    uint16_t bit = ss->ply ? msb(Bitboard(ss->ply)) + 1 : 0;
+    uint16_t idx = (bit << 12) & move.raw12();
     workerThread.lowPlyHistory[idx] << bonus * 682 / 1024;
 
     update_continuation_histories(ss, pos.moved_piece(move), move.to_sq(), bonus * 894 / 1024);

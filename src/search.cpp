@@ -132,6 +132,7 @@ void  update_pv(Move* pv, Move move, const Move* childPv);
 void  update_continuation_histories(Stack* ss, Piece pc, Square to, int bonus);
 void  update_quiet_histories(
    const Position& pos, Stack* ss, Search::Worker& workerThread, Move move, int bonus);
+template<NodeType nodeType>
 void update_all_stats(const Position& pos,
                       Stack*          ss,
                       Search::Worker& workerThread,
@@ -1429,8 +1430,12 @@ moves_loop:  // When in check, search starts here
     // we update the stats of searched moves.
     else if (bestMove)
     {
-        update_all_stats(pos, ss, *this, bestMove, prevSq, quietsSearched, capturesSearched, depth,
-                         ttData.move);
+        if (PvNode)
+            update_all_stats<PV>(pos, ss, *this, bestMove, prevSq, quietsSearched, capturesSearched, depth,
+                                 ttData.move);
+        else
+            update_all_stats<NonPV>(pos, ss, *this, bestMove, prevSq, quietsSearched, capturesSearched, depth,
+                                    ttData.move);
         if (!PvNode)
             ttMoveHistory << (bestMove == ttData.move ? 805 : -787);
     }
@@ -1829,6 +1834,7 @@ void update_pv(Move* pv, Move move, const Move* childPv) {
 
 
 // Updates stats at the end of search() when a bestMove is found
+template<NodeType nodeType>
 void update_all_stats(const Position& pos,
                       Stack*          ss,
                       Search::Worker& workerThread,
@@ -1844,7 +1850,7 @@ void update_all_stats(const Position& pos,
     PieceType              capturedPiece;
 
     int bonus =
-      std::min(128 * depth - 77, 1529) + 353 * (bestMove == ttMove) + (ss - 1)->statScore / 32;
+      std::min(128 * depth - 77, 1529) + 1000 * (nodeType == PV) + 353 * (bestMove == ttMove) + (ss - 1)->statScore / 32;
     int malus = std::min(882 * depth - 204, 2122);
 
     if (!pos.capture_stage(bestMove))

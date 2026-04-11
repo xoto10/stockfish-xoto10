@@ -74,7 +74,6 @@ void partial_insertion_sort(ExtMove* begin, ExtMove* end, int limit) {
 
 }  // namespace
 
-static constexpr int LowPlyMult[9] = {80, 80, 80, 70, 37, 35, 33, 20, 5};
 
 // Constructors of the MovePicker class. As arguments, we pass information
 // to decide which class of moves to emit, to help sorting the (presumably)
@@ -175,9 +174,10 @@ ExtMove* MovePicker::score(const MoveList<Type>& ml) {
             int v = 20 * (bool(threatByLesser[pt] & from) - bool(threatByLesser[pt] & to));
             m.value += PieceValue[pt] * v;
 
+
             uint16_t bit = ply ? msb(Bitboard(ply)) + 1 : 0;
             uint16_t idx = (bit << 12) & m.raw12();
-            m.value += LowPlyMult[bit] * (*lowPlyHistory)[idx] / (10 * (1 + ply));
+            m.value += (8 - bit) * (*lowPlyHistory)[idx] / (1 + ply);
         }
 
         else  // Type == EVASIONS

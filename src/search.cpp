@@ -1037,6 +1037,7 @@ moves_loop:  // When in check, search starts here
             continue;
 
         ss->moveCount = ++moveCount;
+        dbg_hit_on(true, 4);
 
         if (rootNode && is_mainthread() && nodes > NODES_LIMIT_OUTPUT)
         {
@@ -1092,13 +1093,26 @@ moves_loop:  // When in check, search starts here
                 // SEE based pruning for captures and checks
                 // Avoid pruning sacrifices of our last piece for stalemate
                 int margin = 167 * depth + captHist * 34 / 1024;
+                bool adj = false;
+                dbg_hit_on(true, 0);                                                         // only ~10% moves get here
                 if (165 < ss->staticEval && ss->staticEval < 500 && PieceValue[movedPiece] > PieceValue[capturedPiece]
-                    && (nodes & 7ul) == 0)
+//                  && (nodes & 7ul) == 0)                                                   // adjusts ~1.5% of margins
+                    && (nodes & 255ul) > 127)                                                // adjusts ~6.2% of margins, prevents ~8% of prunes
+                {
+                    dbg_hit_on(true, 1);     
+                    adj = true;
                     margin += 300;
+                }
                 margin = std::max(margin, 0);
                 if ((alpha >= VALUE_DRAW || pos.non_pawn_material(us) != PieceValue[movedPiece])
                     && !pos.see_ge(move, -margin))
+                {
+                    dbg_hit_on(true, 2);                                                     // prunes ~40% of time
                     continue;
+                }
+                else if (adj) {
+                        dbg_hit_on(pos.see_ge(move, -(margin-300)), 3);                      // ~50-60% of adjusts prevent prune
+                }
             }
             else if (!ss->followPV || !PvNode)
             {

@@ -498,6 +498,8 @@ bool Search::Worker::iterative_deepening() {
             uint64_t nodesEffort =
               rootMoves[0].effort * 100000 / std::max(uint64_t(1), uint64_t(nodes));
 
+            double winning = 1.0 + std::clamp(bestValue, -260, 260) / -1300.0;
+
             double fallingEval = (12.44 + 2.318 * (mainThread->bestPreviousAverageScore - bestValue)
                                   + 0.95 * (mainThread->iterValue[iterIdx] - bestValue))
                                / 100.0;
@@ -517,7 +519,7 @@ bool Search::Worker::iterative_deepening() {
               interpolate(int64_t(nodesEffort), int64_t(78000), int64_t(94000), 0.96, 0.74), 0.74,
               0.96);
 
-            double totalTime = mainThread->tm.optimum() * fallingEval * reduction
+            double totalTime = mainThread->tm.optimum() * winning * fallingEval * reduction
                              * bestMoveInstability * highBestMoveEffort;
 
             // Cap used time in case of a single legal move for a better viewer experience

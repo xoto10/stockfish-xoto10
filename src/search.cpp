@@ -155,7 +155,7 @@ bool is_shuffling(Move move, Stack* const ss, const Position& pos) {
 
 }  // namespace
 
-int A=1700, B=1700;
+int A=80, B=80;
 TUNE(A, B);
 
 Search::Worker::Worker(SharedState&                    sharedState,
@@ -501,7 +501,7 @@ bool Search::Worker::iterative_deepening() {
             uint64_t nodesEffort =
               rootMoves[0].effort * 100000 / std::max(uint64_t(1), uint64_t(nodes));
 
-            double winning = 1.0 + std::clamp(bestValue, -260, 260) / (bestValue > 0 ? -1.0*A : -1.0*B);
+            double winning = 1.0 + std::clamp(bestValue, -260, 260) * (bestValue > 0 ? A/100000.0 : B/100000.0);
 
             double fallingEval = (12.44 + 2.318 * (mainThread->bestPreviousAverageScore - bestValue)
                                   + 0.95 * (mainThread->iterValue[iterIdx] - bestValue))

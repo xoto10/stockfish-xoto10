@@ -155,6 +155,9 @@ bool is_shuffling(Move move, Stack* const ss, const Position& pos) {
 
 }  // namespace
 
+int A=172, B=300;
+TUNE(B);
+
 Search::Worker::Worker(SharedState&                    sharedState,
                        std::unique_ptr<ISearchManager> sm,
                        size_t                          threadId,
@@ -1092,9 +1095,10 @@ moves_loop:  // When in check, search starts here
                 // SEE based pruning for captures and checks
                 // Avoid pruning sacrifices of our last piece for stalemate
                 int margin = 167 * depth + captHist * 34 / 1024;
-                if (165 < ss->staticEval && ss->staticEval < 500 && PieceValue[movedPiece] > PieceValue[capturedPiece]
-                    && int(nodes & 255ul) > 172)   // A=127,B=300 adjusts ~6.2% of margins, prevents ~8% of prunes
-                    margin += 300;
+                if (   165 < ss->staticEval && ss->staticEval < 500
+                    && PieceValue[movedPiece] > PieceValue[capturedPiece]
+                    && int(nodes & 255ul) > A)
+                    margin += B;
                 margin = std::max(margin, 0);
                 if ((alpha >= VALUE_DRAW || pos.non_pawn_material(us) != PieceValue[movedPiece])
                     && !pos.see_ge(move, -margin))

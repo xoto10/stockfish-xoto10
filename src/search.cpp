@@ -155,6 +155,9 @@ bool is_shuffling(Move move, Stack* const ss, const Position& pos) {
 
 }  // namespace
 
+int A=0;
+TUNE(SetRange(-100, 100), A);
+
 Search::Worker::Worker(SharedState&                    sharedState,
                        std::unique_ptr<ISearchManager> sm,
                        size_t                          threadId,
@@ -1131,8 +1134,8 @@ moves_loop:  // When in check, search starts here
                 // (*Scaler): Generally, lower divisors scale well
                 lmrDepth += history / lmrDivisor[dIndex];
 
-                Value futilityValue = ss->staticEval + 42 + 151 * !bestMove + 120 * lmrDepth
-                                    + 86 * (ss->staticEval > alpha);
+                Value futilityValue = ss->staticEval + 151 * !bestMove + 120 * lmrDepth
+                                    + 86 * (ss->staticEval > alpha) + 42 + A/2 - (ss->ply & 1) * A;
 
                 // Futility pruning: parent node
                 // (*Scaler): Generally, more frequent futility pruning

@@ -84,6 +84,9 @@ struct TTEntry {
     int16_t  eval16;
 };
 
+int A=256, B=256, C=256, D=256;
+TUNE(A, B, C, D);
+
 // Populates the TTEntry with a new node's data, possibly
 // overwriting an old position. The update is non-atomic and can be racy.
 void TTEntry::save(
@@ -94,7 +97,8 @@ void TTEntry::save(
         move16 = m;
 
     // Overwrite less valuable entries (cheapest checks first)
-    if (b == BOUND_EXACT || uint16_t(k) != key16 || d - DEPTH_NONE + 2 * pv > depth8 - 4
+    if (   uint16_t(k) != key16
+        || A*8 * (b == BOUND_EXACT) + B * pv + 128 * (d - DEPTH_NONE) + D * (is_decisive(v) > is_decisive(value16)) > 128 * depth8 - C*2
         || relative_age(curr_generation))
     {
         assert(d > DEPTH_NONE);

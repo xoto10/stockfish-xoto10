@@ -95,7 +95,7 @@ void TTEntry::save(
 
     // Overwrite less valuable entries (cheapest checks first)
     if (   uint16_t(k) != key16
-        || 140 * (b == BOUND_EXACT) + 18 * pv + 8 * (d - DEPTH_NONE) > 8 * depth8 - 66
+        || 500 * (b == BOUND_EXACT) + 18 * pv + 8 * (d - DEPTH_NONE) > 8 * depth8 - 66
         || relative_age(curr_generation))
     {
         assert(d > DEPTH_NONE);

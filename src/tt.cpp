@@ -84,7 +84,7 @@ struct TTEntry {
     int16_t  eval16;
 };
 
-int A=800, B=144, C=240, D=256;
+int A=150, B=144, C=240, D=256;
 TUNE(A, B, C);
 
 // Populates the TTEntry with a new node's data, possibly

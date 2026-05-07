@@ -93,11 +93,9 @@ void TTEntry::save(
     if (m || uint16_t(k) != key16)
         move16 = m;
 
-//constexpr int A=280, B=280, C=264, D=0;
-constexpr int A=140, B=18,  C=33,  D=0;
     // Overwrite less valuable entries (cheapest checks first)
     if (   uint16_t(k) != key16
-        || A   * (b == BOUND_EXACT) + B * pv +   8 * (d - DEPTH_NONE) + D * (is_decisive(v) > is_decisive(value16)) >   8 * depth8 - C*2
+        || 140 * (b == BOUND_EXACT) + 18 * pv + 8 * (d - DEPTH_NONE) > 8 * depth8 - 66
         || relative_age(curr_generation))
     {
         assert(d > DEPTH_NONE);

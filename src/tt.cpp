@@ -84,9 +84,9 @@ struct TTEntry {
     int16_t  eval16;
 };
 
-int A=200, B=576, D=1024; // C=0,
-TUNE(SetRange(0, 800), A);
-TUNE(B);
+int A=300, B=525, C=256, D=1024;
+TUNE(SetRange(0, 1200), A);
+TUNE(SetRange(0, 1500), B);
 //TUNE(SetRange(0, 2560), C);
 
 // Populates the TTEntry with a new node's data, possibly
@@ -101,8 +101,7 @@ void TTEntry::save(
     // Overwrite less valuable entries (cheapest checks first)
     if (   uint16_t(k) != key16
         || A   * (b == BOUND_EXACT) + B   * pv + 256 * (d - DEPTH_NONE)
-//           + C   * (v > value16 ? msb(v - value16) + 1 : 0)
-             > 256 * depth8 - D
+             + C   * (v > value16 ? msb(v - value16) + 1 : 0) > 256 * depth8 - D
         || relative_age(curr_generation))
     {
         assert(d > DEPTH_NONE);

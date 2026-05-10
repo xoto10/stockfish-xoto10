@@ -84,8 +84,8 @@ struct TTEntry {
     int16_t  eval16;
 };
 
-//constexpr int A[] = {0, 0, 0, 159};
-//constexpr int B[] = {154, 154, 154, 0};
+constexpr int Exact[] = {0, 0, 0, 159};
+constexpr int NotExact[] = {154, 154, 154, 0};
 
 // Populates the TTEntry with a new node's data, possibly
 // overwriting an old position. The update is non-atomic and can be racy.
@@ -98,9 +98,9 @@ void TTEntry::save(
 
     // Overwrite less valuable entries (cheapest checks first)
     if (   uint16_t(k) != key16
-        || 159 * (b == BOUND_EXACT) + 70 * pv + 32 * (d - DEPTH_NONE)
+        || Exact[b] + 70 * pv + 32 * (d - DEPTH_NONE)
              + 32 * (v > value16 ? msb(v - value16) + 1 : 0)
-           > 32 * depth8 - 128 - 154 * (Bound((genBound8 & BOUND_MASK) >> BOUND_SHIFT) != BOUND_EXACT)
+           > 32 * depth8 - 128 - NotExact[Bound((genBound8 & BOUND_MASK) >> BOUND_SHIFT)]
         || relative_age(curr_generation))
     {
         assert(d > DEPTH_NONE);

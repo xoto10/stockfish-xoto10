@@ -93,11 +93,6 @@ void TTEntry::save(
     if (m || uint16_t(k) != key16)
         move16 = m;
 
-//  dbg_mean_of (   b == BOUND_EXACT, 0);                                            0.4%
-//  dbg_mean_of(uint16_t(k) != key16, 1);                                           55.2%
-//  dbg_mean_of(Bound((genBound8 & BOUND_MASK) >> BOUND_SHIFT) != BOUND_EXACT, 2);  99.7%
-//  dbg_mean_of(d - DEPTH_NONE + 2 * pv > depth8 - 4, 3);                           94.7%
-//  dbg_mean_of(bool(relative_age(curr_generation)), 4);                            54.2%
     // Overwrite less valuable entries (cheapest checks first)
     if (   b == BOUND_EXACT
         || uint16_t(k) != key16

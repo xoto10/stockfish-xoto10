@@ -98,7 +98,8 @@ void TTEntry::save(
 
     // Overwrite less valuable entries (cheapest checks first)
     if (   uint16_t(k) != key16
-        || Exact[b] + 70 * pv + 32 * (d - DEPTH_NONE) + (v - value16) / 64
+        || Exact[b] + 70 * pv + 32 * (d - DEPTH_NONE)
+             + 8 * (v > value16 ? msb(v - value16) + 1 : 0)
            > 32 * depth8 - 128 - NotExact[Bound((genBound8 & BOUND_MASK) >> BOUND_SHIFT)]
         || relative_age(curr_generation))
     {

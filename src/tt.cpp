@@ -97,7 +97,7 @@ void TTEntry::save(
     if (   uint16_t(k) != key16
         || relative_age(curr_generation)
         || 81 * (b == BOUND_EXACT) + 35 * pv + 16 * (d - DEPTH_NONE) + (v > value16 ? msb(v - value16) + 1 : 0)
-           > 16 * depth8 - 64 - 73 * (Bound((genBound8 & BOUND_MASK) >> BOUND_SHIFT) != BOUND_EXACT))
+           > 16 * depth8 - 137)
     {
         assert(d > DEPTH_NONE);
         assert(d - DEPTH_NONE < 256);

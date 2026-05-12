@@ -93,16 +93,23 @@ void TTEntry::save(
     if (m || uint16_t(k) != key16)
         move16 = m;
 
-    // Overwrite previous entries
-    assert(d > DEPTH_NONE);
-    assert(d - DEPTH_NONE < 256);
-    assert(curr_generation <= GENERATION_MASK);  // TT::new_search() plays nice
+//  dbg_mean_of (   Bound((genBound8 & BOUND_MASK) >> BOUND_SHIFT) != BOUND_EXACT
+//      || d - DEPTH_NONE + 2 * pv > depth8 - 4, 0);
+//  dbg_mean_of (   Bound((genBound8 & BOUND_MASK) >> BOUND_SHIFT) != BOUND_EXACT, 1);
 
-    key16     = uint16_t(k);
-    depth8    = uint8_t(d - DEPTH_NONE);
-    genBound8 = uint8_t(curr_generation | b << BOUND_SHIFT | uint8_t(pv) << PV_SHIFT);
-    value16   = int16_t(v);
-    eval16    = int16_t(ev);
+    // Overwrite less valuable entries (cheapest checks first)
+    if ( Bound((genBound8 & BOUND_MASK) >> BOUND_SHIFT) != BOUND_EXACT )
+    {
+        assert(d > DEPTH_NONE);
+        assert(d - DEPTH_NONE < 256);
+        assert(curr_generation <= GENERATION_MASK);  // TT::new_search() plays nice
+
+        key16     = uint16_t(k);
+        depth8    = uint8_t(d - DEPTH_NONE);
+        genBound8 = uint8_t(curr_generation | b << BOUND_SHIFT | uint8_t(pv) << PV_SHIFT);
+        value16   = int16_t(v);
+        eval16    = int16_t(ev);
+    }
 }
 
 

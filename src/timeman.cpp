@@ -48,6 +48,7 @@ void TimeManagement::advance_nodes_time(i64 nodes) {
 void TimeManagement::init(Search::LimitsType& limits,
                           Color               us,
                           int                 ply,
+                          int                 pieceCount,
                           const OptionsMap&   options,
                           double&             originalTimeAdjust) {
     TimePoint npmsec = TimePoint(options["nodestime"]);
@@ -127,9 +128,15 @@ void TimeManagement::init(Search::LimitsType& limits,
         double optConstant  = std::min(0.0029869 + 0.00033554 * logTimeInSec, 0.004905);
         double maxConstant  = std::max(3.3744 + 3.0608 * logTimeInSec, 3.1441);
 
-        optScale = std::min(0.012112 + std::pow(ply + 3.22713, 0.46866) * optConstant,
+//      double
+//      optScale2 = std::min(0.012112 + std::pow(ply + 3.22713, 0.46866) * optConstant,
+//                          0.19404 * limits.time[us] / timeLeft)
+//               * originalTimeAdjust;
+        optScale = std::min(0.0130 + 0.84 * std::pow(132.0 - 4.0 * pieceCount, 0.5) * optConstant,
                             0.19404 * limits.time[us] / timeLeft)
                  * originalTimeAdjust;
+//      sync_cout << "info string optScale " << optScale << " pcs " << pieceCount << " optScale2 " << optScale2
+//                << " origAdj " << originalTimeAdjust << sync_endl;
 
         maxScale = std::min(6.873, maxConstant + ply / 12.352);
     }

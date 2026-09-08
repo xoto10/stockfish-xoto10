@@ -132,7 +132,7 @@ void TimeManagement::init(Search::LimitsType& limits,
 //      optScale2 = std::min(0.012112 + std::pow(ply + 3.22713, 0.46866) * optConstant,
 //                          0.19404 * limits.time[us] / timeLeft)
 //               * originalTimeAdjust;
-        optScale = std::min(0.01365 + 0.88 * std::pow(132.0 - 4.0 * pieceCount, 0.5) * optConstant,
+        optScale = std::min(0.0124 + 0.80 * std::pow(132.0 - 4.0 * pieceCount, 0.5) * optConstant,
                             0.19404 * limits.time[us] / timeLeft)
                  * originalTimeAdjust;
 //      sync_cout << "info string optScale " << optScale << " pcs " << pieceCount << " optScale2 " << optScale2

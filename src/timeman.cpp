@@ -28,9 +28,8 @@
 
 namespace Stockfish {
 
-auto f1 = [](int m){return Range(m / 2, m * 3 / 2);};
 int A=1000, B=1000;
-TUNE(SetRange(f1), A, B);
+TUNE(A, B);
 
 TimePoint TimeManagement::optimum() const { return optimumTime; }
 TimePoint TimeManagement::maximum() const { return maximumTime; }

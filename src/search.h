@@ -377,6 +377,7 @@ class Worker {
 
     Position  rootPos;
     RootMoves rootMoves;
+    Value     rootValue;
     Depth     rootDepth;
     bool      seekMate = false;
 

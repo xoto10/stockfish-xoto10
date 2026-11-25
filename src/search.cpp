@@ -288,6 +288,7 @@ bool Search::Worker::iterative_deepening() {
     Value  alpha, beta, bestValue;
     double timeReduction = 1, totBestMoveChanges = 0;
     int    delta, iterIdx                        = 0;
+    rootValue = 0;
 
     // Allocate stack with extra size to allow access from (ss - 7) to (ss + 2):
     // (ss - 7) is needed for update_continuation_histories(ss - 1) which accesses (ss - 6),
@@ -415,6 +416,8 @@ bool Search::Worker::iterative_deepening() {
                 // the previous iteration.
                 if (threads.stop)
                     break;
+
+                rootValue = bestValue;
 
                 // When failing high/low give some update before a re-search. To avoid
                 // excessive output that could hang GUIs like Fritz 19, only start
@@ -1172,6 +1175,10 @@ moves_loop:  // When in check, search starts here
         // Decrease reduction for PvNodes
         if (PvNode)
             r -= 532;
+
+        // Decrease reduction in bad positions
+        if (rootValue < -PawnValue / 2)
+            r -= 100;
 
         // Increase reduction for ttPv nodes
         // (*Scaler) Larger values scale well.

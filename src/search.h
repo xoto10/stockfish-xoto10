@@ -301,6 +301,7 @@ class SearchManager {
 
     std::array<Value, 4> iterValue;
     double               previousTimeReduction;
+    Depth                previousStableDepth;
     Value                bestPreviousScore;
     Value                bestPreviousAverageScore;
     bool                 stopOnPonderhit;

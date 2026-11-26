@@ -283,7 +283,7 @@ bool Search::Worker::iterative_deepening() {
     PVMoves pv;
 
     RootPVMoves lastBestMovePV;
-    Depth       lastBestMoveDepth = 0;
+    Depth       lastBestMoveDepth = 0, stableDepth;
     Value       lastBestMoveScore = -VALUE_INFINITE;
 
     Value  alpha, beta, bestValue;
@@ -586,9 +586,11 @@ bool Search::Worker::iterative_deepening() {
             fallingEval = std::clamp(fallingEval, 0.576, 1.728);
 
             // If the bestMove is stable over several iterations, reduce time accordingly
+            stableDepth = rootDepth - lastBestMoveDepth;
             timeReduction = std::clamp(
-              interpolate(double(rootDepth - lastBestMoveDepth), 4.96, 18.79, 0.639, 1.712), 0.629,
-              1.544);
+              interpolate(double(std::max(mainThread->previousStableDepth, stableDepth)),
+                          4.96, 18.79, 0.639, 1.712),
+              0.629, 1.544);
 
             double reduction =
               (1.468 + mainThread->previousTimeReduction) / (2.284 * timeReduction);
@@ -638,6 +640,7 @@ bool Search::Worker::iterative_deepening() {
     if (!mainThread)
         return false;
 
+    mainThread->previousStableDepth = stableDepth;
     mainThread->previousTimeReduction = timeReduction;
 
     // If the skill level is enabled, swap the best PV line with the sub-optimal one

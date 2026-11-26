@@ -586,11 +586,12 @@ bool Search::Worker::iterative_deepening() {
 
             // If the bestMove is stable over several iterations, reduce time accordingly
             timeReduction = std::clamp(
-              interpolate(double(rootDepth - lastBestMoveDepth), 4.96, 18.79, 0.639, 1.712), 0.629,
-              1.544);
+//            interpolate(double(rootDepth - lastBestMoveDepth), 4.96, 18.79, 0.639, 1.712), 0.629,
+//            1.544);
+              interpolate(double(rootDepth - lastBestMoveDepth), 4.96, 18.79, 1.037, 0.387), 1.054,
+              0.429);
 
-            double reduction =
-              (1.468 + mainThread->previousTimeReduction) / (2.284 * timeReduction);
+// 1.046   0.6629/timeReduction
 
             // Age out and update PV variability metric
             totBestMoveChanges /= 2;
@@ -605,7 +606,7 @@ bool Search::Worker::iterative_deepening() {
             double highBestMoveEffort = std::clamp(
               interpolate(i64(nodesEffort), i64(75800), i64(104510), 0.969, 0.714), 0.693, 0.838);
 
-            double totalTime = mainThread->tm.optimum() * fallingEval * reduction
+            double totalTime = mainThread->tm.optimum() * fallingEval * timeReduction
                              * bestMoveInstability * highBestMoveEffort;
 
             if (rootMoves.size() == 1)
@@ -636,8 +637,6 @@ bool Search::Worker::iterative_deepening() {
 
     if (!mainThread)
         return false;
-
-    mainThread->previousTimeReduction = timeReduction;
 
     // If the skill level is enabled, swap the best PV line with the sub-optimal one
     if (skill.enabled())

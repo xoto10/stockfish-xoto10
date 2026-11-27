@@ -588,12 +588,12 @@ bool Search::Worker::iterative_deepening() {
             // If the bestMove is stable over several iterations, reduce time accordingly
             stableDepth = rootDepth - lastBestMoveDepth;
             timeReduction = std::clamp(
-              interpolate(double(std::max(mainThread->previousStableDepth, stableDepth)),
+              interpolate(double(std::min(mainThread->previousStableDepth, stableDepth)),
                           4.96, 18.79, 0.639, 1.712),
               0.629, 1.544);
 
             double reduction =
-              (1.468 + mainThread->previousTimeReduction) / (2.284 * timeReduction);
+              (1.468 + mainThread->previousTimeReduction) / (2.309 * timeReduction);
 
             // Age out and update PV variability metric
             totBestMoveChanges /= 2;

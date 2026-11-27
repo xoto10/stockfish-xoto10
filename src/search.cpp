@@ -169,7 +169,7 @@ bool is_shuffling(Move move, Stack* const ss, const Position& pos) {
 
 }  // namespace
 
-int A=2200;
+int A=1531;
 TUNE(A);
 
 Search::Worker::Worker(SharedState&                   sharedState,
@@ -591,11 +591,8 @@ bool Search::Worker::iterative_deepening() {
             timeReduction = std::clamp(
 //            interpolate(double(rootDepth - lastBestMoveDepth), 4.96, 18.79, 0.639, 1.712), 0.629,
 //            1.544);
-              interpolate(double(rootDepth - lastBestMoveDepth), 4.96, 18.79, 1.037, 0.387),
-              1.054, 0.429)
+              interpolate(double(rootDepth - lastBestMoveDepth), 4.96, 18.79, 1.037, 0.387), 0.429, 1.054)
               * (A/1000.0);
-
-// 1.046   0.6629/timeReduction
 
             // Age out and update PV variability metric
             totBestMoveChanges /= 2;

@@ -169,7 +169,7 @@ bool is_shuffling(Move move, Stack* const ss, const Position& pos) {
 
 }  // namespace
 
-int A=100;
+int A=520, B=480;
 TUNE(A);
 
 Search::Worker::Worker(SharedState&                   sharedState,
@@ -1179,8 +1179,11 @@ moves_loop:  // When in check, search starts here
         if (PvNode)
             r -= 532;
 
-        // Increase reduction if winning, decrease if losing
-        r += (rootValue > 0) ? A : -A;
+        // Alter reduction if winning or losing
+        if (rootValue > PawnValue/2)
+            r += 500 - A;
+        else if (rootValue < -PawnValue/2)
+            r += 500 - B;
 
         // Increase reduction for ttPv nodes
         // (*Scaler) Larger values scale well.

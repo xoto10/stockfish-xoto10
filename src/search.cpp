@@ -170,7 +170,7 @@ bool is_shuffling(Move move, Stack* const ss, const Position& pos) {
 }  // namespace
 
 int A=520, B=480;
-TUNE(A);
+TUNE(A, B);
 
 Search::Worker::Worker(SharedState&                   sharedState,
                        std::unique_ptr<SearchManager> sm,
